@@ -1489,7 +1489,11 @@ def _persist_lines_store_disk(store: dict) -> None:
 
 
 def _lines_store() -> dict:
-    return ensure_session_store(st.session_state, "_lines_store", _load_lines_store_disk())
+    # Session-only: NOT seeded from disk. Every new session starts with no saved
+    # lines, so each matchup opens with the standard default lines. The store
+    # still carries the lines the user types from the fill step into the Resumo
+    # within the SAME analysis. (User decision 2026-06-02: "sempre padrão".)
+    return ensure_session_store(st.session_state, "_lines_store", {})
 
 
 def _load_lines_for_matchup(key: str) -> None:
@@ -1497,10 +1501,9 @@ def _load_lines_for_matchup(key: str) -> None:
 
 
 def _save_lines_for_matchup(key: str) -> None:
+    # Update the session store only — no disk persistence (lines are session-only).
     store = _lines_store()
     _save_lines_for_matchup_impl(st.session_state, store, key)
-
-    _persist_lines_store_disk(store)
 
 
 # -----------------------------

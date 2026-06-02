@@ -56,3 +56,6 @@ bootstrap_cache/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Linhas por confronto: agora sao so-de-sessao (nao persistir)
+user_lines_store.json
