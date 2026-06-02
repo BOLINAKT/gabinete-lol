@@ -1,0 +1,205 @@
+{
+  "version": "lacuna_guardrail_v1",
+  "generated_at": "2026-03-05T14:31:04+00:00",
+  "decision": "promote",
+  "reasons": [],
+  "parts": {
+    "stop_rules_backtest": "promote",
+    "anchors_app": "promote",
+    "leakage_labels": "promote",
+    "coverage_aliases": "promote",
+    "artifact_freshness": "promote",
+    "phase12_roster": "promote",
+    "phase2_areal": "promote",
+    "phase2b_areal_tuning": "promote",
+    "phase3_breal": "promote",
+    "phase4_ranksos": "promote",
+    "phase4b_marginal_tuning": "promote",
+    "phase5_hier_calibration": "promote",
+    "phase6_series_bo": "promote",
+    "phase7_layer_uncertainty": "promote"
+  },
+  "phase_parts": {
+    "phase12_roster": "promote",
+    "phase2_areal": "promote",
+    "phase2b_areal_tuning": "promote",
+    "phase3_breal": "promote",
+    "phase4_ranksos": "promote",
+    "phase4b_marginal_tuning": "promote",
+    "phase5_hier_calibration": "promote",
+    "phase6_series_bo": "promote",
+    "phase7_layer_uncertainty": "promote",
+    "phase8_operations": "promote"
+  },
+  "missing_phase_reports": [],
+  "strict_phase_coverage": true,
+  "coverage": {
+    "decision": "promote",
+    "reasons": [],
+    "summary": {
+      "files_read": 3,
+      "files_total": 3,
+      "rows_total": 264348,
+      "league_count": 66,
+      "low_sample_leagues_lt30": 0,
+      "team_rows": 264348,
+      "blank_teams": 0,
+      "blank_team_rate": 0.0
+    },
+    "top_leagues": [
+      {
+        "league": "LPL",
+        "rows": 20640
+      },
+      {
+        "league": "LCKC",
+        "rows": 14040
+      },
+      {
+        "league": "LCK",
+        "rows": 13944
+      },
+      {
+        "league": "EM",
+        "rows": 10068
+      },
+      {
+        "league": "LAS",
+        "rows": 9336
+      },
+      {
+        "league": "NACL",
+        "rows": 9168
+      },
+      {
+        "league": "LEC",
+        "rows": 8460
+      },
+      {
+        "league": "LJL",
+        "rows": 7872
+      },
+      {
+        "league": "LFL",
+        "rows": 7680
+      },
+      {
+        "league": "PCS",
+        "rows": 7200
+      },
+      {
+        "league": "PRM",
+        "rows": 6972
+      },
+      {
+        "league": "LDL",
+        "rows": 6780
+      },
+      {
+        "league": "AL",
+        "rows": 6720
+      },
+      {
+        "league": "LVP SL",
+        "rows": 6072
+      },
+      {
+        "league": "NLC",
+        "rows": 5988
+      },
+      {
+        "league": "TCL",
+        "rows": 5700
+      },
+      {
+        "league": "LFL2",
+        "rows": 4860
+      },
+      {
+        "league": "VCS",
+        "rows": 4836
+      },
+      {
+        "league": "LCP",
+        "rows": 4716
+      },
+      {
+        "league": "EBL",
+        "rows": 4584
+      },
+      {
+        "league": "LIT",
+        "rows": 4572
+      },
+      {
+        "league": "LPLOL",
+        "rows": 4152
+      },
+      {
+        "league": "HM",
+        "rows": 4140
+      },
+      {
+        "league": "PCL",
+        "rows": 4080
+      },
+      {
+        "league": "CBLOL",
+        "rows": 3972
+      },
+      {
+        "league": "CD",
+        "rows": 3804
+      },
+      {
+        "league": "NEXO",
+        "rows": 3780
+      },
+      {
+        "league": "HC",
+        "rows": 3732
+      },
+      {
+        "league": "HW",
+        "rows": 3516
+      },
+      {
+        "league": "ESLOL",
+        "rows": 3492
+      }
+    ],
+    "errors": []
+  },
+  "artifact_freshness": {
+    "decision": "promote",
+    "reasons": [],
+    "summary": {
+      "ml_artifact_exists": true,
+      "players_artifact_exists": true,
+      "params_fitted_exists": true,
+      "age_vs_newest_csv_hours": {
+        "ml_artifact": 0.0,
+        "players_artifact": 0.0,
+        "params_fitted": 0.0
+      }
+    }
+  },
+  "sources": {
+    "backtest_report": "backtest_pipeline_abc_by_league_report.json",
+    "anchor_report": "anchor_regression_report.json",
+    "leakage_report": "data_leakage_label_report.json",
+    "phase_reports": {
+      "phase12_roster": "phase12_roster_continuity_report.json",
+      "phase2_areal": "phase2_areal_report.json",
+      "phase2b_areal_tuning": "phase2b_areal_tuning_report.json",
+      "phase3_breal": "phase3_breal_report.json",
+      "phase4_ranksos": "phase4_ranksos_report.json",
+      "phase4b_marginal_tuning": "phase4b_marginal_tuning_report.json",
+      "phase5_hier_calibration": "phase5_hier_calibration_report.json",
+      "phase6_series_bo": "phase6_series_bo_report.json",
+      "phase7_layer_uncertainty": "phase7_layer_uncertainty_report.json",
+      "phase8_operations": "phase8_operations_report.json"
+    }
+  },
+  "run_log": "$ anchor_regression_suite rc=0\nOK: anchor regression saved -> anchor_regression_report.json | ok=3/3 fail=0\n\n2026-03-05 11:29:47.189 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:29:47.189 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:29:47.189 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:29:47.190 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:29:54.451 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:29:54.451 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:29:54.451 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:29:54.451 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:29:54.451 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:05.920 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:05.920 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:05.920 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:05.920 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:10.319 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:10.319 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:10.319 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:10.319 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:10.319 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:19.669 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:19.669 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:19.669 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:19.669 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:24.324 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:24.325 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:24.325 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:24.325 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-05 11:30:24.325 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n\n$ check_data_leakage_and_labels rc=0\nOK: leakage/label report saved -> data_leakage_label_report.json | decision=promote | files_ok=3/3 rows=264348"
+}

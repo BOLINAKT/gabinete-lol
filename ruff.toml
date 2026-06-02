@@ -1,0 +1,45 @@
+# Ruff config — focado em pegar BUG real, não estética.
+# Roda em ~1s no projeto inteiro. Veja https://docs.astral.sh/ruff/rules/
+
+target-version = "py313"
+line-length = 120
+
+# Diretórios que não são código-fonte da app.
+extend-exclude = [
+    ".venv",
+    "ops",
+    "backups",
+    "CSV_DIARIO",
+    "CSV_HISTORICO",
+    "mlcore/_recovered",
+]
+
+[lint]
+# Conjuntos selecionados pela utilidade em caçar bug / lixo:
+#   F   pyflakes      — imports não usados, vars não usadas, f-strings quebradas,
+#                       nomes indefinidos, redefinição, comparações inválidas
+#   E9  syntax        — erros de sintaxe / runtime
+#   B   bugbear       — armadilhas comuns (except sem uso, mutável default, etc.)
+#   PIE pie           — código redundante / morto
+#   RUF ruff-specific — ambiguidades, padrões problemáticos
+select = ["F", "E9", "B", "PIE", "RUF"]
+
+# Regras a ignorar (ruído sem retorno pra este projeto):
+#   B008  function-call-in-default — comum e intencional em Streamlit/CLI
+#   B905  zip-without-strict       — zip() proposital sem strict em muitos lugares
+#   RUF001/002/003 — caracteres unicode ambíguos (PT-BR usa acentos legítimos)
+#   B023  function-uses-loop-variable — auditado: todos os ~101 casos são
+#         helpers locais chamados na MESMA iteração (idioma seguro). Nenhuma
+#         closure escapa do loop. Flag conservadora demais para este código.
+ignore = ["B008", "B905", "B023", "RUF001", "RUF002", "RUF003"]
+
+[lint.per-file-ignores]
+# Testes podem ter imports "não usados" (fixtures), asserts soltos e
+# constantes de classe (sets/dicts) como fixtures — RUF012 (mutable default)
+# visa modelos/dataclasses com estado compartilhado, não constantes de teste.
+"mlcore/tests/*" = ["F401", "F811", "RUF012"]
+# plays_app.py passa ctx=globals() para os renderers (visao/consistencia), que
+# leem dezenas de símbolos via ctx.get("core_x"). Esses imports são "usados"
+# apenas por string — F401 os marca como mortos e o --fix os REMOVE, quebrando
+# o app em runtime (sem erro de import). NUNCA rodar --fix F401 aqui.
+"plays_app.py" = ["F401"]

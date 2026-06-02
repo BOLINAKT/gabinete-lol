@@ -1,0 +1,197 @@
+{
+  "version": "phase5c_hier_interleague_gate_v1",
+  "generated_at": "2026-03-11T20:42:49+00:00",
+  "decision": "promote",
+  "reasons": [],
+  "summary": {
+    "ok": 16,
+    "total": 16,
+    "rows_total": 2717,
+    "rows_global": 2717,
+    "gain_logloss": 1.0647901208526989e-06,
+    "gain_brier": 5.157297595925758e-07,
+    "gain_ece": 4.395336649642978e-07
+  },
+  "thresholds": {
+    "oos_logloss_tol": 0.0015,
+    "oos_brier_tol": 0.001,
+    "oos_ece_tol": 0.0015,
+    "oos_min_rows_inter_global": 216,
+    "oos_segment_tol_mult_inter": 1.7,
+    "oos_ece_improve_min_inter": 0.0003
+  },
+  "checks": [
+    {
+      "check": "compare_report_exists",
+      "ok": true,
+      "detail": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\hier_calibration_interleague_pre_post_compare.json"
+    },
+    {
+      "check": "baseline_exists",
+      "ok": true,
+      "detail": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\ml_confidence_baseline.json"
+    },
+    {
+      "check": "rows_global_sufficient",
+      "ok": true,
+      "detail": {
+        "n_global": 2717,
+        "min_rows_global": 216
+      }
+    },
+    {
+      "check": "global_non_inferior_logloss",
+      "ok": true,
+      "detail": {
+        "metric": "logloss",
+        "gain": 1.0647901208526989e-06,
+        "tol_non_inferior": 0.0015,
+        "considered": true,
+        "n": 2717,
+        "min_n": 216
+      }
+    },
+    {
+      "check": "global_non_inferior_brier",
+      "ok": true,
+      "detail": {
+        "metric": "brier",
+        "gain": 5.157297595925758e-07,
+        "tol_non_inferior": 0.001,
+        "considered": true,
+        "n": 2717,
+        "min_n": 216
+      }
+    },
+    {
+      "check": "global_non_inferior_ece",
+      "ok": true,
+      "detail": {
+        "metric": "ece",
+        "gain": 4.395336649642978e-07,
+        "tol_non_inferior": 0.0015,
+        "considered": true,
+        "n": 2717,
+        "min_n": 216
+      }
+    },
+    {
+      "check": "global_has_practical_gain",
+      "ok": true,
+      "detail": {
+        "gain_logloss": 1.0647901208526989e-06,
+        "gain_brier": 5.157297595925758e-07,
+        "gain_ece": 4.395336649642978e-07,
+        "ece_improve_min_inter": 0.0003
+      }
+    },
+    {
+      "check": "inter_major_major_non_inferior_logloss",
+      "ok": true,
+      "detail": {
+        "metric": "logloss",
+        "gain": 2.4484036890148886e-06,
+        "tol_non_inferior": 0.00255,
+        "considered": true,
+        "n": 655,
+        "min_n": 60
+      }
+    },
+    {
+      "check": "inter_major_major_non_inferior_brier",
+      "ok": true,
+      "detail": {
+        "metric": "brier",
+        "gain": 1.171518384079917e-06,
+        "tol_non_inferior": 0.0017,
+        "considered": true,
+        "n": 655,
+        "min_n": 60
+      }
+    },
+    {
+      "check": "inter_major_major_non_inferior_ece",
+      "ok": true,
+      "detail": {
+        "metric": "ece",
+        "gain": 6.028188773689325e-06,
+        "tol_non_inferior": 0.00255,
+        "considered": true,
+        "n": 655,
+        "min_n": 60
+      }
+    },
+    {
+      "check": "inter_mixed_non_inferior_logloss",
+      "ok": true,
+      "detail": {
+        "metric": "logloss",
+        "gain": 2.000560053283529e-06,
+        "tol_non_inferior": 0.00255,
+        "considered": true,
+        "n": 408,
+        "min_n": 80
+      }
+    },
+    {
+      "check": "inter_mixed_non_inferior_brier",
+      "ok": true,
+      "detail": {
+        "metric": "brier",
+        "gain": 9.734338193012615e-07,
+        "tol_non_inferior": 0.0017,
+        "considered": true,
+        "n": 408,
+        "min_n": 80
+      }
+    },
+    {
+      "check": "inter_mixed_non_inferior_ece",
+      "ok": true,
+      "detail": {
+        "metric": "ece",
+        "gain": 6.709569915497315e-06,
+        "tol_non_inferior": 0.00255,
+        "considered": true,
+        "n": 408,
+        "min_n": 80
+      }
+    },
+    {
+      "check": "inter_minor_minor_non_inferior_logloss",
+      "ok": true,
+      "detail": {
+        "metric": "logloss",
+        "gain": 2.860349729294498e-07,
+        "tol_non_inferior": 0.00255,
+        "considered": true,
+        "n": 1654,
+        "min_n": 60
+      }
+    },
+    {
+      "check": "inter_minor_minor_non_inferior_brier",
+      "ok": true,
+      "detail": {
+        "metric": "brier",
+        "gain": 1.4312709686881142e-07,
+        "tol_non_inferior": 0.0017,
+        "considered": true,
+        "n": 1654,
+        "min_n": 60
+      }
+    },
+    {
+      "check": "inter_minor_minor_non_inferior_ece",
+      "ok": true,
+      "detail": {
+        "metric": "ece",
+        "gain": 1.4727375455270142e-07,
+        "tol_non_inferior": 0.00255,
+        "considered": true,
+        "n": 1654,
+        "min_n": 60
+      }
+    }
+  ]
+}

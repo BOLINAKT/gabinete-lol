@@ -1,0 +1,807 @@
+{
+  "generated_at": "2026-05-29T02:01:32+00:00",
+  "version": "phase0_baseline_v1",
+  "split": {
+    "train": {
+      "n": 20252,
+      "date_range": [
+        "2024-01-01",
+        "2025-12-29"
+      ]
+    },
+    "val": {
+      "n": 2427,
+      "date_range": [
+        "2026-01-08",
+        "2026-03-31"
+      ],
+      "cutoff_start": "2026-01-01"
+    },
+    "test": {
+      "n": 2827,
+      "date_range": [
+        "2026-04-01",
+        "2026-05-28"
+      ],
+      "cutoff_start": "2026-04-01"
+    }
+  },
+  "n_bootstrap": 1000,
+  "layers": [
+    {
+      "layer": "L0_p_team_only",
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.651110567238212,
+        "ci_low": 0.6455753770077504,
+        "ci_high": 0.6564552113180552,
+        "n": 2827,
+        "n_bootstrap": 1000
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.10707701407255776,
+        "ci_low": 0.08906697522056471,
+        "ci_high": 0.12391007677688622,
+        "n": 2827,
+        "n_bootstrap": 1000
+      },
+      "brier": {
+        "metric": "brier",
+        "point": 0.22952097224180612,
+        "ci_low": 0.22691965613355822,
+        "ci_high": 0.2319696035483847,
+        "n": 2827,
+        "n_bootstrap": 1000
+      }
+    },
+    {
+      "layer": "L1_fused_raw",
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6389795014873689,
+        "ci_low": 0.6329406171058789,
+        "ci_high": 0.6450528989900148,
+        "n": 2827,
+        "n_bootstrap": 1000
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.1103410973438589,
+        "ci_low": 0.09323027929742675,
+        "ci_high": 0.12663224015944632,
+        "n": 2827,
+        "n_bootstrap": 1000
+      },
+      "brier": {
+        "metric": "brier",
+        "point": 0.22373273863149518,
+        "ci_low": 0.22093496406584226,
+        "ci_high": 0.22639376562655472,
+        "n": 2827,
+        "n_bootstrap": 1000
+      }
+    },
+    {
+      "layer": "L2_fused_platt",
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6173214258440747,
+        "ci_low": 0.6062699561442936,
+        "ci_high": 0.6285546979060632,
+        "n": 2827,
+        "n_bootstrap": 1000
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.04810940840875852,
+        "ci_low": 0.0380566237426955,
+        "ci_high": 0.06771803364476633,
+        "n": 2827,
+        "n_bootstrap": 1000
+      },
+      "brier": {
+        "metric": "brier",
+        "point": 0.21429186751174104,
+        "ci_low": 0.2095072716082272,
+        "ci_high": 0.21870554187786803,
+        "n": 2827,
+        "n_bootstrap": 1000
+      }
+    },
+    {
+      "layer": "L3_fused_microseg",
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.632947330557233,
+        "ci_low": 0.6265334067874615,
+        "ci_high": 0.6392336442055132,
+        "n": 2827,
+        "n_bootstrap": 1000
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.11771591715351497,
+        "ci_low": 0.10107003576142007,
+        "ci_high": 0.134182973757002,
+        "n": 2827,
+        "n_bootstrap": 1000
+      },
+      "brier": {
+        "metric": "brier",
+        "point": 0.2208745042963901,
+        "ci_low": 0.21779817413953642,
+        "ci_high": 0.22370103699853208,
+        "n": 2827,
+        "n_bootstrap": 1000
+      }
+    },
+    {
+      "layer": "L4_final_microseg_platt",
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6094854452280645,
+        "ci_low": 0.5985309472429527,
+        "ci_high": 0.6213381712236032,
+        "n": 2827,
+        "n_bootstrap": 1000
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.04791873776519786,
+        "ci_low": 0.03838889294889988,
+        "ci_high": 0.06739851129445344,
+        "n": 2827,
+        "n_bootstrap": 1000
+      },
+      "brier": {
+        "metric": "brier",
+        "point": 0.2107645169471872,
+        "ci_low": 0.2056633612994168,
+        "ci_high": 0.21542901944619866,
+        "n": 2827,
+        "n_bootstrap": 1000
+      }
+    }
+  ],
+  "by_league": [
+    {
+      "league": "LCKC",
+      "n": 204,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6286907434705065,
+        "ci_low": 0.5914254138054966,
+        "ci_high": 0.6796855112989123,
+        "n": 204,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.06676206128677385,
+        "ci_low": 0.04974498493460898,
+        "ci_high": 0.1436484680517199,
+        "n": 204,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "LCK",
+      "n": 190,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.5508480018815367,
+        "ci_low": 0.48922807087599485,
+        "ci_high": 0.6361052325972473,
+        "n": 190,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.10215868576575747,
+        "ci_low": 0.07283146249305142,
+        "ci_high": 0.16493076735364476,
+        "n": 190,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "LPL",
+      "n": 189,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6364024580060239,
+        "ci_low": 0.5968159197041762,
+        "ci_high": 0.6767493494902073,
+        "n": 189,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.05869850782092837,
+        "ci_low": 0.043782744687476984,
+        "ci_high": 0.1332540718037379,
+        "n": 189,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "LAS",
+      "n": 170,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.5737668904427948,
+        "ci_low": 0.5263036402335144,
+        "ci_high": 0.6237841978952245,
+        "n": 170,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.10006112940248522,
+        "ci_low": 0.06745602454715814,
+        "ci_high": 0.17188957945879,
+        "n": 170,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "EWC",
+      "n": 151,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6153995021485238,
+        "ci_low": 0.5534547824473977,
+        "ci_high": 0.6769538613318694,
+        "n": 151,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.10630524373444479,
+        "ci_low": 0.0719295812201912,
+        "ci_high": 0.19561375179792947,
+        "n": 151,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "LJL",
+      "n": 138,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6094332599436916,
+        "ci_low": 0.5830902125922224,
+        "ci_high": 0.6423016392769757,
+        "n": 138,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.19424041158344163,
+        "ci_low": 0.129792073831459,
+        "ci_high": 0.2610843576346447,
+        "n": 138,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "CD",
+      "n": 113,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6702944819395534,
+        "ci_low": 0.6224711274091488,
+        "ci_high": 0.72648637161962,
+        "n": 113,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.10497213815143377,
+        "ci_low": 0.07121528688618987,
+        "ci_high": 0.20961487487349278,
+        "n": 113,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "NACL",
+      "n": 110,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6246692265947318,
+        "ci_low": 0.5740776861679574,
+        "ci_high": 0.675681195711233,
+        "n": 110,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.08062129577745818,
+        "ci_low": 0.047888996684731164,
+        "ci_high": 0.18921497769193343,
+        "n": 110,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "AL",
+      "n": 109,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6181703144111003,
+        "ci_low": 0.5876194516976742,
+        "ci_high": 0.6458030118852215,
+        "n": 109,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.16685803370686325,
+        "ci_low": 0.10021408443806554,
+        "ci_high": 0.23620583001996148,
+        "n": 109,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "PRM",
+      "n": 105,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.5295845746192204,
+        "ci_low": 0.4830728112248539,
+        "ci_high": 0.5723277960445965,
+        "n": 105,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.15527586293033951,
+        "ci_low": 0.11379651401694564,
+        "ci_high": 0.22427731876492274,
+        "n": 105,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "LEC",
+      "n": 104,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.5763557966451892,
+        "ci_low": 0.5152478572755249,
+        "ci_high": 0.6531568968726399,
+        "n": 104,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.09635136099218299,
+        "ci_low": 0.07724622975332435,
+        "ci_high": 0.20094829366207365,
+        "n": 104,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "LIT",
+      "n": 91,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6294661299958471,
+        "ci_low": 0.6055966435633489,
+        "ci_high": 0.6632731135788758,
+        "n": 91,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.11610917742118752,
+        "ci_low": 0.0658277329869669,
+        "ci_high": 0.22559119590282603,
+        "n": 91,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "CBLOL",
+      "n": 84,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6236694543041983,
+        "ci_low": 0.5700234370997473,
+        "ci_high": 0.6752712100757498,
+        "n": 84,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.11077933904520532,
+        "ci_low": 0.0642414769483316,
+        "ci_high": 0.22073890992004475,
+        "n": 84,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "TCL",
+      "n": 83,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.5607030242910677,
+        "ci_low": 0.5131583689410789,
+        "ci_high": 0.6170839786250785,
+        "n": 83,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.1358313331866034,
+        "ci_low": 0.10818337554138352,
+        "ci_high": 0.227777920174029,
+        "n": 83,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "LCS",
+      "n": 79,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6017776600764756,
+        "ci_low": 0.5300185177952884,
+        "ci_high": 0.6781872369300328,
+        "n": 79,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.08388511188955088,
+        "ci_low": 0.08086410616765162,
+        "ci_high": 0.21366563168790734,
+        "n": 79,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "HLL",
+      "n": 78,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6639021267057678,
+        "ci_low": 0.6216736656649139,
+        "ci_high": 0.7045961423039824,
+        "n": 78,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.06083580582052499,
+        "ci_low": 0.030651462027724567,
+        "ci_high": 0.17964079421312854,
+        "n": 78,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "LCP",
+      "n": 77,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6242326320425148,
+        "ci_low": 0.5429054841544692,
+        "ci_high": 0.7289111794341945,
+        "n": 77,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.11445032827994762,
+        "ci_low": 0.0831679363768634,
+        "ci_high": 0.22074230196471373,
+        "n": 77,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "ROL",
+      "n": 73,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6557467214645484,
+        "ci_low": 0.6170383648256481,
+        "ci_high": 0.7035982076995138,
+        "n": 73,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.05606679335922704,
+        "ci_low": 0.045100701918852175,
+        "ci_high": 0.20467036242883715,
+        "n": 73,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "HC",
+      "n": 71,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6814848833491289,
+        "ci_low": 0.6479480843818449,
+        "ci_high": 0.7286750640887741,
+        "n": 71,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.13016304998420913,
+        "ci_low": 0.04745110963245029,
+        "ci_high": 0.2352934716601629,
+        "n": 71,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "HM",
+      "n": 71,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.5909064641892338,
+        "ci_low": 0.5658006659074093,
+        "ci_high": 0.6207426855512367,
+        "n": 71,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.21774361657870184,
+        "ci_low": 0.17013803666052824,
+        "ci_high": 0.30414128714591654,
+        "n": 71,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "LFL",
+      "n": 71,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6054570266292385,
+        "ci_low": 0.5423872428648603,
+        "ci_high": 0.6693926460649837,
+        "n": 71,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.11991932123419141,
+        "ci_low": 0.09011181023428265,
+        "ci_high": 0.25163175638519786,
+        "n": 71,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "RL",
+      "n": 69,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.5966192991820035,
+        "ci_low": 0.5200518950180553,
+        "ci_high": 0.6692525741492993,
+        "n": 69,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.13571665689558832,
+        "ci_low": 0.08208667659225109,
+        "ci_high": 0.24360176062992678,
+        "n": 69,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "EBL",
+      "n": 66,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.5735254149283426,
+        "ci_low": 0.5101947126474221,
+        "ci_high": 0.6359911772219269,
+        "n": 66,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.14291840017190147,
+        "ci_low": 0.0979008368218593,
+        "ci_high": 0.24551800215633093,
+        "n": 66,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "LES",
+      "n": 63,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6068872161227628,
+        "ci_low": 0.5596244672649985,
+        "ci_high": 0.6602489856310764,
+        "n": 63,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.08888916592049971,
+        "ci_low": 0.06055718829576372,
+        "ci_high": 0.22130222726392462,
+        "n": 63,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "NL",
+      "n": 56,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6385429762470346,
+        "ci_low": 0.6145946873460201,
+        "ci_high": 0.6631262520163125,
+        "n": 56,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.16911478679529968,
+        "ci_low": 0.06645965531973752,
+        "ci_high": 0.2850511275867653,
+        "n": 56,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "LRS",
+      "n": 38,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6328922330591402,
+        "ci_low": 0.6008137839483797,
+        "ci_high": 0.6642139979005188,
+        "n": 38,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.18112708319355267,
+        "ci_low": 0.06924701987000662,
+        "ci_high": 0.3162013878965387,
+        "n": 38,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "LRN",
+      "n": 34,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.5931959908338387,
+        "ci_low": 0.525378446446238,
+        "ci_high": 0.6674795659146007,
+        "n": 34,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.08126348258136212,
+        "ci_low": 0.07842208885852998,
+        "ci_high": 0.24809593146821254,
+        "n": 34,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "VCS",
+      "n": 34,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6276871667486938,
+        "ci_low": 0.5786062585734909,
+        "ci_high": 0.6916538250939875,
+        "n": 34,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.1304275005643919,
+        "ci_low": 0.06059091060994535,
+        "ci_high": 0.28717099335181323,
+        "n": 34,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "PCS",
+      "n": 33,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6008680450982841,
+        "ci_low": 0.5174905263532737,
+        "ci_high": 0.6860767150257977,
+        "n": 33,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.1832181446011761,
+        "ci_low": 0.11639301440392015,
+        "ci_high": 0.35872298120914103,
+        "n": 33,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "NLC",
+      "n": 29,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.6206596200448808,
+        "ci_low": 0.5261549805887951,
+        "ci_high": 0.7255446799830879,
+        "n": 29,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.07119552514245511,
+        "ci_low": 0.07655999040500078,
+        "ci_high": 0.26069987155390195,
+        "n": 29,
+        "n_bootstrap": 200
+      }
+    },
+    {
+      "league": "LPLOL",
+      "n": 28,
+      "logloss": {
+        "metric": "logloss",
+        "point": 0.5989694340576686,
+        "ci_low": 0.5450193490099753,
+        "ci_high": 0.6830533495444614,
+        "n": 28,
+        "n_bootstrap": 200
+      },
+      "ece": {
+        "metric": "ece",
+        "point": 0.22737296592904335,
+        "ci_low": 0.17423040344564267,
+        "ci_high": 0.37179547232197824,
+        "n": 28,
+        "n_bootstrap": 200
+      }
+    }
+  ],
+  "production_layer": "L4_final_microseg_platt",
+  "production_logloss": 0.6094854452280645,
+  "config": {
+    "artifact_path": "ml_artifact.json",
+    "players_artifact_path": "players_artifact.json",
+    "csv_paths": [
+      "CSV_HISTORICO\\2024_LoL_esports_match_data_from_OraclesElixir.csv",
+      "CSV_HISTORICO\\2025_LoL_esports_match_data_from_OraclesElixir.csv",
+      "CSV_DIARIO\\2026_LoL_esports_match_data_from_OraclesElixir.csv"
+    ],
+    "params_fitted_path": "params_fitted.json",
+    "val_cutoff": "2026-03-31",
+    "train_years": [
+      2024,
+      2025
+    ],
+    "val_year": 2026
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "generated_at": "2026-05-29T14:41:52+00:00",
+  "version": "phase2_counter_v1",
+  "split": {
+    "train": {
+      "n": 20252,
+      "date_range": [
+        "2024-01-01",
+        "2025-12-29"
+      ]
+    },
+    "val": {
+      "n": 2427,
+      "date_range": [
+        "2026-01-08",
+        "2026-03-31"
+      ],
+      "cutoff_start": "2026-01-01"
+    },
+    "test": {
+      "n": 2827,
+      "date_range": [
+        "2026-04-01",
+        "2026-05-28"
+      ],
+      "cutoff_start": "2026-04-01"
+    }
+  },
+  "baseline_metrics": {
+    "logloss": {
+      "metric": "logloss",
+      "point": 0.6153699588148087,
+      "ci_low": 0.6049122812426416,
+      "ci_high": 0.6264669414398375,
+      "n": 2827,
+      "n_bootstrap": 1000
+    },
+    "ece": {
+      "metric": "ece",
+      "point": 0.05938486405248276,
+      "ci_low": 0.042877124787355156,
+      "ci_high": 0.07792331660401726,
+      "n": 2827,
+      "n_bootstrap": 1000
+    }
+  },
+  "candidate_metrics": {
+    "logloss": {
+      "metric": "logloss",
+      "point": 0.6142422343741739,
+      "ci_low": 0.6035283525897603,
+      "ci_high": 0.6253295378312992,
+      "n": 2827,
+      "n_bootstrap": 1000
+    },
+    "ece": {
+      "metric": "ece",
+      "point": 0.04854673478849829,
+      "ci_low": 0.03700467733098862,
+      "ci_high": 0.06626099978688113,
+      "n": 2827,
+      "n_bootstrap": 1000
+    }
+  },
+  "best_scale": 4.0,
+  "val_logloss_with_best_scale": 0.6559657626259203,
+  "gate_decision": {
+    "accept": false,
+    "reason": "insufficient_logloss_gain (delta=0.113pp < min=0.200pp)",
+    "delta_logloss": 0.001127724440634803,
+    "delta_logloss_ci_low": -0.0006867492143195486,
+    "delta_logloss_ci_high": 0.0029583063095868223,
+    "p_value": 0.246,
+    "delta_ece": 0.010838129263984468,
+    "n": 2827,
+    "n_bootstrap": 1000,
+    "thresholds": {
+      "min_delta_logloss": 0.002,
+      "alpha": 0.05,
+      "ece_tolerance": 0.005,
+      "n_bootstrap": 1000
+    }
+  },
+  "counter_table_metadata": {
+    "n_player_rows": 202520,
+    "n_buckets": 1379,
+    "reference_date": "2025-12-29 10:52:27"
+  },
+  "counter_diagnostics": {
+    "n_with_counter": 2815,
+    "n_total": 2827,
+    "abs_mean": 0.021978933471163625,
+    "abs_median": 0.017864479717407945,
+    "abs_max": 0.15426539323057945
+  }
+}

@@ -1,0 +1,244 @@
+{
+  "version": "phase6_series_bo_gate_v3",
+  "generated_at": "2026-03-05T14:28:57+00:00",
+  "decision": "promote",
+  "reasons": [],
+  "summary": {
+    "ok": 8,
+    "total": 8,
+    "method": "series_bo_v5_live",
+    "anchor_mode": "dp_sideaware_v5",
+    "expected_maps": 4.104734108008251,
+    "decider_reach_prob": 0.3638374957828628
+  },
+  "checks": [
+    {
+      "check": "params_series_bo_dplite_tuning_present",
+      "ok": true,
+      "detail": {
+        "params_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\params_fitted.json",
+        "has_cfg": true,
+        "bo3_present": true,
+        "bo5_present": true,
+        "version": "series_bo_dplite_tuning_v2"
+      }
+    },
+    {
+      "check": "unittest_series_bo_core_fallback",
+      "ok": true,
+      "detail": "\n............\n----------------------------------------------------------------------\nRan 12 tests in 0.012s\n\nOK\n"
+    },
+    {
+      "check": "base_method_and_bounds",
+      "ok": true,
+      "detail": {
+        "enabled": true,
+        "applied": true,
+        "reason": "ok",
+        "method": "series_bo_v5_live",
+        "bo": 5,
+        "same_league": true,
+        "interregional": false,
+        "playoffs": true,
+        "patch_status": "",
+        "league_hint": "LCK",
+        "p_map": 0.58,
+        "p_before": 0.6474596607999998,
+        "p_after": 0.6345965261605063,
+        "diff_pp": -1.2863134639493512,
+        "weight": 0.9179581167421939,
+        "cap_pp": 12.377664000000001,
+        "n_team_eff": 48.0,
+        "n_players_eff": 26.0,
+        "side_bias_pp": 2.5,
+        "style_volatility": 0.15,
+        "layer_confidence_score": 72.0,
+        "anchor_mode": "dp_sideaware_v5",
+        "anchor_weight": 0.9179581167421939,
+        "tuning": {
+          "applied": true,
+          "source": "global",
+          "league": "LCK",
+          "macro": "KR",
+          "patch_bucket": "UNK",
+          "params": {
+            "decider_side_revert": 0.22,
+            "series_corr_sigma": 0.1,
+            "pick_shift": 0.021,
+            "g1_blue_shift": 0.005,
+            "momentum_shift": 0.009,
+            "loser_pick_decay": 0.28,
+            "decider_variance": 0.2
+          },
+          "resolved": {
+            "pick_shift": 0.021,
+            "g1_blue_shift": 0.005,
+            "momentum_shift": 0.009,
+            "loser_pick_decay": 0.28,
+            "decider_variance": 0.2,
+            "decider_side_revert": 0.22,
+            "series_corr_sigma": 0.1
+          }
+        },
+        "dp": {
+          "p_blue": 0.605,
+          "p_red": 0.5549999999999999,
+          "q_blue_base": 0.53562861216,
+          "pick_shift": 0.021,
+          "g1_blue_shift": 0.005,
+          "momentum_shift": 0.009,
+          "loser_pick_decay": 0.28,
+          "decider_variance": 0.2,
+          "decider_side_revert": 0.22,
+          "series_corr_sigma": 0.1,
+          "p_series_anchor": 0.633437165156399,
+          "expected_maps": 4.104734108008251,
+          "decider_reach_prob": 0.3638374957828628,
+          "map_play_prob": {
+            "m1": 1.0,
+            "m2": 1.0,
+            "m3": 1.0,
+            "m4": 0.7408966122253876,
+            "m5": 0.3638374957828628
+          },
+          "map_win_if_played": {
+            "m1": 0.5792565276503989,
+            "m2": 0.5762947952433661,
+            "m3": 0.5708082233127832,
+            "m4": 0.5658520941319867,
+            "m5": 0.5646907191058953
+          },
+          "scoreline_probs": {
+            "0-3": 0.07420306606345647,
+            "1-3": 0.13397793012859469,
+            "2-3": 0.15838183865154984,
+            "3-0": 0.18490032171115578,
+            "3-1": 0.24308118631393022,
+            "3-2": 0.20545565713131295
+          }
+        },
+        "coherence_guard": {
+          "enabled": true,
+          "applied": false,
+          "reason": "already_coherent",
+          "bo": 5,
+          "p_map": 0.58,
+          "p_series_before": 0.6345965261605063,
+          "p_series_after": 0.6345965261605063,
+          "p_target": 0.6474596607999998,
+          "bounds": {
+            "low": 0.618976,
+            "high": 0.8474596607999998,
+            "max_dev_pp": 20.0
+          },
+          "diff_pp": 0.0
+        }
+      }
+    },
+    {
+      "check": "dynamic_diag_map_by_map",
+      "ok": true,
+      "detail": {
+        "expected_maps": 4.104734108008251,
+        "decider_reach_prob": 0.3638374957828628,
+        "map_play_prob": {
+          "m1": 1.0,
+          "m2": 1.0,
+          "m3": 1.0,
+          "m4": 0.7408966122253876,
+          "m5": 0.3638374957828628
+        },
+        "map_win_if_played": {
+          "m1": 0.5792565276503989,
+          "m2": 0.5762947952433661,
+          "m3": 0.5708082233127832,
+          "m4": 0.5658520941319867,
+          "m5": 0.5646907191058953
+        }
+      }
+    },
+    {
+      "check": "interregional_damp",
+      "ok": true,
+      "detail": {
+        "same_weight": 0.92,
+        "inter_weight": 0.8348823745653993,
+        "same_cap": 12.61824,
+        "inter_cap": 10.725503999999999
+      }
+    },
+    {
+      "check": "economic_coherence_favorite_direction",
+      "ok": true,
+      "detail": {
+        "enabled": true,
+        "applied": true,
+        "reason": "clamped_to_economic_coherence",
+        "bo": 5,
+        "p_map": 0.58,
+        "p_series_before": 0.52,
+        "p_series_after": 0.618976,
+        "p_target": 0.6474596607999998,
+        "bounds": {
+          "low": 0.618976,
+          "high": 0.8474596607999998,
+          "max_dev_pp": 20.0
+        },
+        "diff_pp": 9.897599999999995,
+        "p_bo3_ref": 0.618976
+      }
+    },
+    {
+      "check": "economic_coherence_max_drift_cap",
+      "ok": true,
+      "detail": {
+        "enabled": true,
+        "applied": true,
+        "reason": "clamped_to_economic_coherence",
+        "bo": 3,
+        "p_map": 0.52,
+        "p_series_before": 0.9,
+        "p_series_after": 0.609984,
+        "p_target": 0.529984,
+        "bounds": {
+          "low": 0.52,
+          "high": 0.609984,
+          "max_dev_pp": 8.0
+        },
+        "diff_pp": -29.001600000000003
+      }
+    },
+    {
+      "check": "bo1_noop",
+      "ok": true,
+      "detail": {
+        "enabled": true,
+        "applied": false,
+        "reason": "bo1_noop",
+        "method": "series_bo_v5_live",
+        "bo": 1,
+        "same_league": true,
+        "interregional": false,
+        "playoffs": false,
+        "patch_status": "",
+        "league_hint": "",
+        "p_map": 0.56,
+        "p_before": 0.56,
+        "p_after": null,
+        "diff_pp": null,
+        "weight": null,
+        "cap_pp": null,
+        "n_team_eff": null,
+        "n_players_eff": null,
+        "side_bias_pp": null,
+        "style_volatility": null,
+        "layer_confidence_score": null,
+        "anchor_mode": null,
+        "anchor_weight": null,
+        "tuning": {},
+        "dp": {},
+        "coherence_guard": {}
+      }
+    }
+  ]
+}

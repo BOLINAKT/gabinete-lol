@@ -1,0 +1,604 @@
+{
+  "version": "phase4b_marginal_tuning_v1",
+  "generated_at": "2026-03-05T14:20:03+00:00",
+  "decision": "promote",
+  "reasons": [],
+  "reason": "",
+  "daily_csv": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\CSV_DIARIO\\2026_LoL_esports_match_data_from_OraclesElixir.csv",
+  "params_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\params_fitted.json",
+  "sample_pairs": [
+    {
+      "league": "LCK",
+      "teamA": "Gen.G",
+      "teamB": "BNK FEARX",
+      "gameid": "LOLTMNT02_360286",
+      "blue_win": 1
+    },
+    {
+      "league": "LPL",
+      "teamA": "Anyone's Legend",
+      "teamB": "Invictus Gaming",
+      "gameid": "13130-13130_game_4",
+      "blue_win": 1
+    },
+    {
+      "league": "LEC",
+      "teamA": "G2 Esports",
+      "teamB": "Karmine Corp",
+      "gameid": "LOLTMNT05_179126",
+      "blue_win": 1
+    },
+    {
+      "league": "CBLOL",
+      "teamA": "RED Canids",
+      "teamB": "LOUD",
+      "gameid": "LOLTMNT03_351685",
+      "blue_win": 0
+    },
+    {
+      "league": "LCP",
+      "teamA": "Team Secret Whales",
+      "teamB": "Deep Cross Gaming",
+      "gameid": "LOLTMNT02_359320",
+      "blue_win": 1
+    },
+    {
+      "league": "TCL",
+      "teamA": "S2G Esports",
+      "teamB": "Bushido Wildcats",
+      "gameid": "LOLTMNT06_171007",
+      "blue_win": 1
+    },
+    {
+      "league": "PRM",
+      "teamA": "Unicorns of Love Sexy Edition",
+      "teamB": "G2 NORD",
+      "gameid": "LOLTMNT06_171191",
+      "blue_win": 0
+    },
+    {
+      "league": "LIT",
+      "teamA": "Axolotl",
+      "teamB": "4 Employed e 1 Budino",
+      "gameid": "LOLTMNT06_168054",
+      "blue_win": 0
+    },
+    {
+      "league": "LCK",
+      "teamA": "Gen.G",
+      "teamB": "BNK FEARX",
+      "gameid": "LOLTMNT02_360285",
+      "blue_win": 1
+    },
+    {
+      "league": "LPL",
+      "teamA": "Invictus Gaming",
+      "teamB": "Anyone's Legend",
+      "gameid": "13130-13130_game_3",
+      "blue_win": 0
+    },
+    {
+      "league": "LEC",
+      "teamA": "G2 Esports",
+      "teamB": "Karmine Corp",
+      "gameid": "LOLTMNT05_179124",
+      "blue_win": 0
+    },
+    {
+      "league": "CBLOL",
+      "teamA": "RED Canids",
+      "teamB": "LOUD",
+      "gameid": "LOLTMNT03_350603",
+      "blue_win": 0
+    },
+    {
+      "league": "LCP",
+      "teamA": "Team Secret Whales",
+      "teamB": "Deep Cross Gaming",
+      "gameid": "LOLTMNT02_359319",
+      "blue_win": 1
+    },
+    {
+      "league": "TCL",
+      "teamA": "Bushido Wildcats",
+      "teamB": "S2G Esports",
+      "gameid": "LOLTMNT06_169024",
+      "blue_win": 0
+    }
+  ],
+  "rows": [
+    {
+      "ok": true,
+      "teamA": "Gen.G",
+      "teamB": "BNK FEARX",
+      "p_in": 0.7033922662025255,
+      "p_out_live": 0.6906505100077327,
+      "band": "top",
+      "league": "LCK",
+      "tier": "T1",
+      "confidence_score": 35.35,
+      "n_eff": 163.46071935958875,
+      "reason": "applied",
+      "applied_live": true,
+      "gate_score": 80.0,
+      "gate_n_eff": 30.0,
+      "league_req": "LCK",
+      "gameid": "LOLTMNT02_360286",
+      "y": 1
+    },
+    {
+      "ok": true,
+      "teamA": "Anyone's Legend",
+      "teamB": "Invictus Gaming",
+      "p_in": 0.6338273077749073,
+      "p_out_live": 0.6248812494280594,
+      "band": "top",
+      "league": "LPL",
+      "tier": "T1",
+      "confidence_score": 38.9151,
+      "n_eff": 162.66621235998124,
+      "reason": "applied",
+      "applied_live": true,
+      "gate_score": 80.0,
+      "gate_n_eff": 30.0,
+      "league_req": "LPL",
+      "gameid": "13130-13130_game_4",
+      "y": 1
+    },
+    {
+      "ok": true,
+      "teamA": "G2 Esports",
+      "teamB": "Karmine Corp",
+      "p_in": 0.5268145368819234,
+      "p_out_live": 0.5248899699540857,
+      "band": "top",
+      "league": "LEC",
+      "tier": "T1",
+      "confidence_score": 35.0,
+      "n_eff": 108.13779373002073,
+      "reason": "applied",
+      "applied_live": true,
+      "gate_score": 80.0,
+      "gate_n_eff": 30.0,
+      "league_req": "LEC",
+      "gameid": "LOLTMNT05_179126",
+      "y": 1
+    },
+    {
+      "ok": true,
+      "teamA": "RED Canids",
+      "teamB": "LOUD",
+      "p_in": 0.4593932662427408,
+      "p_out_live": 0.4683497131502928,
+      "band": "core",
+      "league": "CBLOL",
+      "tier": "T1",
+      "confidence_score": 35.5691,
+      "n_eff": 67.00944168419996,
+      "reason": "applied",
+      "applied_live": true,
+      "gate_score": 84.0,
+      "gate_n_eff": 42.0,
+      "league_req": "CBLOL",
+      "gameid": "LOLTMNT03_351685",
+      "y": 0
+    },
+    {
+      "ok": true,
+      "teamA": "Team Secret Whales",
+      "teamB": "Deep Cross Gaming",
+      "p_in": 0.5800050701587494,
+      "p_out_live": 0.5520640915132418,
+      "band": "edge",
+      "league": "LCP",
+      "tier": "MINOR",
+      "confidence_score": 35.0,
+      "n_eff": 36.231138706563925,
+      "reason": "applied",
+      "applied_live": true,
+      "gate_score": 88.0,
+      "gate_n_eff": 55.0,
+      "league_req": "LCP",
+      "gameid": "LOLTMNT02_359320",
+      "y": 1
+    },
+    {
+      "ok": true,
+      "teamA": "S2G Esports",
+      "teamB": "Bushido Wildcats",
+      "p_in": 0.5359793014978858,
+      "p_out_live": 0.5224278582005246,
+      "band": "edge",
+      "league": "TCL",
+      "tier": "T2",
+      "confidence_score": 35.35,
+      "n_eff": 21.120300751879697,
+      "reason": "applied",
+      "applied_live": true,
+      "gate_score": 88.0,
+      "gate_n_eff": 55.0,
+      "league_req": "TCL",
+      "gameid": "LOLTMNT06_171007",
+      "y": 1
+    },
+    {
+      "ok": true,
+      "teamA": "Unicorns of Love Sexy Edition",
+      "teamB": "G2 NORD",
+      "p_in": 0.4506326651701713,
+      "p_out_live": 0.4661685432594026,
+      "band": "edge",
+      "league": "PRM",
+      "tier": "MINOR",
+      "confidence_score": 33.775,
+      "n_eff": 103.11864406779661,
+      "reason": "applied",
+      "applied_live": true,
+      "gate_score": 88.0,
+      "gate_n_eff": 55.0,
+      "league_req": "PRM",
+      "gameid": "LOLTMNT06_171191",
+      "y": 0
+    },
+    {
+      "ok": true,
+      "teamA": "Axolotl",
+      "teamB": "4 Employed e 1 Budino",
+      "p_in": 0.3040007761294996,
+      "p_out_live": 0.36822058970324195,
+      "band": "edge",
+      "league": "LIT",
+      "tier": "MINOR",
+      "confidence_score": 35.7077,
+      "n_eff": 40.0,
+      "reason": "applied",
+      "applied_live": true,
+      "gate_score": 88.0,
+      "gate_n_eff": 55.0,
+      "league_req": "LIT",
+      "gameid": "LOLTMNT06_168054",
+      "y": 0
+    },
+    {
+      "ok": true,
+      "teamA": "Gen.G",
+      "teamB": "BNK FEARX",
+      "p_in": 0.7033922662025255,
+      "p_out_live": 0.6906505100077327,
+      "band": "top",
+      "league": "LCK",
+      "tier": "T1",
+      "confidence_score": 35.35,
+      "n_eff": 163.46071935958875,
+      "reason": "applied",
+      "applied_live": true,
+      "gate_score": 80.0,
+      "gate_n_eff": 30.0,
+      "league_req": "LCK",
+      "gameid": "LOLTMNT02_360285",
+      "y": 1
+    },
+    {
+      "ok": true,
+      "teamA": "Invictus Gaming",
+      "teamB": "Anyone's Legend",
+      "p_in": 0.3961483916280492,
+      "p_out_live": 0.4032181922243582,
+      "band": "top",
+      "league": "LPL",
+      "tier": "T1",
+      "confidence_score": 38.9151,
+      "n_eff": 162.66621235998124,
+      "reason": "applied",
+      "applied_live": true,
+      "gate_score": 80.0,
+      "gate_n_eff": 30.0,
+      "league_req": "LPL",
+      "gameid": "13130-13130_game_3",
+      "y": 0
+    },
+    {
+      "ok": true,
+      "teamA": "G2 Esports",
+      "teamB": "Karmine Corp",
+      "p_in": 0.5268145368819234,
+      "p_out_live": 0.5248899699540857,
+      "band": "top",
+      "league": "LEC",
+      "tier": "T1",
+      "confidence_score": 35.0,
+      "n_eff": 108.13779373002073,
+      "reason": "applied",
+      "applied_live": true,
+      "gate_score": 80.0,
+      "gate_n_eff": 30.0,
+      "league_req": "LEC",
+      "gameid": "LOLTMNT05_179124",
+      "y": 0
+    },
+    {
+      "ok": true,
+      "teamA": "RED Canids",
+      "teamB": "LOUD",
+      "p_in": 0.4593932662427408,
+      "p_out_live": 0.4683497131502928,
+      "band": "core",
+      "league": "CBLOL",
+      "tier": "T1",
+      "confidence_score": 35.5691,
+      "n_eff": 67.00944168419996,
+      "reason": "applied",
+      "applied_live": true,
+      "gate_score": 84.0,
+      "gate_n_eff": 42.0,
+      "league_req": "CBLOL",
+      "gameid": "LOLTMNT03_350603",
+      "y": 0
+    },
+    {
+      "ok": true,
+      "teamA": "Team Secret Whales",
+      "teamB": "Deep Cross Gaming",
+      "p_in": 0.5800050701587494,
+      "p_out_live": 0.5520640915132418,
+      "band": "edge",
+      "league": "LCP",
+      "tier": "MINOR",
+      "confidence_score": 35.0,
+      "n_eff": 36.231138706563925,
+      "reason": "applied",
+      "applied_live": true,
+      "gate_score": 88.0,
+      "gate_n_eff": 55.0,
+      "league_req": "LCP",
+      "gameid": "LOLTMNT02_359319",
+      "y": 1
+    },
+    {
+      "ok": true,
+      "teamA": "Bushido Wildcats",
+      "teamB": "S2G Esports",
+      "p_in": 0.4650184703457497,
+      "p_out_live": 0.47819537201833895,
+      "band": "edge",
+      "league": "TCL",
+      "tier": "T2",
+      "confidence_score": 35.35,
+      "n_eff": 21.120300751879697,
+      "reason": "applied",
+      "applied_live": true,
+      "gate_score": 88.0,
+      "gate_n_eff": 55.0,
+      "league_req": "TCL",
+      "gameid": "LOLTMNT06_169024",
+      "y": 0
+    }
+  ],
+  "samples_used": 14,
+  "samples_n": 14,
+  "samples_marginal": 8,
+  "samples_marginal_n": 8,
+  "baseline_eval": {
+    "rows_eval": 14,
+    "weighted_logloss": 0.5841763494459785,
+    "by_band": {
+      "top": {
+        "n": 6,
+        "logloss_mean": 0.5192359259111743,
+        "avg_abs_shift_pp": 0.7558084198069629
+      },
+      "core": {
+        "n": 2,
+        "logloss_mean": 0.6317693613390438,
+        "avg_abs_shift_pp": 0.8956446907551985
+      },
+      "edge": {
+        "n": 6,
+        "logloss_mean": 0.5958004615747781,
+        "avg_abs_shift_pp": 2.70609989873232
+      }
+    }
+  },
+  "best_eval": {
+    "rows_eval": 14,
+    "weighted_logloss": 0.5802235491291063,
+    "by_band": {
+      "top": {
+        "n": 6,
+        "logloss_mean": 0.5176595036138298,
+        "avg_abs_shift_pp": 0.6416570350597904
+      },
+      "core": {
+        "n": 2,
+        "logloss_mean": 0.630084223600736,
+        "avg_abs_shift_pp": 0.8059787660617768
+      },
+      "edge": {
+        "n": 6,
+        "logloss_mean": 0.5904868076827394,
+        "avg_abs_shift_pp": 2.3998847847449283
+      }
+    }
+  },
+  "baseline_band_coeffs": {
+    "top": {
+      "strength_scale": 0.15529685937499998,
+      "prior_scale": 0.7,
+      "max_shrink_scale": 0.55,
+      "cap_shift": 0.06,
+      "soft_shift": 10.0,
+      "hard_shift": 8.0,
+      "gate_score": 80.0,
+      "gate_n_eff": 30.0
+    },
+    "core": {
+      "strength_scale": 0.4428675000000001,
+      "prior_scale": 0.95,
+      "max_shrink_scale": 0.85,
+      "cap_shift": 0.02,
+      "soft_shift": 3.0,
+      "hard_shift": 2.0,
+      "gate_score": 84.0,
+      "gate_n_eff": 42.0
+    },
+    "edge": {
+      "strength_scale": 0.6790635,
+      "prior_scale": 0.7085880000000001,
+      "max_shrink_scale": 1.05,
+      "cap_shift": -0.04,
+      "soft_shift": -6.0,
+      "hard_shift": -4.0,
+      "gate_score": 88.0,
+      "gate_n_eff": 55.0
+    }
+  },
+  "best_band_coeffs": {
+    "top": {
+      "strength_scale": 0.13200233046874998,
+      "prior_scale": 0.7,
+      "max_shrink_scale": 0.55,
+      "cap_shift": 0.06,
+      "soft_shift": 10.0,
+      "hard_shift": 8.0,
+      "gate_score": 80.0,
+      "gate_n_eff": 30.0
+    },
+    "core": {
+      "strength_scale": 0.3985807500000001,
+      "prior_scale": 0.95,
+      "max_shrink_scale": 0.85,
+      "cap_shift": 0.02,
+      "soft_shift": 3.0,
+      "hard_shift": 2.0,
+      "gate_score": 84.0,
+      "gate_n_eff": 42.0
+    },
+    "edge": {
+      "strength_scale": 0.61115715,
+      "prior_scale": 0.6377292000000001,
+      "max_shrink_scale": 1.05,
+      "cap_shift": -0.04,
+      "soft_shift": -6.0,
+      "hard_shift": -4.0,
+      "gate_score": 88.0,
+      "gate_n_eff": 55.0
+    }
+  },
+  "best_candidate": {
+    "profiles": {
+      "top": {
+        "strength_scale": 0.13200233046874998,
+        "prior_scale": 0.7,
+        "max_shrink_scale": 0.55,
+        "cap_shift": 0.06,
+        "soft_shift": 10.0,
+        "hard_shift": 8.0,
+        "gate_score": 80.0,
+        "gate_n_eff": 30.0
+      },
+      "core": {
+        "strength_scale": 0.3985807500000001,
+        "prior_scale": 0.95,
+        "max_shrink_scale": 0.85,
+        "cap_shift": 0.02,
+        "soft_shift": 3.0,
+        "hard_shift": 2.0,
+        "gate_score": 84.0,
+        "gate_n_eff": 42.0
+      },
+      "edge": {
+        "strength_scale": 0.61115715,
+        "prior_scale": 0.6377292000000001,
+        "max_shrink_scale": 1.05,
+        "cap_shift": -0.04,
+        "soft_shift": -6.0,
+        "hard_shift": -4.0,
+        "gate_score": 88.0,
+        "gate_n_eff": 55.0
+      }
+    },
+    "eval": {
+      "rows_eval": 14,
+      "weighted_logloss": 0.5802235491291063,
+      "by_band": {
+        "top": {
+          "n": 6,
+          "logloss_mean": 0.5176595036138298,
+          "avg_abs_shift_pp": 0.6416570350597904
+        },
+        "core": {
+          "n": 2,
+          "logloss_mean": 0.630084223600736,
+          "avg_abs_shift_pp": 0.8059787660617768
+        },
+        "edge": {
+          "n": 6,
+          "logloss_mean": 0.5904868076827394,
+          "avg_abs_shift_pp": 2.3998847847449283
+        }
+      }
+    },
+    "ll": 0.5802235491291063,
+    "top_shift_pp": 0.6416570350597904,
+    "core_shift_pp": 0.8059787660617768,
+    "hard_ok": true,
+    "distance_from_baseline": 0.20634642890625
+  },
+  "constraints_ok": true,
+  "gain_logloss_vs_baseline": 0.003952800316872174,
+  "grid_size": 2916,
+  "valid_candidates": 2916,
+  "tuning_cfg": {
+    "version": "ml_marginal_band_tuning_v1",
+    "generated_at": "2026-03-05T14:20:03+00:00",
+    "speed": "fast",
+    "global_params_snapshot": {
+      "strength": 0.7,
+      "prior_games": 28.0,
+      "max_shrink": 0.72,
+      "cap_prob": 0.84,
+      "score_soft": 68.0,
+      "score_hard": 46.0,
+      "band_tuning": true
+    },
+    "band_coeffs": {
+      "top": {
+        "strength_scale": 0.13200233046874998,
+        "prior_scale": 0.7,
+        "max_shrink_scale": 0.55,
+        "cap_shift": 0.06,
+        "soft_shift": 10.0,
+        "hard_shift": 8.0,
+        "gate_score": 80.0,
+        "gate_n_eff": 30.0
+      },
+      "core": {
+        "strength_scale": 0.3985807500000001,
+        "prior_scale": 0.95,
+        "max_shrink_scale": 0.85,
+        "cap_shift": 0.02,
+        "soft_shift": 3.0,
+        "hard_shift": 2.0,
+        "gate_score": 84.0,
+        "gate_n_eff": 42.0
+      },
+      "edge": {
+        "strength_scale": 0.61115715,
+        "prior_scale": 0.6377292000000001,
+        "max_shrink_scale": 1.05,
+        "cap_shift": -0.04,
+        "soft_shift": -6.0,
+        "hard_shift": -4.0,
+        "gate_score": 88.0,
+        "gate_n_eff": 55.0
+      }
+    },
+    "thresholds": {
+      "min_samples": 10,
+      "min_marginal_samples": 5,
+      "min_gain": 0.00015,
+      "max_top_shift_pp": 2.0,
+      "max_core_shift_pp": 4.5
+    }
+  }
+}

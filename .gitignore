@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Ambiente virtual
+.venv/
+venv/
+env/
+ENV/
+
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Dados e artefatos pesados (não são código; ficam só no disco, fora do git)
+ops/
+CSV_DIARIO/
+CSV_HISTORICO/
+backups/
+evidence/
+tmp/
+live_models/
+.ruff_cache/
+
+# Backups locais (nunca versionar)
+*.bak
+
+# Artefatos ML pesados (gerados automaticamente)
+ml_trace_last.json
+ml_confidence_baseline.json
+
+# Cache e logs
+*.log
+bootstrap_cache/
+*.monitoring.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

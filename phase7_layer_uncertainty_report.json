@@ -1,0 +1,176 @@
+{
+  "version": "phase7_layer_uncertainty_gate_v1",
+  "generated_at": "2026-03-05T14:28:57+00:00",
+  "decision": "promote",
+  "reasons": [],
+  "summary": {
+    "ok": 3,
+    "total": 3,
+    "method": "layer_uncertainty_v2",
+    "actionability_zone_mid": "high"
+  },
+  "checks": [
+    {
+      "check": "layer_uncertainty_tests",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "runner": "unittest",
+        "detail": "\n...\n----------------------------------------------------------------------\nRan 3 tests in 0.001s\n\nOK\n"
+      }
+    },
+    {
+      "check": "contract_v2_fields",
+      "ok": true,
+      "detail": {
+        "enabled": true,
+        "applied": true,
+        "reason": "ok",
+        "method": "layer_uncertainty_v2",
+        "p_before": 0.6,
+        "p_after": 0.5904457833891565,
+        "diff_pp": -0.9554216610843436,
+        "p_series_before": 0.68,
+        "p_series_after": 0.6662132372648492,
+        "diff_pp_series": -1.3786762735150893,
+        "bo": 5,
+        "interregional": false,
+        "playoffs": true,
+        "patch_status": "ok",
+        "evidence_score": 0.5538461538461539,
+        "uncertainty_score": 0.3103016423321901,
+        "confidence_score": 0.68969835766781,
+        "shrink_map": 0.09780516811453811,
+        "shrink_series": 0.0831343928973574,
+        "cap_pp_map": 1.6,
+        "cap_pp_series": 2.0,
+        "components": {
+          "Areal": {
+            "applied": true,
+            "diff_pp_abs": 1.4,
+            "reason": "",
+            "method": "areal"
+          },
+          "Alite": {
+            "applied": true,
+            "diff_pp_abs": 1.0,
+            "reason": "",
+            "method": "alite"
+          },
+          "B": {
+            "applied": true,
+            "diff_pp_abs": 0.8,
+            "reason": "",
+            "method": "style"
+          },
+          "RankSOS": {
+            "applied": true,
+            "diff_pp_abs": 1.1,
+            "reason": "",
+            "method": "sos"
+          },
+          "Roster": {
+            "applied": true,
+            "diff_pp_abs": 0.6,
+            "reason": "",
+            "method": "roster"
+          },
+          "HierCal": {
+            "applied": true,
+            "diff_pp_abs": 0.5,
+            "reason": "",
+            "method": "hier"
+          },
+          "SeriesBO": {
+            "applied": true,
+            "diff_pp_abs": 1.2,
+            "reason": "",
+            "method": "series"
+          },
+          "C": {
+            "applied": true,
+            "diff_pp_abs": 1.8,
+            "reason": "",
+            "method": "meta"
+          }
+        },
+        "layer_scores": {
+          "Areal": {
+            "weight": 1.25,
+            "uncertainty": 0.4,
+            "confidence": 0.6
+          },
+          "Alite": {
+            "weight": 1.1,
+            "uncertainty": 0.3,
+            "confidence": 0.7
+          },
+          "B": {
+            "weight": 0.95,
+            "uncertainty": 0.3,
+            "confidence": 0.7
+          },
+          "RankSOS": {
+            "weight": 0.85,
+            "uncertainty": 0.3,
+            "confidence": 0.7
+          },
+          "Roster": {
+            "weight": 0.95,
+            "uncertainty": 0.3,
+            "confidence": 0.7
+          },
+          "HierCal": {
+            "weight": 0.9,
+            "uncertainty": 0.3,
+            "confidence": 0.7
+          },
+          "SeriesBO": {
+            "weight": 0.8,
+            "uncertainty": 0.3,
+            "confidence": 0.7
+          },
+          "C": {
+            "weight": 1.05,
+            "uncertainty": 0.4,
+            "confidence": 0.6
+          }
+        },
+        "dominant_risk_layers": [
+          {
+            "layer": "Areal",
+            "uncertainty": 0.4,
+            "applied": true,
+            "diff_pp_abs": 1.4
+          },
+          {
+            "layer": "C",
+            "uncertainty": 0.4,
+            "applied": true,
+            "diff_pp_abs": 1.8
+          },
+          {
+            "layer": "Alite",
+            "uncertainty": 0.3,
+            "applied": true,
+            "diff_pp_abs": 1.0
+          }
+        ],
+        "actionability_zone": "high",
+        "actionability_note": "Boa acionabilidade: pipeline estável para execução padrão.",
+        "applied_layers": 8,
+        "missing_layers": 0
+      }
+    },
+    {
+      "check": "conservative_by_evidence",
+      "ok": true,
+      "detail": {
+        "u_low_evidence": 0.6350647357961784,
+        "u_high_evidence": 0.33342582341989224,
+        "shrink_low_evidence": 0.262726281198879,
+        "shrink_high_evidence": 0.10578318970100026
+      }
+    }
+  ]
+}

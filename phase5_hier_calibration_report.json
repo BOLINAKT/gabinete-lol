@@ -1,0 +1,135 @@
+{
+  "version": "phase5_hier_calibration_gate_v3",
+  "generated_at": "2026-03-05T14:20:05+00:00",
+  "decision": "promote",
+  "reasons": [],
+  "summary": {
+    "ok": 11,
+    "total": 11,
+    "sample_key": "league:AL|bo:3|po:0|inter:0",
+    "scope_used": "league:AL|patch:ok|bo:3|po:0|inter:0",
+    "by_segment": 424,
+    "by_league": 66,
+    "league_class": 66,
+    "interleague_pairs": 28380,
+    "segment_class_keys": 120,
+    "segment_patch_keys": 318
+  },
+  "checks": [
+    {
+      "check": "baseline_exists",
+      "ok": true,
+      "detail": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\ml_confidence_baseline.json"
+    },
+    {
+      "check": "baseline_by_segment_non_empty",
+      "ok": true,
+      "detail": "by_segment=424"
+    },
+    {
+      "check": "baseline_by_league_non_empty",
+      "ok": true,
+      "detail": "by_league=66"
+    },
+    {
+      "check": "baseline_league_class_non_empty",
+      "ok": true,
+      "detail": "league_class=66"
+    },
+    {
+      "check": "baseline_interleague_pairs_non_empty",
+      "ok": true,
+      "detail": "interleague_pairs=28380"
+    },
+    {
+      "check": "threshold_keys_present",
+      "ok": true,
+      "detail": "keys=['bias_clip_abs', 'fine_profile_by_league', 'fine_profile_by_league_inter', 'fine_profile_by_league_same', 'fine_profiles', 'fine_shrink_hi', 'fine_shrink_xhi', 'fine_z_hi', 'fine_z_xhi', 'global_shrink_k', 'hier_decay', 'inter_fdr_q_alpha', 'inter_fdr_soft_z', 'inter_pair_mix_k', 'inter_shrink_k', 'inter_sigma0', 'inter_z_full', 'inter_z_gate', 'league_shrink_k', 'low_sample_min_n', 'oos_bootstrap_samples', 'oos_brier_tol', 'oos_ci_level', 'oos_gate_enabled', 'oos_logloss_tol', 'oos_min_overlap_folds', 'same_fdr_q_alpha', 'same_fdr_soft_z', 'same_sigma0', 'same_z_gate', 'seg_shrink_k', 'segment_patch_bias_mult', 'segment_patch_n_mult']"
+    },
+    {
+      "check": "interleague_pairs_have_aggregated_or_repair_source",
+      "ok": true,
+      "detail": {
+        "sources": [
+          "interleague_league_pair_meta_v2",
+          "interleague_pair_meta_v3"
+        ]
+      }
+    },
+    {
+      "check": "baseline_segments_have_class_and_patch_coverage",
+      "ok": true,
+      "detail": {
+        "class_keys": 120,
+        "patch_keys": 318
+      }
+    },
+    {
+      "check": "runtime_scope_resolves_segment_or_league",
+      "ok": true,
+      "detail": {
+        "sample_key": "league:AL|bo:3|po:0|inter:0",
+        "method": "hier_calibration_v3",
+        "scope_used": "league:AL|patch:ok|bo:3|po:0|inter:0",
+        "reason": "ok",
+        "applied": true
+      }
+    },
+    {
+      "check": "runtime_interregional_has_meta_and_conservative_move",
+      "ok": true,
+      "detail": {
+        "league_a": "AC",
+        "league_b": "AL",
+        "reason": "ok",
+        "interleague": {
+          "macro_a": "OTHER",
+          "macro_b": "OTHER",
+          "pair_scope": null,
+          "pair_n": 35.0,
+          "pair_bias": 0.0,
+          "pair_bias_raw": 0.0,
+          "pair_se": 4.0,
+          "pair_z": 0.0,
+          "pair_z_raw": 0.0,
+          "pair_p": 1.0,
+          "pair_q": 1.0,
+          "significance_mult": 0.0,
+          "z_mult": 0.0,
+          "q_mult": 0.1,
+          "fdr_reject": false,
+          "fdr_q_alpha": 0.1,
+          "z_gate": 1.96,
+          "z_full": 2.58,
+          "inter_ev": 0.01897887323943662,
+          "inter_unc": 0.9810211267605634,
+          "inter_shrink": 0.2073429577464789,
+          "inter_dir": 0.0,
+          "inter_dir_raw": 0.0,
+          "reliability_band": "low",
+          "dir_cap": 0.005164394366197183,
+          "blend": null
+        },
+        "diff_pp": -2.1120000000000028
+      }
+    },
+    {
+      "check": "runtime_fine_band_active_on_extreme_prob",
+      "ok": true,
+      "detail": {
+        "runtime_fine": {
+          "band": "extreme",
+          "z_abs_before": 2.5911121779373496,
+          "fine_shrink": 0.22,
+          "z_hi": 1.0,
+          "z_xhi": 1.55,
+          "profile_used": "strict_low_sample",
+          "profile_source": "league_override",
+          "inter_reliability_band": "na",
+          "inter_ev": null
+        },
+        "reason": "ok"
+      }
+    }
+  ]
+}

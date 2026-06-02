@@ -1,0 +1,23 @@
+{
+  "version": "phase10_player_props_v1",
+  "generated_at": "2026-05-30T01:51:13.037414+00:00",
+  "val_cutoff": "2026-03-31",
+  "n_train": 202520,
+  "n_val": 23770,
+  "n_test": 29250,
+  "baseline_rmse": 2.6855854212182644,
+  "candidate_rmse": 2.5616099712049225,
+  "delta_rmse": 0.12397545001334187,
+  "ci_low": 0.11382099059629969,
+  "ci_high": 0.13360904282396158,
+  "p_value": 0.0,
+  "accept": true,
+  "residual_sigma": 2.602308061451205,
+  "feature_importance_top5": {
+    "champ_kills_mean_pos": 4957330.640330315,
+    "player_kills_mean": 418913.17349123955,
+    "z_pre": 202350.463388443,
+    "league_tier": 62520.88095474243,
+    "player_kills_std": 59715.77974462509
+  }
+}

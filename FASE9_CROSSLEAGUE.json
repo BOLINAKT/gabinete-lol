@@ -1,0 +1,62 @@
+{
+  "version": "phase9_crossleague_v1",
+  "generated_at": "2026-05-30T01:08:26.124064+00:00",
+  "val_cutoff": "2026-03-31",
+  "n_train": 339,
+  "n_val": 84,
+  "n_test": 142,
+  "pair_test_counts": {
+    "CN_vs_KR": 33,
+    "CN_vs_EMEA": 32,
+    "AMERICAS_vs_KR": 17,
+    "APAC_vs_KR": 16,
+    "AMERICAS_vs_CN": 11,
+    "EMEA_vs_KR": 9,
+    "APAC_vs_CN": 7,
+    "AMERICAS_vs_APAC": 7,
+    "APAC_vs_EMEA": 7,
+    "AMERICAS_vs_EMEA": 3
+  },
+  "pair_calibration": {
+    "CN_vs_EMEA": {
+      "a": 0.8126540336964673,
+      "b": 0.1998909967546259,
+      "n_fit": 115
+    },
+    "CN_vs_KR": {
+      "a": 0.9160851486583822,
+      "b": -0.08159386240452225,
+      "n_fit": 88
+    }
+  },
+  "global_calibration": {
+    "a": 0.9250555171643267,
+    "b": 0.06219411397105155,
+    "n_fit": 423
+  },
+  "baseline": {
+    "logloss": 0.6775965900406871,
+    "brier": 0.2421894735845791,
+    "ece": 0.08659869243015167
+  },
+  "per_pair": {
+    "logloss": 0.6747271148745868,
+    "brier": 0.24133486791815217,
+    "ece": 0.11368054931768545,
+    "delta_logloss": 0.002869475166100255,
+    "ci_low": -0.006300374573799727,
+    "ci_high": 0.012293407446689275,
+    "p_value": 0.608,
+    "accept": false
+  },
+  "global": {
+    "logloss": 0.6741592631382898,
+    "brier": 0.24081670824879434,
+    "ece": 0.06533998698834033,
+    "delta_logloss": 0.0034373269023972863,
+    "ci_low": -0.002341656773928058,
+    "ci_high": 0.009548375091233519,
+    "p_value": 0.296,
+    "accept": false
+  }
+}

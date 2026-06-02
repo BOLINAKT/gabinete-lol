@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "updated_at": "2026-03-11T22:20:00",
+  "teams": [
+    {
+      "canonical_name": "Witchcraft",
+      "current_name": "Witchcraft",
+      "previous_names": [
+        "Los Ratones"
+      ],
+      "aliases": [
+        "Witchcraft",
+        "Los Ratones",
+        "LR"
+      ],
+      "relation_type": "sporting_successor",
+      "confidence": "high",
+      "summary": "Witchcraft formed around the former Los Ratones competitive core and was approved by Riot as the clear sporting successor for the transferred EMEA Masters slot.",
+      "current_leagues": [
+        "EMEA Masters",
+        "NLC"
+      ],
+      "kept_players": [
+        "Velja",
+        "Nemesis",
+        "Crownie",
+        "Rekkles"
+      ],
+      "added_players": [
+        "Bwipo"
+      ],
+      "removed_players": [
+        "TheBausffs"
+      ],
+      "kept_staff": [
+        "YamatoCannon",
+        "Shaves"
+      ],
+      "notes": "Seeded from public reports on 2026-03-11.",
+      "source_urls": [
+        "https://rft.gg/news/riot-games-adresses-witchcraft-em-masters-spot",
+        "https://www.ggesports.com/en-US/lol/News/Detail/27194"
+      ],
+      "updated_at": "2026-03-11T22:20:00"
+    }
+  ],
+  "players": []
+}

@@ -1,0 +1,201 @@
+"""Runtime helpers for Resumo tab orchestration."""
+
+from __future__ import annotations
+
+import math
+from typing import Any, Callable, Mapping, Optional
+
+import pandas as pd
+
+
+SC_METRIC_COL: dict[str, str] = {
+    "kills": "total_kills",
+    "towers": "total_towers",
+    "dragons": "total_dragons",
+    "barons": "total_nashors",
+    "inhibitors": "total_inhibitors",
+    "time": "game_time_min",
+}
+
+
+def build_statscamps_scope_frame(
+    *,
+    enabled: bool,
+    session_state: Mapping[str, Any],
+    team_games: pd.DataFrame | None,
+    filters_cls: Any,
+    active_filters: Any,
+    apply_filters_fn: Callable[[pd.DataFrame, Any], pd.DataFrame],
+    ml_info: Mapping[str, Any] | None,
+    map_mode_ui: Any,
+    team_a: str,
+    team_b: str,
+) -> pd.DataFrame | None:
+    if not enabled:
+        return None
+    try:
+        sc_league = str(session_state.get("sc_league", "") or "").strip()
+        sc_year = str(session_state.get("sc_year", "") or "").strip()
+        sc_split = str(session_state.get("sc_split", "") or "").strip()
+        sc_playoffs = str(session_state.get("sc_playoffs", "") or "").strip()
+        sc_map = str(session_state.get("sc_map", "All maps") or "All maps").strip()
+
+        df_sc_base = None
+        if sc_league and sc_year and sc_split:
+            sc_filters = filters_cls(
+                year=int(sc_year),
+                league=sc_league,
+                split=sc_split,
+                playoffs=None if not sc_playoffs else (True if sc_playoffs == "Playoffs" else False),
+            )
+            df_sc_base = apply_filters_fn(team_games, sc_filters).copy()
+            if sc_map != "All maps" and df_sc_base is not None and "map_number" in df_sc_base.columns:
+                try:
+                    map_number = int(sc_map.split()[-1])
+                    df_sc_base = df_sc_base[df_sc_base["map_number"] == map_number].copy()
+                except (IndexError, TypeError, ValueError):
+                    pass
+        else:
+            league_a = ""
+            league_b = ""
+            if isinstance(ml_info, Mapping):
+                league_a = str(((ml_info.get("blue") or {}).get("league")) or "").strip()
+                league_b = str(((ml_info.get("red") or {}).get("league")) or "").strip()
+            league_fb = getattr(active_filters, "league", None)
+            if not league_fb and league_a and league_b and league_a == league_b:
+                league_fb = league_a
+            sc_filters = filters_cls(
+                year=getattr(active_filters, "year", None),
+                league=league_fb,
+                split=getattr(active_filters, "split", None),
+                playoffs=getattr(active_filters, "playoffs", None),
+            )
+            df_sc_base = apply_filters_fn(team_games, sc_filters).copy()
+            if (
+                map_mode_ui
+                and str(map_mode_ui).startswith("map")
+                and df_sc_base is not None
+                and "map_number" in df_sc_base.columns
+            ):
+                try:
+                    map_number = int(str(map_mode_ui).replace("map", "").strip())
+                    df_sc_base = df_sc_base[df_sc_base["map_number"] == map_number].copy()
+                except (TypeError, ValueError):
+                    pass
+
+        if df_sc_base is None or df_sc_base.empty or "team" not in df_sc_base.columns:
+            return None
+
+        df_sc_ab = df_sc_base[df_sc_base["team"].astype(str).isin([str(team_a), str(team_b)])].copy()
+        if "gameid" in df_sc_ab.columns:
+            df_sc_ab = df_sc_ab.drop_duplicates(subset=["gameid"], keep="last")
+        elif "gameId" in df_sc_ab.columns:
+            df_sc_ab = df_sc_ab.drop_duplicates(subset=["gameId"], keep="last")
+        return df_sc_ab
+    except (TypeError, ValueError):
+        return None
+
+
+def compute_statscamps_pct(
+    *,
+    enabled: bool,
+    df_sc_ab: pd.DataFrame | None,
+    metric_key: str,
+    side_key: str,
+    line_val: float,
+    metric_col_map: Mapping[str, str] | None = None,
+) -> Optional[float]:
+    if (not enabled) or df_sc_ab is None or (not isinstance(df_sc_ab, pd.DataFrame)) or df_sc_ab.empty:
+        return None
+    col_map = dict(metric_col_map or SC_METRIC_COL)
+    col_sc = col_map.get(str(metric_key).strip().lower())
+    if not col_sc:
+        return None
+    series = pd.to_numeric(df_sc_ab.get(col_sc), errors="coerce").dropna()
+    if int(series.shape[0]) <= 0:
+        return None
+    try:
+        line_float = float(line_val)
+    except (TypeError, ValueError):
+        return None
+    side_low = str(side_key).strip().lower()
+    if side_low == "over":
+        pct = 100.0 * float((series > line_float).mean())
+    else:
+        pct = 100.0 * float((series < line_float).mean())
+    return float(pct) if math.isfinite(float(pct)) else None
+
+
+def format_statscamps_badge(pct: Optional[float], *, threshold: float) -> str:
+    if pct is None:
+        return "-"
+    icon = "OK" if float(pct) >= float(threshold) else "-"
+    return f"{icon} {float(pct):.0f}%"
+
+
+def ensure_metric_lines(
+    metric_key: str,
+    values: Any,
+    *,
+    parse_lines_fn: Callable[[str], list[float]],
+    parse_time_lines_fn: Callable[[str], list[float]],
+) -> list[float]:
+    if values is None:
+        return []
+    if isinstance(values, str):
+        return parse_time_lines_fn(values) if str(metric_key).strip().lower() == "time" else parse_lines_fn(values)
+    if isinstance(values, (list, tuple, set)):
+        out: list[float] = []
+        for value in values:
+            try:
+                float_value = float(value)
+                if math.isfinite(float_value):
+                    out.append(float_value)
+            except (TypeError, ValueError):
+                pass
+        return out
+    try:
+        float_value = float(values)
+        return [float_value] if math.isfinite(float_value) else []
+    except (TypeError, ValueError):
+        return []
+
+
+def infer_matchup_league(*, df_league_year: pd.DataFrame | None, ml_info: Mapping[str, Any] | None) -> str:
+    league_from_scope = ""
+    try:
+        league_vals = pd.Series(df_league_year.get("league")).dropna().astype(str).str.strip()
+        if not league_vals.empty:
+            league_from_scope = str(league_vals.mode().iloc[0]).upper()
+    except (AttributeError, IndexError, KeyError, TypeError, ValueError):
+        league_from_scope = ""
+    if league_from_scope:
+        return league_from_scope
+    try:
+        league_blue = str((((ml_info or {}).get("blue") or {}).get("league") or "")).strip().upper()
+        league_red = str((((ml_info or {}).get("red") or {}).get("league") or "")).strip().upper()
+        return league_blue if league_blue == league_red else (league_blue or league_red)
+    except (AttributeError, TypeError, ValueError):
+        return ""
+
+
+def build_market_trace_rows(rows: list[Mapping[str, Any]] | None) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for row in rows or []:
+        try:
+            out.append(
+                {
+                    "mercado": str(row.get("Mercado", "")),
+                    "lado": str(row.get("Lado", "")),
+                    "linha": str(row.get("Linha", "")),
+                    "odd_model": (float(row.get("Odd (Modelo)")) if row.get("Odd (Modelo)") is not None else None),
+                    "odd_hist": (float(row.get("Odd (Hist)")) if row.get("Odd (Hist)") is not None else None),
+                    "odd_mix": (float(row.get("Odd (Mix)")) if row.get("Odd (Mix)") is not None else None),
+                    "obs_mix": str(row.get("Obs Mix", "")),
+                    "calib_reason": str(row.get("_calib_reason", "")),
+                    "calib_source": str(row.get("_calib_source", "")),
+                }
+            )
+        except (AttributeError, TypeError, ValueError):
+            continue
+    return out

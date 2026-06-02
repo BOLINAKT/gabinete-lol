@@ -1,0 +1,180 @@
+{
+  "generated_at": "2026-05-29T00:34:35+00:00",
+  "holdout_n": 1313,
+  "baseline": {
+    "logloss": 0.6202385096104103,
+    "ece": 0.052736806241603026
+  },
+  "marginal_trust_sweep": [
+    {
+      "confidence_score": null,
+      "strength": 0.1,
+      "logloss": 0.6257089068469956,
+      "delta_pp": -0.5470397236585378
+    },
+    {
+      "confidence_score": null,
+      "strength": 0.35,
+      "logloss": 0.6311430079049604,
+      "delta_pp": -1.0904498294550091
+    },
+    {
+      "confidence_score": null,
+      "strength": 0.7,
+      "logloss": 0.642574929202728,
+      "delta_pp": -2.233641959231769
+    },
+    {
+      "confidence_score": 25.0,
+      "strength": 0.1,
+      "logloss": 0.6279185643037188,
+      "delta_pp": -0.7680054693308569
+    },
+    {
+      "confidence_score": 25.0,
+      "strength": 0.35,
+      "logloss": 0.6352772149915639,
+      "delta_pp": -1.5038705381153594
+    },
+    {
+      "confidence_score": 25.0,
+      "strength": 0.7,
+      "logloss": 0.6536744369787297,
+      "delta_pp": -3.3435927368319462
+    },
+    {
+      "confidence_score": 40.0,
+      "strength": 0.1,
+      "logloss": 0.6279185643037188,
+      "delta_pp": -0.7680054693308569
+    },
+    {
+      "confidence_score": 40.0,
+      "strength": 0.35,
+      "logloss": 0.6352772149915639,
+      "delta_pp": -1.5038705381153594
+    },
+    {
+      "confidence_score": 40.0,
+      "strength": 0.7,
+      "logloss": 0.6536744369787297,
+      "delta_pp": -3.3435927368319462
+    },
+    {
+      "confidence_score": 55.0,
+      "strength": 0.1,
+      "logloss": 0.6245619431777816,
+      "delta_pp": -0.4323433567371304
+    },
+    {
+      "confidence_score": 55.0,
+      "strength": 0.35,
+      "logloss": 0.6287429525458222,
+      "delta_pp": -0.8504442935411971
+    },
+    {
+      "confidence_score": 55.0,
+      "strength": 0.7,
+      "logloss": 0.636633938454668,
+      "delta_pp": -1.639542884425771
+    },
+    {
+      "confidence_score": 72.0,
+      "strength": 0.1,
+      "logloss": 0.6231618491675252,
+      "delta_pp": -0.2923339557114879
+    },
+    {
+      "confidence_score": 72.0,
+      "strength": 0.35,
+      "logloss": 0.6254972784233215,
+      "delta_pp": -0.5258768812911208
+    },
+    {
+      "confidence_score": 72.0,
+      "strength": 0.7,
+      "logloss": 0.6291703480150727,
+      "delta_pp": -0.8931838404662384
+    },
+    {
+      "confidence_score": 85.0,
+      "strength": 0.1,
+      "logloss": 0.6227040773418987,
+      "delta_pp": -0.24655677314884272
+    },
+    {
+      "confidence_score": 85.0,
+      "strength": 0.35,
+      "logloss": 0.6250830703117229,
+      "delta_pp": -0.48445607013126724
+    },
+    {
+      "confidence_score": 85.0,
+      "strength": 0.7,
+      "logloss": 0.6288215652524227,
+      "delta_pp": -0.8583055642012449
+    },
+    {
+      "confidence_score": 95.0,
+      "strength": 0.1,
+      "logloss": 0.6227040773418987,
+      "delta_pp": -0.24655677314884272
+    },
+    {
+      "confidence_score": 95.0,
+      "strength": 0.35,
+      "logloss": 0.6250830703117229,
+      "delta_pp": -0.48445607013126724
+    },
+    {
+      "confidence_score": 95.0,
+      "strength": 0.7,
+      "logloss": 0.6288215652524227,
+      "delta_pp": -0.8583055642012449
+    }
+  ],
+  "uncertainty_sweep": [
+    {
+      "strength": 0.0,
+      "prior_games": 22.0,
+      "logloss": 0.6202385096104103,
+      "delta_pp": 0.0
+    },
+    {
+      "strength": 0.05,
+      "prior_games": 22.0,
+      "logloss": 0.6210876096989587,
+      "delta_pp": -0.08491000885484379
+    },
+    {
+      "strength": 0.1,
+      "prior_games": 22.0,
+      "logloss": 0.6220008388003774,
+      "delta_pp": -0.17623291899671045
+    },
+    {
+      "strength": 0.2,
+      "prior_games": 22.0,
+      "logloss": 0.624023829059938,
+      "delta_pp": -0.37853194495277576
+    },
+    {
+      "strength": 0.1,
+      "prior_games": 50.0,
+      "logloss": 0.6223690727302128,
+      "delta_pp": -0.2130563119802531
+    },
+    {
+      "strength": 0.1,
+      "prior_games": 5.0,
+      "logloss": 0.6212230249822297,
+      "delta_pp": -0.09845153718194277
+    },
+    {
+      "strength": 0.3,
+      "prior_games": 5.0,
+      "logloss": 0.623369574832532,
+      "delta_pp": -0.31310652221216984
+    }
+  ]
+}
