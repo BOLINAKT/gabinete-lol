@@ -4,11 +4,25 @@ from __future__ import annotations
 import inspect
 import json
 import math
-from typing import Any, Dict, List, Mapping
+from typing import Any, Callable, Dict, List, Mapping
 
 import pandas as pd
 
 from app_core.render_ctx_core import validate_render_ctx
+
+
+def _vg_caption(st: Any) -> Callable[[str], None]:
+    """Caption fn for the ML pipeline that drops the 'Guardião marginal' line.
+
+    That diagnostic is technical noise the user asked to hide on Visão Geral;
+    other pipeline captions (e.g. drift warnings) still show.
+    """
+    def _cap(msg: str) -> None:
+        s = str(msg or "")
+        if s.startswith(("Guardião marginal", "Guardiao marginal")):
+            return
+        st.caption(s)
+    return _cap
 
 
 def _validate_visao_ctx(ctx: Mapping[str, Any]) -> None:
@@ -255,13 +269,9 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         st.metric("Score", value=str(_conf_summary.get("score_text", "0/100")))
     with ccf3:
         st.metric("Base", value=str(_conf_summary.get("source", "global")))
-    st.caption(str(_conf_summary.get("summary_line", "")))
-    if str(_conf_summary.get("baseline_line", "")).strip():
-        st.caption(str(_conf_summary.get("baseline_line", "")))
-    if str(_conf_summary.get("pipeline_line", "")).strip():
-        st.caption(str(_conf_summary.get("pipeline_line", "")))
-    if not isinstance(core_get_lv_last_report(st.session_state), dict):
-        st.caption("Para melhorar a confianca, rode a manutenção/calibracao na aba Parametros.")
+    # Diagnósticos técnicos (Semáforo / Baseline / Camadas A/B/C / dica de
+    # manutenção) removidos a pedido do usuário — ruído para o uso diário.
+    # Os 3 cards acima (Confiança ML / Score / Base) ficam como resumo.
 
     # Explicabilidade curta por confronto (camadas que mais puxaram o preço)
     _trace_last = (_trace_state.get("_ml_trace_last") or {}) if isinstance(_trace_state, dict) else {}
@@ -603,7 +613,7 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             callbacks=_pre_engine_callbacks,
             format_num_fn=_format_num,
             format_pct_fn=_format_pct,
-            caption_fn=st.caption,
+            caption_fn=_vg_caption(st),
             warning_fn=st.warning,
             match_league=str(locals().get("match_league", "") or ""),
         )
@@ -664,7 +674,7 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             session_state=st.session_state,
             trace_pipeline_steps=trace_pipeline_steps,
             callbacks=_pre_live_callbacks,
-            caption_fn=st.caption,
+            caption_fn=_vg_caption(st),
         )
         _pre_pipeline_out = core_run_ml_pre_pipeline(
             pre_engine=_pre_engine_in,
@@ -892,7 +902,7 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         load_confidence_baseline_cached_fn=_load_ml_confidence_baseline_cached,
         file_sig_fn=_file_sig,
         lg_a_hint=str(locals().get("_lgA", "") or ""),
-        caption_fn=st.caption,
+        caption_fn=_vg_caption(st),
         apply_confidence_governor_fn=core_apply_confidence_governor,
         enforce_series_economic_coherence_fn=core_enforce_series_economic_coherence,
         series_coherence_post_max_dev_pp=(
