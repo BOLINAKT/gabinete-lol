@@ -145,9 +145,9 @@ class TestLeagueRankForTeam(unittest.TestCase):
 
 
 class TestStatsRankIntegration(unittest.TestCase):
-    """Combined row carries rank labels; per-team scope ranking works."""
+    """Ranking sits on the % rows: ↑N (most over) on Over, ↓N (most under) on Under."""
 
-    def test_combined_row_has_rank(self):
+    def test_rank_on_over_under_rows_not_combined(self):
         a = _make_team_df("A", n=10, kf=18.0, ka=18.0)   # high combined
         b = _make_team_df("B", n=10, kf=8.0, ka=8.0)     # low combined
         league = pd.concat([a, b, _make_team_df("C", 10, 12, 12)], ignore_index=True)
@@ -156,9 +156,19 @@ class TestStatsRankIntegration(unittest.TestCase):
             metric_col="mv2_total_kills", line=27.5,
         )
         combined = next(r for r in rows if r.label.startswith("Combined"))
-        # B is lowest combined → should carry a "↓1"; A highest → "↑1"
-        self.assertIn("1", combined.rank_b)
-        self.assertIn("1", combined.rank_a)
+        over = next(r for r in rows if r.label.startswith("Over"))
+        under = next(r for r in rows if r.label.startswith("Under"))
+        # Combined no longer carries the rank.
+        self.assertEqual(combined.rank_a, "")
+        self.assertEqual(combined.rank_b, "")
+        # Over row: A is most-over (↑1), Under row: B is most-under (↓1).
+        self.assertIn("↑", over.rank_a)
+        self.assertIn("1", over.rank_a)
+        self.assertIn("↓", under.rank_b)
+        self.assertIn("1", under.rank_b)
+        # Over row shows only ↑ (no ↓); Under shows only ↓ (no ↑).
+        self.assertNotIn("↓", over.rank_a)
+        self.assertNotIn("↑", under.rank_b)
 
 
 if __name__ == "__main__":

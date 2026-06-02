@@ -832,20 +832,24 @@ def build_market_stats_table(
     _scope_a = league_scope_a if league_scope_a is not None else league_scope_df
     _scope_b = league_scope_b if league_scope_b is not None else league_scope_df
 
-    def _rank_one(rank_col: Optional[str], team: str, scope: pd.DataFrame) -> str:
+    def _rank_one(rank_col: Optional[str], team: str, scope: pd.DataFrame,
+                   *, side: str = "both") -> str:
+        # side: "low" → only ↓N (most under), "high" → only ↑N (most over),
+        # "both" → ↓N ↑N. The ranking is always by `rank_col` (combined metric),
+        # i.e. how under/over the team is vs its league.
         if not rank_col:
             return ""
         low, high = _league_rank_for_team(scope, rank_col, team)
         parts = []
-        if low:
+        if low and side in ("low", "both"):
             parts.append(f"↓{low.strip('()')}")   # 1 = menor da liga (mais under)
-        if high:
+        if high and side in ("high", "both"):
             parts.append(f"↑{high.strip('()')}")  # 1 = maior da liga (mais over)
         return " ".join(parts)
 
     def _row_num(label: str, stat_fn: "Callable[[Optional[pd.DataFrame]], float]",
                   *, higher_is_good: bool = True, fmt: str = "num", dec: int = 1,
-                  rank_col: Optional[str] = None) -> StatsRow:
+                  rank_col: Optional[str] = None, rank_side: str = "both") -> StatsRow:
         # Each team is compared to / shown against ITS OWN league reference:
         # in cross-league matchups Liga A = team A's league, Liga B = team B's.
         # When both teams share a league (the common case) league_b == league_a
@@ -868,8 +872,8 @@ def build_market_stats_table(
             tone_a=_tone_compare(value_a, league_a, higher_is_good=higher_is_good),
             tone_b=_tone_compare(value_b, league_b, higher_is_good=higher_is_good),
             is_pct=(fmt == "pct"),
-            rank_a=_rank_one(rank_col, team_a, _scope_a),
-            rank_b=_rank_one(rank_col, team_b, _scope_b),
+            rank_a=_rank_one(rank_col, team_a, _scope_a, side=rank_side),
+            rank_b=_rank_one(rank_col, team_b, _scope_b, side=rank_side),
         )
 
     # # Games (no tone)
@@ -913,7 +917,6 @@ def build_market_stats_table(
         f"{combined_label}",
         lambda d: _safe_mean(d, metric_col),
         higher_is_good=True,
-        rank_col=metric_col,  # show league ranking (↓ most under / ↑ most over)
         fmt="mmss" if is_time_metric else "num",
         dec=int(metric_decimals),
     ))
@@ -929,10 +932,14 @@ def build_market_stats_table(
     # Hit rate at the chosen line (Over and Under)
     line_str = (_fmt_mmss(line) if is_time_metric else f"{float(line):g}")
     suffix = " (combined)" if (for_col and against_col and not is_time_metric) else ""
+    # League ranking now sits next to the % rows (per user): ↑N (most over) on
+    # the Over line, ↓N (most under) on the Under line. Ranking is by the
+    # combined metric — i.e. how over/under the team is vs its league.
     rows.append(_row_num(
         f"Over {line_str}{suffix}",
         lambda d: _safe_pct_above(d, metric_col, line),
         higher_is_good=True, fmt="pct", dec=0,
+        rank_col=metric_col, rank_side="high",
     ))
 
     def _under_pct(d: "Optional[pd.DataFrame]") -> float:
@@ -943,6 +950,7 @@ def build_market_stats_table(
         f"Under {line_str}{suffix}",
         _under_pct,
         higher_is_good=True, fmt="pct", dec=0,
+        rank_col=metric_col, rank_side="low",
     ))
     return rows
 
