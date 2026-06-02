@@ -59,3 +59,13 @@ desktop.ini
 
 # Linhas por confronto: agora sao so-de-sessao (nao persistir)
 user_lines_store.json
+
+# Estado/relatorios gerados em runtime (mudam a cada execucao - nao versionar)
+csv_bootstrap_*.json
+*.csv_ingest.json
+ml_artifact.json
+players_artifact.json
+team_state_artifact.json
+params_fitted.json
+data_leakage_label_report.json
+wf_last_report.json
