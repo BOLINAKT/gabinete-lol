@@ -6,7 +6,7 @@ from typing import Any, Callable
 
 import pandas as pd
 
-from app_core.tab_filters_core import collect_year_split_league_options
+from app_core.tab_filters_core import collect_year_split_league_options, scope_has_playoffs
 from app_core.tab_state_core import ensure_blank_keys, normalize_select_key, reset_keys, select_placeholder
 from app_core.tab_ui_core import render_tab_hero, render_tab_section
 
@@ -95,14 +95,20 @@ def render_rankings_tab(
             format_func=select_placeholder,
         )
 
-    with c4:
-        normalize_select_key(st.session_state, "rank_po_visual", ["", "Regular", "Playoffs"])
-        rank_playoffs = st.selectbox(
-            "Playoffs",
-            options=["", "Regular", "Playoffs"],
-            key="rank_po_visual",
-            format_func=select_placeholder,
-        )
+    # Playoffs box appears ONLY when the chosen (liga, ano, split) has playoff
+    # games — same pattern as the other tabs (scope_has_playoffs).
+    if scope_has_playoffs(team_games, league=rank_league, year=rank_year, split=rank_split):
+        with c4:
+            normalize_select_key(st.session_state, "rank_po_visual", ["", "Regular", "Playoffs"])
+            rank_playoffs = st.selectbox(
+                "Playoffs",
+                options=["", "Regular", "Playoffs"],
+                key="rank_po_visual",
+                format_func=select_placeholder,
+            )
+        rank_playoffs = st.session_state.get("rank_po_visual", "") or ""
+    else:
+        rank_playoffs = ""
 
     rank_filters = Filters(
         year=None if not rank_year else int(rank_year),

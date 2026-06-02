@@ -8,7 +8,7 @@ from typing import Any, Mapping, Optional
 
 import pandas as pd
 
-from app_core.tab_filters_core import collect_year_split_league_options
+from app_core.tab_filters_core import collect_year_split_league_options, scope_has_playoffs
 from app_core.tab_state_core import blank_space_label
 from app_core.tab_ui_core import render_tab_hero, render_tab_section
 
@@ -116,15 +116,21 @@ def render_champions_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             split_options = ["", *splits_filtered]
             _ensure_choice("ch_split", split_options, "")
             ch_split = st.selectbox("Split", options=split_options, key="ch_split", format_func=blank_space_label)
-        with bc3:
-            playoffs_options = ["", "Regular", "Playoffs"]
-            _ensure_choice("ch_playoffs", playoffs_options, "")
-            ch_playoffs = st.selectbox(
-                "Playoffs",
-                options=playoffs_options,
-                key="ch_playoffs",
-                format_func=blank_space_label,
-            )
+        # Playoffs box appears ONLY when the chosen (liga, ano, split) has
+        # playoff games — same pattern as the other tabs (scope_has_playoffs).
+        if scope_has_playoffs(team_games, league=ch_league, year=ch_year, split=ch_split):
+            with bc3:
+                playoffs_options = ["", "Regular", "Playoffs"]
+                _ensure_choice("ch_playoffs", playoffs_options, "")
+                ch_playoffs = st.selectbox(
+                    "Playoffs",
+                    options=playoffs_options,
+                    key="ch_playoffs",
+                    format_func=blank_space_label,
+                )
+            ch_playoffs = st.session_state.get("ch_playoffs", "") or ""
+        else:
+            ch_playoffs = ""
 
         tc1, tc2 = st.columns([2, 1])
         with tc1:

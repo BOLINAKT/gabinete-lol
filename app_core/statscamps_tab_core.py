@@ -14,7 +14,7 @@ from app_core.statscamps_state_core import (
     reset_statscamps_league_dependents,
     sync_statscamps_delta_targets,
 )
-from app_core.tab_filters_core import collect_year_split_league_options
+from app_core.tab_filters_core import collect_year_split_league_options, scope_has_playoffs
 from app_core.tab_state_core import normalize_select_key, select_placeholder
 from app_core.tab_ui_core import render_tab_hero, render_tab_section
 
@@ -306,14 +306,20 @@ def render_statscamps_tab(
             format_func=select_placeholder,
         )
 
-    with base_cols[3]:
-        normalize_statscamps_select_state(session_state, years=[str(y) for y in years_opt], splits=splits_opt)
-        sc_playoffs = st.selectbox(
-            "Playoffs",
-            options=["", "Regular", "Playoffs"],
-            key="sc_playoffs",
-            format_func=select_placeholder,
-        )
+    # Playoffs box appears ONLY when the chosen (liga, ano, split) has playoff
+    # games — same pattern as the other tabs (scope_has_playoffs).
+    if scope_has_playoffs(team_games, league=sc_league, year=sc_year, split=sc_split):
+        with base_cols[3]:
+            normalize_statscamps_select_state(session_state, years=[str(y) for y in years_opt], splits=splits_opt)
+            sc_playoffs = st.selectbox(
+                "Playoffs",
+                options=["", "Regular", "Playoffs"],
+                key="sc_playoffs",
+                format_func=select_placeholder,
+            )
+        sc_playoffs = session_state.get("sc_playoffs", "") or ""
+    else:
+        sc_playoffs = ""
 
     sc_ready = True
     if not sc_league:
