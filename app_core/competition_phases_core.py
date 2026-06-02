@@ -111,6 +111,7 @@ LEAGUE_REGION = {
     "LCS": "NA", "NACL": "NA", "LTA N": "NA", "LTA": "NA",
     "LEC": "EU", "LFL": "EU", "EM": "EU", "NLC": "EU", "PRM": "EU", "HLL": "EU",
     "LCP": "APAC", "PCS": "APAC", "VCS": "APAC", "LJL": "APAC",
+    "CBLOL": "BR", "CBLOLA": "BR",
 }
 
 
