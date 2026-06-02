@@ -908,7 +908,14 @@ def _load_team_games(csv_sig: Tuple[str, int, int]) -> pd.DataFrame:
     # liga+intervalo de datas. NO-OP enquanto competition_phases.json tiver
     # 'rules' vazio. (Cache: editar o JSON exige rerun/limpar cache.)
     try:
-        from app_core.competition_phases_core import apply_competition_phases
+        from app_core.competition_phases_core import (
+            apply_competition_phases,
+            apply_ewc_regional_phases,
+        )
+        # Automático: rotula jogos da EWC por qualifier regional (intra-região →
+        # "Qualify KR/NA/EU/APAC/CN") vs evento principal (cross-região → "Main").
+        df = apply_ewc_regional_phases(df)
+        # Manual: regras extras por liga+data (no-op enquanto o JSON estiver vazio).
         df = apply_competition_phases(df, path=Path(__file__).resolve().parent / "competition_phases.json")
     except Exception:
         pass

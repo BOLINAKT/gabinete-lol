@@ -12,6 +12,8 @@ from app_core.competition_phases_core import (
     apply_phase_overrides,
     load_phase_rules,
     apply_competition_phases,
+    apply_ewc_regional_phases,
+    region_of_league,
 )
 
 
@@ -54,6 +56,53 @@ class TestApplyPhaseOverrides(unittest.TestCase):
         out = apply_phase_overrides(_df(), rules)
         main = out[(out["league"] == "EWC") & (out["split"] == "Main")]
         self.assertTrue(bool(main["playoffs"].iloc[0]))
+
+
+class TestEwcRegionalPhases(unittest.TestCase):
+
+    def _ewc_df(self):
+        # Each team has domestic (non-EWC) games defining its region, plus EWC games.
+        rows = [
+            # domestic games (define region)
+            {"team": "T1", "opponent": "GenG", "league": "LCK", "split": "Split 2", "date": "2026-03-01"},
+            {"team": "GenG", "opponent": "T1", "league": "LCK", "split": "Split 2", "date": "2026-03-01"},
+            {"team": "FlyQuest", "opponent": "TL", "league": "LCS", "split": "Split 2", "date": "2026-03-01"},
+            {"team": "TL", "opponent": "FlyQuest", "league": "LCS", "split": "Split 2", "date": "2026-03-01"},
+            # EWC games
+            {"team": "T1", "opponent": "GenG", "league": "EWC", "split": "", "date": "2026-05-25"},      # intra KR
+            {"team": "FlyQuest", "opponent": "TL", "league": "EWC", "split": "", "date": "2026-04-14"},  # intra NA
+            {"team": "T1", "opponent": "FlyQuest", "league": "EWC", "split": "", "date": "2026-05-20"},  # cross
+        ]
+        return pd.DataFrame(rows)
+
+    def test_intra_region_labeled_qualify(self):
+        out = apply_ewc_regional_phases(self._ewc_df())
+        ewc = out[out["league"] == "EWC"]
+        kr = ewc[(ewc["team"] == "T1") & (ewc["opponent"] == "GenG")]
+        na = ewc[(ewc["team"] == "FlyQuest") & (ewc["opponent"] == "TL")]
+        self.assertEqual(kr["split"].iloc[0], "Qualify KR")
+        self.assertEqual(na["split"].iloc[0], "Qualify NA")
+
+    def test_cross_region_labeled_main(self):
+        out = apply_ewc_regional_phases(self._ewc_df())
+        cross = out[(out["league"] == "EWC") & (out["team"] == "T1") & (out["opponent"] == "FlyQuest")]
+        self.assertEqual(cross["split"].iloc[0], "Main")
+
+    def test_domestic_rows_untouched(self):
+        out = apply_ewc_regional_phases(self._ewc_df())
+        dom = out[out["league"] == "LCK"]
+        self.assertTrue((dom["split"] == "Split 2").all())
+
+    def test_noop_when_no_ewc(self):
+        df = pd.DataFrame([{"team": "T1", "opponent": "GenG", "league": "LCK", "split": "S2", "date": "2026-03-01"}])
+        out = apply_ewc_regional_phases(df)
+        pd.testing.assert_frame_equal(out, df)
+
+    def test_region_of_league(self):
+        self.assertEqual(region_of_league("LCK"), "KR")
+        self.assertEqual(region_of_league("LPL"), "CN")
+        self.assertEqual(region_of_league("LEC"), "EU")
+        self.assertEqual(region_of_league("UNKNOWN"), "UNKNOWN")  # fallback = code
 
 
 class TestLoadPhaseRules(unittest.TestCase):

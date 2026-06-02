@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import List, Mapping
+from typing import Any, List, Mapping
 
 import pandas as pd
 
@@ -95,3 +95,64 @@ def apply_phase_overrides(df: pd.DataFrame, rules: List[dict]) -> pd.DataFrame:
 def apply_competition_phases(df: pd.DataFrame, *, path: str | Path) -> pd.DataFrame:
     """Convenience: load rules from `path` and apply them. No-op if none."""
     return apply_phase_overrides(df, load_phase_rules(path))
+
+
+# ---------------------------------------------------------------------------
+# EWC regional phases (automatic, no manual file needed)
+# ---------------------------------------------------------------------------
+
+INTERNATIONAL_LEAGUES = frozenset({"EWC", "MSI", "WORLDS", "FST", "IEM", "FIRST STAND"})
+
+# Domestic league → region. Fallback: the league code itself (so an unmapped
+# league still groups its own qualifier, just labeled by the code).
+LEAGUE_REGION = {
+    "LPL": "CN", "LDL": "CN",
+    "LCK": "KR", "LCKC": "KR",
+    "LCS": "NA", "NACL": "NA", "LTA N": "NA", "LTA": "NA",
+    "LEC": "EU", "LFL": "EU", "EM": "EU", "NLC": "EU", "PRM": "EU", "HLL": "EU",
+    "LCP": "APAC", "PCS": "APAC", "VCS": "APAC", "LJL": "APAC",
+}
+
+
+def region_of_league(league: Any) -> str:
+    lg = str(league or "").strip().upper()
+    return LEAGUE_REGION.get(lg, lg)
+
+
+def apply_ewc_regional_phases(df: pd.DataFrame, *, ewc_league: str = "EWC") -> pd.DataFrame:
+    """Label EWC games by regional qualifier vs main event.
+
+    The EWC bucket is, in practice, almost entirely the REGIONAL QUALIFIERS
+    (intra-region games) plus a few cross-region main-event games. So:
+      - intra-region game (both teams same domestic region) → split "Qualify <REGION>"
+      - cross-region game                                    → split "Main"
+    Region is derived from each team's most-common domestic (non-international)
+    league. SAFE NO-OP when there are no EWC rows or required columns missing.
+    """
+    if (df is None or "league" not in df.columns
+            or "team" not in df.columns or "opponent" not in df.columns):
+        return df
+    lg_up = df["league"].astype(str).str.strip().str.upper()
+    ewc_mask = lg_up == str(ewc_league).strip().upper()
+    if not bool(ewc_mask.any()):
+        return df
+    out = df.copy()
+    # Domestic region per team, from non-international games.
+    dom = out[~lg_up.isin(INTERNATIONAL_LEAGUES)]
+    if not dom.empty and "league" in dom.columns:
+        team_dom = dom.groupby("team")["league"].agg(
+            lambda s: s.astype(str).value_counts().index[0] if len(s) else ""
+        )
+    else:
+        team_dom = pd.Series(dtype=object)
+
+    def _region(team: Any) -> str:
+        return region_of_league(team_dom.get(str(team), ""))
+
+    if "split" not in out.columns:
+        out["split"] = ""
+    for i in out.index[ewc_mask]:
+        ra = _region(out.at[i, "team"])
+        rb = _region(out.at[i, "opponent"])
+        out.at[i, "split"] = f"Qualify {ra}" if (ra and ra == rb) else "Main"
+    return out
