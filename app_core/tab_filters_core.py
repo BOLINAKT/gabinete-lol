@@ -48,3 +48,35 @@ def filter_by_year(df: pd.DataFrame, year: Any) -> pd.DataFrame:
         return df[pd.to_numeric(df["year"], errors="coerce") == int(year)].copy()
     except Exception:
         return df
+
+
+def scope_has_playoffs(
+    df: pd.DataFrame,
+    *,
+    league: Any = None,
+    year: Any = None,
+    split: Any = None,
+) -> bool:
+    """True when the given (league, year, split) scope contains playoff games.
+
+    Used to render the Playoffs selector ONLY when it's meaningful — e.g. you
+    pick Split 2 and, if that split already has playoff games, the playoffs
+    box appears; otherwise it stays hidden. Blank/None filters are ignored
+    (no filtering on that dimension).
+    """
+    if df is None or df.empty or "playoffs" not in df.columns:
+        return False
+    sub = df
+    try:
+        if league and "league" in sub.columns:
+            sub = sub[sub["league"].astype(str) == str(league)]
+        if year and "year" in sub.columns:
+            sub = sub[pd.to_numeric(sub["year"], errors="coerce") == int(year)]
+        if split and "split" in sub.columns:
+            sub = sub[sub["split"].astype(str) == str(split)]
+        if sub.empty:
+            return False
+        po = pd.to_numeric(sub["playoffs"], errors="coerce").fillna(0).astype(int)
+        return bool((po > 0).any())
+    except Exception:
+        return False

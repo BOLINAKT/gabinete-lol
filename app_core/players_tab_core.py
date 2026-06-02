@@ -9,7 +9,7 @@ from typing import Any, Mapping
 import numpy as np
 import pandas as pd
 
-from app_core.tab_filters_core import collect_year_split_league_options
+from app_core.tab_filters_core import collect_year_split_league_options, scope_has_playoffs
 from app_core.tab_state_core import blank_space_label
 from app_core.tab_ui_core import render_tab_hero, render_tab_section
 from mlcore.utils import sigmoid as _sigmoid
@@ -162,15 +162,23 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             split_options = ["", *splits_pl]
             _ensure_choice("pl_split", split_options, "")
             p_split = st.selectbox("Split", options=split_options, key="pl_split", format_func=blank_space_label)
-        with pc4:
-            playoffs_options = ["", "Regular", "Playoffs"]
-            _ensure_choice("pl_playoffs", playoffs_options, "")
-            p_playoffs = st.selectbox(
-                "Playoffs",
-                options=playoffs_options,
-                key="pl_playoffs",
-                format_func=blank_space_label,
-            )
+        # Playoffs box appears ONLY when the chosen (liga, ano, split) actually
+        # has playoff games — e.g. pick Split 2 and, once playoffs start, the
+        # box shows up. Otherwise it stays hidden and no playoff filter applies.
+        _has_po = scope_has_playoffs(team_games, league=p_league, year=p_year, split=p_split)
+        if _has_po:
+            with pc4:
+                playoffs_options = ["", "Regular", "Playoffs"]
+                _ensure_choice("pl_playoffs", playoffs_options, "")
+                p_playoffs = st.selectbox(
+                    "Playoffs",
+                    options=playoffs_options,
+                    key="pl_playoffs",
+                    format_func=blank_space_label,
+                )
+            p_playoffs = st.session_state.get("pl_playoffs", "") or ""
+        else:
+            p_playoffs = ""
 
     base_filters = Filters(
         year=None if not p_year else int(p_year),
