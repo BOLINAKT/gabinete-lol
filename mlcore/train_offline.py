@@ -344,7 +344,7 @@ def main() -> None:
         help="Derive league base points from interleague Bradley-Terry (SOS) and bake into the artifact. "
              "Validated: improves cross-region (interleague) OOS logloss. Use --no-sos-league for ablation.",
     )
-    ap.add_argument("--sos-scale", type=float, default=800.0, help="SOS league points = scale * BT theta (validated 800).")
+    ap.add_argument("--sos-scale", type=float, default=400.0, help="SOS league points = scale * BT theta. 400 validated best on the faithful artifact path (interleague OOS).")
     ap.add_argument("--sos-min-games", type=int, default=20, help="Min interleague games for a league to get a data-derived prior.")
     ap.add_argument("--league-cap", type=float, default=45.0, help="league_strength_cap_abs (learned offset cap). Validated stack used 90.")
     ap.add_argument(
