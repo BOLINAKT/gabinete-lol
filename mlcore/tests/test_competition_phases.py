@@ -98,6 +98,20 @@ class TestEwcRegionalPhases(unittest.TestCase):
         out = apply_ewc_regional_phases(df)
         pd.testing.assert_frame_equal(out, df)
 
+    def test_unknown_region_inherits_opponent(self):
+        # A team that only appears in EWC (no domestic games → unknown region)
+        # must inherit the opponent's region (qualifiers are intra-region), NOT
+        # be labeled a spurious cross-region "Main". Mirrors Team Secret x GAM.
+        rows = [
+            {"team": "GAM", "opponent": "X", "league": "LCP", "split": "S2", "date": "2026-03-01"},
+            {"team": "TeamSecret", "opponent": "GAM", "league": "EWC", "split": "", "date": "2026-05-20"},
+            {"team": "GAM", "opponent": "TeamSecret", "league": "EWC", "split": "", "date": "2026-05-20"},
+        ]
+        out = apply_ewc_regional_phases(pd.DataFrame(rows))
+        ewc = out[out["league"] == "EWC"]
+        self.assertTrue((ewc["split"] == "Qualify APAC").all())
+        self.assertNotIn("Main", set(ewc["split"]))
+
     def test_region_of_league(self):
         self.assertEqual(region_of_league("LCK"), "KR")
         self.assertEqual(region_of_league("LPL"), "CN")

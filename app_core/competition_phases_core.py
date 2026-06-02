@@ -123,12 +123,15 @@ def region_of_league(league: Any) -> str:
 def apply_ewc_regional_phases(df: pd.DataFrame, *, ewc_league: str = "EWC") -> pd.DataFrame:
     """Label EWC games by regional qualifier vs main event.
 
-    The EWC bucket is, in practice, almost entirely the REGIONAL QUALIFIERS
-    (intra-region games) plus a few cross-region main-event games. So:
+    The EWC league bucket is the EWC QUALIFY — regional qualifiers (intra-region
+    games). So:
       - intra-region game (both teams same domestic region) → split "Qualify <REGION>"
-      - cross-region game                                    → split "Main"
+      - genuinely cross-region game (real main event)        → split "Main"
     Region is derived from each team's most-common domestic (non-international)
-    league. SAFE NO-OP when there are no EWC rows or required columns missing.
+    league. A team that only shows up in EWC (no domestic games → unknown region)
+    inherits its opponent's region, since the qualifier is intra-region — this
+    avoids labeling such a game as a spurious "Main". SAFE NO-OP when there are
+    no EWC rows or the required columns are missing.
     """
     if (df is None or "league" not in df.columns
             or "team" not in df.columns or "opponent" not in df.columns):
@@ -155,5 +158,16 @@ def apply_ewc_regional_phases(df: pd.DataFrame, *, ewc_league: str = "EWC") -> p
     for i in out.index[ewc_mask]:
         ra = _region(out.at[i, "team"])
         rb = _region(out.at[i, "opponent"])
-        out.at[i, "split"] = f"Qualify {ra}" if (ra and ra == rb) else "Main"
+        # Unknown region (team only in EWC) inherits the opponent's — qualifiers
+        # are intra-region, so this is the correct fill, not a cross-region game.
+        if not ra:
+            ra = rb
+        if not rb:
+            rb = ra
+        if ra and ra == rb:
+            out.at[i, "split"] = f"Qualify {ra}"
+        elif not ra and not rb:
+            out.at[i, "split"] = "Qualify"   # região desconhecida, mas é qualify
+        else:
+            out.at[i, "split"] = "Main"       # cross-região genuíno (main event)
     return out
