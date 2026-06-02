@@ -1,0 +1,8 @@
+{
+  "_doc": "Anotacao manual de fases para eventos que vem SEM split util no CSV (ex.: EWC misturando qualify e main). Cada regra: liga + intervalo de datas (e ano opcional) -> define o split (e playoffs opcional) das linhas que casam. Aplicada no carregamento do team_games. Enquanto 'rules' estiver vazio, NAO muda nada.",
+  "_exemplo": [
+    {"league": "EWC", "year": 2026, "date_from": "2026-04-14", "date_to": "2026-05-01", "split": "Qualify"},
+    {"league": "EWC", "year": 2026, "date_from": "2026-05-02", "date_to": "2026-05-26", "split": "Main"}
+  ],
+  "rules": []
+}

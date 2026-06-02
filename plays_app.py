@@ -904,6 +904,15 @@ def _load_team_games(csv_sig: Tuple[str, int, int]) -> pd.DataFrame:
     rows = load_team_rows(csv_path)
     df = build_team_games(rows)
 
+    # Anotações manuais de fase (ex.: EWC qualify vs main) — define `split` por
+    # liga+intervalo de datas. NO-OP enquanto competition_phases.json tiver
+    # 'rules' vazio. (Cache: editar o JSON exige rerun/limpar cache.)
+    try:
+        from app_core.competition_phases_core import apply_competition_phases
+        df = apply_competition_phases(df, path=Path(__file__).resolve().parent / "competition_phases.json")
+    except Exception:
+        pass
+
     # Canonicaliza nomes de times para evitar que capitalização diferente (ex.: "Kia" vs "KIA")
     # faça o mesmo time aparecer como se fosse outro e caia em liga errada no modo auto.
     maps = _team_canon_maps(csv_sig)
