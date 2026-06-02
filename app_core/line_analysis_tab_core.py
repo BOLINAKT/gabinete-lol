@@ -15,7 +15,7 @@ import pandas as pd
 from app_core.championship_stats_core import STATS_MARKET_CONFIG
 from app_core.shared_formatters import fmt_delta_pp, fmt_num, fmt_pct, fmt_status
 from app_core.ui_design_core import cyan_banner, cyan_section_header
-from app_core.tab_filters_core import collect_year_split_league_options
+from app_core.tab_filters_core import collect_year_split_league_options, scope_has_playoffs
 from app_core.tab_state_core import normalize_select_key, select_placeholder
 from app_core.tab_ui_core import render_tab_hero, render_tab_section
 
@@ -177,7 +177,7 @@ def _render_v3_view(
             session_state["_lav3_autofill_fp"] = _matchup_fp
 
     _, _, leagues = collect_year_split_league_options(team_games)
-    fcols = st.columns(3)
+    fcols = st.columns(4)
     la_league_opts = ["", *leagues]
     with fcols[0]:
         normalize_select_key(session_state, "lav3_league", la_league_opts)
@@ -243,6 +243,18 @@ def _render_v3_view(
         normalize_select_key(session_state, "lav3_split", la_split_opts)
         v3_split = st.selectbox("Split (opcional)", la_split_opts, key="lav3_split",
                                   format_func=lambda x: "Todos os splits" if x == "" else x)
+    # Playoffs box appears ONLY when the chosen (liga, ano, split) actually has
+    # playoff games — same pattern as the other tabs (scope_has_playoffs).
+    if scope_has_playoffs(team_games, league=v3_league, year=v3_year, split=v3_split):
+        with fcols[3]:
+            la_po_opts = ["", "Regular", "Playoffs"]
+            normalize_select_key(session_state, "lav3_playoffs", la_po_opts)
+            v3_playoffs = st.selectbox(
+                "Playoffs", la_po_opts, key="lav3_playoffs",
+                format_func=lambda x: "Todos" if x == "" else x,
+            )
+    else:
+        v3_playoffs = ""
 
     if not v3_league or not v3_year:
         st.info("Selecione liga e ano para continuar.")
@@ -251,7 +263,7 @@ def _render_v3_view(
     sc_filters = Filters(
         year=int(v3_year), league=v3_league,
         split=v3_split if v3_split else None,
-        playoffs=None,
+        playoffs=None if not v3_playoffs else (v3_playoffs == "Playoffs"),
     )
     df_scope = apply_filters_fn(team_games, sc_filters).copy()
     if df_scope is None or df_scope.empty or "team" not in df_scope.columns:
