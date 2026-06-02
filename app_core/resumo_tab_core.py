@@ -79,6 +79,20 @@ def _ctx(ctx: Mapping[str, Any], key: str) -> Any:
     return ctx[key]
 
 
+def _norm_team_key(value: Any) -> str:
+    """Normalize a team name for matching (tolerates mojibake/casing/spacing).
+
+    Mirrors the matching used in Análise de Linha so the same opponent resolves
+    the same way in both tabs.
+    """
+    s = str(value or "").strip().replace("�", "").replace("?", "")
+    try:
+        s = s.encode("ascii", "ignore").decode("ascii")
+    except (UnicodeDecodeError, UnicodeEncodeError):
+        pass
+    return s.lower().strip()
+
+
 def _safe_rerun(st: Any) -> None:
     try:
         st.rerun()
@@ -743,8 +757,24 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
 
     df_a_all = df_a_used.copy().sort_values("date")
     df_b_all = df_b_used.copy().sort_values("date")
-    df_h2h_a = df_a_all[df_a_all["opponent"] == team_b].copy()
-    df_h2h_b = df_b_all[df_b_all["opponent"] == team_a].copy()
+    # H2H = TODOS os confrontos da temporada (qualquer split/fase), não só o
+    # recorte estreito. Antes o H2H saía de dfA_used (filtrado por split/playoffs),
+    # então um recorte de Playoffs escondia confrontos da fase regular — ex.:
+    # LGD x TT tem 3 jogos no Split 2 regular que sumiam no recorte de playoffs.
+    # Fonte = team_games filtrado só por ano, com match de nome normalizado.
+    _ka, _kb = _norm_team_key(team_a), _norm_team_key(team_b)
+    _h2h_src = team_games if isinstance(team_games, pd.DataFrame) else df_a_all
+    _yr = getattr(active_filters, "year", None)
+    if _yr and "year" in _h2h_src.columns:
+        _h2h_src = _h2h_src[pd.to_numeric(_h2h_src["year"], errors="coerce") == int(_yr)]
+    if {"team", "opponent"}.issubset(_h2h_src.columns):
+        _ta_key = _h2h_src["team"].astype(str).map(_norm_team_key)
+        _opp_key = _h2h_src["opponent"].astype(str).map(_norm_team_key)
+        df_h2h_a = _h2h_src[(_ta_key == _ka) & (_opp_key == _kb)].copy().sort_values("date")
+        df_h2h_b = _h2h_src[(_ta_key == _kb) & (_opp_key == _ka)].copy().sort_values("date")
+    else:
+        df_h2h_a = df_a_all[df_a_all["opponent"] == team_b].copy()
+        df_h2h_b = df_b_all[df_b_all["opponent"] == team_a].copy()
     slices = recency_slices(df_a=df_a_all, df_b=df_b_all, df_h2h=df_h2h_a, id_col="gameid", date_col="date")
     df_league_year = slices["league_year"]
     df_h2h_year = slices["h2h_year"]
