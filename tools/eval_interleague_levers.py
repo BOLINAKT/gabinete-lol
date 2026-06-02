@@ -21,15 +21,14 @@ import sys
 from dataclasses import replace
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from mlcore.stats_teams import build_team_games, load_team_rows
-import mlcore.tiers as tiers
 from mlcore.tiers import tier_for_league
 from mlcore.elo import EloModel, EloParams
+from mlcore.league_sos import sos_league_base_points
 
 ROOT = Path(__file__).resolve().parents[1]
 INTL = {"EWC", "MSI", "WORLDS", "FST", "IEM", "FIRST STAND"}
@@ -68,53 +67,36 @@ def _tier(lg: str) -> str:
     return _tier_cache[lg]
 
 
-def bradley_terry_league_strength(g: pd.DataFrame, oos_year: int) -> dict:
-    """BT (logistic) league strengths from TRAIN (pre-OOS) interleague games."""
+def sos_points_from_train(g: pd.DataFrame, oos_year: int, scale: float) -> dict:
+    """Production SOS base points from TRAIN (pre-OOS) interleague games."""
     train = g[(g.yr < oos_year) & (g.dl != g.ol) & g.dl.ne("") & g.ol.ne("")]
-    leagues = sorted(set(train.dl) | set(train.ol))
-    idx = {l: i for i, l in enumerate(leagues)}
-    A = np.zeros((len(train), len(leagues)))
-    y = train["win"].to_numpy(dtype=float)
-    for k, r in enumerate(train.itertuples(index=False)):
-        A[k, idx[r.dl]] += 1.0
-        A[k, idx[r.ol]] -= 1.0
-    theta = np.zeros(len(leagues))
-    lr, l2 = 0.5, 1e-3
-    for _ in range(4000):
-        p = 1.0 / (1.0 + np.exp(-(A @ theta)))
-        theta -= lr * (A.T @ (p - y) / max(1, len(y)) + l2 * theta)
-    theta -= theta.mean()
-    return {l: float(theta[idx[l]]) for l in leagues}
+    pairs = list(zip(train.dl, train.ol, train.win.astype(float)))
+    return sos_league_base_points(pairs, scale=scale)
 
 
 def evaluate(g: pd.DataFrame, *, oos_year: int, league_points: dict | None = None,
              params: EloParams | None = None) -> tuple[float, int]:
-    """Prequential interleague log-loss on OOS season. league_points overrides
-    LEAGUE_BASE_POINTS during the run (restored after)."""
-    saved = dict(tiers.LEAGUE_BASE_POINTS)
-    if league_points is not None:
-        tiers.LEAGUE_BASE_POINTS.clear()
-        tiers.LEAGUE_BASE_POINTS.update(league_points)
-    try:
-        elo = EloModel(params or EloParams())
-        tot, n = 0.0, 0
-        for r in g.itertuples(index=False):
-            bl, rl = r.dl, r.ol
-            if bl and rl and bl != rl:
-                if r.yr == oos_year:
-                    p = float(elo.p_blue(r.team, r.opponent, blue_league=bl, red_league=rl,
-                                         blue_tier=_tier(bl), red_tier=_tier(rl)))
-                    p = min(max(p, 1e-6), 1 - 1e-6)
-                    y = int(r.win)
-                    tot += -(y * math.log(p) + (1 - y) * math.log(1 - p))
-                    n += 1
-            elo.update(str(r.team), str(r.opponent), int(r.win),
-                       blue_league=bl or None, red_league=rl or None,
-                       blue_tier=_tier(bl) if bl else None, red_tier=_tier(rl) if rl else None)
-        return (tot / max(1, n), n)
-    finally:
-        tiers.LEAGUE_BASE_POINTS.clear()
-        tiers.LEAGUE_BASE_POINTS.update(saved)
+    """Prequential interleague log-loss on OOS season. Uses the PRODUCTION path:
+    sets the model's `league_base_points_map` (what the fit will bake), not a
+    global override."""
+    elo = EloModel(params or EloParams())
+    if league_points:
+        elo.league_base_points_map = dict(league_points)
+    tot, n = 0.0, 0
+    for r in g.itertuples(index=False):
+        bl, rl = r.dl, r.ol
+        if bl and rl and bl != rl:
+            if r.yr == oos_year:
+                p = float(elo.p_blue(r.team, r.opponent, blue_league=bl, red_league=rl,
+                                     blue_tier=_tier(bl), red_tier=_tier(rl)))
+                p = min(max(p, 1e-6), 1 - 1e-6)
+                y = int(r.win)
+                tot += -(y * math.log(p) + (1 - y) * math.log(1 - p))
+                n += 1
+        elo.update(str(r.team), str(r.opponent), int(r.win),
+                   blue_league=bl or None, red_league=rl or None,
+                   blue_tier=_tier(bl) if bl else None, red_tier=_tier(rl) if rl else None)
+    return (tot / max(1, n), n)
 
 
 def main() -> int:
@@ -128,8 +110,7 @@ def main() -> int:
     n_inter = int(((g.dl != g.ol) & g.dl.ne("") & g.ol.ne("")).sum())
     print(f"games={len(g)} interleague_total={n_inter} oos_year={args.oos_year}")
 
-    theta = bradley_terry_league_strength(g, args.oos_year)
-    sos_pts = {l: float(args.sos_scale * t) for l, t in theta.items()}
+    sos_pts = sos_points_from_train(g, args.oos_year, args.sos_scale)
     base = EloParams()
 
     configs = [

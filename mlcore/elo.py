@@ -106,6 +106,12 @@ class EloModel:
         self.tier_strength: Dict[str, float] = {}
         self.side_adv_points: float = 0.0  # blue-side advantage in points
 
+        # Data-derived league base points (SOS, fit-time). When a league is here
+        # it OVERRIDES the global static prior from mlcore.tiers — this keeps the
+        # league prior consistent with the learned offset (both fit together) and
+        # auto-updates with data. Empty = use the global static priors (legacy).
+        self.league_base_points_map: Dict[str, float] = {}
+
         # Stable mapping inferred during training (home league/tier)
         self.team_meta: Dict[str, Dict[str, str]] = {}
 
@@ -141,6 +147,12 @@ class EloModel:
     def residual_eff(self, team: str) -> float:
         n = self.n_games(team)
         return self.rating_raw(team) * self._shrink_factor(n)
+
+    def _league_base_points(self, league: str) -> float:
+        """Data-derived per-model league base points if present; else global static."""
+        if league in self.league_base_points_map:
+            return float(self.league_base_points_map[league])
+        return float(league_base_points(league))
 
     def _k_decay(self, n: int) -> float:
         a = float(self.params.alpha)
@@ -249,7 +261,7 @@ class EloModel:
         tr = self._get_tier(team, tier, lg)
         # Learned components + structural priors from league/tier baselines.
         prior_tier = float(self.params.tier_prior_weight) * float(tier_base_points(tr))
-        prior_league = float(self.params.league_prior_weight) * float(league_base_points(lg))
+        prior_league = float(self.params.league_prior_weight) * float(self._league_base_points(lg))
         base = float(
             self.residual_eff(team)
             + self._league_strength(lg)
@@ -291,7 +303,7 @@ class EloModel:
         ls = float(self._league_strength(lg))
         ts = float(self._tier_strength(tr))
         prior_tier = float(self.params.tier_prior_weight) * float(tier_base_points(tr))
-        prior_league = float(self.params.league_prior_weight) * float(league_base_points(lg))
+        prior_league = float(self.params.league_prior_weight) * float(self._league_base_points(lg))
         base_uncapped = float(eff + ls + ts + prior_tier + prior_league)
         cap = None
         if self.rank_caps_by_tier:
@@ -568,6 +580,7 @@ class EloModel:
             "side_adv_points": float(self.side_adv_points),
             "team_meta": self.team_meta,
             "rank_caps_by_tier": self.rank_caps_by_tier,
+            "league_base_points_map": self.league_base_points_map,
         }
 
     @classmethod
@@ -632,6 +645,10 @@ class EloModel:
         rc = d.get("rank_caps_by_tier") or {}
         if isinstance(rc, dict):
             model.rank_caps_by_tier = enforce_monotone_caps({str(k): float(v) for k, v in rc.items()})
+
+        lbp = d.get("league_base_points_map") or {}
+        if isinstance(lbp, dict):
+            model.league_base_points_map = {str(k): float(v) for k, v in lbp.items()}
 
         # Center offsets for older artifacts that might have drifted
         model._center_offsets()
