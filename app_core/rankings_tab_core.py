@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from html import escape
 from typing import Any, Callable
 
 import pandas as pd
@@ -9,6 +10,76 @@ import pandas as pd
 from app_core.tab_filters_core import collect_year_split_league_options, scope_has_playoffs
 from app_core.tab_state_core import ensure_blank_keys, normalize_select_key, reset_keys, select_placeholder
 from app_core.tab_ui_core import render_tab_hero, render_tab_section
+from app_core.ui_design_core import team_badge_html
+
+
+def _render_rank_grid(
+    st: Any,
+    df: pd.DataFrame,
+    *,
+    format_num_fn: Callable[[float, int], str],
+    metric_col: str,
+    metric_label: str,
+    show_tier: bool = True,
+    top_n: int = 200,
+) -> None:
+    """Render a ranking as a cyan HTML grid: # | Time (badge) | Liga | [Tier] | <metric>.
+
+    Pre-sorted by the source; top-3 get medals. Scrollable for long lists.
+    """
+    if df is None or df.empty:
+        st.info("Sem dados para essa fonte/recorte. Troque a fonte acima ou ajuste o recorte.")
+        return
+    d = df.head(int(top_n)).copy().reset_index(drop=True)
+    grid = "0.5fr 2.4fr 0.9fr" + (" 0.7fr" if show_tier else "") + " 1fr"
+
+    def _num(v: Any) -> str:
+        try:
+            f = float(v)
+            return format_num_fn(f, 0) if f == f else "—"  # f==f filters NaN
+        except (TypeError, ValueError):
+            return "—"
+
+    tier_head = "<div style='text-align:center;opacity:0.7;'>Tier</div>" if show_tier else ""
+    header = (
+        f"<div style='display:grid;grid-template-columns:{grid};"
+        "background:rgba(45,170,196,0.14);padding:7px 10px;font-weight:700;"
+        "font-size:0.78em;text-transform:uppercase;letter-spacing:0.05em;opacity:0.9;"
+        "position:sticky;top:0;'>"
+        "<div style='text-align:center;'>#</div>"
+        "<div>Time</div>"
+        "<div style='text-align:center;opacity:0.7;'>Liga</div>"
+        f"{tier_head}"
+        f"<div style='text-align:center;color:#2daac4;'>{escape(metric_label)}</div>"
+        "</div>"
+    )
+    rows = []
+    for i, r in d.iterrows():
+        bg = "rgba(255,255,255,0.02)" if (i % 2 == 0) else "rgba(255,255,255,0.045)"
+        medal = ["🥇", "🥈", "🥉"][i] if i < 3 else str(i + 1)
+        team = str(r.get("team", "") or "")
+        league = escape(str(r.get("league", "") or "—"))
+        tier_cell = (f"<div style='text-align:center;opacity:0.75;'>{escape(str(r.get('tier','') or '—'))}</div>"
+                     if show_tier else "")
+        val = _num(r.get(metric_col))
+        rows.append(
+            f"<div style='display:grid;grid-template-columns:{grid};align-items:center;"
+            f"padding:5px 10px;background:{bg};border-bottom:1px solid rgba(255,255,255,0.04);'>"
+            f"<div style='text-align:center;font-weight:700;opacity:0.85;'>{medal}</div>"
+            f"<div style='display:flex;align-items:center;gap:8px;'>{team_badge_html(team, size=24)}"
+            f"<span style='font-weight:600;'>{escape(team)}</span></div>"
+            f"<div style='text-align:center;opacity:0.8;'>{league}</div>"
+            f"{tier_cell}"
+            f"<div style='text-align:center;font-weight:700;color:#2daac4;'>{val}</div>"
+            "</div>"
+        )
+    st.markdown(
+        "<div style='border:1px solid rgba(45,170,196,0.25);border-radius:10px;overflow:hidden;'>"
+        f"{header}"
+        f"<div style='max-height:560px;overflow-y:auto;'>{''.join(rows)}</div>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
 
 
 def render_rankings_tab(
@@ -120,139 +191,79 @@ def render_rankings_tab(
     render_tab_section(
         st,
         title="Ranking principal",
-        subtitle="O painel prioriza o ML core v2 e cai para Elo quando o recorte pede cobertura extra.",
+        subtitle="Escolha a fonte: ML core v2 (ratings do modelo) ou Elo (do CSV, cobertura total).",
     )
+
+    # Fonte explícita (sem fallback silencioso) — você sempre sabe o que vê.
+    _src_opts = {
+        "ML core v2 (ratings do modelo)": "v2",
+        "Elo (do CSV — cobertura total)": "elo",
+    }
+    _src_keys = list(_src_opts.keys())
+    if str(st.session_state.get("rank_source", "") or "") not in _src_keys:
+        st.session_state["rank_source"] = _src_keys[0]
+    s1, s2 = st.columns([1.6, 1.0])
+    with s1:
+        _src_label = st.selectbox("Fonte do ranking", _src_keys, key="rank_source")
+    rank_source = _src_opts.get(_src_label, "v2")
     if "rank_top_n" not in st.session_state:
         st.session_state["rank_top_n"] = 200
-    top_n = st.slider("Top N (ranking global)", min_value=50, max_value=400, step=50, key="rank_top_n")
-    rank_fetch_n = int(max(int(top_n), 600))
-    df_rank_v2 = mlcore_rank_table_v2_fn(artifact_path, as_of=as_of_date, top_n=rank_fetch_n)
-    df_rank_v2_view = df_rank_v2.copy()
-    if rank_league and (not df_rank_v2_view.empty) and ("league" in df_rank_v2_view.columns):
-        df_rank_v2_view = df_rank_v2_view[df_rank_v2_view["league"].astype(str) == str(rank_league)].copy()
+    with s2:
+        top_n = st.slider("Top N", min_value=50, max_value=400, step=50, key="rank_top_n")
 
-    df_fallback = pd.DataFrame()
-    try:
-        df_fallback = elo_rank_table_fn(
-            team_games,
-            filters=rank_filters,
-            half_life_days=float(half_life_days),
-            k_factor=24.0,
-            base_rating=1500.0,
-        )
-        if not df_fallback.empty:
-            df_fallback = df_fallback.head(int(top_n)).copy()
-    except Exception:
-        df_fallback = pd.DataFrame()
+    def _apply_recorte(df: pd.DataFrame) -> pd.DataFrame:
+        out = df
+        if rank_league and ("league" in out.columns):
+            out = out[out["league"].astype(str) == str(rank_league)].copy()
+        if rank_year and ("year" in out.columns):
+            try:
+                out = out[pd.to_numeric(out["year"], errors="coerce") == int(rank_year)].copy()
+            except Exception:
+                pass
+        if rank_split and ("split" in out.columns):
+            out = out[out["split"].astype(str) == str(rank_split)].copy()
+        if rank_playoffs and ("playoffs" in out.columns):
+            try:
+                want = str(rank_playoffs) == "Playoffs"
+                po = out["playoffs"]
+                ser = po if po.dtype == bool else pd.to_numeric(po, errors="coerce").fillna(0).astype(int).astype(bool)
+                out = out[ser == want].copy()
+            except Exception:
+                pass
+        return out
 
-    df_rank_main = df_rank_v2_view.copy()
-    rank_main_source = "ML core v2"
-    no_filters = (not rank_league) and (not rank_year) and (not rank_split) and (not rank_playoffs)
-    if df_rank_main.empty:
-        if not df_fallback.empty:
-            df_rank_main = df_fallback.copy()
-            rank_main_source = "Elo fallback (CSV)"
-    elif no_filters:
-        try:
-            v2_leagues = set(df_rank_main["league"].astype(str).str.strip()) if "league" in df_rank_main.columns else set()
-            v2_teams = (
-                set(df_rank_main["team"].astype(str).str.strip().str.casefold()) if "team" in df_rank_main.columns else set()
+    if rank_source == "v2":
+        df_v2 = _apply_recorte(mlcore_rank_table_v2_fn(artifact_path, as_of=as_of_date, top_n=int(max(int(top_n), 600))))
+        if df_v2.empty:
+            st.info("ML core v2 sem dados nesse recorte. Troque para **Elo** na fonte acima, ou ajuste o recorte.")
+        else:
+            _render_rank_grid(
+                st, df_v2, format_num_fn=format_num_fn,
+                metric_col="total_strength", metric_label="Força",
+                show_tier=True, top_n=int(top_n),
             )
-            need_fallback = False
-            if "LCK" not in v2_leagues:
-                need_fallback = True
-            for featured in ["gen.g", "t1"]:
-                if featured not in v2_teams:
-                    need_fallback = True
-                    break
-            if need_fallback and (not df_fallback.empty):
-                df_rank_main = df_fallback.copy()
-                rank_main_source = "Elo fallback (CSV)"
-        except Exception:
-            pass
-
-    if df_rank_main.empty:
-        st.warning("Não consegui gerar ranking para esse recorte (v2 + fallback sem dados).")
+            with st.expander("Ver colunas técnicas (breakdown do ML v2)", expanded=False):
+                st.caption("Decomposição da força: elo residual, força de liga/tier, base e boost por conquistas.")
+                st.dataframe(df_v2.head(int(top_n)), width="stretch", height=420)
     else:
-        st.caption(f"Fonte do ranking principal: {rank_main_source}")
-        if rank_league and ("league" in df_rank_main.columns):
-            df_rank_main = df_rank_main[df_rank_main["league"].astype(str) == str(rank_league)].copy()
-        if rank_year and ("year" in df_rank_main.columns):
-            try:
-                df_rank_main = df_rank_main[pd.to_numeric(df_rank_main["year"], errors="coerce") == int(rank_year)].copy()
-            except Exception:
-                pass
-        if rank_split and ("split" in df_rank_main.columns):
-            df_rank_main = df_rank_main[df_rank_main["split"].astype(str) == str(rank_split)].copy()
-        if rank_playoffs and ("playoffs" in df_rank_main.columns):
-            try:
-                want_playoffs = True if str(rank_playoffs) == "Playoffs" else False
-                po_ser = df_rank_main["playoffs"]
-                if po_ser.dtype == bool:
-                    df_rank_main = df_rank_main[po_ser == want_playoffs].copy()
-                else:
-                    df_rank_main = df_rank_main[
-                        pd.to_numeric(po_ser, errors="coerce").fillna(0).astype(int).astype(bool) == want_playoffs
-                    ].copy()
-            except Exception:
-                pass
-
-        if no_filters:
-            try:
-                df_cov = pd.DataFrame()
-                if not df_rank_main.empty:
-                    df_cov = df_rank_main.copy()
-                if not df_fallback.empty:
-                    df_cov = pd.concat([df_cov, df_fallback.copy()], ignore_index=True) if not df_cov.empty else df_fallback.copy()
-                if not df_cov.empty and ("league" in df_cov.columns):
-                    score_col = None
-                    for col in ["total_strength", "elo", "rating", "score"]:
-                        if col in df_cov.columns:
-                            score_col = col
-                            break
-                    if score_col is not None:
-                        df_cov["_score_num"] = pd.to_numeric(df_cov[score_col], errors="coerce")
-                        df_cov = df_cov.sort_values("_score_num", ascending=False, na_position="last")
-                        top_limit = int(top_n)
-                        top = df_cov.head(top_limit).copy()
-                        majors = ["LCK", "LPL", "LEC", "LCS"]
-                        present = set(top["league"].astype(str).tolist())
-                        extras = []
-                        for league in majors:
-                            if league in present:
-                                continue
-                            cand = df_cov[df_cov["league"].astype(str) == league].head(1)
-                            if not cand.empty:
-                                extras.append(cand)
-                        if extras:
-                            top = pd.concat([top, *extras], ignore_index=True)
-                            dedup_cols = [c for c in ["team", "league"] if c in top.columns]
-                            if dedup_cols:
-                                top = top.drop_duplicates(subset=dedup_cols, keep="first")
-                            if top.shape[0] > top_limit:
-                                major_df = top[top["league"].astype(str).isin(majors)].copy()
-                                other_df = top[~top["league"].astype(str).isin(majors)].copy()
-                                top = pd.concat([major_df, other_df], ignore_index=True).head(top_limit).copy()
-                            feat_rows = []
-                            for team_name in ["gen.g", "t1"]:
-                                cand = df_cov[df_cov["team"].astype(str).str.strip().str.casefold() == team_name].head(1)
-                                if not cand.empty:
-                                    feat_rows.append(cand)
-                            if feat_rows:
-                                top = pd.concat([top, *feat_rows], ignore_index=True)
-                                if dedup_cols:
-                                    top = top.drop_duplicates(subset=dedup_cols, keep="first")
-                                top = top.head(top_limit).copy()
-                            df_rank_main = top.drop(columns=["_score_num"], errors="ignore")
-            except Exception:
-                pass
-
-        if not df_rank_main.empty:
-            df_rank_main = df_rank_main.head(int(top_n)).copy()
-        st.dataframe(df_rank_main, width="stretch", height=520)
+        try:
+            df_elo = _apply_recorte(elo_rank_table_fn(
+                team_games, filters=rank_filters, half_life_days=float(half_life_days),
+                k_factor=24.0, base_rating=1500.0,
+            ))
+        except Exception:
+            df_elo = pd.DataFrame()
+        if df_elo.empty:
+            st.info("Sem jogos suficientes nesse recorte para o Elo. Ajuste o recorte ou troque a fonte.")
+        else:
+            _render_rank_grid(
+                st, df_elo, format_num_fn=format_num_fn,
+                metric_col="elo", metric_label="Elo",
+                show_tier=False, top_n=int(top_n),
+            )
 
     st.divider()
-    with st.expander("Ranking antigo (Elo / debug)", expanded=False):
+    with st.expander("Avançado — Elo (ajuste K / força por liga)", expanded=False):
         st.caption("Elo é atualizado jogo a jogo; jogos mais recentes valem mais (half-life).")
         c_a, c_b, c_c = st.columns([1, 1, 2])
         with c_a:
