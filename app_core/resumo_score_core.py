@@ -469,8 +469,15 @@ def rank_candidates(
     team_a: str,
     team_b: str,
     top_n: int = 5,
+    sort_by: str = "score",
 ) -> list[CandidateScore]:
-    """Score and sort all rows, returning top_n by score descending."""
+    """Score all rows and return the top_n ordered by the chosen key.
+
+    sort_by:
+      "score"  → highest score first (default)
+      "odd"    → smallest Hist odd first (safest/most likely); missing odds last
+      "gestao" → biggest suggested stake first; missing stakes last
+    """
     scored: list[CandidateScore] = []
     for r in rows:
         if not isinstance(r, dict):
@@ -481,7 +488,14 @@ def rank_candidates(
             scored.append(s)
         except Exception:
             continue
-    return sorted(scored, key=lambda c: -c.total)[:int(top_n)]
+    sb = str(sort_by or "score").strip().lower()
+    if sb == "odd":
+        scored.sort(key=lambda c: (c.odd_hist is None, c.odd_hist if c.odd_hist is not None else float("inf")))
+    elif sb in ("gestao", "gestão", "stake"):
+        scored.sort(key=lambda c: (c.stake_units is None, -(c.stake_units or 0.0)))
+    else:
+        scored.sort(key=lambda c: -c.total)
+    return scored[:int(top_n)]
 
 
 def generate_veredito(

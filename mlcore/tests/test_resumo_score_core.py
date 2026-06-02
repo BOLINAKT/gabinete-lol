@@ -211,6 +211,34 @@ class TestRankCandidates(unittest.TestCase):
         if kills_score is not None and towers_score is not None:
             self.assertGreater(kills_score, towers_score)
 
+    def _rows_varied_odds(self):
+        return [
+            {"Mercado": "Kills (27.5)", "Lado": "Abaixo", "Linha": "27.5",
+             "_metric": "kills", "_line": 27.5, "Amostra Liga": 14, "Amostra H2H": 4,
+             "Confiança": 70, "Odd (Hist)": 1.50, "Odd (Modelo)": 1.5, "Odd (Mix)": 1.5, "_gap_pp": 4.0},
+            {"Mercado": "Torres (11.5)", "Lado": "Abaixo", "Linha": "11.5",
+             "_metric": "towers", "_line": 11.5, "Amostra Liga": 10, "Amostra H2H": 2,
+             "Confiança": 60, "Odd (Hist)": 2.40, "Odd (Modelo)": 2.4, "Odd (Mix)": 2.4, "_gap_pp": 8.0},
+            {"Mercado": "Dragões (4.5)", "Lado": "Abaixo", "Linha": "4.5",
+             "_metric": "dragons", "_line": 4.5, "Amostra Liga": 12, "Amostra H2H": 3,
+             "Confiança": 65, "Odd (Hist)": 1.90, "Odd (Modelo)": 1.9, "Odd (Mix)": 1.9, "_gap_pp": 6.0},
+        ]
+
+    def test_sort_by_odd_ascending(self):
+        df = _mk_df([25.0] * 20)
+        ranked = rank_candidates(self._rows_varied_odds(), oc_map={}, df_a=df, df_b=df,
+                                 team_a="A", team_b="B", top_n=5, sort_by="odd")
+        odds = [r.odd_hist for r in ranked]
+        self.assertEqual(odds, sorted(odds), "Odd sort must be ascending (smallest first)")
+        self.assertEqual(ranked[0].odd_hist, 1.50)
+
+    def test_sort_by_score_is_default(self):
+        df = _mk_df([25.0] * 20)
+        ranked = rank_candidates(self._rows_varied_odds(), oc_map={}, df_a=df, df_b=df,
+                                 team_a="A", team_b="B", top_n=5)
+        totals = [r.total for r in ranked]
+        self.assertEqual(totals, sorted(totals, reverse=True), "Score sort must be descending")
+
 
 class TestGenerateVeredito(unittest.TestCase):
 

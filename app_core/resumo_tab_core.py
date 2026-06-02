@@ -222,18 +222,19 @@ def _temporal_bars_html(tp: TemporalProfile) -> str:
 
 def _render_candidate_cards(
     *, st: Any, ranked: list, oc_map_cur: dict[str, float], matchup_key_oc: str,
-    team_a: str = "", team_b: str = "", league: str = "",
+    team_a: str = "", team_b: str = "", league: str = "", sort_label: str = "",
 ) -> None:
     """Render each scored candidate as a card with temporal breakdown."""
     if not ranked:
         st.info("Nenhuma pick passou no filtro atual. Ajuste os filtros na seção ⚙️ Ajuste fino.")
         return
 
+    _ordenado = f"ordenado por {escape_html(sort_label)}" if sort_label else "melhores por score"
     st.markdown(
         "<div style='margin-top:8px;background:linear-gradient(180deg,#2daac4 0%,#1f8ba1 100%);"
         "padding:8px 14px;border-radius:8px;font-weight:700;letter-spacing:0.05em;"
         "font-size:0.92em;color:white;text-transform:uppercase;'>"
-        "Picks Analisadas (melhores por score)</div>",
+        f"Picks Analisadas ({_ordenado})</div>",
         unsafe_allow_html=True,
     )
 
@@ -974,6 +975,19 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     # no topo) — sem cortar em 5. Cortar escondia linhas digitadas de propósito
     # (ex.: você quer ver o 26.5 mesmo que o 27.5 pontue mais). Teto alto só
     # como salvaguarda contra colagens gigantes.
+    _sort_opts = {
+        "Score (maior→menor)": "score",
+        "Odd (menor→maior)": "odd",
+        "Gestão (maior→menor)": "gestao",
+    }
+    _sort_keys = list(_sort_opts.keys())
+    if str(session_state.get("resumo_picks_sort", "") or "") not in _sort_keys:
+        session_state["resumo_picks_sort"] = _sort_keys[0]
+    _sort_label = st.selectbox(
+        "Ordenar picks por", _sort_keys, key="resumo_picks_sort",
+        help="Score = melhores notas no topo. Odd = menores odds (mais prováveis) primeiro. Gestão = maiores stakes primeiro.",
+    )
+    _sort_by = _sort_opts.get(_sort_label, "score")
     ranked = rank_candidates(
         rows,
         oc_map=oc_map_cur,
@@ -982,12 +996,14 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         team_a=team_a,
         team_b=team_b,
         top_n=60,
+        sort_by=_sort_by,
     )
 
     _render_candidate_cards(
         st=st, ranked=ranked, oc_map_cur=oc_map_cur,
         matchup_key_oc=matchup_key_oc,
         team_a=team_a, team_b=team_b, league=str(league_from_scope or ""),
+        sort_label=str(_sort_label),
     )
 
     _render_veredito_block(st=st, ranked=ranked, team_a=team_a, team_b=team_b)
