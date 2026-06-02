@@ -69,3 +69,6 @@ team_state_artifact.json
 params_fitted.json
 data_leakage_label_report.json
 wf_last_report.json
+
+# Backups locais do artefato pre-deploy (nao versionar)
+*.pre_sos
