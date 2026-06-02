@@ -22,6 +22,7 @@ import pandas as pd
 
 from .io_oracle import load_oracle_elixir_games
 from .elo import EloModel, EloParams
+from .league_sos import sos_league_base_points
 from .calibration import fit_platt_from_raw_probs, PlattCalibrator
 from .artifact import MLArtifact
 from .utils import logloss, brier, clip_prob
@@ -337,6 +338,16 @@ def main() -> None:
     ap.add_argument("--k", type=float, default=20.0, help="Elo K-factor")
     ap.add_argument("--scale", type=float, default=400.0, help="Elo scale_points (denominator)")
     ap.add_argument(
+        "--sos-league",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Derive league base points from interleague Bradley-Terry (SOS) and bake into the artifact. "
+             "Validated: improves cross-region (interleague) OOS logloss. Use --no-sos-league for ablation.",
+    )
+    ap.add_argument("--sos-scale", type=float, default=800.0, help="SOS league points = scale * BT theta (validated 800).")
+    ap.add_argument("--sos-min-games", type=int, default=20, help="Min interleague games for a league to get a data-derived prior.")
+    ap.add_argument("--league-cap", type=float, default=45.0, help="league_strength_cap_abs (learned offset cap). Validated stack used 90.")
+    ap.add_argument(
         "--dynamic-k",
         action=argparse.BooleanOptionalAction,
         default=False,
@@ -448,6 +459,7 @@ def main() -> None:
             k=float(args.k),
             scale_points=float(args.scale),
             init_rating=0.0,
+            league_strength_cap_abs=float(args.league_cap),
             dynamic_k_enabled=bool(args.dynamic_k),
             dynamic_k_games_prior=float(args.dynamic_k_games_prior),
             dynamic_k_uncertainty_mult_max=float(args.dynamic_k_unc_max),
@@ -458,6 +470,25 @@ def main() -> None:
         )
     )
     model.set_team_meta(team_meta_latest)
+
+    # SOS league strength (data-derived priors, baked into the artifact). Computed
+    # from TRAIN interleague games (Bradley-Terry, controls for strength of
+    # schedule) and set BEFORE the fit so the learned offset stays consistent with
+    # it (no double counting). See mlcore/league_sos.py. Validated to improve
+    # cross-region OOS logloss; falls back to global static priors per-league.
+    if bool(getattr(args, "sos_league", True)):
+        try:
+            _inter = train_fit[train_fit["blue_league"].astype(str) != train_fit["red_league"].astype(str)]
+            _pairs = list(zip(
+                _inter["blue_league"].astype(str), _inter["red_league"].astype(str),
+                pd.to_numeric(_inter["blue_win"], errors="coerce").fillna(0).astype(float),
+            ))
+            sos_map = sos_league_base_points(_pairs, scale=float(args.sos_scale), min_games=int(args.sos_min_games))
+            model.league_base_points_map = sos_map
+            print(f"[train_offline] SOS league priors: {len(sos_map)} leagues (data-derived).")
+        except Exception as e:
+            model_warnings_sos = f"sos_league_failed: {type(e).__name__}: {e}"
+            print("[train_offline]", model_warnings_sos)
 
     last_tier: Dict[str, str] = {}
 
