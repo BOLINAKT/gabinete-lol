@@ -8,20 +8,42 @@ from mlcore.utils import decimal_odds_to_prob, prob_to_decimal_odds
 
 
 def parse_lines_text(text: str) -> List[float]:
-    """Parse a comma/space/semicolon-separated string of numeric lines into a list of floats."""
+    """Parse a string of numeric lines into a list of floats.
+
+    Accepts both decimal conventions so a Brazilian user can type ``5,5`` and
+    get ``5.5`` (not ``5`` and ``5``). Separators: semicolons, whitespace, and a
+    comma *followed by a space* (``27,5, 30,5`` -> ``[27.5, 30.5]``). Within a
+    token, a lone comma between digits is a decimal point (``5,5`` -> ``5.5``);
+    a comma in a token that already has a ``.`` is treated as a separator
+    (``11.5,12.5`` -> ``[11.5, 12.5]``).
+    """
     text = (text or "").strip()
     if not text:
         return []
-    parts = re.split(r"[,\s;]+", text)
+    # Clear separators first: semicolons, whitespace, and ", " (comma+space).
+    tokens = re.split(r"[;\s]+|,\s+", text)
     out: List[float] = []
-    for p in parts:
-        p = p.strip()
-        if not p:
+    for tok in tokens:
+        tok = tok.strip()
+        if not tok:
             continue
-        try:
-            out.append(float(p))
-        except Exception:
-            continue
+        if "," in tok:
+            if "." in tok or tok.count(",") > 1:
+                # Mixed/ambiguous → comma is a separator.
+                subtoks = tok.split(",")
+            else:
+                # Single comma, no dot → decimal comma (5,5 -> 5.5).
+                subtoks = [tok.replace(",", ".")]
+        else:
+            subtoks = [tok]
+        for s in subtoks:
+            s = s.strip()
+            if not s:
+                continue
+            try:
+                out.append(float(s))
+            except Exception:
+                continue
     return out
 
 
@@ -30,12 +52,16 @@ def parse_time_lines_text(text: str) -> List[float]:
     text = (text or "").strip()
     if not text:
         return []
-    parts = re.split(r"[,\s;]+", text)
+    # Split on semicolons, whitespace and comma+space; keep a lone decimal comma
+    # within a token (32,5 -> 32.5) instead of splitting it into 32 and 5.
+    parts = re.split(r"[;\s]+|,\s+", text)
     out: List[float] = []
     for p in parts:
         p = p.strip()
         if not p:
             continue
+        if "," in p and ":" not in p and "." not in p and p.count(",") == 1:
+            p = p.replace(",", ".")
 
         m = re.fullmatch(r"(\d+):(00|30)", p)
         if m:

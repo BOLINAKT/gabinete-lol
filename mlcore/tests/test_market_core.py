@@ -43,6 +43,28 @@ class TestParseLinesText(unittest.TestCase):
     def test_whitespace_only_returns_empty(self):
         self.assertEqual(parse_lines_text("   "), [])
 
+    def test_decimal_comma_single_value(self):
+        # Brazilian decimal: "5,5" means 5.5, NOT [5, 5].
+        self.assertEqual(parse_lines_text("5,5"), [5.5])
+        self.assertEqual(parse_lines_text("1,5"), [1.5])
+        self.assertEqual(parse_lines_text("27,5"), [27.5])
+
+    def test_decimal_comma_multiple_with_space(self):
+        # Comma+space separates; decimal comma kept within each token.
+        self.assertEqual(parse_lines_text("27,5, 30,5"), [27.5, 30.5])
+
+    def test_dot_decimals_with_comma_separator_no_space(self):
+        # Dots are decimals → the comma must be a separator.
+        self.assertEqual(parse_lines_text("11.5,12.5"), [11.5, 12.5])
+
+    def test_comma_space_forces_separation_of_integers(self):
+        self.assertEqual(parse_lines_text("1, 5"), [1.0, 5.0])
+
+    def test_time_decimal_comma(self):
+        # "32,5" minutes means 32.5, not 32 and 5.
+        self.assertEqual(parse_time_lines_text("32,5"), [32.5])
+        self.assertEqual(parse_time_lines_text("32,5, 33"), [32.5, 33.0])
+
 
 class TestParseTimeLinesText(unittest.TestCase):
 

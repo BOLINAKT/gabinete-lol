@@ -9,7 +9,7 @@ import pandas as pd
 
 from app_core.championship_stats_core import enrich_resumo_rows_with_stats_detail
 
-from app_core.resumo_runtime_core import SC_METRIC_COL, lines_or_default, select_h2h_games
+from app_core.resumo_runtime_core import SC_METRIC_COL, merge_with_default_lines, select_h2h_games
 from app_core.resumo_state_core import (
     get_resumo_view_state,
     set_resumo_market_trace,
@@ -805,10 +805,11 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             parse_lines_fn=parse_lines,
             parse_time_lines_fn=parse_time_lines,
         )
-        # No custom line typed for this matchup → fall back to the standard
-        # default for the metric (27.5 kills, 11.5 torres, ...). Fixed set, so
-        # an empty field never resurfaces a line from a previous matchup.
-        return lines_or_default(metric_key, parsed)
+        # Always keep the metric's standard default (27.5 kills, 11.5 torres,
+        # ...) AND add any custom line the user typed for this matchup. Fixed
+        # default set, so an empty field never resurfaces a line from a previous
+        # matchup.
+        return merge_with_default_lines(metric_key, parsed)
 
     p_ml_row = float(view_state["p_ml_scope"])
     league_from_scope = infer_matchup_league(df_league_year=df_league_year, ml_info=ml_info)

@@ -34,15 +34,20 @@ RESUMO_DEFAULT_LINES: dict[str, list[float]] = {
 }
 
 
-def lines_or_default(metric_key: str, parsed: list[float]) -> list[float]:
-    """Return the user's parsed lines, or the standard default when empty.
+def merge_with_default_lines(metric_key: str, parsed: list[float]) -> list[float]:
+    """Always include the metric's standard default line, plus any custom lines.
 
-    Keeps "empty" deterministic so the Resumo always shows the standard line
-    for a metric instead of nothing (or a leftover line from a prior matchup).
+    The default (e.g. towers 11.5) is kept for analysis even when the user adds
+    a custom line (e.g. 5.5) — they want BOTH, not a replacement. The default
+    comes first; custom lines are appended in order, de-duplicated. Because the
+    default is a fixed constant, an empty field never resurfaces a line from a
+    previous matchup (no "ghost 25.5").
     """
-    if parsed:
-        return parsed
-    return list(RESUMO_DEFAULT_LINES.get(str(metric_key).strip().lower(), []))
+    out = list(RESUMO_DEFAULT_LINES.get(str(metric_key).strip().lower(), []))
+    for v in (parsed or []):
+        if not any(abs(float(v) - float(e)) < 1e-9 for e in out):
+            out.append(float(v))
+    return out
 
 
 def select_h2h_games(
