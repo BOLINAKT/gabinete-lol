@@ -12,7 +12,64 @@ import pandas as pd
 from app_core.tab_filters_core import collect_year_split_league_options, scope_has_playoffs
 from app_core.tab_state_core import blank_space_label
 from app_core.tab_ui_core import render_tab_hero, render_tab_section
+from app_core.ui_design_core import TONE_HTML_COLOR, cyan_section_header, team_badge_html, tone_for_pct
 from mlcore.utils import sigmoid as _sigmoid
+
+
+def _render_players_result_card(
+    st: Any, *, team_a: str, team_b: str, odd_a: float, odd_b: float, p_team_a: float,
+    p_players_raw: float, p_team_ref: float, w_players: float,
+    n_team_eff: float, n_players_eff: float, format_num_fn: Any, format_pct_fn: Any,
+) -> None:
+    """Headline output: two odd cards colored by win probability + a blend breakdown.
+
+    Replaces the old plain-markdown line + two raw dataframes so the main result
+    reads at a glance instead of as crude text.
+    """
+    pa = float(max(0.0, min(1.0, p_team_a))) * 100.0
+    pb = 100.0 - pa
+    col_a = TONE_HTML_COLOR.get({"elite": "good", "green": "good", "yellow": "warn", "red": "bad", "neutral": "neutral"}[tone_for_pct(pa)], "#fff")
+    col_b = TONE_HTML_COLOR.get({"elite": "good", "green": "good", "yellow": "warn", "red": "bad", "neutral": "neutral"}[tone_for_pct(pb)], "#fff")
+
+    def _odd_card(team: str, odd: float, pct: float, color: str) -> str:
+        return (
+            "<div style='flex:1;border:1px solid rgba(45,170,196,0.35);border-radius:10px;"
+            "padding:12px 14px;background:rgba(45,170,196,0.06);text-align:center;'>"
+            f"<div style='display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;'>"
+            f"{team_badge_html(team, size=34)}"
+            f"<span style='font-weight:700;font-size:1.02em;'>{team}</span></div>"
+            f"<div style='font-size:2.0em;font-weight:800;color:{color};line-height:1;'>{format_num_fn(odd, 2)}</div>"
+            f"<div style='opacity:0.7;font-size:0.85em;margin-top:4px;'>{pct:.0f}% de vitória</div>"
+            "</div>"
+        )
+
+    cyan_section_header(st, "Resultado — ML por players")
+    st.markdown(
+        "<div style='display:flex;gap:12px;margin:8px 0 6px;'>"
+        + _odd_card(str(team_a), odd_a, pa, col_a)
+        + _odd_card(str(team_b), odd_b, pb, col_b)
+        + "</div>",
+        unsafe_allow_html=True,
+    )
+
+    def _chip(label: str, value: str) -> str:
+        return (
+            "<span style='display:inline-block;background:rgba(45,170,196,0.10);border-radius:6px;"
+            "padding:3px 9px;margin:2px 4px 2px 0;font-size:0.86em;'>"
+            f"<span style='opacity:0.6;'>{label}</span> <b>{value}</b></span>"
+        )
+
+    st.markdown(
+        "<div style='margin:2px 0 4px;'>"
+        + _chip("Players", format_pct_fn(p_players_raw))
+        + _chip("Time (ML)", format_pct_fn(p_team_ref))
+        + _chip("Blend", format_pct_fn(p_team_a))
+        + _chip("Peso players", f"{format_num_fn(100.0 * w_players, 0)}%")
+        + _chip("n_time", format_num_fn(n_team_eff, 1))
+        + _chip("n_players", format_num_fn(n_players_eff, 1))
+        + "</div>",
+        unsafe_allow_html=True,
+    )
 
 
 def _team_rating(
@@ -287,27 +344,27 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     odd_a = odd_from_prob_fn(p_team_a)
     odd_b = odd_from_prob_fn(1.0 - p_team_a)
 
-    render_tab_section(st, title="Resultado (ML por players)", subtitle="Mostra o blend entre players e time para o confronto atual.")
-    st.markdown(f"**Time A:** {format_num_fn(odd_a, 2)}  |  **Time B:** {format_num_fn(odd_b, 2)}")
-    st.caption(
-        f"Conexão com ML de times: p_players={format_pct_fn(p_players_raw)} | "
-        f"p_time={format_pct_fn(p_team_ref)} | blend={format_pct_fn(p_team_a)} "
-        f"(w_players={format_num_fn(100.0 * w_players, 0)}% | n_team={format_num_fn(n_team_eff, 1)} | n_players={format_num_fn(n_players_eff, 1)})"
+    _render_players_result_card(
+        st, team_a=team_a, team_b=team_b, odd_a=odd_a, odd_b=odd_b, p_team_a=p_team_a,
+        p_players_raw=p_players_raw, p_team_ref=p_team_ref, w_players=w_players,
+        n_team_eff=n_team_eff, n_players_eff=n_players_eff,
+        format_num_fn=format_num_fn, format_pct_fn=format_pct_fn,
     )
 
-    cta, ctb = st.columns(2)
-    with cta:
-        st.markdown("**Detalhe Time A**")
-        if df_a.empty:
-            st.info("Nenhum player reconhecido na base.")
-        else:
-            st.dataframe(df_a, width="stretch", hide_index=True)
-    with ctb:
-        st.markdown("**Detalhe Time B**")
-        if df_b.empty:
-            st.info("Nenhum player reconhecido na base.")
-        else:
-            st.dataframe(df_b, width="stretch", hide_index=True)
+    with st.expander("Detalhe por jogador (ratings)", expanded=False):
+        cta, ctb = st.columns(2)
+        with cta:
+            st.markdown(f"**{team_a}**")
+            if df_a.empty:
+                st.info("Nenhum player reconhecido na base.")
+            else:
+                st.dataframe(df_a, width="stretch", hide_index=True)
+        with ctb:
+            st.markdown(f"**{team_b}**")
+            if df_b.empty:
+                st.info("Nenhum player reconhecido na base.")
+            else:
+                st.dataframe(df_b, width="stretch", hide_index=True)
 
     st.divider()
     render_tab_section(st, title="Mercados de players", subtitle="Defina linhas por lane e por jogador; a atualizacao so roda quando voce confirmar a analise.")
