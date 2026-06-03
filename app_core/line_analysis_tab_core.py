@@ -13,6 +13,7 @@ from typing import Any, Callable, MutableMapping, Optional
 import pandas as pd
 
 from app_core.championship_stats_core import STATS_MARKET_CONFIG
+from app_core.market import parse_lines_text, parse_time_lines_text
 from app_core.shared_formatters import fmt_delta_pp, fmt_num, fmt_pct, fmt_status
 from app_core.ui_design_core import cyan_banner, cyan_section_header
 from app_core.tab_filters_core import collect_year_split_league_options, scope_has_playoffs
@@ -1173,8 +1174,8 @@ def _render_v3_kills_subpanel(
         lines_list = [float(default_line)]
     session_state[lines_key] = lines_list
 
-    _step = 0.5 if market_key == "time" else 1.0
-    lc1, lc2, lc3, lc4 = st.columns([1.5, 1.1, 1.1, 3])
+    _is_time = (market_key == "time")
+    lc1, lc2, lc3 = st.columns([1.6, 2.6, 3])
     with lc1:
         st.markdown(
             f"<div style='padding-top:6px;opacity:0.7;font-size:0.88em;'>"
@@ -1183,25 +1184,30 @@ def _render_v3_kills_subpanel(
             unsafe_allow_html=True,
         )
     with lc2:
-        # Type the value for the NEW line here (pre-filled with a sensible next
-        # value, but any value works). "Adicionar linha" uses exactly this.
-        new_line_val = st.number_input(
-            "Valor da nova linha",
-            value=float(lines_list[-1]) + _step,
-            step=_step,
-            key=f"{lines_key}__newval",
-            help="Digite a linha que quer adicionar (ex.: 6.5) e clique em Adicionar linha.",
-        )
+        # Add lines via a FORM: nothing is analyzed until you click — typing in
+        # the box does NOT trigger a re-run. Accepts several lines separated by
+        # comma (27.5, 28.5, 29.5), decimal with dot. Time also takes 33:30 / 33.5.
+        with st.form(key=f"{lines_key}__addform", clear_on_submit=True):
+            _ph = "ex: 33:30, 34.5" if _is_time else "ex: 27.5, 28.5, 29.5"
+            new_txt = st.text_input(
+                "Adicionar linha(s)",
+                value="",
+                placeholder=_ph,
+                help=("Várias de uma vez separadas por vírgula. Decimal com ponto. "
+                      + ("Tempo: 33:30 ou 33.5 (minutos)." if _is_time else "Ex.: 27.5, 28.5.")),
+            )
+            _submitted = st.form_submit_button("➕ Adicionar linha(s)", width="stretch")
+        if _submitted and str(new_txt or "").strip():
+            parsed = parse_time_lines_text(new_txt) if _is_time else parse_lines_text(new_txt)
+            merged = list(lines_list)
+            for v in parsed:
+                if not any(abs(float(v) - float(x)) < 1e-9 for x in merged):
+                    merged.append(float(v))
+            if merged != list(lines_list):
+                # Sorted ascending so a smaller line sits to the left.
+                session_state[lines_key] = sorted(merged)
+                st.rerun()
     with lc3:
-        st.markdown("<div style='padding-top:28px;'></div>", unsafe_allow_html=True)
-        if st.button("➕ Adicionar linha", key=f"{lines_key}__add", width="stretch"):
-            v = float(new_line_val)
-            if not any(abs(v - float(x)) < 1e-9 for x in lines_list):
-                # Insert and sort ascending so a smaller line sits to the left.
-                lines_list = sorted([*list(lines_list), v])
-                session_state[lines_key] = lines_list
-            st.rerun()
-    with lc4:
         st.markdown("<div style='padding-top:6px;'></div>", unsafe_allow_html=True)
         map_choice = st.radio(
             "Mapa", map_opts, horizontal=True, key=map_key,
