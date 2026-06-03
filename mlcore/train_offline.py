@@ -337,6 +337,7 @@ def main() -> None:
     )
     ap.add_argument("--k", type=float, default=20.0, help="Elo K-factor")
     ap.add_argument("--scale", type=float, default=400.0, help="Elo scale_points (denominator)")
+    ap.add_argument("--alpha", type=float, default=60.0, help="Shrink/k-decay coupling: inference shrink n/(n+alpha) + k-decay alpha/(alpha+n). Lower = more confident/stable. 60 validated best on the faithful artifact path (NOTA 7.40 vs 7.38@80, melhor ECE); prequential harness preferred ~25 but that was a false positive (sem calibracao).")
     ap.add_argument(
         "--sos-league",
         action=argparse.BooleanOptionalAction,
@@ -461,6 +462,7 @@ def main() -> None:
         EloParams(
             k=float(args.k),
             scale_points=float(args.scale),
+            alpha=float(args.alpha),
             init_rating=0.0,
             league_strength_cap_abs=float(args.league_cap),
             dynamic_k_enabled=bool(args.dynamic_k),
