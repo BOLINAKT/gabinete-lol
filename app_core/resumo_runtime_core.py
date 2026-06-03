@@ -18,6 +18,33 @@ SC_METRIC_COL: dict[str, str] = {
 }
 
 
+# Standard default lines the Resumo shows when the user has NOT typed a custom
+# line for a metric. These are fixed constants on purpose: an empty field always
+# resolves to these, never to a stale custom value carried over from another
+# matchup — which is what eliminates the "ghost 25.5" leak for good. A line the
+# user actually types for the current matchup replaces the default for that
+# metric.
+RESUMO_DEFAULT_LINES: dict[str, list[float]] = {
+    "kills": [27.5],
+    "towers": [11.5],
+    "dragons": [4.5],
+    "barons": [1.5],
+    "inhibitors": [1.5],
+    "time": [32.5],
+}
+
+
+def lines_or_default(metric_key: str, parsed: list[float]) -> list[float]:
+    """Return the user's parsed lines, or the standard default when empty.
+
+    Keeps "empty" deterministic so the Resumo always shows the standard line
+    for a metric instead of nothing (or a leftover line from a prior matchup).
+    """
+    if parsed:
+        return parsed
+    return list(RESUMO_DEFAULT_LINES.get(str(metric_key).strip().lower(), []))
+
+
 def build_statscamps_scope_frame(
     *,
     enabled: bool,
