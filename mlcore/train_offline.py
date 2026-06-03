@@ -368,7 +368,14 @@ def main() -> None:
     ap.add_argument("--min-cal-gain", type=float, default=0.0, help="Minimum holdout logloss improvement required to keep calibration")
 
     # Players / lineup layer (optional)
-    ap.add_argument("--fit-players", action="store_true", help="Build players_artifact.json + fit w_lineup on holdout")
+    ap.add_argument(
+        "--fit-players",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Build players_artifact.json + fit w_lineup on holdout. Default ON: um DEPLOY sem isso "
+             "derruba o meta.players_layer e o runtime cai no peso de UI (regressao silenciosa na fusao). "
+             "Use --no-fit-players SO para experimentos Elo-only rapidos (nao deployar).",
+    )
     ap.add_argument("--players-out", default="players_artifact.json", help="Output players artifact path (json)")
     ap.add_argument("--players-stats", default=None, help="OracleElixir byTournament player stats CSV (optional prior)")
     ap.add_argument("--players-half-life", type=float, default=180.0, help="Players rating half-life (days)")
