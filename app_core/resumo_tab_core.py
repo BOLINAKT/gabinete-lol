@@ -9,7 +9,7 @@ import pandas as pd
 
 from app_core.championship_stats_core import enrich_resumo_rows_with_stats_detail
 
-from app_core.resumo_runtime_core import SC_METRIC_COL, lines_or_default
+from app_core.resumo_runtime_core import SC_METRIC_COL, lines_or_default, select_h2h_games
 from app_core.resumo_state_core import (
     get_resumo_view_state,
     set_resumo_market_trace,
@@ -763,17 +763,14 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     # então um recorte de Playoffs escondia confrontos da fase regular — ex.:
     # LGD x TT tem 3 jogos no Split 2 regular que sumiam no recorte de playoffs.
     # Fonte = team_games filtrado só por ano, com match de nome normalizado.
-    _ka, _kb = _norm_team_key(team_a), _norm_team_key(team_b)
-    _h2h_src = team_games if isinstance(team_games, pd.DataFrame) else df_a_all
     _yr = getattr(active_filters, "year", None)
-    if _yr and "year" in _h2h_src.columns:
-        _h2h_src = _h2h_src[pd.to_numeric(_h2h_src["year"], errors="coerce") == int(_yr)]
-    if {"team", "opponent"}.issubset(_h2h_src.columns):
-        _ta_key = _h2h_src["team"].astype(str).map(_norm_team_key)
-        _opp_key = _h2h_src["opponent"].astype(str).map(_norm_team_key)
-        df_h2h_a = _h2h_src[(_ta_key == _ka) & (_opp_key == _kb)].copy().sort_values("date")
-        df_h2h_b = _h2h_src[(_ta_key == _kb) & (_opp_key == _ka)].copy().sort_values("date")
-    else:
+    df_h2h_a, df_h2h_b = select_h2h_games(
+        team_games if isinstance(team_games, pd.DataFrame) else df_a_all,
+        team_a=team_a, team_b=team_b, year=_yr, norm_team_fn=_norm_team_key,
+    )
+    if df_h2h_a.empty and df_h2h_b.empty:
+        # Fallback to the (split-scoped) per-team frames only if the full-season
+        # lookup found nothing — keeps behavior safe for odd column layouts.
         df_h2h_a = df_a_all[df_a_all["opponent"] == team_b].copy()
         df_h2h_b = df_b_all[df_b_all["opponent"] == team_a].copy()
     slices = recency_slices(df_a=df_a_all, df_b=df_b_all, df_h2h=df_h2h_a, id_col="gameid", date_col="date")

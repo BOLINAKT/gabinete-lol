@@ -14,6 +14,7 @@ import pandas as pd
 
 from app_core.resumo_tab_core import _norm_team_key
 from app_core.resumo_core import counts_ou, _merge_h2h_odds, passed_recortes
+from app_core.resumo_runtime_core import select_h2h_games
 from app_core.odds_core import laplace_odds
 
 
@@ -60,6 +61,43 @@ class TestH2HOddsPath(unittest.TestCase):
             side_builder=lambda d: (None, None),
         )
         self.assertEqual(passed_recortes(odds, "H2H", "Under", max_odd=5.0), [])
+
+
+class TestSelectH2HGamesNotLimitedBySplit(unittest.TestCase):
+    """H2H must span the whole season: a Split 1 meeting still counts in Split 2."""
+
+    def _games(self):
+        return pd.DataFrame([
+            {"team": "A", "opponent": "B", "split": "Split 1", "playoffs": 0, "year": 2026, "date": "2026-02-01"},
+            {"team": "B", "opponent": "A", "split": "Split 1", "playoffs": 0, "year": 2026, "date": "2026-02-01"},
+            {"team": "A", "opponent": "B", "split": "Split 2", "playoffs": 1, "year": 2026, "date": "2026-07-10"},
+            {"team": "A", "opponent": "C", "split": "Split 2", "playoffs": 0, "year": 2026, "date": "2026-07-12"},
+        ])
+
+    def test_includes_meetings_from_other_splits(self):
+        df_a, df_b = select_h2h_games(
+            self._games(), team_a="A", team_b="B", year=2026, norm_team_fn=_norm_team_key,
+        )
+        # A-vs-B: one from Split 1 + one from Split 2 playoffs = 2 (split never filters).
+        self.assertEqual(len(df_a), 2)
+        self.assertEqual(len(df_b), 1)
+        # The unrelated A-vs-C game is excluded.
+        self.assertTrue((df_a["opponent"].astype(str) == "B").all())
+
+    def test_year_filter_scopes_when_provided(self):
+        games = self._games()
+        games.loc[len(games)] = {"team": "A", "opponent": "B", "split": "Split 1",
+                                 "playoffs": 0, "year": 2025, "date": "2025-03-01"}
+        df_a_2026, _ = select_h2h_games(games, team_a="A", team_b="B", year=2026, norm_team_fn=_norm_team_key)
+        df_a_all, _ = select_h2h_games(games, team_a="A", team_b="B", year=None, norm_team_fn=_norm_team_key)
+        self.assertEqual(len(df_a_2026), 2)   # only 2026 meetings
+        self.assertEqual(len(df_a_all), 3)    # all years
+
+    def test_empty_or_missing_columns(self):
+        self.assertEqual(select_h2h_games(None, team_a="A", team_b="B", norm_team_fn=_norm_team_key)[0].shape[0], 0)
+        bad = pd.DataFrame([{"foo": 1}])
+        a, b = select_h2h_games(bad, team_a="A", team_b="B", norm_team_fn=_norm_team_key)
+        self.assertTrue(a.empty and b.empty)
 
 
 if __name__ == "__main__":

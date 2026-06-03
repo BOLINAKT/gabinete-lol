@@ -45,6 +45,43 @@ def lines_or_default(metric_key: str, parsed: list[float]) -> list[float]:
     return list(RESUMO_DEFAULT_LINES.get(str(metric_key).strip().lower(), []))
 
 
+def select_h2h_games(
+    team_games: pd.DataFrame | None,
+    *,
+    team_a: str,
+    team_b: str,
+    year: Any = None,
+    norm_team_fn: Callable[[Any], str],
+    date_col: str = "date",
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Select head-to-head games between two teams, NOT limited by split/phase.
+
+    The Resumo H2H must span the whole season: a meeting from Split 1 still
+    counts in Split 2 (and playoffs vs regular don't hide each other). So the
+    only optional narrowing is by ``year``; split/playoffs filters are never
+    applied here. Name matching is normalized so mojibake/casing don't drop
+    real meetings. Returns ``(df_h2h_a, df_h2h_b)`` from each team's side.
+    """
+    empty = pd.DataFrame([])
+    if not isinstance(team_games, pd.DataFrame) or team_games.empty:
+        return empty, empty
+    src = team_games
+    if year and "year" in src.columns:
+        src = src[pd.to_numeric(src["year"], errors="coerce") == int(year)]
+    if not {"team", "opponent"}.issubset(src.columns):
+        return empty, empty
+    ka, kb = norm_team_fn(team_a), norm_team_fn(team_b)
+    ta_key = src["team"].astype(str).map(norm_team_fn)
+    opp_key = src["opponent"].astype(str).map(norm_team_fn)
+    df_a = src[(ta_key == ka) & (opp_key == kb)].copy()
+    df_b = src[(ta_key == kb) & (opp_key == ka)].copy()
+    if date_col in df_a.columns:
+        df_a = df_a.sort_values(date_col)
+    if date_col in df_b.columns:
+        df_b = df_b.sort_values(date_col)
+    return df_a, df_b
+
+
 def build_statscamps_scope_frame(
     *,
     enabled: bool,
