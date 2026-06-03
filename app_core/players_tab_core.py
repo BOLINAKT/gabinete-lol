@@ -16,6 +16,16 @@ from app_core.ui_design_core import TONE_HTML_COLOR, cyan_section_header, team_b
 from mlcore.utils import sigmoid as _sigmoid
 
 
+def _subhead(st: Any, title: str) -> None:
+    """Lightweight cyan-accented sub-header (consistent look, lighter than the
+    full gradient bar) for the data sections inside the Players tab."""
+    st.markdown(
+        f"<div style='margin:14px 0 4px;padding-left:9px;border-left:3px solid #2daac4;"
+        f"font-weight:700;font-size:1.02em;color:#2daac4;'>{title}</div>",
+        unsafe_allow_html=True,
+    )
+
+
 def _render_players_result_card(
     st: Any, *, team_a: str, team_b: str, odd_a: float, odd_b: float, p_team_a: float,
     p_players_raw: float, p_team_ref: float, w_players: float,
@@ -419,7 +429,7 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
 
     med_rows = build_player_means_rows_fn(dfb=dfb, lane_rows=lane_rows, team_a=team_a, team_b=team_b, format_num_fn=format_num_fn)
     if med_rows:
-        st.markdown("#### Médias por jogador")
+        _subhead(st, "Médias por jogador")
         st.caption("Base estatística usada no modelo de players por lane.")
         dfm = pd.DataFrame(med_rows)
         dfm = df_contract_view_fn(
@@ -440,7 +450,7 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         max_games_per_player=8,
     )
     if recent_rows:
-        st.markdown("#### Stats recentes dos players")
+        _subhead(st, "Stats recentes dos players")
         st.caption("Últimos jogos por player/lane: campeão, resultado, KDA, KP%, duração e adversário.")
         dfr = pd.DataFrame(recent_rows)
         rows_before = len(dfr)
@@ -516,7 +526,7 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         return
 
     if fair_rows:
-        st.markdown("#### Fair (Modelo) por jogador")
+        _subhead(st, "Fair (Modelo) por jogador")
         st.caption("Odds justas do modelo para cada jogador/linha em Kills, Deaths e Assists.")
         dff = pd.DataFrame(fair_rows)
         ff1, ff2, ff3 = st.columns(3)
@@ -558,7 +568,7 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         st.dataframe(dff, width="stretch", hide_index=True)
 
     st.divider()
-    st.markdown("#### Mercados de Players (Modelo/Hist/Mix)")
+    _subhead(st, "Mercados de Players (Modelo/Hist/Mix)")
     dfo = pd.DataFrame(out_rows)
     if not dfo.empty:
         st.caption(
