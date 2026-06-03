@@ -72,3 +72,5 @@ wf_last_report.json
 
 # Backups locais do artefato pre-deploy (nao versionar)
 *.pre_sos
+*.pre_dynk
+*.pre_*

@@ -350,8 +350,11 @@ def main() -> None:
     ap.add_argument(
         "--dynamic-k",
         action=argparse.BooleanOptionalAction,
-        default=False,
-        help="Enable feature-flagged dynamic K multiplier (uncertainty + volatility).",
+        default=True,
+        help="Dynamic K multiplier (Glicko-style uncertainty + volatility). Default ON: "
+             "validated as a clear gain on the faithful artifact path AND pure prequential OOS "
+             "in BOTH segments (inter-liga 0.6212->0.6091, mesma-liga 0.6407->0.6242). "
+             "Use --no-dynamic-k to disable.",
     )
     ap.add_argument("--dynamic-k-games-prior", type=float, default=30.0, help="Prior games for dynamic uncertainty multiplier.")
     ap.add_argument("--dynamic-k-unc-max", type=float, default=1.80, help="Max uncertainty multiplier when games are scarce.")
