@@ -47,7 +47,9 @@ def merge_with_default_lines(metric_key: str, parsed: list[float]) -> list[float
     for v in (parsed or []):
         if not any(abs(float(v) - float(e)) < 1e-9 for e in out):
             out.append(float(v))
-    return out
+    # Sort ascending so a smaller custom line (6.5) sits to the LEFT of the
+    # default (11.5) and a larger one (12.5) to the RIGHT.
+    return sorted(out)
 
 
 def select_h2h_games(
