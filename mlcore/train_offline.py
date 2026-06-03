@@ -347,7 +347,7 @@ def main() -> None:
     )
     ap.add_argument("--sos-scale", type=float, default=400.0, help="SOS league points = scale * BT theta. 400 validated best on the faithful artifact path (interleague OOS).")
     ap.add_argument("--sos-min-games", type=int, default=20, help="Min interleague games for a league to get a data-derived prior.")
-    ap.add_argument("--league-cap", type=float, default=45.0, help="league_strength_cap_abs (learned offset cap). Validated stack used 90.")
+    ap.add_argument("--league-cap", type=float, default=75.0, help="league_strength_cap_abs (learned offset cap). 75 validado no caminho fiel (NOTA 7.40->7.43, melhor ECE inter). >90 melhora logloss mas degrada calibracao/seguranca (overfit do cross-region esparso).")
     ap.add_argument(
         "--dynamic-k",
         action=argparse.BooleanOptionalAction,
