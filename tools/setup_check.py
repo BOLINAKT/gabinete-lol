@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 # pacote (pip) -> módulo de import (quando diferem)
 DEPS = {
-    "altair": "altair", "click": "click", "matplotlib": "matplotlib",
+    "altair": "altair", "click": "click", "lightgbm": "lightgbm", "matplotlib": "matplotlib",
     "numpy": "numpy", "pandas": "pandas", "pillow": "PIL",
     "python-dateutil": "dateutil", "pytz": "pytz", "requests": "requests",
     "scikit-image": "skimage", "scikit-learn": "sklearn", "scipy": "scipy",
