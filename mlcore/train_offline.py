@@ -335,7 +335,7 @@ def main() -> None:
         default="auto",
         help="Filter playoffs rows. If you pass '--keep-playoffs' without a value, it behaves like 'auto'.",
     )
-    ap.add_argument("--k", type=float, default=20.0, help="Elo K-factor")
+    ap.add_argument("--k", type=float, default=28.0, help="Elo K-factor. 28 validado no OOS puro (prequencial): ganho real pequeno same-league, inter ~flat. k>28 ganha so in-sample (frozen otimista).")
     ap.add_argument("--scale", type=float, default=400.0, help="Elo scale_points (denominator)")
     ap.add_argument("--alpha", type=float, default=60.0, help="Shrink/k-decay coupling: inference shrink n/(n+alpha) + k-decay alpha/(alpha+n). Lower = more confident/stable. 60 validated best on the faithful artifact path (NOTA 7.40 vs 7.38@80, melhor ECE); prequential harness preferred ~25 but that was a false positive (sem calibracao).")
     ap.add_argument(
@@ -348,6 +348,8 @@ def main() -> None:
     ap.add_argument("--sos-scale", type=float, default=400.0, help="SOS league points = scale * BT theta. 400 validated best on the faithful artifact path (interleague OOS).")
     ap.add_argument("--sos-min-games", type=int, default=20, help="Min interleague games for a league to get a data-derived prior.")
     ap.add_argument("--league-cap", type=float, default=75.0, help="league_strength_cap_abs (learned offset cap). 75 validado no caminho fiel (NOTA 7.40->7.43, melhor ECE inter). >90 melhora logloss mas degrada calibracao/seguranca (overfit do cross-region esparso).")
+    ap.add_argument("--league-prior-weight", type=float, default=0.10, help="Peso do prior estatico de liga (league_base_points). Com SOS data-derived isso pode ser redundante; testar 0.")
+    ap.add_argument("--tier-prior-weight", type=float, default=0.30, help="Peso do prior estatico de tier (tier_base_points).")
     ap.add_argument(
         "--dynamic-k",
         action=argparse.BooleanOptionalAction,
@@ -471,6 +473,8 @@ def main() -> None:
             scale_points=float(args.scale),
             alpha=float(args.alpha),
             init_rating=0.0,
+            league_prior_weight=float(args.league_prior_weight),
+            tier_prior_weight=float(args.tier_prior_weight),
             league_strength_cap_abs=float(args.league_cap),
             dynamic_k_enabled=bool(args.dynamic_k),
             dynamic_k_games_prior=float(args.dynamic_k_games_prior),
