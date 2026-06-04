@@ -4,11 +4,13 @@ from __future__ import annotations
 import inspect
 import json
 import math
+from html import escape as _esc
 from typing import Any, Callable, Dict, List, Mapping
 
 import pandas as pd
 
 from app_core.render_ctx_core import validate_render_ctx
+from app_core.team_logos_core import team_logo_html
 
 
 def _vg_caption(st: Any) -> Callable[[str], None]:
@@ -1102,7 +1104,21 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
 
     _l, _m, _r = st.columns([1, 2, 1])
     with _m:
-        st.markdown(f"## {teamA_disp} vs {teamB_disp}")
+        st.markdown(
+            "<div style='display:flex;align-items:center;justify-content:center;gap:16px;"
+            "margin:2px 0 12px;flex-wrap:wrap;'>"
+            "<span style='display:flex;align-items:center;gap:9px;'>"
+            f"{team_logo_html(str(teamA), 46)}"
+            f"<span style='font-weight:800;font-size:1.35em;color:#2daac4;'>{_esc(str(teamA_disp))}</span>"
+            "</span>"
+            "<span style='opacity:0.45;font-weight:700;font-size:1.05em;'>vs</span>"
+            "<span style='display:flex;align-items:center;gap:9px;'>"
+            f"<span style='font-weight:800;font-size:1.35em;color:#2daac4;'>{_esc(str(teamB_disp))}</span>"
+            f"{team_logo_html(str(teamB), 46)}"
+            "</span>"
+            "</div>",
+            unsafe_allow_html=True,
+        )
         a_col, b_col = st.columns(2)
         with a_col:
             st.caption("Time 1")
