@@ -22,6 +22,33 @@ def _mtime_as_datetime(path_like: str | Path) -> datetime | None:
         return None
 
 
+def detect_deep_fit(params_path: str | Path, artifact_path: str | Path) -> Dict[str, Any]:
+    """Detecta se o full fit (profundo) foi rodado/promovido e se está defasado.
+
+    'done' = params_fitted.json tem speed_profile=='full' (= um full fit foi
+    promovido). 'stale' = o artefato (Elo) foi modificado DEPOIS do fit, então a
+    camada de fusão não está mais alinhada → vale rodar de novo. 'at' = quando o
+    fit foi gerado (ISO).
+    """
+    out: Dict[str, Any] = {"done": False, "at": "", "stale": False}
+    d = read_json_file_safe(str(params_path))
+    if not isinstance(d, dict) or not d:
+        return out
+    out["done"] = (str(d.get("speed_profile") or "").strip().lower() == "full")
+    out["at"] = str(d.get("generated_at") or "")
+    if out["done"]:
+        fit_epoch = None
+        try:
+            fit_epoch = datetime.fromisoformat(str(d.get("generated_at"))).timestamp()
+        except (TypeError, ValueError):
+            fit_epoch = None
+        art_mt = safe_mtime(artifact_path)
+        # 60s de folga pra evitar falso "stale" por arredondamento de mtime.
+        if fit_epoch is not None and art_mt is not None and art_mt > fit_epoch + 60.0:
+            out["stale"] = True
+    return out
+
+
 def _to_int(value: Any, default: int = 0) -> int:
     try:
         return int(value or 0)
@@ -320,6 +347,8 @@ def collect_maintenance_status(
             if bool(on):
                 _push(str(flag_msgs.get(key) or f"Pendente: {key}"))
 
+    deep_fit = detect_deep_fit(params_p, art_p)
+
     has_issues = bool(alerts) or any_need
     severity = "critical" if critical else ("warning" if has_issues else "ok")
     return {
@@ -328,6 +357,9 @@ def collect_maintenance_status(
         "alerts": alerts,
         "critical": critical,
         "players_artifact_path": str(players_p),
+        "deep_fit_done": bool(deep_fit.get("done")),
+        "deep_fit_at": str(deep_fit.get("at") or ""),
+        "deep_fit_stale": bool(deep_fit.get("stale")),
         "need_retrain_model": bool(need_retrain_model),
         "need_retrain_params": bool(need_retrain_params),
         "need_walkforward": bool(need_walkforward),

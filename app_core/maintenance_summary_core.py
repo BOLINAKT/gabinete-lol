@@ -3,6 +3,14 @@ from __future__ import annotations
 from typing import Any, Dict, List, Mapping
 
 
+def _short_date(iso: Any) -> str:
+    """ISO 'YYYY-MM-DD...' -> 'DD/MM/YYYY' (vazio se não parsear)."""
+    s = str(iso or "")[:10]
+    if len(s) == 10 and s[4] == "-" and s[7] == "-":
+        return f"{s[8:10]}/{s[5:7]}/{s[0:4]}"
+    return ""
+
+
 def build_maintenance_quality_status(status: Mapping[str, Any]) -> Dict[str, Any]:
     sta = dict(status or {}) if isinstance(status, Mapping) else {}
     severity = str(sta.get("severity") or "").strip().lower()
@@ -44,8 +52,24 @@ def build_maintenance_quality_status(status: Mapping[str, Any]) -> Dict[str, Any
         operational_state = "ready_warn"
         operational_text = "Pronta para operar, com alerta de patch/liga ainda aberto."
 
-    deep_state = "pending"
-    deep_text = "Full fit manual/profundo ainda não foi rodado."
+    deep_done = bool(sta.get("deep_fit_done"))
+    deep_stale = bool(sta.get("deep_fit_stale"))
+    deep_at = _short_date(sta.get("deep_fit_at"))
+    if not deep_done:
+        deep_state = "pending"
+        deep_text = "Full fit manual/profundo ainda não foi rodado."
+    elif deep_stale:
+        deep_state = "ready_warn"
+        deep_text = (
+            f"Full fit rodado em {deep_at}, mas o modelo mudou depois — vale rodar de novo."
+            if deep_at else "Full fit rodado, mas o modelo mudou depois — vale rodar de novo."
+        )
+    else:
+        deep_state = "ready"
+        deep_text = (
+            f"Full fit rodado em {deep_at} (alinhado ao modelo atual)."
+            if deep_at else "Full fit rodado (alinhado ao modelo atual)."
+        )
 
     headline = "Qualidade operacional pronta."
     if operational_state == "blocked":

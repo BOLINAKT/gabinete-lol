@@ -16,7 +16,10 @@
     [string]$LatestLaunchReport = "ops/monitoring/full_fit_launch_latest.json",
     [string]$LatestFinalizeReport = "ops/monitoring/full_fit_finalize_report.json",
     [int]$PollSeconds = 60,
-    [int]$TimeoutSeconds = 21600,
+    # 18h: o full fit "full" leva ~14h (players_context_fit e' o gargalo). 6h (valor
+    # antigo) fazia o watcher desistir antes do fit terminar -> nao promovia sozinho.
+    # 18h cobre com folga; o StaleSeconds ainda pega um fit travado de verdade.
+    [int]$TimeoutSeconds = 64800,
     [int]$StaleSeconds = 1800,
     [switch]$DryRun
 )
