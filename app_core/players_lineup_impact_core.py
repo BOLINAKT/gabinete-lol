@@ -7,6 +7,8 @@ import difflib
 
 import pandas as pd
 
+from mlcore.team_artifact_normalize import _norm_team_key
+
 
 def parse_pct(x: Any) -> float:
     s = str(x or "").strip().replace("%", "")
@@ -132,7 +134,14 @@ def latest_lineup_names(
 ) -> list[str]:
     if df_in is None or df_in.empty or "team" not in df_in.columns:
         return []
+    # Match exato primeiro; se não casar (CSV de players grafa o time diferente
+    # do CSV de team-games, ex. "Gen.G" vs "GEN"), cai para match normalizado.
+    # Sem isso o autofill "não pegava nenhum" quando as grafias divergiam.
     d = df_in[df_in["team"].astype(str) == str(team_name)].copy()
+    if d.empty:
+        key = _norm_team_key(team_name)
+        if key:
+            d = df_in[df_in["team"].apply(lambda x: _norm_team_key(x) == key)].copy()
     if d.empty:
         return []
     if "date" in d.columns:

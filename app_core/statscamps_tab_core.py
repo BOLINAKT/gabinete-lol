@@ -275,7 +275,11 @@ def render_statscamps_tab(
         years_opt = []
 
     with base_cols[1]:
-        normalize_statscamps_select_state(session_state, years=[str(y) for y in years_opt], splits=[])
+        # Normalizar SÓ o Ano aqui. NÃO chamar o normalize completo com splits=[]:
+        # isso validava sc_split contra [""] e ZERAVA o split escolhido a cada
+        # rerun (bug: "seleciono o split e ele ignora"). O split é normalizado
+        # mais abaixo (linha ~301) já com as opções reais (splits_opt).
+        normalize_select_key(session_state, "sc_year", ["", *[str(y) for y in years_opt]])
         sc_year = st.selectbox(
             "Ano",
             options=[""] + [str(y) for y in years_opt],

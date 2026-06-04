@@ -7,6 +7,7 @@ from app_core.statscamps_state_core import (
     reset_statscamps_league_dependents,
     sync_statscamps_delta_targets,
 )
+from app_core.tab_state_core import normalize_select_key
 
 
 class TestEnsureStatscampsFilterState(unittest.TestCase):
@@ -76,6 +77,35 @@ class TestNormalizeStatscampsSelectState(unittest.TestCase):
         state = {"sc_playoffs": "INVALID"}
         normalize_statscamps_select_state(state, years=["2025"], splits=["Spring"])
         self.assertEqual(state["sc_playoffs"], "")
+
+
+class TestSplitNotClobberedByYearNormalize(unittest.TestCase):
+    """Regressão: bug 'seleciono o split e ele ignora'.
+
+    A causa era chamar o normalize completo com splits=[] ANTES do selectbox de
+    Ano (as opções de split ainda nem foram calculadas). Com splits=[] a lista
+    permitida vira só [""], então o split escolhido era zerado a cada rerun.
+    O fix é normalizar SÓ o ano nesse ponto.
+    """
+
+    def test_full_normalize_with_empty_splits_wipes_split(self):
+        # Documenta o comportamento que causava o bug.
+        state = {"sc_year": "2025", "sc_split": "Summer", "sc_playoffs": ""}
+        normalize_statscamps_select_state(state, years=["2025"], splits=[])
+        self.assertEqual(state["sc_split"], "")  # split foi zerado (era o bug)
+
+    def test_year_only_normalize_preserves_split(self):
+        # O fix: normalizar só o ano não pode tocar no split.
+        state = {"sc_year": "2025", "sc_split": "Summer", "sc_playoffs": ""}
+        normalize_select_key(state, "sc_year", ["", "2025"])
+        self.assertEqual(state["sc_split"], "Summer")  # preservado
+        self.assertEqual(state["sc_year"], "2025")
+
+    def test_split_normalized_with_real_options_is_kept(self):
+        # Mais abaixo no fluxo, com as opções reais, o split válido sobrevive.
+        state = {"sc_year": "2025", "sc_split": "Summer", "sc_playoffs": ""}
+        normalize_statscamps_select_state(state, years=["2025"], splits=["Spring", "Summer"])
+        self.assertEqual(state["sc_split"], "Summer")
 
 
 class TestGetStatscampsThresholdText(unittest.TestCase):

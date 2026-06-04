@@ -75,6 +75,13 @@ class TestPlayersLineupImpactCore(unittest.TestCase):
         names = latest_lineup_names(df_in=df, team_name="TA", norm_pos_fn=_norm_pos)
         self.assertEqual(names, ["T2", "J2"])
 
+        # Regressão: autofill "não pegava nenhum" quando a grafia do time diverge
+        # entre os CSVs. Match normalizado deve resolver (TA == "t.a." == "T A").
+        self.assertEqual(latest_lineup_names(df_in=df, team_name="t.a.", norm_pos_fn=_norm_pos), ["T2", "J2"])
+        self.assertEqual(latest_lineup_names(df_in=df, team_name="T A", norm_pos_fn=_norm_pos), ["T2", "J2"])
+        # Time inexistente continua retornando vazio (sem falso-positivo).
+        self.assertEqual(latest_lineup_names(df_in=df, team_name="ZZZ", norm_pos_fn=_norm_pos), [])
+
         filters = SimpleNamespace(year=2026, split="Spring", playoffs=False)
         out = latest_lineup_for_team(
             df_player_rows=df,

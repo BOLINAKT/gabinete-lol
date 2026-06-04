@@ -13,7 +13,21 @@ from app_core.tab_filters_core import collect_year_split_league_options, scope_h
 from app_core.tab_state_core import blank_space_label
 from app_core.tab_ui_core import render_tab_hero, render_tab_section
 from app_core.ui_design_core import TONE_HTML_COLOR, cyan_section_header, team_badge_html, tone_for_pct
+from mlcore.team_artifact_normalize import _norm_team_key
 from mlcore.utils import sigmoid as _sigmoid
+
+
+def _team_rows(dfb: pd.DataFrame, team: str) -> pd.DataFrame:
+    """Linhas do time com match exato e fallback normalizado (grafias divergem
+    entre o CSV de team-games e o de players)."""
+    if dfb is None or dfb.empty or "team" not in dfb.columns:
+        return dfb.iloc[0:0] if dfb is not None else pd.DataFrame()
+    sub = dfb[dfb["team"].astype(str) == str(team)]
+    if sub.empty:
+        key = _norm_team_key(team)
+        if key:
+            sub = dfb[dfb["team"].apply(lambda x: _norm_team_key(x) == key)]
+    return sub
 
 
 def _subhead(st: Any, title: str) -> None:
@@ -274,8 +288,8 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     by_player["rating"] = np.log(by_player["p_smooth"] / (1.0 - by_player["p_smooth"]))
 
     vocab = sorted([x for x in by_player["player"].fillna("").astype(str).unique().tolist() if x])
-    vocab_a = sorted([x for x in dfb[dfb["team"].astype(str) == str(team_a)]["player"].fillna("").astype(str).unique().tolist() if x])
-    vocab_b = sorted([x for x in dfb[dfb["team"].astype(str) == str(team_b)]["player"].fillna("").astype(str).unique().tolist() if x])
+    vocab_a = sorted([x for x in _team_rows(dfb, team_a)["player"].fillna("").astype(str).unique().tolist() if x])
+    vocab_b = sorted([x for x in _team_rows(dfb, team_b)["player"].fillna("").astype(str).unique().tolist() if x])
     if not vocab_a:
         vocab_a = vocab
     if not vocab_b:
