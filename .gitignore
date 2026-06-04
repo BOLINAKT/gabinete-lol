@@ -74,3 +74,6 @@ wf_last_report.json
 *.pre_sos
 *.pre_dynk
 *.pre_*
+
+# Bundles de release (modelo+dados pra enviar) - nao versionar
+release/
