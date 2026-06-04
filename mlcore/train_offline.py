@@ -345,7 +345,7 @@ def main() -> None:
         help="Derive league base points from interleague Bradley-Terry (SOS) and bake into the artifact. "
              "Validated: improves cross-region (interleague) OOS logloss. Use --no-sos-league for ablation.",
     )
-    ap.add_argument("--sos-scale", type=float, default=400.0, help="SOS league points = scale * BT theta. 400 validated best on the faithful artifact path (interleague OOS).")
+    ap.add_argument("--sos-scale", type=float, default=800.0, help="SOS league points = scale * BT theta. 800 re-validado no Elo novo (caminho calibrado): GERAL ll 0.6029->0.6021, inter ll 0.5875->0.5838, inter ECE 0.0424->0.0361 (melhora calib). 1000 piora ECE. Prior data-derived (BT) nao overfita como o cap.")
     ap.add_argument("--sos-min-games", type=int, default=20, help="Min interleague games for a league to get a data-derived prior.")
     ap.add_argument("--league-cap", type=float, default=75.0, help="league_strength_cap_abs (learned offset cap). 75 validado no caminho fiel (NOTA 7.40->7.43, melhor ECE inter). >90 melhora logloss mas degrada calibracao/seguranca (overfit do cross-region esparso).")
     ap.add_argument("--league-prior-weight", type=float, default=0.10, help="Peso do prior estatico de liga (league_base_points). Com SOS data-derived isso pode ser redundante; testar 0.")
