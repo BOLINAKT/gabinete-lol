@@ -7,31 +7,23 @@ from typing import Any, Callable, Mapping, Optional
 
 import pandas as pd
 
+from app_core.stats_config import (
+    combined_col_map as _stats_combined_col_map,
+    default_lines_map as _stats_default_lines_map,
+)
 
-SC_METRIC_COL: dict[str, str] = {
-    "kills": "total_kills",
-    "towers": "total_towers",
-    "dragons": "total_dragons",
-    "barons": "total_nashors",
-    "inhibitors": "total_inhibitors",
-    "time": "game_time_min",
-}
+
+# Derivado da fonte única STATS_MARKET_CONFIG (app_core/stats_config.py) — antes
+# era duplicado aqui. Adicionar/remover mercado de stats = editar lá, só.
+SC_METRIC_COL: dict[str, str] = _stats_combined_col_map()
 
 
 # Standard default lines the Resumo shows when the user has NOT typed a custom
-# line for a metric. These are fixed constants on purpose: an empty field always
-# resolves to these, never to a stale custom value carried over from another
-# matchup — which is what eliminates the "ghost 25.5" leak for good. A line the
-# user actually types for the current matchup replaces the default for that
-# metric.
-RESUMO_DEFAULT_LINES: dict[str, list[float]] = {
-    "kills": [27.5],
-    "towers": [11.5],
-    "dragons": [4.5],
-    "barons": [1.5],
-    "inhibitors": [1.5],
-    "time": [32.5],
-}
+# line for a metric. Constantes fixas de propósito: campo vazio sempre resolve
+# pra estas, nunca pra uma linha antiga de outro confronto (mata o "fantasma
+# 25.5"). Uma linha digitada para o confronto atual substitui a padrão da métrica.
+# DERIVADO da fonte única STATS_MARKET_CONFIG (default_line por mercado).
+RESUMO_DEFAULT_LINES: dict[str, list[float]] = _stats_default_lines_map()
 
 
 def merge_with_default_lines(metric_key: str, parsed: list[float]) -> list[float]:
