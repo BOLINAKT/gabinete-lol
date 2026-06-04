@@ -137,5 +137,33 @@ class TestAugmentTotalColumns(unittest.TestCase):
         self.assertNotIn("mv2_total_kills", df.columns)  # original intacto
 
 
+
+
+class TestMlChipVencedorMD3MD5(unittest.TestCase):
+    """Trava o bug: MD3 e MD5 devem usar bo3/bo5 (de p_map), não o mesmo p_series."""
+
+    def _render(self, p_map, p_series):
+        from app_core.line_analysis_tab_core import _render_ml_chip_vencedor
+        cap = []
+
+        class _St:
+            def markdown(self, html, **kw):
+                cap.append(html)
+
+        _render_ml_chip_vencedor(st=_St(), team_a="A", team_b="B", p_map=p_map, p_series=p_series)
+        return cap[0] if cap else ""
+
+    def test_md3_md5_differ_from_pmap(self):
+        # p_map=0.629 -> bo3=68.9%, bo5=73.1% (diferentes).
+        html = self._render(0.629, 0.90)
+        self.assertIn("68.9%", html)   # MD3 (bo3)
+        self.assertIn("73.1%", html)   # MD5 (bo5)
+
+    def test_does_not_use_selected_p_series(self):
+        # p_series=0.90 (bo selecionado) NÃO deve aparecer — MD3/MD5 vêm de p_map.
+        html = self._render(0.629, 0.90)
+        self.assertNotIn("90.0%", html)
+
+
 if __name__ == "__main__":
     unittest.main()

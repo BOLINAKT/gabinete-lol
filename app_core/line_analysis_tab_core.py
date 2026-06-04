@@ -14,6 +14,7 @@ import pandas as pd
 
 from app_core.championship_stats_core import STATS_MARKET_CONFIG
 from app_core.market import parse_lines_text, parse_time_lines_text
+from mlcore.bo import prob_win_series
 from app_core.shared_formatters import fmt_delta_pp, fmt_num, fmt_pct, fmt_status
 from app_core.ui_design_core import cyan_banner, cyan_section_header
 from app_core.tab_filters_core import collect_year_split_league_options, scope_has_playoffs
@@ -646,9 +647,23 @@ def _render_v3_vencedor_subpanel(
 
 def _render_ml_chip_vencedor(
     *, st: Any, team_a: str, team_b: str,
-    p_map: float | None, p_series: float | None,
+    p_map: float | None, p_series: float | None = None,
 ) -> None:
-    """Compact ML probability chip for Mapa/MD3/MD5."""
+    """Compact ML probability chip for Mapa/MD3/MD5.
+
+    MD3 e MD5 são derivados de p_map via prob_win_series(p_map, 3) e (p_map, 5).
+    Antes ambos usavam o MESMO p_series (a prob do bo SELECIONADO), então MD3 e
+    MD5 saíam idênticos — bug. p_series é aceito por compat mas não é usado.
+    """
+    def _series(bo: int) -> float | None:
+        if not (isinstance(p_map, (int, float)) and 0 < float(p_map) < 1):
+            return None
+        try:
+            v = float(prob_win_series(float(p_map), bo))
+            return v if 0.0 < v < 1.0 else None
+        except Exception:
+            return None
+
     def _odds(p: float) -> float:
         return (1.0 / p) if (p and 0 < p < 1) else float("nan")
 
@@ -681,9 +696,9 @@ def _render_ml_chip_vencedor(
         f"border:1px solid rgba(45,170,196,0.3);border-radius:10px;margin:10px 0;'>"
         f"{_cell('Mapa', p_map)}"
         f"<div style='width:1px;background:rgba(255,255,255,0.08);'></div>"
-        f"{_cell('MD3', p_series)}"
+        f"{_cell('MD3', _series(3))}"
         f"<div style='width:1px;background:rgba(255,255,255,0.08);'></div>"
-        f"{_cell('MD5', p_series)}"
+        f"{_cell('MD5', _series(5))}"
         f"</div>",
         unsafe_allow_html=True,
     )
