@@ -54,6 +54,14 @@ def _microseg_shifts(p, *, league, split, side, bo, phase, table,
     return min(0.99, p + 0.03), {"applied": True, "delta_pp": 3.0}
 
 
+def _microseg_mult(p, *, league, split, side, bo, phase, table,
+                   min_n, strength, cap_pp, hierarchical, hierarchy_decay):
+    # Shift DEPENDENTE de p (multiplicativo) — diferente de um shift constante,
+    # NÃO cancela na simetrização de saída (é o que prova que microseg ainda
+    # afeta o resultado mesmo com a simetria ligada).
+    return min(0.99, max(0.01, p * 1.15)), {"applied": True, "delta_pp": 1.0}
+
+
 def _microseg_raises(*a, **kw):
     raise ValueError("table error")
 
@@ -64,6 +72,11 @@ def _fused_postcal_identity(p, *, league_hint, use_fitted):
 
 def _fused_postcal_shifts(p, *, league_hint, use_fitted):
     return min(0.99, p + 0.02), {"applied": True, "method": "platt"}
+
+
+def _fused_postcal_mult(p, *, league_hint, use_fitted):
+    # p-dependente (sobrevive à simetrização), ver _microseg_mult.
+    return min(0.99, max(0.01, p * 1.15)), {"applied": True, "method": "platt"}
 
 
 def _fused_postcal_raises(p, *, league_hint, use_fitted):
@@ -225,18 +238,39 @@ class TestComputeMlCorePrediction(unittest.TestCase):
             return _microseg_identity(p, **kw)
 
         compute_ml_core_prediction(**_default_core_kwargs(apply_microseg_fn=_spy))
-        self.assertEqual(len(called), 1)
+        # Chamado nas DUAS direções (forward + reverse) para simetrizar a saída.
+        self.assertEqual(len(called), 2)
 
     def test_microseg_shifts_p_map_cal(self):
+        # Core ASSIMÉTRICO (p_fwd != p_rev) + shift p-dependente: o microseg
+        # sobrevive à simetrização e move p_map_cal.
         out_id = compute_ml_core_prediction(**_default_core_kwargs(
+            p_map_v2_fn=_p_map_v2_symmetric,
             apply_microseg_fn=_microseg_identity,
             apply_fused_postcal_fn=_fused_postcal_identity,
         ))
         out_shift = compute_ml_core_prediction(**_default_core_kwargs(
-            apply_microseg_fn=_microseg_shifts,
+            p_map_v2_fn=_p_map_v2_symmetric,
+            apply_microseg_fn=_microseg_mult,
             apply_fused_postcal_fn=_fused_postcal_identity,
         ))
         self.assertGreater(out_shift["p_map_cal"], out_id["p_map_cal"])
+
+    def test_constant_side_shift_cancels_under_symmetry(self):
+        # Comportamento CORRETO da simetrização: um shift CONSTANTE (viés de lado
+        # blue) é removido — pré-jogo você não sabe quem é blue, então não deve
+        # contar. Documenta por que o teste antigo (shift constante) mudou.
+        out_id = compute_ml_core_prediction(**_default_core_kwargs(
+            p_map_v2_fn=_p_map_v2_symmetric,
+            apply_microseg_fn=_microseg_identity,
+            apply_fused_postcal_fn=_fused_postcal_identity,
+        ))
+        out_const = compute_ml_core_prediction(**_default_core_kwargs(
+            p_map_v2_fn=_p_map_v2_symmetric,
+            apply_microseg_fn=_microseg_shifts,   # +0.03 constante
+            apply_fused_postcal_fn=_fused_postcal_identity,
+        ))
+        self.assertAlmostEqual(out_const["p_map_cal"], out_id["p_map_cal"], places=9)
 
     def test_microseg_exception_swallowed(self):
         out = compute_ml_core_prediction(**_default_core_kwargs(
@@ -252,11 +286,14 @@ class TestComputeMlCorePrediction(unittest.TestCase):
         self.assertIsInstance(out["microseg_info"], dict)
 
     def test_fused_postcal_applied(self):
+        # Core assimétrico + fused p-dependente (sobrevive à simetrização).
         out_no_shift = compute_ml_core_prediction(**_default_core_kwargs(
+            p_map_v2_fn=_p_map_v2_symmetric,
             apply_fused_postcal_fn=_fused_postcal_identity,
         ))
         out_shift = compute_ml_core_prediction(**_default_core_kwargs(
-            apply_fused_postcal_fn=_fused_postcal_shifts,
+            p_map_v2_fn=_p_map_v2_symmetric,
+            apply_fused_postcal_fn=_fused_postcal_mult,
         ))
         self.assertGreater(out_shift["p_map_cal"], out_no_shift["p_map_cal"])
 

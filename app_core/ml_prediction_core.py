@@ -105,54 +105,47 @@ def compute_ml_core_prediction(
     except (OSError, TypeError, ValueError):
         pass
 
-    # 2. Forward ML
-    try:
-        ml_info = p_map_v2_fn(
-            artifact_path,
-            team_a,
-            team_b,
-            as_of_date,
+    # 2. Forward + reverse core ML. Computing both directions lets us symmetrize
+    #    the FINAL output (p(A,B) == 1 − p(B,A)). The reverse was already computed
+    #    before, but symmetry was applied too early (only to the core), and then
+    #    microseg/fused (order-dependent: league_a, side="blue") re-broke it. Now
+    #    we run the full post pipeline on BOTH directions and average at the end.
+    def _core_ml(ta: str, tb: str, la: str, lb: str, tta: str, ttb: str) -> Optional[Dict[str, Any]]:
+        return p_map_v2_fn(
+            artifact_path, ta, tb, as_of_date,
             ach_override_path=achievement_path,
-            league_hint_blue=league_a or None,
-            league_hint_red=league_b or None,
-            tier_hint_blue=tier_a or None,
-            tier_hint_red=tier_b or None,
+            league_hint_blue=la or None, league_hint_red=lb or None,
+            tier_hint_blue=tta or None, tier_hint_red=ttb or None,
         )
+
+    try:
+        ml_info = _core_ml(team_a, team_b, league_a, league_b, tier_a, tier_b)
     except Exception:
         ml_info = None
+    ml_info_rev: Optional[Dict[str, Any]] = None
+    if ml_info is not None:
+        try:
+            ml_info_rev = _core_ml(team_b, team_a, league_b, league_a, tier_b, tier_a)
+        except Exception:
+            ml_info_rev = None
 
     if ml_info is not None:
-        p_map_raw = _f(ml_info.get("p_raw"))
-        p_map_cal = _f(ml_info.get("p_cal"))
+        p_cal_fwd = _f(ml_info.get("p_cal"))
+        p_raw_fwd = _f(ml_info.get("p_raw"))
+        p_cal_rev = _f(ml_info_rev.get("p_cal")) if isinstance(ml_info_rev, dict) else float("nan")
+        p_raw_rev = _f(ml_info_rev.get("p_raw")) if isinstance(ml_info_rev, dict) else float("nan")
 
-        # 3. Reverse ML (symmetry: p(A,B) ≈ 1 − p(B,A))
-        try:
-            _rev = p_map_v2_fn(
-                artifact_path,
-                team_b,
-                team_a,
-                as_of_date,
-                ach_override_path=achievement_path,
-                league_hint_blue=league_b or None,
-                league_hint_red=league_a or None,
-                tier_hint_blue=tier_b or None,
-                tier_hint_red=tier_a or None,
-            )
-            if _rev is not None:
-                _p_cal_rev = _f(_rev.get("p_cal"))
-                _p_raw_rev = _f(_rev.get("p_raw"))
-                if math.isfinite(p_map_cal) and math.isfinite(_p_cal_rev):
-                    p_map_cal = 0.5 * (p_map_cal + (1.0 - _p_cal_rev))
-                if math.isfinite(p_map_raw) and math.isfinite(_p_raw_rev):
-                    p_map_raw = 0.5 * (p_map_raw + (1.0 - _p_raw_rev))
-        except Exception:
-            pass
+        # RAW: symmetrize directly (no post-layers apply to the raw probability).
+        p_map_raw = p_raw_fwd
+        if math.isfinite(p_raw_fwd) and math.isfinite(p_raw_rev):
+            p_map_raw = 0.5 * (p_raw_fwd + (1.0 - p_raw_rev))
 
-        # 4. Microseg calibration
-        if math.isfinite(p_map_cal) and bool(ml_runtime_cfg.get("ml_microseg_enabled")):
+        # Build the microseg table ONCE (shared by both directions).
+        seg_tbl: Dict[str, Any] = {}
+        seg_src = "live"
+        microseg_on = math.isfinite(p_cal_fwd) and bool(ml_runtime_cfg.get("ml_microseg_enabled"))
+        if microseg_on:
             try:
-                seg_tbl: Dict[str, Any] = {}
-                seg_src = "live"
                 if load_fitted_params_fn is not None and file_sig_fn is not None and fit_params_path:
                     try:
                         _fit_live = load_fitted_params_fn(file_sig_fn(fit_params_path))
@@ -163,7 +156,6 @@ def compute_ml_core_prediction(
                             seg_src = "fitted"
                     except (OSError, TypeError, ValueError):
                         seg_tbl = {}
-
                 if not seg_tbl:
                     seg_tbl = build_microseg_table_fn(
                         csv_sig=csv_sig,
@@ -171,46 +163,73 @@ def compute_ml_core_prediction(
                         lookback_games=int(ml_runtime_cfg.get("ml_microseg_lookback_games", 1200)),
                         shrink_k=float(ml_runtime_cfg.get("ml_microseg_shrink_k", 90.0)),
                     )
-
-                _split_hint = str(filter_split or "")
-                _phase_hint = (
-                    "playoffs"
-                    if str(filter_playoffs or "").lower() in {"1", "true", "playoffs"}
-                    else "regular"
-                )
-                _bo_hint = str(int(bo)) if str(int(bo)) in {"1", "3", "5"} else "1"
-                p_map_cal, _seg_info = apply_microseg_fn(
-                    float(p_map_cal),
-                    league=str(league_a or ""),
-                    split=_split_hint,
-                    side="blue",
-                    bo=_bo_hint,
-                    phase=_phase_hint,
-                    table=seg_tbl,
-                    min_n=int(ml_runtime_cfg.get("ml_microseg_min_n", 30)),
-                    strength=float(ml_runtime_cfg.get("ml_microseg_strength", 0.5)),
-                    cap_pp=float(ml_runtime_cfg.get("ml_microseg_cap_pp", 3.0)),
-                    hierarchical=bool(ml_runtime_cfg.get("ml_microseg_hierarchical", True)),
-                    hierarchy_decay=float(ml_runtime_cfg.get("ml_microseg_hier_decay", 0.80)),
-                )
-                if isinstance(_seg_info, dict):
-                    _seg_info["source"] = str(seg_src)
-                microseg_info = _seg_info
             except (AttributeError, KeyError, OSError, TypeError, ValueError):
-                pass
+                seg_tbl = {}
 
-        # 5. Fused post-calibration
-        if math.isfinite(p_map_cal):
-            try:
-                p_map_cal, _fp_info = apply_fused_postcal_fn(
-                    float(p_map_cal),
-                    league_hint=str(league_a or ""),
-                    use_fitted=bool(ml_runtime_cfg.get("ml_fused_post_cal_use_fitted", True)),
-                )
-                if isinstance(_fp_info, dict):
-                    fused_post_cal_info = _fp_info
-            except (TypeError, ValueError):
-                pass
+        _split_hint = str(filter_split or "")
+        _phase_hint = (
+            "playoffs"
+            if str(filter_playoffs or "").lower() in {"1", "true", "playoffs"}
+            else "regular"
+        )
+        _bo_hint = str(int(bo)) if str(int(bo)) in {"1", "3", "5"} else "1"
+
+        def _apply_post(p_cal: float, league_hint: str) -> tuple:
+            """microseg + fused post-cal applied to ONE direction's calibrated p.
+
+            Returns (p, microseg_info, fused_info).
+            """
+            p = float(p_cal)
+            ms_info: Optional[Dict[str, Any]] = None
+            fp_info: Optional[Dict[str, Any]] = None
+            if microseg_on and math.isfinite(p):
+                try:
+                    p, _seg = apply_microseg_fn(
+                        float(p),
+                        league=str(league_hint or ""),
+                        split=_split_hint,
+                        side="blue",
+                        bo=_bo_hint,
+                        phase=_phase_hint,
+                        table=seg_tbl,
+                        min_n=int(ml_runtime_cfg.get("ml_microseg_min_n", 30)),
+                        strength=float(ml_runtime_cfg.get("ml_microseg_strength", 0.5)),
+                        cap_pp=float(ml_runtime_cfg.get("ml_microseg_cap_pp", 3.0)),
+                        hierarchical=bool(ml_runtime_cfg.get("ml_microseg_hierarchical", True)),
+                        hierarchy_decay=float(ml_runtime_cfg.get("ml_microseg_hier_decay", 0.80)),
+                    )
+                    if isinstance(_seg, dict):
+                        _seg["source"] = str(seg_src)
+                        ms_info = _seg
+                except (AttributeError, KeyError, OSError, TypeError, ValueError):
+                    pass
+            if math.isfinite(p):
+                try:
+                    p, _fp = apply_fused_postcal_fn(
+                        float(p),
+                        league_hint=str(league_hint or ""),
+                        use_fitted=bool(ml_runtime_cfg.get("ml_fused_post_cal_use_fitted", True)),
+                    )
+                    if isinstance(_fp, dict):
+                        fp_info = _fp
+                except (TypeError, ValueError):
+                    pass
+            return p, ms_info, fp_info
+
+        # Full post pipeline on BOTH directions; microseg/fused info from forward
+        # (for display). The reverse is only needed to symmetrize the output.
+        full_fwd = p_cal_fwd
+        if math.isfinite(p_cal_fwd):
+            full_fwd, microseg_info, fused_post_cal_info = _apply_post(p_cal_fwd, league_a)
+        full_rev = p_cal_rev
+        if math.isfinite(p_cal_rev):
+            full_rev, _, _ = _apply_post(p_cal_rev, league_b)
+
+        # 6. Output-level symmetry: guarantees p(A,B) == 1 − p(B,A).
+        if math.isfinite(full_fwd) and math.isfinite(full_rev):
+            p_map_cal = 0.5 * (full_fwd + (1.0 - full_rev))
+        else:
+            p_map_cal = full_fwd
 
     return {
         "ml_info": ml_info,
