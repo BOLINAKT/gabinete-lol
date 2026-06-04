@@ -336,7 +336,7 @@ def main() -> None:
         help="Filter playoffs rows. If you pass '--keep-playoffs' without a value, it behaves like 'auto'.",
     )
     ap.add_argument("--k", type=float, default=28.0, help="Elo K-factor. 28 validado no OOS puro (prequencial): ganho real pequeno same-league, inter ~flat. k>28 ganha so in-sample (frozen otimista).")
-    ap.add_argument("--scale", type=float, default=400.0, help="Elo scale_points (denominator)")
+    ap.add_argument("--scale", type=float, default=300.0, help="Elo scale_points (denominator). 300 validado no caminho CALIBRADO (logloss 0.6112->0.6029, ECE ~0.038 ok). scale nao causa overfit in-sample (so reescala prob); ganho confirmado tambem no OOS cru.")
     ap.add_argument("--alpha", type=float, default=60.0, help="Shrink/k-decay coupling: inference shrink n/(n+alpha) + k-decay alpha/(alpha+n). Lower = more confident/stable. 60 validated best on the faithful artifact path (NOTA 7.40 vs 7.38@80, melhor ECE); prequential harness preferred ~25 but that was a false positive (sem calibracao).")
     ap.add_argument(
         "--sos-league",
