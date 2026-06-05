@@ -1217,96 +1217,11 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             with st.expander("Detalhe por janela (Ano todo / L10 / L5)", expanded=False):
                 st.dataframe(pd.DataFrame(_bd_rows), width='stretch', hide_index=True)
 
-    st.subheader("Odds justas (linhas)")
+    # Painel visual "Odds justas (linhas)" removido da Visão Geral (a pedido).
+    # O cálculo do p_ml_scope é MANTIDO porque outras abas (Resumo, Consistência)
+    # consomem _p_ml_scope via session_state — não é só visual.
     _pmap_u = float(st.session_state.get('_p_map_used', p_map_cal))
     _pser_u = float(st.session_state.get('_p_series_used', p_series))
     p_ml_scope = _pmap_u if ml_mode == "map" else _pser_u
     core_set_ml_scope(st.session_state, p_ml_scope)
-
-    _vg_market_tab = core_render_stateful_tab_selector(
-        st,
-        key="vg_odds_market_tab",
-        options=["Kills", "Torres", "Dragões", "Dragões Elementais", "Barões", "Inibidores", "Tempo", "ML + Totais"],
-        default="Kills",
-        label="Mercados",
-    )
-    if _vg_market_tab == "Kills":
-        _render_odds_cards(_lines_table("kills", kills, totals_for_lines["kills"]), mode="ou")
-    elif _vg_market_tab == "Torres":
-        _render_odds_cards(_lines_table("towers", towers, totals_for_lines["towers"]), mode="ou")
-    elif _vg_market_tab == "Dragões":
-        _render_odds_cards(_lines_table("dragons", dragons, totals_for_lines["dragons"]), mode="ou")
-    elif _vg_market_tab == "Dragões Elementais":
-        _dragons_elemental_total = totals_for_lines.get("dragons_elemental")
-        if _dragons_elemental_total is None or not math.isfinite(float(getattr(_dragons_elemental_total, "mean", float("nan")))):
-            st.info("Modelo indisponível para dragões elementais com este recorte.")
-        else:
-            _render_odds_cards(_lines_table("dragons_elemental", dragons, _dragons_elemental_total), mode="ou")
-    elif _vg_market_tab == "Barões":
-        _render_odds_cards(_lines_table("barons", barons, totals_for_lines["barons"]), mode="ou")
-    elif _vg_market_tab == "Inibidores":
-        _render_odds_cards(_lines_table("inhibitors", inhib, totals_for_lines["inhibitors"]), mode="ou")
-    elif _vg_market_tab == "Tempo":
-        _render_odds_cards(_lines_table("time", time_m, totals_for_lines["time"]), mode="ou")
-    elif _vg_market_tab == "ML + Totais":
-        st.markdown("#### ML + Totais (modelo)")
-
-        # ML + Totais usa APENAS as linhas "Extras" (Linha Kills/Tempo para ML + Totais)
-        combo_kills_list = parse_lines_text(combo_kills_text)
-        combo_time_list = parse_time_lines_text(combo_time_text)
-
-        if not (combo_kills_list or combo_time_list):
-            st.info("Digite uma linha em Extras: Linha Kills (para ML + Totais) e/ou Linha Tempo (para ML + Totais).")
-        else:
-            # ML+Totais: mostrar os dois lados (Time 1 e Time 2)
-            _pA_ml = float(p_ml_scope) if p_ml_scope is not None else float('nan')
-            _pB_ml = (1.0 - _pA_ml) if pd.notna(_pA_ml) else float('nan')
-
-            _vg_ml_totals_tab = core_render_stateful_tab_selector(
-                st,
-                key="vg_ml_totals_tab",
-                options=["Kills", "Tempo"],
-                default="Kills",
-                label="ML + Totais",
-            )
-
-            if _vg_ml_totals_tab == "Kills":
-                if not combo_kills_list:
-                    st.info("Digite uma linha em Extras: Linha Kills (para ML + Totais).")
-                else:
-                    c1, c2 = st.columns(2)
-                    with c1:
-                        st.markdown(f"##### {teamA}")
-                        _render_odds_cards(
-                            _lines_table_with_p_ml("kills", combo_kills_list, totals_for_lines["kills"], _pA_ml),
-                            mode="ml_totals",
-                            table_label=f"Ver tabela ({teamA})",
-                        )
-                    with c2:
-                        st.markdown(f"##### {teamB}")
-                        _render_odds_cards(
-                            _lines_table_with_p_ml("kills", combo_kills_list, totals_for_lines["kills"], _pB_ml),
-                            mode="ml_totals",
-                            table_label=f"Ver tabela ({teamB})",
-                        )
-
-            elif _vg_ml_totals_tab == "Tempo":
-                if not combo_time_list:
-                    st.info("Digite uma linha em Extras: Linha Tempo (para ML + Totais).")
-                else:
-                    c1, c2 = st.columns(2)
-                    with c1:
-                        st.markdown(f"##### {teamA}")
-                        _render_odds_cards(
-                            _lines_table_with_p_ml("time", combo_time_list, totals_for_lines["time"], _pA_ml),
-                            mode="ml_totals",
-                            table_label=f"Ver tabela ({teamA})",
-                        )
-                    with c2:
-                        st.markdown(f"##### {teamB}")
-                        _render_odds_cards(
-                            _lines_table_with_p_ml("time", combo_time_list, totals_for_lines["time"], _pB_ml),
-                            mode="ml_totals",
-                            table_label=f"Ver tabela ({teamB})",
-                        )
 
