@@ -1112,11 +1112,11 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             "margin:2px 0 12px;flex-wrap:wrap;'>"
             "<span style='display:flex;align-items:center;gap:9px;'>"
             f"{team_logo_html(str(teamA), 46)}"
-            f"<span style='font-weight:800;font-size:1.35em;color:#2daac4;'>{_esc(str(teamA_disp))}</span>"
+            f"<span style='font-weight:800;font-size:1.35em;color:#2daac4;line-height:1;'>{_esc(str(teamA_disp))}</span>"
             "</span>"
             "<span style='opacity:0.45;font-weight:700;font-size:1.05em;'>vs</span>"
             "<span style='display:flex;align-items:center;gap:9px;'>"
-            f"<span style='font-weight:800;font-size:1.35em;color:#2daac4;'>{_esc(str(teamB_disp))}</span>"
+            f"<span style='font-weight:800;font-size:1.35em;color:#2daac4;line-height:1;'>{_esc(str(teamB_disp))}</span>"
             f"{team_logo_html(str(teamB), 46)}"
             "</span>"
             "</div>",
