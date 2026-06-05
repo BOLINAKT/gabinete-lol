@@ -2683,10 +2683,10 @@ if _prev_season_csv_path and Path(_prev_season_csv_path).exists():
 # o ML do vencedor vem do artefato Elo e independe da janela). Ver
 # app_core/window_blend_core.py.
 win_map = {
+    "Geral": "Geral",
     "Ano todo": "All",
     "Últimos 10": "Last 10",
     "Últimos 5": "Last 5",
-    "Geral": "Geral",
 }
 if str(st.session_state.get("window_short", "") or "") not in win_map:
     st.session_state["window_short"] = next(iter(win_map.keys()))
