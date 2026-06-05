@@ -342,15 +342,38 @@ def _render_candidate_cards(
 
             lap_liga = str(row.get("Laplace (Liga)") or "—")
             lap_h2h  = str(row.get("Laplace (H2H)")  or "—")
+
+            # H2H sem NENHUM jogo no histórico (confronto inédito) não é "ruim":
+            # é ausência de dado. Em vez dos 4 ❌ (que parecem reprovação),
+            # mostramos uma barra lateral neutra. Quando há jogos mas as odds
+            # ficam fora do limite, os ❌ continuam (reprovação legítima).
+            try:
+                _n_h2h = int(row.get("Amostra H2H") or 0)
+            except (TypeError, ValueError):
+                _n_h2h = 0
+            if _n_h2h <= 0:
+                _h2h_block = (
+                    "<div style='margin:2px 0 6px;padding:4px 10px;line-height:1.8;"
+                    "border-left:3px solid #6b7280;background:rgba(107,114,128,0.10);"
+                    "border-radius:4px;'>"
+                    "<span style='font-size:0.9em;opacity:0.7;font-weight:600;'>H2H</span>"
+                    "&nbsp;<span style='font-size:0.88em;opacity:0.6;'>"
+                    "sem confronto direto no histórico</span>"
+                    "</div>"
+                )
+            else:
+                _h2h_block = (
+                    "<div style='margin:2px 0 6px;line-height:2.0;'>"
+                    f"{_recorte_badges(h2h_passed, 'H2H ')}"
+                    f"&nbsp;<span style='opacity:0.5;font-size:0.88em;'>odd: {lap_h2h}</span>"
+                    "</div>"
+                )
             st.markdown(
                 f"<div style='margin:8px 0 2px;line-height:2.0;'>"
                 f"{_recorte_badges(liga_passed, 'Liga')}"
                 f"&nbsp;<span style='opacity:0.5;font-size:0.88em;'>odd: {lap_liga}</span>"
                 f"</div>"
-                f"<div style='margin:2px 0 6px;line-height:2.0;'>"
-                f"{_recorte_badges(h2h_passed, 'H2H ')}"
-                f"&nbsp;<span style='opacity:0.5;font-size:0.88em;'>odd: {lap_h2h}</span>"
-                f"</div>",
+                f"{_h2h_block}",
                 unsafe_allow_html=True,
             )
 
