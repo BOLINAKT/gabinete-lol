@@ -11,6 +11,7 @@ import pandas as pd
 
 from app_core.render_ctx_core import validate_render_ctx
 from app_core.team_logos_core import team_logo_html
+from app_core.ui_labels import min_to_mmss as _min_to_mmss
 
 
 def _vg_caption(st: Any) -> Callable[[str], None]:
@@ -201,6 +202,8 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     totals_for_lines = ctx.get("totals_for_lines")
     totals_map = ctx.get("totals_map")
     totals_mode = ctx.get("totals_mode")
+    is_geral = bool(ctx.get("is_geral"))
+    totals_breakdown = ctx.get("totals_breakdown") or {}
     towers = ctx.get("towers")
     weight_mode = ctx.get("weight_mode")
     year_opt = ctx.get("year_opt")
@@ -1181,6 +1184,38 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
                 st.info("Você está em map_mode=avg. Troque para map1..map5 em Ajustes de cálculo para ver MAP específico.")
             else:
                 st.dataframe(_totals_table(totals_map), width='stretch')
+
+    if is_geral and totals_breakdown:
+        st.caption("Geral = mistura recency-ponderada das janelas (L5 50% · L10 30% · Ano todo 20%).")
+        _bd_order = ["kills", "towers", "dragons", "dragons_elemental", "barons", "inhibitors", "time"]
+        _bd_pt = {
+            "kills": "Kills", "towers": "Torres", "dragons": "Dragões",
+            "dragons_elemental": "Drag. elem.", "barons": "Barões",
+            "inhibitors": "Inibidores", "time": "Tempo",
+        }
+        _bd_labels = ["Ano todo", "L10", "L5"]
+        _bd_rows: List[Dict[str, Any]] = []
+        for _mk in _bd_order:
+            if not any(_mk in (totals_breakdown.get(_lb) or {}) for _lb in _bd_labels):
+                continue
+            _row: Dict[str, Any] = {"Métrica": _bd_pt.get(_mk, _mk)}
+            for _lb in _bd_labels:
+                _t = (totals_breakdown.get(_lb) or {}).get(_mk)
+                _mv = getattr(_t, "mean", None) if _t is not None else None
+                try:
+                    _ok = _mv is not None and math.isfinite(float(_mv))
+                except (TypeError, ValueError):
+                    _ok = False
+                if not _ok:
+                    _row[_lb] = "—"
+                elif _mk == "time":
+                    _row[_lb] = _min_to_mmss(float(_mv))
+                else:
+                    _row[_lb] = _format_num(float(_mv), 2)
+            _bd_rows.append(_row)
+        if _bd_rows:
+            with st.expander("Detalhe por janela (Ano todo / L10 / L5)", expanded=False):
+                st.dataframe(pd.DataFrame(_bd_rows), width='stretch', hide_index=True)
 
     st.subheader("Odds justas (linhas)")
     _pmap_u = float(st.session_state.get('_p_map_used', p_map_cal))

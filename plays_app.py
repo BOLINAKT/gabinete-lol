@@ -420,6 +420,11 @@ from mlcore.lines_engine import (
     _combine_sd,
     MatchupTotals,
 )
+from app_core.window_blend_core import (
+    GERAL_WINDOWS as _GERAL_WINDOWS,
+    blend_matchup_totals as _blend_matchup_totals,
+    geral_window_weight as _geral_window_weight,
+)
 from mlcore.state_team_artifact import (
     load_team_state_artifact as core_load_team_state_artifact,
 )
@@ -2673,11 +2678,15 @@ if _prev_season_csv_path and Path(_prev_season_csv_path).exists():
     except (OSError, TypeError, ValueError, pd.errors.EmptyDataError, pd.errors.ParserError):
         _prev_team_games = pd.DataFrame()
 
-# Janela rápida (layout estilo print: Ano Todo / 10 / 5)
+# Janela rápida (layout estilo print: Ano Todo / 10 / 5 / Geral)
+# "Geral" = consolidado recency-ponderado das 3 janelas (só afeta os TOTAIS;
+# o ML do vencedor vem do artefato Elo e independe da janela). Ver
+# app_core/window_blend_core.py.
 win_map = {
     "Ano todo": "All",
     "Últimos 10": "Last 10",
     "Últimos 5": "Last 5",
+    "Geral": "Geral",
 }
 if str(st.session_state.get("window_short", "") or "") not in win_map:
     st.session_state["window_short"] = next(iter(win_map.keys()))
@@ -2726,7 +2735,11 @@ _sim_seed_series = core_compute_sim_seed_series(
 )
 
 # Recorte -> max_games
+# "Geral" mantém max_games=None (= ano todo) para TODO o resto do app
+# (ML, outras abas, filtros); o consolidado recency-ponderado é aplicado só
+# nos totais, mais abaixo, quando is_geral é True.
 max_games = None
+is_geral = window_opt == "Geral"
 if window_opt.startswith("Last"):
     try:
         max_games = int(window_opt.split()[-1])
@@ -3066,6 +3079,43 @@ if map_mode != "avg":
 
 totals_map = totals
 totals_avg = avg_totals if avg_totals is not None else totals
+
+# --- Modo "Geral": consolida as 3 janelas (recency-ponderado) nos TOTAIS ---
+# Recalcula os totais para cada janela (Ano/L10/L5) e blendeia. O ML do
+# vencedor não é tocado (vem do artefato Elo, independe da janela).
+# totals_breakdown guarda o detalhe por janela p/ exibir abaixo da tabela.
+totals_breakdown: Dict[str, Any] = {}
+if is_geral:
+    def _totals_for_window(_mg: Optional[int]) -> tuple[Dict[str, Any], Dict[str, Any]]:
+        _pA = build_profile(team_games, team=teamA, filters=filters, league_mode=league_mode, map_mode=map_mode, half_life_days=half_life_days, max_games=_mg)
+        _pB = build_profile(team_games, team=teamB, filters=filters, league_mode=league_mode, map_mode=map_mode, half_life_days=half_life_days, max_games=_mg)
+        _tm = matchup_expected_totals(_pA, _pB) if (_pA.n_games > 0 and _pB.n_games > 0) else {}
+        if map_mode != "avg":
+            _pAa = build_profile(team_games, team=teamA, filters=filters, league_mode=league_mode, map_mode="avg", half_life_days=half_life_days, max_games=_mg)
+            _pBa = build_profile(team_games, team=teamB, filters=filters, league_mode=league_mode, map_mode="avg", half_life_days=half_life_days, max_games=_mg)
+            _ta = matchup_expected_totals(_pAa, _pBa) if (_pAa.n_games > 0 and _pBa.n_games > 0) else _tm
+        else:
+            _ta = _tm
+        return _tm, _ta
+
+    _per_map: list = []
+    _per_avg: list = []
+    for _lbl, _mg in _GERAL_WINDOWS:
+        _w = _geral_window_weight(_mg)
+        _tm, _ta = _totals_for_window(_mg)
+        if _tm:
+            _per_map.append((_w, _tm))
+        if _ta:
+            _per_avg.append((_w, _ta))
+        # breakdown segue o mesmo modo (map/avg) exibido na tabela
+        totals_breakdown[_lbl] = (_tm if totals_mode == "map" else _ta)
+    _blend_map = _blend_matchup_totals(_per_map, totals_cls=MatchupTotals)
+    _blend_avg = _blend_matchup_totals(_per_avg, totals_cls=MatchupTotals)
+    if _blend_map:
+        totals_map = _blend_map
+    if _blend_avg:
+        totals_avg = _blend_avg
+
 totals_for_lines = totals_map if totals_mode == "map" else totals_avg
 
 _prev_totals_map: Dict[str, Any] = {}
