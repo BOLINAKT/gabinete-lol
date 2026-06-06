@@ -13,7 +13,12 @@ def resolve_maintenance_preferences(settings: Mapping[str, Any], *, force_full: 
         "fast_mode_user_pref": bool(fast_mode_user_pref),
         "fast_mode": bool(fast_mode_user_pref),
         "run_layer_validation": bool(settings.get("auto_maint_run_layer_validation", (not fast_mode_user_pref))),
-        "policy_force_full": bool(settings.get("auto_maint_force_full", False)) or bool(force_full),
+        # IMPORTANTE: force_full (botão "Manutenção completa") força o full retrain
+        # do MODELO (skip incremental → train_offline reconstrói ml+players), mas
+        # NÃO o profile full do PARAMS. O fit profundo de params (horas) vem só do
+        # setting explícito auto_maint_force_full (a "Qualidade profunda"). Senão o
+        # botão de sync ficava preso horas no params_fit full sem necessidade.
+        "policy_force_full": bool(settings.get("auto_maint_force_full", False)),
         "policy_force_fast": bool(settings.get("auto_maint_force_fast", False)),
         "fast_new_games_max": int(settings.get("auto_maint_fast_new_games_max", 30) or 30),
     }

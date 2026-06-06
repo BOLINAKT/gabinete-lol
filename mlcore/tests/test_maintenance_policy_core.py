@@ -15,8 +15,16 @@ class TestMaintenancePolicyCore(unittest.TestCase):
         self.assertEqual(prefs["cmd_timeout_s"], 900)
         self.assertEqual(prefs["params_timeout_s"], 14000)
         self.assertFalse(prefs["fast_mode_user_pref"])
-        self.assertTrue(prefs["policy_force_full"])
+        # force_full (botão) NÃO força mais o profile full do params (só o modelo).
+        self.assertFalse(prefs["policy_force_full"])
         self.assertFalse(prefs["policy_force_fast"])
+
+    def test_params_full_profile_only_from_explicit_setting(self):
+        # O deep-fit de params (profile full) vem só do setting auto_maint_force_full.
+        on = resolve_maintenance_preferences({"auto_maint_force_full": True}, force_full=False)
+        self.assertTrue(on["policy_force_full"])
+        off = resolve_maintenance_preferences({}, force_full=True)
+        self.assertFalse(off["policy_force_full"])
 
     def test_resolve_maintenance_preferences_respects_params_timeout_override(self):
         prefs = resolve_maintenance_preferences(
