@@ -1290,6 +1290,7 @@ def csv_bootstrap_gate(
         return
     force_once = bool(_gate_state.get("force_once", False))
     force_maint = bool(_gate_state.get("force_maint", False))
+    force_full_req = bool(_gate_state.get("force_full", False))
     last_done_key = str(_gate_state.get("last_done_key", "") or "")
     pending_open = bool(_gate_state.get("pending_open", False))
 
@@ -1603,6 +1604,7 @@ def csv_bootstrap_gate(
                             csv_path_s,
                             artifact_path,
                             status_before,
+                            force_full=bool(force_full_req),
                             progress_cb=_on_auto_progress,
                             st=st,
                             ctx=ctx,
@@ -1854,7 +1856,7 @@ def csv_bootstrap_gate(
     except OSError:
         pass
 
-    c_btn1, c_btn2, c_btn3 = st.columns([1.2, 1.0, 1.0])
+    c_btn1, c_btn2, c_btn3, c_btn4 = st.columns([1.2, 1.0, 1.0, 1.1])
     with c_btn1:
         _enter_disabled = bool(_go_decision == "NO-GO")
         if _enter_disabled:
@@ -1890,6 +1892,25 @@ def csv_bootstrap_gate(
                 hold_screen=True,
             )
             _request_streamlit_rerun()
+    with c_btn4:
+        # Manutenção COMPLETA: full retrain (modelo + players) + refit de params.
+        # Necessária quando a incremental rápida não limpa os alertas (ex.:
+        # players_artifact em drift, ou params com mtime atrás do artifact).
+        if st.button("Manutenção completa", width="stretch", key="csv_bootstrap_rerun_maint_full"):
+            core_clear_bootstrap_auto_maint_run_state(st.session_state)
+            _cleanup_stale_bootstrap_maint_lock(
+                fp_key=fp_key,
+                stale_s=int(core_get_bootstrap_runtime_state(st.session_state).get("lock_stale_s", 180) or 180),
+            )
+            core_request_csv_runtime_refresh(
+                st.session_state,
+                bootstrap=True,
+                hold_screen=True,
+                force_maint=True,
+                force_full=True,
+            )
+            _request_streamlit_rerun()
+        st.caption("Reconstrói modelo + players e refaz params. Mais lento; use p/ sincronizar de vez.")
 
     _non_critical_items: List[str] = []
     _prep_steps = (rep_prepare or {}).get("steps") if isinstance(rep_prepare, dict) else []

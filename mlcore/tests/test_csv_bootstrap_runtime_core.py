@@ -87,7 +87,18 @@ class TestCSVBootstrapRuntimeCore(unittest.TestCase):
         gate_state = consume_bootstrap_gate_state(ss)
         self.assertTrue(gate_state["force_once"])
         self.assertTrue(gate_state["force_maint"])
+        self.assertFalse(gate_state["force_full"])  # nao pedido aqui
         self.assertTrue(gate_state["pending_open"])
+
+        # force_full (botao "Manutencao completa"): one-shot, consumido junto.
+        ss2: dict = {}
+        flags2 = request_csv_runtime_refresh(ss2, bootstrap=True, force_maint=True, force_full=True)
+        self.assertTrue(flags2["force_full"])
+        gate2 = consume_bootstrap_gate_state(ss2)
+        self.assertTrue(gate2["force_maint"])
+        self.assertTrue(gate2["force_full"])
+        # consumido (pop) -> some na segunda leitura
+        self.assertFalse(consume_bootstrap_gate_state(ss2)["force_full"])
         self.assertEqual(mark_bootstrap_gate_completed(ss, "fp-1"), "fp-1")
         self.assertEqual(ss["_csv_bootstrap_done_fp"], "fp-1")
         self.assertFalse(ss["_csv_bootstrap_hold_screen"])

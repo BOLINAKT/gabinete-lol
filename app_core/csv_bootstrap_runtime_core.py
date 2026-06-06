@@ -119,6 +119,7 @@ def request_csv_runtime_refresh(
     bootstrap: bool = True,
     hold_screen: bool = True,
     force_maint: bool = False,
+    force_full: bool = False,
 ) -> Dict[str, bool]:
     """Sinaliza na session_state que um recarregamento de CSV/bootstrap deve ocorrer no próximo ciclo."""
     if bool(prepare):
@@ -129,11 +130,17 @@ def request_csv_runtime_refresh(
         session_state["_csv_bootstrap_hold_screen"] = True
     if bool(force_maint):
         session_state["_csv_bootstrap_force_maint"] = True
+    # force_full: manutenção COMPLETA (full retrain de modelo+players + refit de
+    # params). Necessário p/ sincronizar quando a incremental rápida não dá conta
+    # (ex.: players_artifact em drift). One-shot.
+    if bool(force_full):
+        session_state["_csv_bootstrap_force_full"] = True
     return {
         "prepare": bool(prepare),
         "bootstrap": bool(bootstrap),
         "hold_screen": bool(hold_screen),
         "force_maint": bool(force_maint),
+        "force_full": bool(force_full),
     }
 
 
@@ -148,6 +155,7 @@ def consume_bootstrap_gate_state(session_state: MutableMapping[str, Any]) -> Dic
         "probe_skip": bool(session_state.get("_probe_skip_csv_bootstrap_gate", False)),
         "force_once": bool(session_state.pop("_csv_bootstrap_force_once", False)),
         "force_maint": bool(session_state.pop("_csv_bootstrap_force_maint", False)),
+        "force_full": bool(session_state.pop("_csv_bootstrap_force_full", False)),
         "last_done_key": str(session_state.get("_csv_bootstrap_done_fp", "") or ""),
         "pending_open": bool(session_state.get("_csv_bootstrap_hold_screen", False)),
     }
