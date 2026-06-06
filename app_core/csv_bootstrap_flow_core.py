@@ -368,72 +368,88 @@ def run_auto_maintenance_now(
             _model_ok = False
             _new_games_inc: Optional[int] = None
             _t_inc = time.perf_counter()
-            _emit_running("modelo_incremental")
-            if Path(str(art_target)).exists() and Path(str(daily_csv or "")).exists():
-                try:
-                    cmd_inc = core_build_incremental_update_cmd(
-                        artifact_path=str(art_target),
-                        csv_path=str(daily_csv),
-                        players_path=str(_players_artifact_target),
-                    )
-                    cp_inc = _run_cmd(cmd_inc, timeout_s=cmd_timeout_s)
-                    logs.append("[modelo-incremental]\n" + (cp_inc.stdout or "") + ("\n" + cp_inc.stderr if cp_inc.stderr else ""))
-                    if int(cp_inc.returncode) == 0:
-                        _model_ok = True
-                        _model_updated_this_cycle = True
-                        try:
-                            _inc_info = core_parse_incremental_update_stdout(str(cp_inc.stdout or ""))
-                        except (TypeError, ValueError):
-                            _inc_info = {}
-                        if not isinstance(_inc_info, dict):
-                            _inc_info = {}
-                        _new_games_val = _fnum(_inc_info.get("new_games"))
-                        if _new_games_val is not None:
-                            _new_games_inc = int(_new_games_val)
-                            _model_new_games = int(_new_games_inc)
-                            _model_updated_this_cycle = bool(int(_new_games_inc) > 0)
-                        if _inc_info.get("backfill_suspected") is not None:
-                            _model_backfill_suspected = bool(_inc_info.get("backfill_suspected"))
-                    _mark_step(
-                        "modelo_incremental",
-                        ok=int(cp_inc.returncode) == 0,
-                        t0=_t_inc,
-                        summary=(
-                            f"rc={int(cp_inc.returncode)}"
-                            + (f" | new_games={_new_games_inc}" if _new_games_inc is not None else "")
-                        ),
-                        critical=False,
-                    )
-                except Exception as _exc_inc:
-                    logs.append(f"[modelo-incremental][erro] {type(_exc_inc).__name__}: {_exc_inc}")
-                    _mark_step(
-                        "modelo_incremental",
-                        ok=False,
-                        t0=_t_inc,
-                        summary=f"{type(_exc_inc).__name__}: {_exc_inc}",
-                        critical=False,
-                    )
-            else:
+            if bool(force_full):
+                # "Manutenção completa": pular a incremental e ir DIRETO pro full
+                # retrain. A incremental com 0 jogos novos "tem sucesso" (_model_ok
+                # True) e pulava o full retrain — que é o ÚNICO passo que reconstrói
+                # o players_artifact e refaz o modelo. Sem isso, o players ficava em
+                # drift e o params atrás do artifact, e os alertas nunca limpavam
+                # por mais que se clicasse. Deixando _model_ok=False, o full roda.
                 _mark_step(
                     "modelo_incremental",
                     ok=True,
                     t0=_t_inc,
-                    summary="Pulado (artifact/csv diário ausente).",
+                    summary="Pulado (Manutenção completa: full retrain forçado).",
                     critical=False,
                     skipped=True,
                 )
+            else:
+                _emit_running("modelo_incremental")
+                if Path(str(art_target)).exists() and Path(str(daily_csv or "")).exists():
+                    try:
+                        cmd_inc = core_build_incremental_update_cmd(
+                            artifact_path=str(art_target),
+                            csv_path=str(daily_csv),
+                            players_path=str(_players_artifact_target),
+                        )
+                        cp_inc = _run_cmd(cmd_inc, timeout_s=cmd_timeout_s)
+                        logs.append("[modelo-incremental]\n" + (cp_inc.stdout or "") + ("\n" + cp_inc.stderr if cp_inc.stderr else ""))
+                        if int(cp_inc.returncode) == 0:
+                            _model_ok = True
+                            _model_updated_this_cycle = True
+                            try:
+                                _inc_info = core_parse_incremental_update_stdout(str(cp_inc.stdout or ""))
+                            except (TypeError, ValueError):
+                                _inc_info = {}
+                            if not isinstance(_inc_info, dict):
+                                _inc_info = {}
+                            _new_games_val = _fnum(_inc_info.get("new_games"))
+                            if _new_games_val is not None:
+                                _new_games_inc = int(_new_games_val)
+                                _model_new_games = int(_new_games_inc)
+                                _model_updated_this_cycle = bool(int(_new_games_inc) > 0)
+                            if _inc_info.get("backfill_suspected") is not None:
+                                _model_backfill_suspected = bool(_inc_info.get("backfill_suspected"))
+                        _mark_step(
+                            "modelo_incremental",
+                            ok=int(cp_inc.returncode) == 0,
+                            t0=_t_inc,
+                            summary=(
+                                f"rc={int(cp_inc.returncode)}"
+                                + (f" | new_games={_new_games_inc}" if _new_games_inc is not None else "")
+                            ),
+                            critical=False,
+                        )
+                    except Exception as _exc_inc:
+                        logs.append(f"[modelo-incremental][erro] {type(_exc_inc).__name__}: {_exc_inc}")
+                        _mark_step(
+                            "modelo_incremental",
+                            ok=False,
+                            t0=_t_inc,
+                            summary=f"{type(_exc_inc).__name__}: {_exc_inc}",
+                            critical=False,
+                        )
+                else:
+                    _mark_step(
+                        "modelo_incremental",
+                        ok=True,
+                        t0=_t_inc,
+                        summary="Pulado (artifact/csv diário ausente).",
+                        critical=False,
+                        skipped=True,
+                    )
 
-            _after_inc = core_adjust_needs_after_incremental(
-                model_ok=bool(_model_ok),
-                new_games_inc=_new_games_inc,
-                need_patch_recalibration=bool(need_patch_recalibration),
-                need_retrain_params=bool(need_retrain_params),
-                need_walkforward=bool(need_walkforward),
-            )
-            need_retrain_params = bool(_after_inc.get("need_retrain_params", need_retrain_params))
-            need_walkforward = bool(_after_inc.get("need_walkforward", need_walkforward))
-            if str(_after_inc.get("log_message") or "").strip():
-                logs.append(str(_after_inc.get("log_message") or ""))
+                _after_inc = core_adjust_needs_after_incremental(
+                    model_ok=bool(_model_ok),
+                    new_games_inc=_new_games_inc,
+                    need_patch_recalibration=bool(need_patch_recalibration),
+                    need_retrain_params=bool(need_retrain_params),
+                    need_walkforward=bool(need_walkforward),
+                )
+                need_retrain_params = bool(_after_inc.get("need_retrain_params", need_retrain_params))
+                need_walkforward = bool(_after_inc.get("need_walkforward", need_walkforward))
+                if str(_after_inc.get("log_message") or "").strip():
+                    logs.append(str(_after_inc.get("log_message") or ""))
 
             if not _model_ok:
                 _t_model = time.perf_counter()
