@@ -45,8 +45,13 @@ def parse_incremental_update_stdout(stdout_text: str) -> Dict[str, Any]:
     return out
 
 
-def build_incremental_update_cmd(*, artifact_path: str | Path, csv_path: str | Path) -> List[str]:
-    return [
+def build_incremental_update_cmd(
+    *,
+    artifact_path: str | Path,
+    csv_path: str | Path,
+    players_path: str | Path | None = None,
+) -> List[str]:
+    cmd = [
         sys.executable,
         "-m",
         "mlcore.update_incremental",
@@ -55,6 +60,11 @@ def build_incremental_update_cmd(*, artifact_path: str | Path, csv_path: str | P
         "--csv",
         str(csv_path),
     ]
+    # Passa o players_artifact que o APP realmente usa, para os jogos novos irem
+    # ao arquivo certo (e nao a um path obsoleto guardado no meta do artifact).
+    if players_path:
+        cmd += ["--players", str(players_path)]
+    return cmd
 
 
 def build_train_offline_cmd(

@@ -10,6 +10,7 @@ from mlcore.update_incremental import (
     _resolve_csv_path,
     _safe_int,
     _safe_write_json,
+    _should_skip_artifact_write,
 )
 
 
@@ -73,6 +74,14 @@ class UpdateIncrementalTests(unittest.TestCase):
     def test_safe_int_handles_float_like_strings(self) -> None:
         self.assertEqual(_safe_int("1.0"), 1)
         self.assertEqual(_safe_int(None, 7), 7)
+
+    def test_skip_artifact_write_only_when_no_new_and_no_backfill(self) -> None:
+        # 0 jogos novos e sem backfill -> pula a escrita (preserva mtime).
+        self.assertTrue(_should_skip_artifact_write(0, False))
+        # com jogos novos -> escreve.
+        self.assertFalse(_should_skip_artifact_write(3, False))
+        # 0 novos mas com backfill (correcoes) -> escreve (precisa reaplicar).
+        self.assertFalse(_should_skip_artifact_write(0, True))
 
 
 if __name__ == "__main__":

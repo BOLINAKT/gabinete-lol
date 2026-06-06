@@ -374,6 +374,7 @@ def run_auto_maintenance_now(
                     cmd_inc = core_build_incremental_update_cmd(
                         artifact_path=str(art_target),
                         csv_path=str(daily_csv),
+                        players_path=str(_players_artifact_target),
                     )
                     cp_inc = _run_cmd(cmd_inc, timeout_s=cmd_timeout_s)
                     logs.append("[modelo-incremental]\n" + (cp_inc.stdout or "") + ("\n" + cp_inc.stderr if cp_inc.stderr else ""))

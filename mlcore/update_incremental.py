@@ -108,6 +108,15 @@ def _safe_int(v: Any, default: int = 0) -> int:
         return int(default)
 
 
+def _should_skip_artifact_write(new_n: int, backfill_suspected: bool) -> bool:
+    """True quando NAO se deve reescrever o artifact: 0 jogos novos e sem
+    backfill. Reescrever so para bumpar o mtime fazia o params_fitted.json
+    parecer 'desatualizado vs artifact' para sempre (a manutencao pula o params
+    quando new_games==0, mas antes ainda regravava o artifact -> mtime maior ->
+    alerta que nunca limpava)."""
+    return int(new_n) == 0 and not bool(backfill_suspected)
+
+
 def _extract_model_team_meta(model: Any) -> Dict[str, Dict[str, str]]:
     raw = getattr(model, "team_meta", None)
     if not isinstance(raw, dict):
@@ -233,6 +242,13 @@ def main() -> None:
         help="Filter playoffs rows. 'auto' (default) behaves like 'all' but keeps compatibility with older scripts.",
     )
     ap.add_argument("--tail-n", type=int, default=500, help="How many last games to fingerprint/store for same-day updates (default: 500).")
+    ap.add_argument(
+        "--players",
+        default=None,
+        help="Path to players_artifact.json to update incrementally. Overrides the path stored in the artifact meta "
+             "(which can point to a stale/temp file). Strongly recommended so the players artifact the APP loads is "
+             "the one that gets the new games.",
+    )
     ap.add_argument("--dry-run", action="store_true", help="Do not write artifact; just print what would change.")
     args = ap.parse_args()
 
@@ -388,10 +404,16 @@ def main() -> None:
     players_update_report: Dict[str, Any] = {"enabled": False}
     try:
         pl_meta = dict((art.meta or {}).get("players_layer") or {})
-        if pl_meta.get("enabled") and pl_meta.get("players_artifact") and new_n > 0:
+        # Caminho explícito (--players) SEMPRE vence o do meta: o meta pode
+        # apontar p/ um arquivo temporário/antigo (ex.: tmp_sos800_players.json
+        # de um experimento), fazendo os jogos novos irem p/ o arquivo errado
+        # enquanto o app carrega o players_artifact.json. Resultado: players
+        # "em drift" para sempre. Passe --players <o que o app usa>.
+        p_path = str(args.players or pl_meta.get("players_artifact") or "")
+        players_enabled = bool(args.players) or bool(pl_meta.get("enabled"))
+        if players_enabled and p_path and new_n > 0:
             from .players_layer import PlayersArtifact, load_match_player_rows, lineup_for_game
 
-            p_path = str(pl_meta.get("players_artifact"))
             if os.path.exists(p_path):
                 p_art = PlayersArtifact.load_json(p_path)
                 new_gids = set(new_df["gameid"].astype(str).tolist())
@@ -464,6 +486,13 @@ def main() -> None:
 
     if args.dry_run:
         print("[update_incremental] dry-run: artifact not written.")
+        return
+
+    # Sem jogos novos e sem backfill: NÃO reescrever o artifact (preserva mtime).
+    # Ver _should_skip_artifact_write para o porquê (alerta de params que nunca
+    # limpava por causa do bump gratuito de mtime).
+    if _should_skip_artifact_write(new_n, backfill_suspected):
+        print("[update_incremental] no new games; artifact unchanged (mtime preserved).")
         return
 
     _safe_write_json(art_path, art.to_dict())

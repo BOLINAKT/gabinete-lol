@@ -61,6 +61,19 @@ class MaintenanceRuntimeCoreTests(unittest.TestCase):
             cmd,
             [sys.executable, "-m", "mlcore.update_incremental", "--artifact", "ml_artifact.json", "--csv", "daily.csv"],
         )
+        # Sem players_path: nao deve incluir --players (retrocompat).
+        self.assertNotIn("--players", cmd)
+
+    def test_build_incremental_update_cmd_with_players(self) -> None:
+        # Com players_path: os jogos novos vao p/ o arquivo que o app usa,
+        # nao p/ um path obsoleto do meta do artifact.
+        cmd = build_incremental_update_cmd(
+            artifact_path="ml_artifact.json",
+            csv_path="daily.csv",
+            players_path="players_artifact.json",
+        )
+        self.assertIn("--players", cmd)
+        self.assertEqual(cmd[cmd.index("--players") + 1], "players_artifact.json")
 
     def test_build_train_offline_cmd(self) -> None:
         cmd = build_train_offline_cmd(
