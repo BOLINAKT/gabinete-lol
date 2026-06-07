@@ -667,7 +667,12 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     pc1, pc2 = st.columns([2, 1])
     with pc1:
         if str(session_state.get("resumo_laplace_pick", "") or "") not in _laplace_pick_opts:
-            session_state["resumo_laplace_pick"] = "Média Liga+H2H 5"
+            # DEVE ser o MESMO default do resto do app (app_state.py + _VIEW_DEFAULTS
+            # = "Liga 15"). Antes era "Média Liga+H2H 5" — o ÚNICO lugar do código
+            # que gravava esse valor. Quando a chave era resetada num render
+            # intermediário, este default divergente assumia e a HIST "pulava"
+            # de 1.40 (Liga 15) p/ 1.51 (Média). Confirmado por log.
+            session_state["resumo_laplace_pick"] = "Liga 15"
         st.selectbox(
             "Fonte do Histórico",
             options=_laplace_pick_opts,
@@ -700,12 +705,7 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     # amostra baixa.
     sc_use = bool(view_state["resumo_sc_use"])
     sc_thr = float(view_state["resumo_sc_thr"])
-    # Ler do session_state (o selectbox "Fonte do Histórico" já renderizou acima
-    # e gravou o valor que está NA TELA). O snapshot do topo (view_state) é lido
-    # ANTES do selectbox: como o selectbox abre na 1ª opção "Média Liga+H2H 5",
-    # o render 1 usava "Liga 15" (default da constante) e o render 2 "Média" →
-    # a HIST pulava 1.40→1.51. Confirmado por debug (laplace mudava entre renders).
-    laplace_pick = str(session_state.get("resumo_laplace_pick") or view_state["resumo_laplace_pick"])
+    laplace_pick = str(view_state["resumo_laplace_pick"])
     w_mix_model = float(view_state["resumo_mix_w_model"])
     w_mix_lap = float(view_state["resumo_mix_w_laplace"])
     w_mix_sc = float(view_state["resumo_mix_w_sc"])
