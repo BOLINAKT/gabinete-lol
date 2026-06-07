@@ -700,7 +700,12 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     # amostra baixa.
     sc_use = bool(view_state["resumo_sc_use"])
     sc_thr = float(view_state["resumo_sc_thr"])
-    laplace_pick = str(view_state["resumo_laplace_pick"])
+    # Ler do session_state (o selectbox "Fonte do Histórico" já renderizou acima
+    # e gravou o valor que está NA TELA). O snapshot do topo (view_state) é lido
+    # ANTES do selectbox: como o selectbox abre na 1ª opção "Média Liga+H2H 5",
+    # o render 1 usava "Liga 15" (default da constante) e o render 2 "Média" →
+    # a HIST pulava 1.40→1.51. Confirmado por debug (laplace mudava entre renders).
+    laplace_pick = str(session_state.get("resumo_laplace_pick") or view_state["resumo_laplace_pick"])
     w_mix_model = float(view_state["resumo_mix_w_model"])
     w_mix_lap = float(view_state["resumo_mix_w_laplace"])
     w_mix_sc = float(view_state["resumo_mix_w_sc"])
@@ -1040,23 +1045,6 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         top_n=60,
         sort_by=_sort_by,
     )
-
-    # DEBUG TEMP (remover): dump dos candidatos de "Barões" p/ achar a causa real
-    # do "HIST muda" (1.40 vazio -> 1.51 preenchido). Read-only, nao altera nada.
-    try:
-        _bar = [c for c in ranked if "bar" in str((getattr(c, "row", {}) or {}).get("Mercado", "")).lower()]
-        _parts = []
-        for _c in _bar:
-            _r = getattr(_c, "row", {}) or {}
-            _parts.append(
-                f"{_r.get('Mercado', '?')}|{_r.get('Lado', '?')} "
-                f"odd_hist={getattr(_c, 'odd_hist', None)} "
-                f"row_hist={_r.get('Odd (Hist)')} oc={getattr(_c, 'odd_casa', None)} "
-                f"score={getattr(_c, 'total', None)}"
-            )
-        st.caption(f"🔧DEBUG baron[{len(_bar)}] laplace='{laplace_pick}' :: " + " ;; ".join(_parts))
-    except Exception as _dbg_e:
-        st.caption(f"🔧DEBUG baron erro: {type(_dbg_e).__name__}: {_dbg_e}")
 
     _render_candidate_cards(
         st=st, ranked=ranked, oc_map_cur=oc_map_cur,
