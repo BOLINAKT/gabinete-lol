@@ -1,8 +1,10 @@
-"""Resumo default-lines behavior (kills the 'ghost 25.5' leak).
+"""Resumo default-lines behavior.
 
-When the user types no custom line for a metric, the Resumo must fall back to a
-FIXED standard line (27.5 kills, 11.5 torres, ...) — never to a value left over
-from a previous matchup. A line the user does type replaces the default.
+Contrato (2026-06): RESPEITA o que o usuário digitou.
+- Campo vazio → padrão FIXO da métrica (27.5 kills, ...), nunca um valor de um
+  confronto anterior (sem "fantasma 25.5").
+- Campo com linhas → usa EXATAMENTE essas (o usuário pode remover o padrão, ex.:
+  deixar só 28.5). Antes o padrão era forçado junto e não dava pra remover.
 """
 from __future__ import annotations
 
@@ -21,17 +23,19 @@ class TestResumoDefaultLines(unittest.TestCase):
         self.assertEqual(merge_with_default_lines("inhibitors", []), [1.5])
         self.assertEqual(merge_with_default_lines("time", []), [32.5])
 
-    def test_custom_line_is_added_to_default_and_sorted(self):
-        # User typed towers 5.5 → both the default 11.5 AND 5.5 are analyzed,
-        # sorted ascending (smaller line to the left).
-        self.assertEqual(merge_with_default_lines("towers", [5.5]), [5.5, 11.5])
-        # A larger custom line sits to the right of the default.
-        self.assertEqual(merge_with_default_lines("towers", [12.5]), [11.5, 12.5])
-        # Kills custom 25.5 keeps the standard 27.5 too (sorted).
-        self.assertEqual(merge_with_default_lines("kills", [25.5]), [25.5, 27.5])
+    def test_typed_lines_are_respected_exactly(self):
+        # Usuário digitou só 5.5 → analisa SÓ 5.5 (o padrão 11.5 NÃO é forçado;
+        # ele pode remover o padrão de propósito).
+        self.assertEqual(merge_with_default_lines("towers", [5.5]), [5.5])
+        self.assertEqual(merge_with_default_lines("towers", [12.5]), [12.5])
+        # Tirou 27.5 e deixou só 28.5 (o caso exato do bug): só 28.5.
+        self.assertEqual(merge_with_default_lines("kills", [28.5]), [28.5])
 
-    def test_multiple_custom_lines_merged_sorted(self):
-        self.assertEqual(merge_with_default_lines("kills", [30.5, 26.5]), [26.5, 27.5, 30.5])
+    def test_multiple_custom_lines_respected_sorted(self):
+        # Várias linhas digitadas: usa só elas, ordenadas (sem injetar o padrão).
+        self.assertEqual(merge_with_default_lines("kills", [30.5, 26.5]), [26.5, 30.5])
+        # Se o usuário INCLUIR o padrão junto, ele aparece (porque foi digitado).
+        self.assertEqual(merge_with_default_lines("kills", [27.5, 28.5]), [27.5, 28.5])
 
     def test_typing_the_default_is_not_duplicated(self):
         self.assertEqual(merge_with_default_lines("kills", [27.5]), [27.5])

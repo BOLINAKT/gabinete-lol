@@ -1013,6 +1013,23 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         help="Score = melhores notas no topo. Odd = menores odds (mais prováveis) primeiro. Gestão = maiores stakes primeiro.",
     )
     _sort_by = _sort_opts.get(_sort_label, "score")
+    # Sincroniza as "Sua odd" digitadas (widgets oc_*) ANTES de computar as picks.
+    # Os widgets escrevem em session_state[oc_key]; ler isso aqui (no topo do
+    # rerun, já com o valor novo) garante que a EDGE use a odd atual. Antes este
+    # bloco ficava DEPOIS do rank_candidates -> a edge saía com a odd anterior
+    # (lag de 1 rerun: o campo mostrava 1.68 mas a edge era a do 2.11).
+    oc_key_prefix = f"oc_{matchup_key_oc}|"
+    for ss_key in list(session_state.keys()):
+        if isinstance(ss_key, str) and ss_key.startswith(oc_key_prefix):
+            row_key = ss_key[len(oc_key_prefix):]
+            fv = _parse_odd_input(session_state.get(ss_key))
+            if fv is not None and fv > 1.0:
+                oc_map_cur[row_key] = float(fv)
+            elif row_key in oc_map_cur:
+                oc_map_cur.pop(row_key, None)
+    oc_map_all[matchup_key_oc] = oc_map_cur
+    session_state[oc_store_key] = oc_map_all
+
     ranked = rank_candidates(
         rows,
         oc_map=oc_map_cur,
@@ -1035,16 +1052,3 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
 
     # Compare-mode: quando há 2+ linhas da mesma métrica, mostra o sweet spot.
     _render_line_comparisons(st=st, rows=rows)
-
-    # Persist updated oc_map back.
-    oc_key_prefix = f"oc_{matchup_key_oc}|"
-    for ss_key in list(session_state.keys()):
-        if isinstance(ss_key, str) and ss_key.startswith(oc_key_prefix):
-            row_key = ss_key[len(oc_key_prefix):]
-            fv = _parse_odd_input(session_state.get(ss_key))
-            if fv is not None and fv > 1.0:
-                oc_map_cur[row_key] = float(fv)
-            elif row_key in oc_map_cur:
-                oc_map_cur.pop(row_key, None)
-    oc_map_all[matchup_key_oc] = oc_map_cur
-    session_state[oc_store_key] = oc_map_all

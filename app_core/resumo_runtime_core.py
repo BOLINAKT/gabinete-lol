@@ -27,21 +27,26 @@ RESUMO_DEFAULT_LINES: dict[str, list[float]] = _stats_default_lines_map()
 
 
 def merge_with_default_lines(metric_key: str, parsed: list[float]) -> list[float]:
-    """Always include the metric's standard default line, plus any custom lines.
+    """Linhas a analisar para a métrica, RESPEITANDO o que o usuário digitou.
 
-    The default (e.g. towers 11.5) is kept for analysis even when the user adds
-    a custom line (e.g. 5.5) — they want BOTH, not a replacement. The default
-    comes first; custom lines are appended in order, de-duplicated. Because the
-    default is a fixed constant, an empty field never resurfaces a line from a
-    previous matchup (no "ghost 25.5").
+    - Campo com linhas → usa EXATAMENTE essas (dedup + ordenado). O usuário tem
+      controle total: pode REMOVER o padrão (ex.: tirar 27.5 e deixar só 28.5).
+      Antes o padrão era forçado junto e não dava pra remover.
+    - Campo vazio → cai no padrão da métrica (ex.: kills 27.5). Como o padrão é
+      constante, um campo vazio nunca ressuscita uma linha de um confronto
+      anterior (sem "fantasma 25.5").
     """
-    out = list(RESUMO_DEFAULT_LINES.get(str(metric_key).strip().lower(), []))
+    cleaned: list[float] = []
     for v in (parsed or []):
-        if not any(abs(float(v) - float(e)) < 1e-9 for e in out):
-            out.append(float(v))
-    # Sort ascending so a smaller custom line (6.5) sits to the LEFT of the
-    # default (11.5) and a larger one (12.5) to the RIGHT.
-    return sorted(out)
+        try:
+            fv = float(v)
+        except (TypeError, ValueError):
+            continue
+        if not any(abs(fv - float(e)) < 1e-9 for e in cleaned):
+            cleaned.append(fv)
+    if cleaned:
+        return sorted(cleaned)
+    return sorted(float(x) for x in RESUMO_DEFAULT_LINES.get(str(metric_key).strip().lower(), []))
 
 
 def select_h2h_games(
