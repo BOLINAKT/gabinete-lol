@@ -18,7 +18,11 @@ _VIEW_DEFAULTS: dict[str, Any] = {
     "resumo_show_laplace_cols": False,
     "resumo_sc_thr": 60,
     "resumo_sc_use": True,
-    "resumo_laplace_pick": "Liga 15",
+    # DEVE bater com o default do selectbox "Fonte do Histórico"
+    # (resumo_tab_core). Se divergir, o 1º render computa a HIST com uma fonte e
+    # o selectbox mostra outra → a HIST "muda" (ex.: 1.40 Liga15 → 1.51 Média)
+    # ao digitar a 1ª odd. Mantém os dois em "Média Liga+H2H 5".
+    "resumo_laplace_pick": "Média Liga+H2H 5",
     # Pesos do Mix: usuário acerta mais seguindo Histórico → Hist tem peso dominante.
     "resumo_mix_w_model": 25.0,
     "resumo_mix_w_laplace": 55.0,
@@ -35,6 +39,20 @@ _COMBO_PRESET_MAP: dict[str, tuple[float, float]] = {
     "Neutro": (0.45, 0.18),
     "Agressivo": (0.65, 0.30),
 }
+
+
+def ensure_resumo_filter_state(session_state: MutableMapping[str, Any]) -> None:
+    """Semeia os defaults dos controles do Resumo no session_state ANTES de ler
+    o view_state.
+
+    Sem isso, no 1º render get_resumo_view_state usa o default da CONSTANTE,
+    enquanto o widget (selectbox/number_input) seedava o SEU default depois — se
+    divergissem, os números (HIST/edge/filtro) "mudavam" na 1ª interação (ex.:
+    HIST do baron 1.40→1.51 quando a fonte do histórico saltava de Liga15 para
+    Média Liga+H2H 5). Seedar aqui garante: 1º render == widgets == compute.
+    """
+    for key, val in {**_FILTER_DEFAULTS, **_VIEW_DEFAULTS}.items():
+        session_state.setdefault(key, val)
 
 
 def _filter_snapshot(session_state: Mapping[str, Any]) -> dict[str, Any]:

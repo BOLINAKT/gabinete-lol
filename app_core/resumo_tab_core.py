@@ -11,6 +11,7 @@ from app_core.championship_stats_core import enrich_resumo_rows_with_stats_detai
 
 from app_core.resumo_runtime_core import SC_METRIC_COL, merge_with_default_lines, select_h2h_games
 from app_core.resumo_state_core import (
+    ensure_resumo_filter_state,
     get_resumo_view_state,
     set_resumo_market_trace,
 )
@@ -571,6 +572,10 @@ def _render_diagnostic(
 
 def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     session_state = st.session_state
+    # Seedar defaults ANTES de ler o view_state — senão o 1º render computa com o
+    # default da constante e o widget mostra outro, fazendo HIST/edge/filtro
+    # "mudarem" na 1ª interação (bug do baron 1.40→1.51).
+    ensure_resumo_filter_state(session_state)
     view_state = get_resumo_view_state(session_state)
 
     # Install live ROI overlay from the tracked picks (xlsx backfill + manual).
