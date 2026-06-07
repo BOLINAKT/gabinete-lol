@@ -705,11 +705,20 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     # amostra baixa.
     sc_use = bool(view_state["resumo_sc_use"])
     sc_thr = float(view_state["resumo_sc_thr"])
-    laplace_pick = str(view_state["resumo_laplace_pick"])
+    # laplace_pick e max_odd: ler do session_state AQUI (os widgets selectbox
+    # "Fonte do Histórico" e number_input "Odd máxima" já renderizaram acima e
+    # gravaram o valor atual). Usar o snapshot do topo (view_state, lido ANTES
+    # dos widgets) fazia o cálculo divergir do que o selectbox mostra → HIST e
+    # Score "pulavam" na 1ª interação (1.40 Liga15 → 1.51 Média). Agora cálculo
+    # == widget em todo render.
+    laplace_pick = str(session_state.get("resumo_laplace_pick") or view_state["resumo_laplace_pick"])
     w_mix_model = float(view_state["resumo_mix_w_model"])
     w_mix_lap = float(view_state["resumo_mix_w_laplace"])
     w_mix_sc = float(view_state["resumo_mix_w_sc"])
-    max_odd = float(view_state["resumo_max_odd"])
+    try:
+        max_odd = float(session_state.get("resumo_max_odd") or view_state["resumo_max_odd"])
+    except (TypeError, ValueError):
+        max_odd = float(view_state["resumo_max_odd"])
     req_liga = False
     req_h2h = False
     req_model = False
