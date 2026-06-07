@@ -11,7 +11,6 @@ from app_core.championship_stats_core import enrich_resumo_rows_with_stats_detai
 
 from app_core.resumo_runtime_core import SC_METRIC_COL, merge_with_default_lines, select_h2h_games
 from app_core.resumo_state_core import (
-    ensure_resumo_filter_state,
     get_resumo_view_state,
     set_resumo_market_trace,
 )
@@ -572,10 +571,6 @@ def _render_diagnostic(
 
 def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     session_state = st.session_state
-    # Seedar defaults ANTES de ler o view_state — senão o 1º render computa com o
-    # default da constante e o widget mostra outro, fazendo HIST/edge/filtro
-    # "mudarem" na 1ª interação (bug do baron 1.40→1.51).
-    ensure_resumo_filter_state(session_state)
     view_state = get_resumo_view_state(session_state)
 
     # Install live ROI overlay from the tracked picks (xlsx backfill + manual).
@@ -705,20 +700,11 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     # amostra baixa.
     sc_use = bool(view_state["resumo_sc_use"])
     sc_thr = float(view_state["resumo_sc_thr"])
-    # laplace_pick e max_odd: ler do session_state AQUI (os widgets selectbox
-    # "Fonte do Histórico" e number_input "Odd máxima" já renderizaram acima e
-    # gravaram o valor atual). Usar o snapshot do topo (view_state, lido ANTES
-    # dos widgets) fazia o cálculo divergir do que o selectbox mostra → HIST e
-    # Score "pulavam" na 1ª interação (1.40 Liga15 → 1.51 Média). Agora cálculo
-    # == widget em todo render.
-    laplace_pick = str(session_state.get("resumo_laplace_pick") or view_state["resumo_laplace_pick"])
+    laplace_pick = str(view_state["resumo_laplace_pick"])
     w_mix_model = float(view_state["resumo_mix_w_model"])
     w_mix_lap = float(view_state["resumo_mix_w_laplace"])
     w_mix_sc = float(view_state["resumo_mix_w_sc"])
-    try:
-        max_odd = float(session_state.get("resumo_max_odd") or view_state["resumo_max_odd"])
-    except (TypeError, ValueError):
-        max_odd = float(view_state["resumo_max_odd"])
+    max_odd = float(view_state["resumo_max_odd"])
     req_liga = False
     req_h2h = False
     req_model = False
@@ -1054,6 +1040,23 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         top_n=60,
         sort_by=_sort_by,
     )
+
+    # DEBUG TEMP (remover): dump dos candidatos de "Barões" p/ achar a causa real
+    # do "HIST muda" (1.40 vazio -> 1.51 preenchido). Read-only, nao altera nada.
+    try:
+        _bar = [c for c in ranked if "bar" in str((getattr(c, "row", {}) or {}).get("Mercado", "")).lower()]
+        _parts = []
+        for _c in _bar:
+            _r = getattr(_c, "row", {}) or {}
+            _parts.append(
+                f"{_r.get('Mercado', '?')}|{_r.get('Lado', '?')} "
+                f"odd_hist={getattr(_c, 'odd_hist', None)} "
+                f"row_hist={_r.get('Odd (Hist)')} oc={getattr(_c, 'odd_casa', None)} "
+                f"score={getattr(_c, 'total', None)}"
+            )
+        st.caption(f"🔧DEBUG baron[{len(_bar)}] laplace='{laplace_pick}' :: " + " ;; ".join(_parts))
+    except Exception as _dbg_e:
+        st.caption(f"🔧DEBUG baron erro: {type(_dbg_e).__name__}: {_dbg_e}")
 
     _render_candidate_cards(
         st=st, ranked=ranked, oc_map_cur=oc_map_cur,

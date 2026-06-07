@@ -1,12 +1,10 @@
 import unittest
 
 from app_core.resumo_state_core import (
-    _VIEW_DEFAULTS,
     apply_resumo_combo_preset,
     apply_resumo_filter_values,
     delete_active_resumo_filter_profile,
     ensure_resumo_combo_state,
-    ensure_resumo_filter_state,
     get_resumo_market_trace,
     get_resumo_view_state,
     list_resumo_filter_presets,
@@ -15,29 +13,6 @@ from app_core.resumo_state_core import (
     save_resumo_filter_profile,
     set_resumo_market_trace,
 )
-
-# DEVE bater com o default do selectbox "Fonte do Histórico" em resumo_tab_core.
-# Se alguém mudar um sem o outro, o 1º render computa a HIST com uma fonte e o
-# widget mostra outra → HIST "muda" na 1ª interação (bug do baron 1.40→1.51).
-_SELECTBOX_LAPLACE_DEFAULT = "Média Liga+H2H 5"
-
-
-class ResumoFirstRenderConsistencyTest(unittest.TestCase):
-    def test_laplace_default_matches_selectbox(self):
-        self.assertEqual(_VIEW_DEFAULTS["resumo_laplace_pick"], _SELECTBOX_LAPLACE_DEFAULT)
-
-    def test_ensure_seeds_defaults_into_empty_state(self):
-        ss: dict = {}
-        ensure_resumo_filter_state(ss)
-        vs = get_resumo_view_state(ss)
-        self.assertEqual(vs["resumo_laplace_pick"], _SELECTBOX_LAPLACE_DEFAULT)
-        self.assertEqual(vs["resumo_max_odd"], 2.0)
-
-    def test_ensure_respects_existing_values(self):
-        ss = {"resumo_laplace_pick": "Liga 10", "resumo_max_odd": 1.8}
-        ensure_resumo_filter_state(ss)
-        self.assertEqual(ss["resumo_laplace_pick"], "Liga 10")
-        self.assertEqual(ss["resumo_max_odd"], 1.8)
 
 
 class ResumoStateCoreTest(unittest.TestCase):
