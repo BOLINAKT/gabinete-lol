@@ -156,11 +156,20 @@ def _render_v3_view(
     if _need_autofill:
         try:
             if team_games is not None and not team_games.empty and {"team", "date"}.issubset(team_games.columns):
-                _wanted = {_team_match_key(_top_team_a), _team_match_key(_top_team_b)}
                 _team_keys = team_games["team"].astype(str).map(_team_match_key)
-                _matchup_games = team_games[_team_keys.isin(_wanted)].copy()
-                _matchup_games["_d"] = pd.to_datetime(_matchup_games["date"], errors="coerce")
-                _matchup_games = _matchup_games.dropna(subset=["_d"]).sort_values("_d")
+
+                def _recent_games(_keys: set) -> pd.DataFrame:
+                    _g = team_games[_team_keys.isin(_keys)].copy()
+                    _g["_d"] = pd.to_datetime(_g["date"], errors="coerce")
+                    return _g.dropna(subset=["_d"]).sort_values("_d")
+
+                # Recorte segue o TIME 1 (teamA): num cross-league (ex.: EBL x LFL)
+                # a liga do recorte deve ser a do PRIMEIRO time, não a de quem
+                # jogou mais recentemente. Fallback p/ qualquer um dos dois se o
+                # Time 1 não tiver jogos no CSV ativo.
+                _matchup_games = _recent_games({_team_match_key(_top_team_a)})
+                if _matchup_games.empty:
+                    _matchup_games = _recent_games({_team_match_key(_top_team_a), _team_match_key(_top_team_b)})
                 if not _matchup_games.empty:
                     _last_row = _matchup_games.iloc[-1]
                     _last_lg = str(_last_row.get("league", "") or "")
