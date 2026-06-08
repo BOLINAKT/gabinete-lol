@@ -766,16 +766,19 @@ def _render_kills_line_content(
         render_v3_stats_table,
     )
 
-    # --------- Line editor for this tab (allows tweaking value in place) ---------
-    line_edit_key = f"{lines_key}__edit_{line_idx}"
-    edit_cols = st.columns([1, 1, 4])
+    # --------- Linha desta sub-aba (somente exibição) ---------
+    # Sem editor +/- (number_input): ele dava a opção de aumentar/diminuir que o
+    # usuário não quer E, por ser widget dentro de st.tabs, era resetado ao
+    # trocar de aba — corrompendo a lista (a linha "virava" o padrão e duplicava).
+    # Agora a linha é só mostrada; para outra linha, use "Adicionar" no topo.
+    _lv_disp = mmss(float(line_val)) if is_time_metric else num_fmt(float(line_val), metric_decimals)
+    edit_cols = st.columns([1.4, 1, 4])
     with edit_cols[0]:
-        new_line_val = st.number_input(
-            f"Linha {market_label}",
-            min_value=0.0, max_value=200.0,
-            step=float(step_val),
-            value=float(line_val),
-            key=line_edit_key, format="%g",
+        st.markdown(
+            f"<div style='font-size:0.78em;opacity:0.6;text-transform:uppercase;letter-spacing:0.04em;'>"
+            f"Linha {escape(str(market_label))}</div>"
+            f"<div style='font-weight:800;font-size:1.3em;color:#2daac4;'>{escape(str(_lv_disp))}</div>",
+            unsafe_allow_html=True,
         )
     with edit_cols[1]:
         if st.button("✕ Remover esta linha",
@@ -790,15 +793,7 @@ def _render_kills_line_content(
             session_state[lines_key] = current
             st.rerun()
     with edit_cols[2]:
-        st.caption("Editando a linha mostrada nesta sub-aba. Adicione/remova linhas no topo.")
-
-    # If user changed the line value, persist it to the lines list
-    if new_line_val != line_val:
-        current = list(session_state.get(lines_key) or [float(new_line_val)])
-        if 0 <= line_idx < len(current):
-            current[line_idx] = float(new_line_val)
-            session_state[lines_key] = current
-        line_val = float(new_line_val)
+        st.caption("Para analisar outra linha, adicione no campo do topo (aceita várias: 27.5, 28.5, ...).")
 
     def _cyan_section_header(title: str) -> None:
         cyan_section_header(st, title)

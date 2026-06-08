@@ -18,7 +18,11 @@ _VIEW_DEFAULTS: dict[str, Any] = {
     "resumo_show_laplace_cols": False,
     "resumo_sc_thr": 60,
     "resumo_sc_use": True,
-    "resumo_laplace_pick": "Liga 15",
+    # Default = Média Liga+H2H 5 (a análise que o usuário considera mais certeira).
+    # DEVE bater com o índice 0 das opções e o default-set do selectbox em
+    # resumo_tab_core, senão a HIST "pula" no 1º render (reset do widget). Se o
+    # H2H do recorte não existir, laplace_pick_odd cai na Liga sozinha.
+    "resumo_laplace_pick": "Média Liga+H2H 5",
     # Pesos do Mix: usuário acerta mais seguindo Histórico → Hist tem peso dominante.
     "resumo_mix_w_model": 25.0,
     "resumo_mix_w_laplace": 55.0,
