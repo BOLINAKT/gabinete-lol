@@ -650,15 +650,20 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     # ── Controles principais ────────────────────────────────────────────────
     # Fonte do Histórico é o filtro central do fluxo de decisão:
     # se a pick aparecer aqui com "Média Liga+H2H 5" → critério 4/4 cumprido.
+    # ORDEM IMPORTA: "Liga 15" é o ÍNDICE 0 de propósito. O Streamlit, ao
+    # rerenderizar o selectbox dentro de st.tabs, às vezes reseta o widget pro
+    # índice 0 no início do rerun (antes do nosso código). Se o índice 0 fosse
+    # "Média Liga+H2H 5", esse reset fazia a HIST pular (Liga15→Média). Com
+    # "Liga 15" no índice 0 (= default de todo o app), o reset cai no valor certo.
     _laplace_pick_opts = [
+        "Liga 15",
+        "Liga 5",
+        "Liga 10",
+        "Liga Ano",
         "Média Liga+H2H 5",
         "Média Liga+H2H 10",
         "Média Liga+H2H 15",
         "Média Liga+H2H Ano",
-        "Liga 5",
-        "Liga 10",
-        "Liga 15",
-        "Liga Ano",
         "H2H 5",
         "H2H 10",
         "H2H 15",
