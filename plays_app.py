@@ -3274,6 +3274,8 @@ _secondary_tab_renderers = {
         mlcore_rank_table_v2_fn=_mlcore_rank_table_v2,
         elo_rank_table_fn=_elo_rank_table,
         format_num_fn=_format_num,
+        team_a=teamA,
+        team_b=teamB,
     ),
     "Jogos": lambda: core_render_schedule_tab(st=st, bo=int(bo), teams=teams),
     "Series": lambda: core_render_series_tab(

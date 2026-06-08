@@ -11,6 +11,7 @@ from app_core.tab_filters_core import collect_year_split_league_options, scope_h
 from app_core.tab_state_core import ensure_blank_keys, normalize_select_key, reset_keys, select_placeholder
 from app_core.tab_ui_core import render_tab_hero, render_tab_section
 from app_core.ui_design_core import team_badge_html
+from mlcore.team_artifact_normalize import _norm_team_key
 
 
 def _render_rank_grid(
@@ -82,6 +83,66 @@ def _render_rank_grid(
     )
 
 
+def _rating_row(df_all: pd.DataFrame, team: str) -> Any:
+    if df_all is None or df_all.empty or "team" not in df_all.columns:
+        return None
+    r = df_all[df_all["team"].astype(str) == str(team)]
+    return r.iloc[0] if not r.empty else None
+
+
+def _render_rating_comparison(
+    st: Any,
+    df_all: pd.DataFrame,
+    team_a: str,
+    team_b: str,
+    *,
+    format_num_fn: Callable[[float, int], str],
+) -> None:
+    """Cards lado a lado com a força (ML core v2) de dois times + veredito.
+
+    Serve para comparar times de ligas DIFERENTES (cross-league): a força do v2
+    já embute SOS/força-de-liga, então comparar o total_strength é justo entre
+    ligas (ao contrário de um Elo cru, que não é comparável entre regiões)."""
+    ra = _rating_row(df_all, team_a)
+    rb = _rating_row(df_all, team_b)
+    if ra is None or rb is None:
+        st.info("Algum dos times não está no ranking do modelo. Use a busca acima para conferir o nome exato.")
+        return
+
+    def _f(v: Any) -> float:
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            return float("nan")
+
+    cols = st.columns(2)
+    for col, r in zip(cols, (ra, rb)):
+        with col:
+            _s = _f(r.get("total_strength"))
+            _s_txt = format_num_fn(_s, 1) if _s == _s else "—"  # NaN check
+            st.markdown(
+                "<div style='border:1px solid rgba(45,170,196,0.25);border-radius:10px;"
+                "padding:12px 14px;background:rgba(45,170,196,0.05);'>"
+                f"<div style='font-weight:800;font-size:1.15em;color:#2daac4;'>{escape(str(r.get('team', '')))}</div>"
+                f"<div style='opacity:0.7;font-size:0.85em;margin:2px 0 8px;'>"
+                f"{escape(str(r.get('league', '') or '—'))} · {escape(str(r.get('tier', '') or '—'))}</div>"
+                f"<div style='font-size:1.7em;font-weight:800;'>{_s_txt}</div>"
+                f"<div style='opacity:0.6;font-size:0.8em;'>força ML · #{int(r.get('rank')) if str(r.get('rank','')).strip().isdigit() else '—'} no ranking geral</div>"
+                "</div>",
+                unsafe_allow_html=True,
+            )
+
+    sa, sb = _f(ra.get("total_strength")), _f(rb.get("total_strength"))
+    if sa == sa and sb == sb:  # both finite
+        diff = sa - sb
+        if abs(diff) < 1e-9:
+            _verdict = "Empate técnico de força."
+        else:
+            _winner = str(ra.get("team", "")) if sa > sb else str(rb.get("team", ""))
+            _verdict = f"**{_winner}** é mais forte por **{format_num_fn(abs(diff), 1)}** de força."
+        st.caption(f"{_verdict} (força ML core v2 = Elo residual + força de liga/tier + conquistas; comparável entre ligas).")
+
+
 def render_rankings_tab(
     *,
     st: Any,
@@ -93,6 +154,8 @@ def render_rankings_tab(
     mlcore_rank_table_v2_fn: Callable[..., pd.DataFrame],
     elo_rank_table_fn: Callable[..., pd.DataFrame],
     format_num_fn: Callable[[float, int], str],
+    team_a: str = "",
+    team_b: str = "",
 ) -> None:
     render_tab_hero(
         st,
@@ -261,6 +324,68 @@ def render_rankings_tab(
                 metric_col="elo", metric_label="Elo",
                 show_tier=False, top_n=int(top_n),
             )
+
+    # Tabela COMPLETA (todos os times do artefato, sem corte de Top N) — base
+    # para a busca e a comparação. Times novos/fracos (ex.: Magaza, ~691º) não
+    # aparecem no Top N mas EXISTEM no modelo; aqui dá p/ achá-los e compará-los.
+    df_all = mlcore_rank_table_v2_fn(artifact_path, as_of=as_of_date, top_n=0)
+
+    st.divider()
+    render_tab_section(
+        st,
+        title="Buscar time",
+        subtitle="Ache qualquer time pelo nome — força e posição completas, sem corte de Top N nem recorte.",
+    )
+    _q = st.text_input("Nome do time", key="rank_team_search", placeholder="ex: Magaza")
+    if str(_q or "").strip():
+        if df_all.empty:
+            st.info("Sem ratings no artefato do modelo.")
+        else:
+            _qn = _norm_team_key(_q)
+            _hits = df_all[df_all["team"].apply(lambda t: _qn in _norm_team_key(t))]
+            if _hits.empty:
+                st.info("Nenhum time encontrado com esse nome.")
+            else:
+                _scols = [c for c in ["rank", "team", "league", "tier", "total_strength"] if c in _hits.columns]
+                st.dataframe(_hits[_scols].head(50), width="stretch", hide_index=True)
+
+    render_tab_section(
+        st,
+        title="Comparar rating entre ligas",
+        subtitle="Força de dois times lado a lado (cross-league). Começa com os times do confronto atual; troque à vontade.",
+    )
+    if df_all.empty:
+        st.info("Sem ratings no artefato do modelo.")
+    else:
+        _all_teams = sorted(df_all["team"].astype(str).unique().tolist())
+
+        def _match_team(name: str) -> str:
+            _nn = _norm_team_key(name)
+            for _t in _all_teams:
+                if _norm_team_key(_t) == _nn:
+                    return _t
+            return ""
+
+        # Default = times do confronto. Re-seed quando o confronto muda; entre
+        # trocas de confronto, mantém a escolha manual do usuário.
+        _seed = f"{team_a}|{team_b}"
+        if st.session_state.get("_rank_cmp_seed") != _seed:
+            st.session_state["_rank_cmp_seed"] = _seed
+            _ma, _mb = _match_team(team_a), _match_team(team_b)
+            if _ma:
+                st.session_state["rank_cmp_a"] = _ma
+            if _mb:
+                st.session_state["rank_cmp_b"] = _mb
+        for _ck in ("rank_cmp_a", "rank_cmp_b"):
+            if st.session_state.get(_ck) not in _all_teams:
+                st.session_state[_ck] = _all_teams[0]
+
+        _c1, _c2 = st.columns(2)
+        with _c1:
+            _ta = st.selectbox("Time A", _all_teams, key="rank_cmp_a")
+        with _c2:
+            _tb = st.selectbox("Time B", _all_teams, key="rank_cmp_b")
+        _render_rating_comparison(st, df_all, str(_ta), str(_tb), format_num_fn=format_num_fn)
 
     st.divider()
     with st.expander("Avançado — Elo (ajuste K / força por liga)", expanded=False):
