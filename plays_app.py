@@ -1021,21 +1021,6 @@ def _load_artifact_cached(art_sig: Tuple[str, int, int]) -> MLArtifact:
 
 
 @st.cache_data(show_spinner=False)
-def _list_model_teams(art_sig: Tuple[str, int, int]) -> List[str]:
-    """Times que o MODELO conhece (artefato = todos os CSVs de treino).
-
-    O CSV ativo (diário) só tem os times da season atual; times que ainda não
-    jogaram em 2026 (returning/novos, ex.: Weibo Gaming Youth) ficam de fora da
-    lista do confronto, embora o modelo os preveja. Unir esta lista resolve."""
-    try:
-        art = _load_artifact_cached(art_sig)
-        ratings = getattr(art.model, "ratings", {}) or {}
-        return sorted({str(t) for t in ratings.keys() if str(t).strip()})
-    except Exception:
-        return []
-
-
-@st.cache_data(show_spinner=False)
 def _load_achievements_cached(ach_sig: Tuple[str, int, int]) -> Dict[str, Any]:
     """Carrega achievements.json com tolerância a erros.
 
@@ -2280,33 +2265,14 @@ core_apply_season_change_reset(
 
 csv_sig = _file_sig(csv_path)
 
-# Carrega times
+# Carrega times — APENAS os do CSV ativo (season atual / 2026). Times que só
+# jogaram em 2024/2025 (ex.: LDL, sem dado em 2026) NÃO entram nos seletores,
+# mesmo o modelo tendo rating antigo deles — a pedido: só times da season atual.
 try:
     teams = _list_teams(csv_sig)
 except (OSError, TypeError, ValueError, pd.errors.EmptyDataError, pd.errors.ParserError) as e:
     st.error(f"Falha ao ler CSV para listar times: {e}")
     st.stop()
-
-# Inclui TODOS os times que o modelo conhece (artefato = todos os CSVs), não só
-# os do CSV ativo (2026). Assim returning/novos times que ainda não jogaram na
-# season atual (ex.: Weibo Gaming Youth) ficam selecionáveis nos dois seletores
-# (Time 1 e Time 2) — o modelo já tem rating deles. Dedup por chave canônica.
-try:
-    _model_teams = (
-        _list_model_teams(_file_sig(artifact_path))
-        if artifact_path and Path(str(artifact_path)).exists()
-        else []
-    )
-    if _model_teams:
-        _seen_keys = {_canon_team_key(t) for t in teams}
-        for _t in _model_teams:
-            _k = _canon_team_key(_t)
-            if _k not in _seen_keys:
-                teams.append(_t)
-                _seen_keys.add(_k)
-        teams = sorted(teams)
-except Exception:
-    pass
 
 # Normaliza grafias (ex.: "Dplus Kia" vs "Dplus KIA") para evitar cair na liga errada no modo auto.
 core_normalize_matchup_selection_teams(
