@@ -126,10 +126,13 @@ class TestAssessFreshness(unittest.TestCase):
 class TestBuildRetrainCommand(unittest.TestCase):
 
     def test_command_contains_required_args(self):
+        # 2026-07: o retreino aponta pro ORQUESTRADOR (fases 6/7/8/10 + manifest),
+        # nao mais pro run_phase6_live_gate isolado (--save-models-dir).
         cmd = build_retrain_command(val_cutoff="2026-04-30")
         self.assertIn("--val-cutoff", cmd)
         self.assertIn("2026-04-30", cmd)
-        self.assertIn("--save-models-dir", cmd)
+        self.assertTrue(any("retrain_live_models_all" in str(part) for part in cmd))
+        self.assertIn("--models-root", cmd)
 
 
 class TestRetrainStatus(unittest.TestCase):

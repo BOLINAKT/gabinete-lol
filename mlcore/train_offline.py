@@ -5,6 +5,7 @@ from __future__ import annotations
 # or (from repo root):
 #   python .\mlcore\train_offline.py ...
 
+import math
 import os
 import sys
 
@@ -365,6 +366,17 @@ def main() -> None:
     ap.add_argument("--dynamic-k-vol-min", type=float, default=0.80, help="Min volatility multiplier for dynamic K.")
     ap.add_argument("--dynamic-k-vol-max", type=float, default=1.35, help="Max volatility multiplier for dynamic K.")
     ap.add_argument("--vol-ewma-beta", type=float, default=0.08, help="EWMA beta for per-team volatility tracking.")
+    ap.add_argument("--mov-lambda", type=float, default=0.5, help="MOVDA (arXiv 2506.00348): peso do termo margem-de-vitoria (diff de kills) no update do Elo. 0.5 validado 2026-07-02 por DOIS metodos: caminho fiel (logloss 0.5903->0.5824, ECE 0.0342->0.0221, NOTA 8.43->8.59) E prequencial OOS puro (+0.06 nota @0.25-0.5; lambda>=1 degrada). 0=off (comportamento pre-MOVDA).")
+    ap.add_argument("--core", choices=["elo", "whr"], default="whr",
+                    help="Motor dos ratings. DEFAULT=whr desde 2026-07-07 (deploy da alavanca N: "
+                         "fusion scorecard 8.31->9.34; rollback = --core elo). "
+                         "'whr' = Whole-History Rating (Coulom 2008, alavanca N, "
+                         "ACCEPT duplo 2026-07-06: +0.0114 logloss prequencial e +0.59 nota no caminho "
+                         "fiel c/ Platt vs Elo+MOVDA). Exporta ratings pro mesmo formato de artefato "
+                         "(params alpha=0/league_prior_weight=1/scale=400 reconstroem o protocolo validado). "
+                         "MOVDA/dynamic-k não se aplicam ao fit whr.")
+    ap.add_argument("--whr-w2", type=float, default=60.0,
+                    help="Drift do WHR (Elo^2/dia). 60 tunado prequencialmente em 2025, eval cego 2026.")
     ap.add_argument("--calibrate", choices=["auto","yes","no"], default="auto", help="Platt calibration on holdout raw probs")
     ap.add_argument("--min-holdout", type=int, default=500, help="Min holdout size to fit calibrator when --calibrate=auto")
     ap.add_argument("--min-cal-gain", type=float, default=0.0, help="Minimum holdout logloss improvement required to keep calibration")
@@ -483,6 +495,7 @@ def main() -> None:
             dynamic_k_volatility_mult_min=float(args.dynamic_k_vol_min),
             dynamic_k_volatility_mult_max=float(args.dynamic_k_vol_max),
             volatility_ewma_beta=float(args.vol_ewma_beta),
+            mov_lambda=float(getattr(args, "mov_lambda", 0.0) or 0.0),
         )
     )
     model.set_team_meta(team_meta_latest)
@@ -509,19 +522,82 @@ def main() -> None:
     last_tier: Dict[str, str] = {}
 
     train_fit = train_fit.sort_values(["date", "gameid"]).reset_index(drop=True)
-    for r in train_fit.itertuples(index=False):
-        blue = str(r.blue)
-        red = str(r.red)
-        bw = int(r.blue_win)
-        bl = str(r.blue_league)
-        rl = str(r.red_league)
-        bt = str(r.blue_tier)
-        rt = str(r.red_tier)
+    if str(getattr(args, "core", "elo")) == "whr":
+        # ------------------ WHR (alavanca N) ------------------
+        # Fit MAP do histórico completo; depois EXPORTA os ratings finais pro
+        # EloModel acima. Pra reconstruir EXATAMENTE o protocolo validado
+        # (p = logistic10((R_a-R_b)/400), prior de liga = SOS no 1º ponto):
+        #   ratings_armazenados = R_whr - pontos_da_liga (o p_blue soma o prior
+        #   de volta via league_prior_weight=1.0), alpha=0 (sem shrink),
+        #   tier_prior_weight=0, scale=400, dynk/MOVDA off.
+        from .whr_core import WHRFitter
+        whr = WHRFitter(w2_elo_per_day=float(args.whr_w2),
+                        league_prior_points=dict(model.league_base_points_map))
+        _n_fit = 0
+        # Predições PREQUENCIAIS (prever ANTES de adicionar o jogo) do último
+        # ano de treino — é nelas que o Platt do artefato é fitado (a receita
+        # validada no caminho fiel). Fitar no holdout de 30d overfita o
+        # intercepto da janela (bug 2026-07-07: média p_blue 0.573, ECE 0.089).
+        _preq_cut = train_fit["date"].max() - pd.Timedelta(days=365)
+        whr_preq_y: List[int] = []
+        whr_preq_p: List[float] = []
+        for r in train_fit.itertuples(index=False):
+            day = int(r.date.toordinal())
+            _b, _r = str(r.blue), str(r.red)
+            if r.date >= _preq_cut and whr.n_games.get(_b, 0) >= 5 and whr.n_games.get(_r, 0) >= 5:
+                whr_preq_p.append(float(whr.p_blue(_b, _r)))
+                whr_preq_y.append(int(r.blue_win))
+            whr.add_game(_b, _r, int(r.blue_win), day,
+                         blue_league=str(r.blue_league), red_league=str(r.red_league))
+            whr.refresh_pair(_b, _r, iters=2)
+            _n_fit += 1
+            if _n_fit % 400 == 0:
+                whr.full_sweeps(sweeps=1, tol_elo=0.0)
+        _sweeps = whr.full_sweeps(sweeps=12, tol_elo=0.5, iters=1)
+        print(f"[train_offline] WHR fit: {_n_fit} jogos, convergiu em {_sweeps} varreduras finais; "
+              f"{len(whr_preq_y)} predições prequenciais p/ calibração.")
 
-        _maybe_reset_on_promotion(model, blue, bt, last_tier=last_tier)
-        _maybe_reset_on_promotion(model, red, rt, last_tier=last_tier)
+        # Injeta no EloModel (mesmo formato de artefato/runtime). Os ratings
+        # vão COMPLETOS (prior de liga já embutido pelo 1º ponto do WHR) e
+        # league_prior_weight=0: p_blue vira diferença pura de ratings, IMUNE
+        # a hints de liga divergentes entre chamadores (bug flagrado 2026-07-07:
+        # com lpw=1.0 e rating descontado, cada régua/tela reconstruía uma soma
+        # diferente — ECE 0.019 no fusion mas 0.091 no alarme). Custo aceito:
+        # time NUNCA visto no treino perde o prior de liga (fica rating 0).
+        for _t, _r_elo in whr.ratings_elo().items():
+            model.ratings[_t] = float(_r_elo)
+            model.games_played[_t] = int(whr.n_games.get(_t, 0))
+        model.params.alpha = 0.0
+        model.params.league_prior_weight = 0.0
+        model.params.tier_prior_weight = 0.0
+        model.params.scale_points = 400.0
+        model.params.dynamic_k_enabled = False
+        model.params.mov_lambda = 0.0
+        args.scale = 400.0  # calibração/holdout usam a mesma escala do runtime
+    else:
+        for r in train_fit.itertuples(index=False):
+            blue = str(r.blue)
+            red = str(r.red)
+            bw = int(r.blue_win)
+            bl = str(r.blue_league)
+            rl = str(r.red_league)
+            bt = str(r.blue_tier)
+            rt = str(r.red_tier)
 
-        model.update(blue, red, bw, blue_league=bl, red_league=rl, blue_tier=bt, red_tier=rt)
+            _maybe_reset_on_promotion(model, blue, bt, last_tier=last_tier)
+            _maybe_reset_on_promotion(model, red, rt, last_tier=last_tier)
+
+            # MOV (diff de kills do blue) — só tem efeito com --mov-lambda > 0.
+            _mov_val = None
+            try:
+                _bk = float(getattr(r, "blue_teamkills"))
+                _rk = float(getattr(r, "red_teamkills"))
+                if math.isfinite(_bk) and math.isfinite(_rk):
+                    _mov_val = _bk - _rk
+            except (TypeError, ValueError, AttributeError):
+                _mov_val = None
+
+            model.update(blue, red, bw, blue_league=bl, red_league=rl, blue_tier=bt, red_tier=rt, mov=_mov_val)
 
     # Center offsets and compute ranking caps (ranking-only guardrail)
     model_warnings: List[str] = []
@@ -631,7 +707,17 @@ def main() -> None:
     cal = PlattCalibrator()
     calibrated = False
     cal_reason = "disabled"
-    if args.calibrate == "yes" or (args.calibrate == "auto" and len(y) >= int(args.min_holdout)):
+    # Core WHR: Platt fitado nas predições PREQUENCIAIS do último ano de treino
+    # (receita do caminho fiel; ECE validada). O holdout curto fica só como
+    # métrica OOS — fitar nele overfita o intercepto da janela.
+    # --calibrate no é RESPEITADO (Dota mediu Platt piorando no blind e deploya
+    # raw; antes este branch ignorava a flag — bug corrigido 2026-07-09).
+    if (str(getattr(args, "core", "elo")) == "whr" and args.calibrate != "no"
+            and len(locals().get("whr_preq_y") or []) >= 500):
+        cal = fit_platt_from_raw_probs(whr_preq_y, whr_preq_p)
+        calibrated = True
+        cal_reason = f"whr_prequential_n={len(whr_preq_y)}"
+    elif args.calibrate == "yes" or (args.calibrate == "auto" and len(y) >= int(args.min_holdout)):
         if len(y) > 0:
             cal_try = fit_platt_from_raw_probs(y, p_raw)
             p_cal_try = [float(cal_try.predict_proba(p)) for p in p_raw]
@@ -683,6 +769,8 @@ def main() -> None:
         "csv": list(csv_paths),
         "keep_playoffs": keep_playoffs,
         "holdout_days": int(args.holdout_days),
+        "core": str(getattr(args, "core", "elo")),
+        "whr_w2": float(getattr(args, "whr_w2", 0.0)) if str(getattr(args, "core", "elo")) == "whr" else None,
         "params": {
             "k": float(args.k),
             "scale_points": float(args.scale),
@@ -839,7 +927,13 @@ def main() -> None:
 
             w_fit_raw = float(fit_w_lineup(y=ys_pl, logit_base=logit_base_pl, delta=delta_pl, l2=float(args.wlineup_l2)))
             wmax = max(0.0, float(args.wlineup_max_abs))
-            w_fit = max(-wmax, min(wmax, float(w_fit_raw)))
+            # Piso em 0: w_lineup NEGATIVO significa "apostar contra o lineup melhor" —
+            # sem base teórica, é ruído do holdout curto. Visto na prática em 2026-07-02:
+            # após o MOVDA o core absorveu parte do sinal de desempenho e o fit do holdout
+            # escolheu w=-0.094, que PIOROU a fusão na season inteira (0.5858→0.5937).
+            # Com piso, o pior caso é a fusão == core (players neutro). w_fit_raw fica
+            # registrado no meta para observabilidade.
+            w_fit = max(0.0, min(wmax, float(w_fit_raw)))
 
             # Optional: calibrator after applying lineup adjustment (Platt on holdout)
             cal_after_lineup = None

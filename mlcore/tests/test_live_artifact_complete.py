@@ -30,13 +30,25 @@ class TestLiveArtifactComplete(unittest.TestCase):
 
     def test_elo_params_present(self):
         p = self.art.model.params
+        core = str((self.art.meta or {}).get("core") or "elo")
         # Core knobs the validated structure relies on (presence/sanity, not exact
         # values — those legitimately move when retuned).
         self.assertGreater(float(p.k), 0.0)
         self.assertGreater(float(p.scale_points), 0.0)
-        self.assertGreater(float(p.alpha), 0.0)
+        if core == "whr":
+            # WHR (alavanca N, deploy 2026-07-07): a estrutura VALIDADA é
+            # alpha=0 (sem shrink — o MAP já pondera), priors estáticos 0
+            # (prior de liga vive DENTRO do rating, lpw=0 = imune a hints),
+            # dynk/MOVDA inertes e scale 400 (protocolo do gate).
+            self.assertEqual(float(p.alpha), 0.0, "core=whr exige alpha=0 (sem shrink)")
+            self.assertEqual(float(p.league_prior_weight), 0.0, "core=whr exige lpw=0 (hint-proof)")
+            self.assertEqual(float(p.scale_points), 400.0, "core=whr exige scale=400")
+            self.assertFalse(bool(p.dynamic_k_enabled), "core=whr exige dynk off")
+            self.assertEqual(float(getattr(p, "mov_lambda", 0.0) or 0.0), 0.0, "core=whr exige MOVDA off")
+        else:
+            self.assertGreater(float(p.alpha), 0.0)
+            self.assertIsInstance(bool(p.dynamic_k_enabled), bool)
         self.assertGreater(float(p.league_strength_cap_abs), 0.0)
-        self.assertIsInstance(bool(p.dynamic_k_enabled), bool)
 
     def test_sos_league_map_baked(self):
         # SOS (lever A) bakes data-derived league base points into the model.

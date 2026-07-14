@@ -262,12 +262,17 @@ def build_retrain_command(
     save_models_dir: str = "live_models",
     extra_args: Optional[List[str]] = None,
 ) -> List[str]:
-    """Build the CLI command to retrain the state-to-win models."""
+    """Build the CLI command to retrain ALL live models (fases 6/7/8/10).
+
+    2026-07-05: antes chamava só o run_phase6_live_gate (estado→vitória) e os
+    modelos de MERCADO live (kills/torres/... , first-X, player props) ficavam
+    envelhecendo pra sempre. Agora usa o orquestrador, que também atualiza o
+    manifest de frescor no fim.
+    """
     cmd = [
-        sys.executable, "tools/run_phase6_live_gate.py",
+        sys.executable, "tools/retrain_live_models_all.py",
         "--val-cutoff", str(val_cutoff),
-        "--save-models-dir", str(save_models_dir),
-        "--output", str(output),
+        "--models-root", str(save_models_dir),
         "--n-bootstrap", "500",  # smaller bootstrap for faster turnaround
     ]
     if extra_args:

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import time
 import threading
 import uuid
@@ -177,7 +178,7 @@ def run_auto_maintenance_now(
     fast_new_games_max = int(_prefs.get("fast_new_games_max", 30) or 30)
     t_all0 = time.perf_counter()
     steps: List[Dict[str, Any]] = []
-    _progress_total = 8
+    _progress_total = 9
 
     def _emit_progress(payload: Dict[str, Any]) -> None:
         if not callable(progress_cb):
@@ -465,7 +466,15 @@ def run_auto_maintenance_now(
                     k=float(_train_cfg.get("k", 26.0) or 26.0),
                     scale=float(_train_cfg.get("scale", 400.0) or 400.0),
                     calibrate=str(_train_cfg.get("calibrate", "auto") or "auto"),
-                    fit_players=True,
+                    # Deploy validado usa holdout 30 (tools/atualizar_modelo.py). Sem isso,
+                    # o train_offline cai no default 180 e congela os ratings 6 meses atras
+                    # (cutoff sem nenhum jogo da season atual) -> nota despenca (7.74->4.97
+                    # medido em 2026-06-10). NUNCA omitir aqui.
+                    holdout_days=30,
+                    core=(str(_train_cfg["core"]) if _train_cfg.get("core") else None),
+                    whr_w2=(float(_train_cfg["whr_w2"]) if _train_cfg.get("whr_w2") is not None else None),
+                    # players layer segue o artefato atual (Dota deploya sem players — P3)
+                    fit_players=bool(_train_cfg.get("fit_players", True)),
                     players_out=_players_artifact_target,
                 )
                 cp_m = _run_cmd(cmd_m, timeout_s=cmd_timeout_s)
@@ -918,6 +927,38 @@ def run_auto_maintenance_now(
                 critical=False,
                 skipped=True,
             )
+
+        # Alarme de qualidade pós-retrain: se o modelo mudou neste ciclo, mede a nota
+        # da season atual vs baseline (ops/monitoring/ml_quality_baseline.json). Sem isso,
+        # uma degradação silenciosa (ex.: incidente holdout-180, nota 7.74→4.97 por 4 dias)
+        # passa batida — o guard de artefato checa completude, não qualidade.
+        _t_qc = time.perf_counter()
+        if bool(_model_updated_this_cycle):
+            _emit_running("qualidade_alarme")
+            cmd_qc = [sys.executable, str(APP_ROOT / "tools" / "ml_quality_check.py"), "--artifact", str(art_target)]
+            cp_qc = _run_cmd(cmd_qc, timeout_s=cmd_timeout_s)
+            logs.append("[qualidade-alarme]\n" + (cp_qc.stdout or "") + ("\n" + cp_qc.stderr if cp_qc.stderr else ""))
+            _ok_qc = int(cp_qc.returncode) == 0
+            _qc_summary = f"rc={int(cp_qc.returncode)}"
+            try:
+                _qc_last = json.loads((APP_ROOT / "ops" / "monitoring" / "ml_quality_last_check.json").read_text(encoding="utf-8"))
+                _qc_res = (_qc_last.get("result") or {}) if isinstance(_qc_last, dict) else {}
+                if _qc_res.get("verdict"):
+                    _qc_summary = f"{_qc_res.get('verdict')}: {str(_qc_res.get('reason', ''))[:140]}"
+            except (OSError, ValueError):
+                pass
+            _mark_step("qualidade_alarme", ok=_ok_qc, t0=_t_qc, summary=_qc_summary, critical=False)
+            if not _ok_qc:
+                all_ok = False
+        else:
+            _mark_step(
+                "qualidade_alarme",
+                ok=True,
+                t0=_t_qc,
+                summary="Pulado (modelo não mudou neste ciclo).",
+                critical=False,
+                skipped=True,
+            )
     except Exception as exc:
         all_ok = False
         logs.append(f"[erro] {type(exc).__name__}: {exc}")
@@ -1015,13 +1056,23 @@ def ensure_csv_runtime_ready(
     _artifacts_rows: List[Dict[str, Any]] = []
     if artifact_path:
         _artifacts_rows.append({"Arquivo": "ml_artifact.json", "Caminho": artifact_path, "Existe": bool(Path(artifact_path).exists())})
-        _artifacts_rows.append(
-            {
-                "Arquivo": "players_artifact.json",
-                "Caminho": str(_resolve_players_artifact_path(artifact_path, APP_ROOT)),
-                "Existe": bool(Path(str(_resolve_players_artifact_path(artifact_path, APP_ROOT))).exists()),
-            }
-        )
+        # players_artifact so entra no checklist se o deploy atual USA players
+        # (meta.players_layer) — o Gabinete Dota deploya sem players ate a P3.
+        _expects_players_row = True
+        try:
+            import json as _json_pl
+            _meta_pl = (_json_pl.loads(Path(artifact_path).read_text(encoding="utf-8")).get("meta") or {})
+            _expects_players_row = bool(_meta_pl.get("players_layer"))
+        except (OSError, ValueError, AttributeError):
+            pass
+        if _expects_players_row:
+            _artifacts_rows.append(
+                {
+                    "Arquivo": "players_artifact.json",
+                    "Caminho": str(_resolve_players_artifact_path(artifact_path, APP_ROOT)),
+                    "Existe": bool(Path(str(_resolve_players_artifact_path(artifact_path, APP_ROOT))).exists()),
+                }
+            )
         _artifacts_rows.append(
             {
                 "Arquivo": "params_fitted.json",

@@ -214,7 +214,18 @@ def collect_maintenance_status(
         _push("Parâmetros ausentes (`params_fitted.json`).", is_critical=True)
         need_retrain_params = True
     if not players_p.exists():
-        _push("Players artifact ausente (`players_artifact.json`).")
+        # So cobra o players_artifact se o deploy atual USA a camada de players
+        # (meta.players_layer). O Gabinete Dota deploya sem players ate a P3 —
+        # cobrar um arquivo que nao faz parte do modelo e ruido.
+        _expects_players = True
+        try:
+            import json as _json
+            _meta = _json.loads(art_p.read_text(encoding="utf-8")).get("meta") or {}
+            _expects_players = bool(_meta.get("players_layer"))
+        except (OSError, ValueError, AttributeError):
+            pass
+        if _expects_players:
+            _push("Players artifact ausente (`players_artifact.json`).")
     else:
         csv_m = _mtime_as_datetime(csv_p)
         pl_m = _mtime_as_datetime(players_p)

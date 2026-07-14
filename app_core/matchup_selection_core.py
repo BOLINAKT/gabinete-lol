@@ -5,6 +5,10 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 import streamlit as st
 
+# Opções do seletor de BO. Constante de módulo para permitir override por
+# outros hosts (o Gabinete Dota inclui BO2; o LoL segue 1/3/5).
+BO_OPTIONS: List[int] = [1, 3, 5]
+
 from app_core.flow_runtime_core import (
     apply_flow_line_values,
     consume_pending_auto_analyze,
@@ -205,7 +209,7 @@ def render_matchup_selection(
                             payload["teamA"] = str(game.get("teamA"))
                         if str(game.get("teamB", "")) in teams:
                             payload["teamB"] = str(game.get("teamB"))
-                        if str(game.get("bo")) in ["1", "3", "5"]:
+                        if str(game.get("bo")) in {str(x) for x in BO_OPTIONS}:
                             payload["bo"] = int(game.get("bo"))
                         if isinstance(game, dict) and isinstance(game.get("lines_saved"), dict):
                             payload["_flow_line_values"] = dict(game.get("lines_saved") or {})
@@ -221,8 +225,8 @@ def render_matchup_selection(
         session_state["teamA"] = ""
     if str(session_state.get("teamB", "") or "") not in team_opts:
         session_state["teamB"] = ""
-    if str(session_state.get("bo", "1") or "1") not in {"1", "3", "5"}:
-        session_state["bo"] = 1
+    if str(session_state.get("bo", "1") or "1") not in {str(x) for x in BO_OPTIONS}:
+        session_state["bo"] = int(BO_OPTIONS[0])
 
     def _fmt_team_placeholder(x: str) -> str:
         return "" if str(x) == "" else str(x)
@@ -233,7 +237,7 @@ def render_matchup_selection(
     with cB:
         team_b = st.selectbox("Time 2", options=team_opts, key="teamB", disabled=locked, format_func=_fmt_team_placeholder)
     with cC:
-        bo = st.selectbox("BO", [1, 3, 5], key="bo", disabled=locked)
+        bo = st.selectbox("BO", list(BO_OPTIONS), key="bo", disabled=locked)
     with cD:
         if flow_stage == "select":
             st.write("Ação")

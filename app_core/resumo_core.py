@@ -752,6 +752,8 @@ def build_metric_rows(
                 if not _guardrail_model_odd(odd_model, max_odd=max_odd, req_model=req_model):
                     continue
                 odd_hist = laplace_pick_odd_fn(odds_map, side_key)
+                # Teto de odd: aplicado CENTRALMENTE em resumo_tab_core (vale p/
+                # TODOS os mercados — vencedor ML, totais e combos), não aqui.
                 stats_pct = sc_pct_fn(metric_key, side_key, float(ln))
                 row = _row_common(
                     mercado=f"{metric_label_fn(metric_key)} ({fmt_line_disp_fn(metric_key, float(ln))})",

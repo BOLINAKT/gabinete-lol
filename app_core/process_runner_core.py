@@ -1,11 +1,28 @@
 """Subprocess runner with heartbeat callback and timeout support."""
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import tempfile
 import time
+from pathlib import Path
 from typing import Callable, Optional
+
+# Raiz do repo (dona de mlcore/app_core). Subprocessos tipo
+# `python -m mlcore.train_offline` precisam dela no PYTHONPATH: o app do LoL
+# roda com cwd aqui (redundante e inofensivo), mas o Gabinete Dota roda em
+# OUTRA pasta — sem isso, todo retrain da manutenção morria com rc=1
+# (ModuleNotFoundError silencioso; visto 2026-07-11).
+_REPO_ROOT = str(Path(__file__).resolve().parents[1])
+
+
+def _env_with_repo_on_pythonpath() -> dict:
+    env = dict(os.environ)
+    prev = env.get("PYTHONPATH") or ""
+    if _REPO_ROOT not in prev.split(os.pathsep):
+        env["PYTHONPATH"] = _REPO_ROOT + (os.pathsep + prev if prev else "")
+    return env
 
 
 def _no_window_kwargs() -> dict:
@@ -44,6 +61,7 @@ def run_cmd(
                 stdout=_tmp,
                 stderr=_tmp,
                 text=True,
+                env=_env_with_repo_on_pythonpath(),
                 **_no_window_kwargs(),
             )
             while True:

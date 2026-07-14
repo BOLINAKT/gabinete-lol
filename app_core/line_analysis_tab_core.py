@@ -50,11 +50,18 @@ def _augment_with_total_columns(df: pd.DataFrame) -> pd.DataFrame:
         ("mv2_total_dragons",    "dragons_for",    "dragons_against"),
         ("mv2_total_barons",     "barons_for",     "barons_against"),
         ("mv2_total_inhibitors", "inhibitors_for", "inhibitors_against"),
+        # Dota: megacreeps (0/1 por jogo; linha 0.5 = "vai ter megas?").
+        # LoL nao tem as colunas -> skip pelo guard abaixo.
+        ("mv2_total_megacreeps", "megacreeps_for", "megacreeps_against"),
     ):
         if for_col in out.columns and against_col in out.columns:
+            # SEM fillna(0): jogo sem o dado (NaN — ex.: Dota com objetivos
+            # ainda não baixados) precisa continuar NaN para ficar FORA das
+            # janelas — fillna criava "0" falso que entrava nos % (2026-07-11).
+            # No LoL não há NaN nesses pares em jogos normais → sem efeito.
             out[total_col] = (
-                pd.to_numeric(out[for_col], errors="coerce").fillna(0.0)
-                + pd.to_numeric(out[against_col], errors="coerce").fillna(0.0)
+                pd.to_numeric(out[for_col], errors="coerce")
+                + pd.to_numeric(out[against_col], errors="coerce")
             )
     # Spread columns (positive = team won that metric by N)
     for spread_col, for_col, against_col in (
@@ -75,27 +82,17 @@ def _augment_with_total_columns(df: pd.DataFrame) -> pd.DataFrame:
 # ============================================================================
 
 
+# Passo 2 do registro central (2026-07-06): os 6 mercados CORE derivam de
+# STATS_MARKET_CONFIG (v3_core_markets) — add/remover mercado de stats = editar
+# SÓ o stats_config. Os extras abaixo são de UI da V3 (não são mercados de
+# stats) e continuam definidos aqui. Equivalência com os valores históricos
+# travada em mlcore/tests/test_v3_markets_registry.py.
+from app_core.stats_config import v3_core_markets as _v3_core_markets
+
 _V3_MARKETS = [
     {"label": "Vencedor",     "key": "winner",       "metric_col": "",                       "default_line": 0,
      "status": "todo"},
-    {"label": "Kills",        "key": "kills",        "metric_col": "mv2_total_kills",        "default_line": 27.5,
-     "status": "ready", "metric_label": "Kills", "for_col": "kills_for", "against_col": "kills_against",
-     "metric_decimals": 1, "is_time_metric": False},
-    {"label": "Torres",       "key": "towers",       "metric_col": "mv2_total_towers",       "default_line": 11.5,
-     "status": "ready", "metric_label": "Torres", "for_col": "towers_for", "against_col": "towers_against",
-     "metric_decimals": 1, "is_time_metric": False},
-    {"label": "Dragões",      "key": "dragons",      "metric_col": "mv2_total_dragons",      "default_line": 4.5,
-     "status": "ready", "metric_label": "Dragões", "for_col": "dragons_for", "against_col": "dragons_against",
-     "metric_decimals": 1, "is_time_metric": False},
-    {"label": "Barões",       "key": "barons",       "metric_col": "mv2_total_barons",       "default_line": 1.5,
-     "status": "ready", "metric_label": "Barões", "for_col": "barons_for", "against_col": "barons_against",
-     "metric_decimals": 1, "is_time_metric": False},
-    {"label": "Inibidores",   "key": "inibs",        "metric_col": "mv2_total_inhibitors",   "default_line": 1.5,
-     "status": "ready", "metric_label": "Inibidores", "for_col": "inhibitors_for", "against_col": "inhibitors_against",
-     "metric_decimals": 1, "is_time_metric": False},
-    {"label": "Tempo",        "key": "time",         "metric_col": "game_time_min",          "default_line": 32.5,
-     "status": "ready", "metric_label": "Tempo", "for_col": None, "against_col": None,
-     "metric_decimals": 1, "is_time_metric": True},
+    *_v3_core_markets(),
     {"label": "Handicaps",    "key": "handicaps",    "metric_col": "mv2_spread_kills",       "default_line": 0.0,
      "status": "ready", "metric_label": "Spread", "for_col": None, "against_col": None,
      "metric_decimals": 1, "is_time_metric": False, "handicap": True},
@@ -474,9 +471,22 @@ def _render_v3_vencedor_subpanel(
         df_a_season = df_a.copy()
         df_b_season = df_b.copy()
 
-    # H2H
-    df_h2h = df_a_season[df_a_season["opponent"].astype(str) == str(team_b)].copy() \
-        if "opponent" in df_a_season.columns else pd.DataFrame()
+    # H2H do ANO INTEIRO em todas as ligas (par-a-par; recorte de liga escondia
+    # confrontos em torneios fora da liga doméstica — fix 2026-07-13, mesmo do
+    # painel de mercados).
+    try:
+        _h2h_all = team_games
+        if "year" in _h2h_all.columns and "date" in df_a_season.columns and len(df_a_season):
+            _yr_ref = pd.to_datetime(df_a_season["date"], errors="coerce").dt.year.max()
+            if pd.notna(_yr_ref):
+                _h2h_all = _h2h_all[pd.to_numeric(_h2h_all["year"], errors="coerce") == int(_yr_ref)]
+        df_h2h = _h2h_all[
+            (_h2h_all["team"].astype(str) == str(team_a))
+            & (_h2h_all["opponent"].astype(str) == str(team_b))
+        ].copy()
+    except (TypeError, ValueError, KeyError):
+        df_h2h = df_a_season[df_a_season["opponent"].astype(str) == str(team_b)].copy() \
+            if "opponent" in df_a_season.columns else pd.DataFrame()
 
     # ---------- 3-card panel: OVERALL / RECENT FORM / PAST FACEOFFS ----------
     def _cyan_banner(title: str) -> str:
@@ -755,6 +765,7 @@ def _render_kills_line_content(
     against_col: str | None = "kills_against",
     metric_decimals: int = 1,
     is_time_metric: bool = False,
+    binary_market: bool = False,
 ) -> None:
     """Render the full per-line panel content for one specific line value."""
     from app_core.market_v3_analysis_core import (
@@ -780,29 +791,39 @@ def _render_kills_line_content(
     # usuário não quer E, por ser widget dentro de st.tabs, era resetado ao
     # trocar de aba — corrompendo a lista (a linha "virava" o padrão e duplicava).
     # Agora a linha é só mostrada; para outra linha, use "Adicionar" no topo.
-    _lv_disp = mmss(float(line_val)) if is_time_metric else num_fmt(float(line_val), metric_decimals)
-    edit_cols = st.columns([1.4, 1, 4])
-    with edit_cols[0]:
+    if bool(binary_market):
+        # Marcação sim/não (ex.: Megacreeps no Dota, pedido 2026-07-11): não há
+        # linha a exibir/remover — verde = aconteceu, vermelho = não.
         st.markdown(
             f"<div style='font-size:0.78em;opacity:0.6;text-transform:uppercase;letter-spacing:0.04em;'>"
-            f"Linha {escape(str(market_label))}</div>"
-            f"<div style='font-weight:800;font-size:1.3em;color:#2daac4;'>{escape(str(_lv_disp))}</div>",
+            f"Marcação {escape(str(market_label))}</div>"
+            f"<div style='font-weight:800;font-size:1.15em;color:#2daac4;'>aconteceu? (sim/não)</div>",
             unsafe_allow_html=True,
         )
-    with edit_cols[1]:
-        if st.button("✕ Remover esta linha",
-                       key=f"{lines_key}__rm_{line_idx}",
-                       help="Remove esta linha da lista (volta pra padrão se for a última)",
-                       disabled=(len(session_state.get(lines_key, [])) <= 1)):
-            current = list(session_state.get(lines_key) or [])
-            if 0 <= line_idx < len(current):
-                current.pop(line_idx)
-            if not current:
-                current = [float(line_val)]
-            session_state[lines_key] = current
-            st.rerun()
-    with edit_cols[2]:
-        st.caption("Para analisar outra linha, adicione no campo do topo (aceita várias: 27.5, 28.5, ...).")
+    else:
+        _lv_disp = mmss(float(line_val)) if is_time_metric else num_fmt(float(line_val), metric_decimals)
+        edit_cols = st.columns([1.4, 1, 4])
+        with edit_cols[0]:
+            st.markdown(
+                f"<div style='font-size:0.78em;opacity:0.6;text-transform:uppercase;letter-spacing:0.04em;'>"
+                f"Linha {escape(str(market_label))}</div>"
+                f"<div style='font-weight:800;font-size:1.3em;color:#2daac4;'>{escape(str(_lv_disp))}</div>",
+                unsafe_allow_html=True,
+            )
+        with edit_cols[1]:
+            if st.button("✕ Remover esta linha",
+                           key=f"{lines_key}__rm_{line_idx}",
+                           help="Remove esta linha da lista (volta pra padrão se for a última)",
+                           disabled=(len(session_state.get(lines_key, [])) <= 1)):
+                current = list(session_state.get(lines_key) or [])
+                if 0 <= line_idx < len(current):
+                    current.pop(line_idx)
+                if not current:
+                    current = [float(line_val)]
+                session_state[lines_key] = current
+                st.rerun()
+        with edit_cols[2]:
+            st.caption("Para analisar outra linha, adicione no campo do topo (aceita várias: 27.5, 28.5, ...).")
 
     def _cyan_section_header(title: str) -> None:
         cyan_section_header(st, title)
@@ -823,6 +844,10 @@ def _render_kills_line_content(
         line=float(line_val),
         min_to_mmss_fn=mmss,
         num_formatter=num_fmt,
+        # Handicap: a linha digitada (ex.: -7.5) vira cobertura POR TIME nos 3
+        # cards (cobriu X/N com barra), em vez de leitura de total.
+        handicap=(str(market_key) == "handicaps"),
+        binary=bool(binary_market),
     )
 
     # ---------- Análise da linha ----------
@@ -884,18 +909,24 @@ def _render_kills_line_content(
     )
     _def_a = default_group_label_for_archetype(archetype_b.archetype)  # vs opponent B's group
     _def_b = default_group_label_for_archetype(archetype_a.archetype)  # vs opponent A's group
+    # Semear SÓ via session_state (sem index=): default + seed juntos disparam
+    # o warning "created with a default value but also had its value set".
+    _key_ga = f"la_oppgrp_a_{market_key}_{line_idx}"
+    _key_gb = f"la_oppgrp_b_{market_key}_{line_idx}"
+    if str(session_state.get(_key_ga, "") or "") not in OPPONENT_GROUP_CHOICES:
+        session_state[_key_ga] = _def_a if _def_a in OPPONENT_GROUP_CHOICES else OPPONENT_GROUP_CHOICES[2]
+    if str(session_state.get(_key_gb, "") or "") not in OPPONENT_GROUP_CHOICES:
+        session_state[_key_gb] = _def_b if _def_b in OPPONENT_GROUP_CHOICES else OPPONENT_GROUP_CHOICES[2]
     _grp_cols = st.columns(2)
     with _grp_cols[0]:
         grp_a = st.selectbox(
             f"Grupo de adversário · {team_a}", OPPONENT_GROUP_CHOICES,
-            index=OPPONENT_GROUP_CHOICES.index(_def_a) if _def_a in OPPONENT_GROUP_CHOICES else 2,
-            key=f"la_oppgrp_a_{market_key}_{line_idx}",
+            key=_key_ga,
         )
     with _grp_cols[1]:
         grp_b = st.selectbox(
             f"Grupo de adversário · {team_b}", OPPONENT_GROUP_CHOICES,
-            index=OPPONENT_GROUP_CHOICES.index(_def_b) if _def_b in OPPONENT_GROUP_CHOICES else 2,
-            key=f"la_oppgrp_b_{market_key}_{line_idx}",
+            key=_key_gb,
         )
     profile_a = build_contextual_opponent_profile(
         focal_team=team_a, focal_team_df=df_a_context_all,
@@ -1150,13 +1181,15 @@ def _render_v3_kills_subpanel(
 
     # First X selector — pick which "first" objective to analyze
     if bool(market_cfg.get("first_x_selector")):
-        first_x_opts = {
+        # O host pode fornecer o mapa de objetivos (o Gabinete Dota troca por
+        # First Blood/Tower/Roshan); default = os 5 do LoL.
+        first_x_opts = dict(market_cfg.get("first_x_opts") or {
             "First Blood":   "firstblood",
             "First Tower":   "firsttower",
             "First Dragon":  "firstdragon",
             "First Herald":  "firstherald",
             "First Baron":   "firstbaron",
-        }
+        })
         fx_key = f"v3_firstx_choice_{team_a}_{team_b}"
         labels = list(first_x_opts.keys())
         if session_state.get(fx_key) not in labels:
@@ -1193,6 +1226,13 @@ def _render_v3_kills_subpanel(
         lines_list = [float(default_line)]
     session_state[lines_key] = lines_list
 
+    # Mercado BINÁRIO (marcação sim/não — ex.: Megacreeps no Dota, pedido
+    # 2026-07-11): não existe "linha" a escolher — é fixa em 0.5 e o editor
+    # de linhas some. Todo o resto (janelas, % , selos) segue igual.
+    if bool(market_cfg.get("binary_market")):
+        session_state[lines_key] = [float(default_line)]
+        lines_list = [float(default_line)]
+
     _is_time = (market_key == "time")
     lc1, lc2, lc3 = st.columns([1.6, 2.6, 3])
     with lc1:
@@ -1203,19 +1243,28 @@ def _render_v3_kills_subpanel(
             unsafe_allow_html=True,
         )
     with lc2:
-        # Add lines via a FORM: nothing is analyzed until you click — typing in
-        # the box does NOT trigger a re-run. Accepts several lines separated by
-        # comma (27.5, 28.5, 29.5), decimal with dot. Time also takes 33:30 / 33.5.
-        with st.form(key=f"{lines_key}__addform", clear_on_submit=True):
-            _ph = "ex: 33:30, 34.5" if _is_time else "ex: 27.5, 28.5, 29.5"
-            new_txt = st.text_input(
-                "Adicionar linha(s)",
-                value="",
-                placeholder=_ph,
-                help=("Várias de uma vez separadas por vírgula. Decimal com ponto. "
-                      + ("Tempo: 33:30 ou 33.5 (minutos)." if _is_time else "Ex.: 27.5, 28.5.")),
+        if bool(market_cfg.get("binary_market")):
+            st.markdown(
+                "<div style='padding-top:6px;opacity:0.7;font-size:0.88em;'>"
+                "Marcação <b>sim/não</b> — sem linha para escolher.</div>",
+                unsafe_allow_html=True,
             )
-            _submitted = st.form_submit_button("➕ Adicionar linha(s)", width="stretch")
+            _submitted = False
+            new_txt = ""
+        else:
+            # Add lines via a FORM: nothing is analyzed until you click — typing in
+            # the box does NOT trigger a re-run. Accepts several lines separated by
+            # comma (27.5, 28.5, 29.5), decimal with dot. Time also takes 33:30 / 33.5.
+            with st.form(key=f"{lines_key}__addform", clear_on_submit=True):
+                _ph = "ex: 33:30, 34.5" if _is_time else "ex: 27.5, 28.5, 29.5"
+                new_txt = st.text_input(
+                    "Adicionar linha(s)",
+                    value="",
+                    placeholder=_ph,
+                    help=("Várias de uma vez separadas por vírgula. Decimal com ponto. "
+                          + ("Tempo: 33:30 ou 33.5 (minutos)." if _is_time else "Ex.: 27.5, 28.5.")),
+                )
+                _submitted = st.form_submit_button("➕ Adicionar linha(s)", width="stretch")
         if _submitted and str(new_txt or "").strip():
             parsed = parse_time_lines_text(new_txt) if _is_time else parse_lines_text(new_txt)
             merged = list(lines_list)
@@ -1354,11 +1403,22 @@ def _render_v3_kills_subpanel(
         if _xl_league_b:
             df_b_context_season = _team_year_in_league(team_b, _xl_league_b)
 
-    # H2H: A's games vs B — re-apply Mapa filter explicitly as a safety net
-    if "opponent" in df_a_context_season.columns:
-        df_h2h_year = df_a_context_season[df_a_context_season["opponent"].astype(str) == str(team_b)].copy()
+    # H2H: A's games vs B — do ANO INTEIRO em TODAS as ligas. H2H é par-a-par:
+    # derivar do recorte de liga escondia confrontos jogados em torneio fora da
+    # liga doméstica (visto 2026-07-13: Vici×PlayTime com 2 H2H reais e o card
+    # dizendo "sem H2H" no cross-league). Mesma regra do usuário no Resumo.
+    try:
+        _h2h_base = _augment_with_total_columns(team_games.copy())
+        try:
+            _h2h_base = _h2h_base[pd.to_numeric(_h2h_base.get("year"), errors="coerce") == int(v3_year)]
+        except (TypeError, ValueError):
+            pass
+        df_h2h_year = _h2h_base[
+            (_h2h_base["team"].astype(str) == str(team_a))
+            & (_h2h_base["opponent"].astype(str) == str(team_b))
+        ].copy()
         df_h2h_year = _filter_by_map(df_h2h_year)
-    else:
+    except (TypeError, ValueError, KeyError):
         df_h2h_year = pd.DataFrame()
     df_h2h_full = df_h2h_year.copy()
 
@@ -1440,6 +1500,7 @@ def _render_v3_kills_subpanel(
         against_col=market_cfg.get("against_col", "kills_against"),
         metric_decimals=int(market_cfg.get("metric_decimals", 1)),
         is_time_metric=bool(market_cfg.get("is_time_metric", False)),
+        binary_market=bool(market_cfg.get("binary_market", False)),
     )
 
     if len(lines_list) == 1:

@@ -100,6 +100,17 @@ def render_series_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             f"**ML série:** {team_a_disp} = **{format_num_fn(odd_a_series, 2)}** | {team_b_disp} = **{format_num_fn(odd_b_series, 2)}**"
         )
 
+    if odd_a_series is None or odd_b_series is None:
+        # BO2 (Dota) ou confronto sem preço de série: tudo abaixo deriva desse
+        # preço — sem ele, avisa em vez de quebrar (TypeError visto 2026-07-10).
+        # Preço real do empate BO2 = backlog (draw pricing calibrado).
+        st.info(
+            "Sem preço de série para este formato/confronto (ex.: BO2). "
+            "Use o ML do mapa acima; handicaps/placares de série ficam "
+            "indisponíveis até haver preço de série para o formato."
+        )
+        return
+
     probs = score_probs(p_a_map, int(bo))
     fav_is_a = bool(odd_a_series <= odd_b_series)
     fav_team = team_a_disp if fav_is_a else team_b_disp

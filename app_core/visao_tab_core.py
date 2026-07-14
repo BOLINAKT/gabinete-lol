@@ -241,11 +241,21 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             st.session_state.pop(_stale_key, None)
         st.session_state["_ml_trace_last_ctx_fp"] = _ml_trace_ctx_fp
 
+    # Estrutura da Visão Geral (reforma 2026-06, decidida pelo usuário):
+    # Métricas (Confiança/Score/Base) → Confronto → Odds, com o diagnóstico
+    # técnico restante (explicabilidade, avisos de pipeline) recolhido num
+    # expander único no fim. Containers desacoplam ordem de exibição da ordem
+    # do código — nenhuma lógica/cálculo muda de lugar, só o destino do render.
+    _box_metricas = st.container()
+    _box_confronto = st.container()
+    _box_contexto = st.container()
+    _box_detalhes = st.expander("Detalhes do ML (explicabilidade e avisos do pipeline)", expanded=False)
+
     # Card de odds único: exibimos apenas o painel principal abaixo,
     # já com todas as calibrações/fusões aplicadas.
     _msi_caption = core_build_microseg_caption(core_get_ml_microseg_info(st.session_state))
     if str(_msi_caption).strip():
-        st.caption(str(_msi_caption))
+        _box_contexto.caption(str(_msi_caption))
 
     _lg_hint = core_resolve_shared_league_hint(
         ml_info=(_ml_info if isinstance(_ml_info, dict) else {}),
@@ -267,16 +277,17 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         confidence_baseline=_conf_baseline,
     )
     _conf_summary = core_build_confidence_summary(_conf if isinstance(_conf, dict) else {})
-    ccf1, ccf2, ccf3 = st.columns(3)
-    with ccf1:
-        st.metric("Confianca ML", value=str(_conf_summary.get("grade", "C (Baixa)")))
-    with ccf2:
-        st.metric("Score", value=str(_conf_summary.get("score_text", "0/100")))
-    with ccf3:
-        st.metric("Base", value=str(_conf_summary.get("source", "global")))
+    with _box_metricas:
+        ccf1, ccf2, ccf3 = st.columns(3)
+        with ccf1:
+            st.metric("Confianca ML", value=str(_conf_summary.get("grade", "C (Baixa)")))
+        with ccf2:
+            st.metric("Score", value=str(_conf_summary.get("score_text", "0/100")))
+        with ccf3:
+            st.metric("Base", value=str(_conf_summary.get("source", "global")))
     # Diagnósticos técnicos (Semáforo / Baseline / Camadas A/B/C / dica de
     # manutenção) removidos a pedido do usuário — ruído para o uso diário.
-    # Os 3 cards acima (Confiança ML / Score / Base) ficam como resumo.
+    # Os 3 cards acima voltaram ao topo a pedido do usuário (2026-06-10).
 
     # Explicabilidade curta por confronto (camadas que mais puxaram o preço)
     _trace_last = (_trace_state.get("_ml_trace_last") or {}) if isinstance(_trace_state, dict) else {}
@@ -286,7 +297,8 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         _explain = core_build_pipeline_explainability(_step_rows, _conf if isinstance(_conf, dict) else {})
         _top_rows = list(_explain.get("rows") or []) if isinstance(_explain, dict) else []
         if _top_rows:
-            with st.expander("Explicabilidade do ML (resumo do confronto)", expanded=False):
+            with _box_detalhes:
+                st.markdown("**Explicabilidade do ML (resumo do confronto)**")
                 if str(_explain.get("moves_line", "")).strip():
                     st.caption(str(_explain.get("moves_line", "")))
                 if str(_explain.get("why_line", "")).strip():
@@ -325,48 +337,29 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     # Mantém ajuste de lineup estritamente opt-in via checkbox para evitar
     # mudanças de odd em reruns (ex.: editar/salvar linhas sem alterar inputs de ML).
 
-    with st.expander('Lineup (Players) — ajuste do ML', expanded=False):
+    with _box_detalhes:
+        # UI de lineup removida da Visão Geral (2026-06-10, pedido do usuário): os
+        # widgets (checkbox/sliders/CSV/selects) não eram usados — o ajuste manual era
+        # opt-in e ficava desligado. O que IMPORTA continua: o autofill preenche a
+        # lineup do último jogo nas chaves de sessão e o players layer do core
+        # (w_lineup fitado no artefato) consome essas lineups no motor. Remover o
+        # autofill derrubaria a coverage do players layer (parte da nota da fusão).
         if 'use_lineup_adjust' not in st.session_state:
             st.session_state['use_lineup_adjust'] = bool(_lineup_rt.get('use_lineup_adjust', False))
         if 'players_csv_path' not in st.session_state:
             st.session_state['players_csv_path'] = str(_lineup_rt.get('players_csv_path', 'data/oracleselixir_players.csv') or 'data/oracleselixir_players.csv')
-        c0, c1, c2, c3 = st.columns([1.2, 2, 1.2, 1.2])
-        with c0:
-            use_lineup = st.checkbox('Aplicar ajuste por players (Lineup)', key='use_lineup_adjust')
-        with c1:
-            st.text_input('CSV players (OracleElixir) — porTournament', key='players_csv_path', on_change=_save_lineup_for_matchup, args=(_lk,))
-        with c2:
-            if 'lineup_lambda_points' not in st.session_state:
-                st.session_state['lineup_lambda_points'] = int(_lineup_rt.get('lineup_lambda_points', 90) or 90)
-            st.slider('Peso (pontos)', 0, 200, step=5, key='lineup_lambda_points', on_change=_save_lineup_for_matchup, args=(_lk,))
-        with c3:
-            if 'lineup_min_gp' not in st.session_state:
-                st.session_state['lineup_min_gp'] = int(_lineup_rt.get('lineup_min_gp', 5) or 5)
-            st.slider('Min GP', 0, 50, step=1, key='lineup_min_gp', on_change=_save_lineup_for_matchup, args=(_lk,))
+        use_lineup = bool(st.session_state.get('use_lineup_adjust', False))
 
-        if 'lineup_shrink_m' not in st.session_state:
-            st.session_state['lineup_shrink_m'] = int(_lineup_rt.get('lineup_shrink_m', 10) or 10)
-        st.slider('Shrink m (GP/(GP+m))', 1, 30, step=1, key='lineup_shrink_m', on_change=_save_lineup_for_matchup, args=(_lk,))
-
-        # tenta auto-preencher pelo último jogo do time no CSV principal
         df_pr = None
         try:
             df_pr = _load_player_rows(csv_sig)
         except (OSError, TypeError, ValueError, pd.errors.EmptyDataError, pd.errors.ParserError):
             df_pr = None
 
-        auto_cols = st.columns([1.2, 1, 1])
-        with auto_cols[0]:
-            do_auto = st.button('Auto-preencher do último jogo', width='stretch', key='lineup_autofill_btn')
-        with auto_cols[1]:
-            st.caption('Dica: muda de confronto ele tenta preencher de novo.')
-        with auto_cols[2]:
-            pass
-
         core_autofill_lineup_state(
             session_state=st.session_state,
             lineup_key=_lk,
-            do_auto=bool(do_auto),
+            do_auto=False,
             df_pr=df_pr,
             team_a=teamA,
             team_b=teamB,
@@ -379,7 +372,6 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             save_lineup_for_matchup_fn=_save_lineup_for_matchup,
         )
 
-        # Preferir ajuste por PlayersArtifact (treinado) quando disponível (auto-detect)
         _pl_cfg = core_resolve_players_layer_config(
             artifact_path=str(artifact_path),
             session_state=st.session_state,
@@ -392,29 +384,10 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         pl_w = float(_pl_cfg.get("weight", 1.15) or 1.15)
         pl_w_src = str(_pl_cfg.get("weight_source") or "ui")
 
-        # Se o artifact não trouxe w_lineup, expõe slider (você pode ajustar)
-        if pl_enabled and pl_w_src == "ui":
-            if "ml_players_w_lineup" not in st.session_state:
-                st.session_state["ml_players_w_lineup"] = float(pl_w)
-            st.slider(
-                "Peso (w_lineup) — ML players layer",
-                0.0,
-                2.0,
-                step=0.05,
-                key="ml_players_w_lineup",
-                on_change=_save_lineup_for_matchup,
-                args=(_lk,),
-            )
+        # Sem o radio: comportamento igual ao default antigo (index=0).
+        use_ml_lineup = bool(pl_enabled)
+        lineup_mode = "ML players layer" if use_ml_lineup else "CSV byTournament (manual)"
 
-        mode_opts = []
-        if pl_enabled:
-            mode_opts.append("ML players layer")
-        mode_opts.append("CSV byTournament (manual)")
-        lineup_mode = st.radio("Ajuste por players", options=mode_opts, horizontal=True, index=0)
-
-        use_ml_lineup = bool(pl_enabled) and (lineup_mode == "ML players layer")
-
-        # carrega impacto (CSV) somente se for usar modo manual ou para sugestões
         df_imp = pd.DataFrame(columns=['team','pos','player','gp','score'])
         try:
             psig = _file_sig(str(_lineup_rt.get('players_csv_path','data/oracleselixir_players.csv') or 'data/oracleselixir_players.csv'))
@@ -422,75 +395,9 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             df_imp = _apply_shrink_m(df_imp, int(_lineup_rt.get('lineup_shrink_m', 10) or 10))
         except (OSError, TypeError, ValueError, pd.errors.EmptyDataError, pd.errors.ParserError):
             df_imp = pd.DataFrame(columns=['team','pos','player','gp','score'])
-
         teams_imp = sorted(df_imp['team'].dropna().astype(str).unique().tolist()) if df_imp is not None and not df_imp.empty else []
-
-        # tenta casar nomes de time do app com o CSV de players (modo manual)
         teamA_key = _best_match(teamA, teams_imp) if teams_imp else ''
         teamB_key = _best_match(teamB, teams_imp) if teams_imp else ''
-
-        if use_ml_lineup:
-            choicesA, dispA = core_build_ml_lineup_choices(
-                df_pr=df_pr,
-                team_ui=teamA,
-                pos_canon_ml=list(_POS_CANON_ML),
-                norm_pos_ml_fn=_norm_pos_ml,
-            )
-            choicesB, dispB = core_build_ml_lineup_choices(
-                df_pr=df_pr,
-                team_ui=teamB,
-                pos_canon_ml=list(_POS_CANON_ML),
-                norm_pos_ml_fn=_norm_pos_ml,
-            )
-        else:
-            choicesA = core_build_manual_lineup_choices(
-                df_imp=df_imp,
-                df_pr=df_pr,
-                team_ui=teamA,
-                team_key=teamA_key,
-                pos_canon=list(_POS_CANON),
-                norm_pos_fn=_norm_pos,
-            )
-            choicesB = core_build_manual_lineup_choices(
-                df_imp=df_imp,
-                df_pr=df_pr,
-                team_ui=teamB,
-                team_key=teamB_key,
-                pos_canon=list(_POS_CANON),
-                norm_pos_fn=_norm_pos,
-            )
-            dispA, dispB = {}, {}
-
-        # render selectors
-        colA, colB = st.columns(2)
-        with colA:
-            core_render_lineup_selector_column(
-                st_module=st,
-                team_label=str(teamA),
-                side="A",
-                choices=(choicesA if isinstance(choicesA, dict) else {}),
-                display_map=(dispA if isinstance(dispA, dict) else {}),
-                pos_list_ui=(list(_POS_CANON_ML) if use_ml_lineup else list(_POS_CANON)),
-                prefix=("lineup_ml" if use_ml_lineup else "lineup"),
-                use_ml_lineup=bool(use_ml_lineup),
-                lineup_key=_lk,
-                safe_key_fn=_safe_key,
-                save_lineup_for_matchup_fn=_save_lineup_for_matchup,
-            )
-        with colB:
-            core_render_lineup_selector_column(
-                st_module=st,
-                team_label=str(teamB),
-                side="B",
-                choices=(choicesB if isinstance(choicesB, dict) else {}),
-                display_map=(dispB if isinstance(dispB, dict) else {}),
-                pos_list_ui=(list(_POS_CANON_ML) if use_ml_lineup else list(_POS_CANON)),
-                prefix=("lineup_ml" if use_ml_lineup else "lineup"),
-                use_ml_lineup=bool(use_ml_lineup),
-                lineup_key=_lk,
-                safe_key_fn=_safe_key,
-                save_lineup_for_matchup_fn=_save_lineup_for_matchup,
-            )
 
         lineupA_sel = _get_lineup_selected('A', mode='ml' if use_ml_lineup else 'manual')
         lineupB_sel = _get_lineup_selected('B', mode='ml' if use_ml_lineup else 'manual')
@@ -618,8 +525,8 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             callbacks=_pre_engine_callbacks,
             format_num_fn=_format_num,
             format_pct_fn=_format_pct,
-            caption_fn=_vg_caption(st),
-            warning_fn=st.warning,
+            caption_fn=_vg_caption(_box_detalhes),
+            warning_fn=_box_detalhes.warning,
             match_league=str(locals().get("match_league", "") or ""),
         )
         _pre_live_callbacks = {
@@ -679,7 +586,7 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             session_state=st.session_state,
             trace_pipeline_steps=trace_pipeline_steps,
             callbacks=_pre_live_callbacks,
-            caption_fn=_vg_caption(st),
+            caption_fn=_vg_caption(_box_detalhes),
         )
         _pre_pipeline_out = core_run_ml_pre_pipeline(
             pre_engine=_pre_engine_in,
@@ -907,7 +814,7 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         load_confidence_baseline_cached_fn=_load_ml_confidence_baseline_cached,
         file_sig_fn=_file_sig,
         lg_a_hint=str(locals().get("_lgA", "") or ""),
-        caption_fn=_vg_caption(st),
+        caption_fn=_vg_caption(_box_detalhes),
         apply_confidence_governor_fn=core_apply_confidence_governor,
         enforce_series_economic_coherence_fn=core_enforce_series_economic_coherence,
         series_coherence_post_max_dev_pp=(
@@ -1105,117 +1012,121 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     oddA_bo5 = _winner_pricing.get("oddA_bo5")
     oddB_bo5 = _winner_pricing.get("oddB_bo5")
 
-    _l, _m, _r = st.columns([1, 2, 1])
-    with _m:
+    with _box_confronto:
+        # Visual "Cards + barra de duelo" (escolha do usuário, 2026-07-03):
+        # bloco inteiro em UM html flex — dois cards de time, medalhão VS no
+        # meio e barra de probabilidade dividida embaixo. Um html único elimina
+        # por construção qualquer desalinhamento de colunas do Streamlit.
+        try:
+            _bo_hdr = int(bo)
+        except (TypeError, ValueError):
+            _bo_hdr = 1
+        _bo_hl = "MD5" if _bo_hdr >= 5 else ("MD3" if _bo_hdr >= 3 else "Mapa")
+
+        _COR_A = "#2daac4"   # ciano (accent do app) — Time 1
+        _COR_B = "#8b5cf6"   # violeta — Time 2 (sem semântica bom/ruim)
+
+        def _odds_rows_html(rows: list) -> str:
+            # "entra ≥ X" = justa × 1.05 (margem de valor recomendada; substitui
+            # a conta de cabeça do "+15% de juice" — pedido dele 2026-07-10).
+            parts: list[str] = []
+            for _lab, _o, _p in rows:
+                try:
+                    _entra = f" <span style='opacity:0.5;font-size:0.82em;'>entra ≥{float(_o) * 1.05:.2f}</span>"
+                except (TypeError, ValueError):
+                    _entra = ""
+                _line = (
+                    f"<span style='opacity:0.75;'>{_lab}</span>&nbsp; "
+                    f"<b>{_format_num(_o, 2)}</b> "
+                    f"<span style='opacity:0.7;font-size:0.9em;'>({_format_pct(_p)})</span>"
+                    f"{_entra}"
+                )
+                if _lab == _bo_hl:
+                    _line = (
+                        "<span style='background:rgba(45,170,196,0.16);"
+                        "border:1px solid rgba(45,170,196,0.5);padding:2px 10px;"
+                        "border-radius:9px;display:inline-block;font-weight:700;'>"
+                        + _line + "</span>"
+                    )
+                parts.append(f"<div style='padding:3px 0;'>{_line}</div>")
+            return "".join(parts)
+
+        def _team_card_html(team_raw: str, disp: str, rows: list, cor: str, rotulo: str) -> str:
+            return (
+                f"<div style='flex:1;max-width:340px;background:rgba(255,255,255,0.025);"
+                f"border:1px solid rgba(255,255,255,0.09);border-top:3px solid {cor};"
+                f"border-radius:14px;padding:12px 16px 10px;text-align:center;'>"
+                f"<div style='opacity:0.55;font-size:0.76em;text-transform:uppercase;"
+                f"letter-spacing:0.06em;'>{_esc(rotulo)}</div>"
+                f"<div style='display:flex;align-items:center;justify-content:center;gap:9px;"
+                f"margin:6px 0 10px;'>"
+                f"{team_logo_html(str(team_raw), 44)}"
+                f"<span style='display:inline-flex;align-items:center;height:44px;font-weight:800;"
+                f"font-size:1.25em;color:{cor};line-height:1;'>{_esc(str(disp))}</span>"
+                f"</div>"
+                f"{_odds_rows_html(rows)}"
+                f"</div>"
+            )
+
+        _card_a = _team_card_html(str(teamA), str(teamA_disp), [
+            ("Mapa", oddA_map, pA_map),
+            ("MD3", oddA_bo3, pA_bo3),
+            ("MD5", oddA_bo5, pA_bo5),
+        ], _COR_A, "Time 1")
+        _card_b = _team_card_html(str(teamB), str(teamB_disp), [
+            ("Mapa", oddB_map, pB_map),
+            ("MD3", oddB_bo3, pB_bo3),
+            ("MD5", oddB_bo5, pB_bo5),
+        ], _COR_B, "Time 2")
+
+        # Barra de duelo: probabilidade do formato em destaque (BO selecionado).
+        _p_duel = {"Mapa": pA_map, "MD3": pA_bo3, "MD5": pA_bo5}.get(_bo_hl, pA_map)
+        _duel_html = ""
+        try:
+            _pd = float(_p_duel)
+        except (TypeError, ValueError):
+            _pd = float("nan")
+        if math.isfinite(_pd) and 0.0 < _pd < 1.0:
+            _pa_pct = 100.0 * _pd
+            _duel_html = (
+                f"<div style='max-width:734px;margin:12px auto 2px;'>"
+                f"<div style='display:flex;justify-content:space-between;font-size:0.85em;"
+                f"margin-bottom:4px;'>"
+                f"<span style='color:{_COR_A};font-weight:700;'>{_esc(str(teamA_disp))} {_pa_pct:.1f}%</span>"
+                f"<span style='opacity:0.55;font-size:0.85em;'>{_bo_hl}</span>"
+                f"<span style='color:{_COR_B};font-weight:700;'>{100.0 - _pa_pct:.1f}% {_esc(str(teamB_disp))}</span>"
+                f"</div>"
+                f"<div style='display:flex;height:13px;border-radius:7px;overflow:hidden;"
+                f"box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);'>"
+                f"<div style='width:{_pa_pct:.1f}%;background:linear-gradient(90deg,{_COR_A},#1f8ba1);'></div>"
+                f"<div style='flex:1;background:linear-gradient(90deg,#6d46c9,{_COR_B});'></div>"
+                f"</div>"
+                f"</div>"
+            )
+
         st.markdown(
-            "<div style='display:flex;align-items:center;justify-content:center;gap:16px;"
-            "margin:2px 0 12px;flex-wrap:wrap;'>"
-            "<span style='display:flex;align-items:center;gap:9px;'>"
-            f"{team_logo_html(str(teamA), 46)}"
-            f"<span style='font-weight:800;font-size:1.35em;color:#2daac4;line-height:1;'>{_esc(str(teamA_disp))}</span>"
-            "</span>"
-            "<span style='opacity:0.45;font-weight:700;font-size:1.05em;'>vs</span>"
-            "<span style='display:flex;align-items:center;gap:9px;'>"
-            f"<span style='font-weight:800;font-size:1.35em;color:#2daac4;line-height:1;'>{_esc(str(teamB_disp))}</span>"
-            f"{team_logo_html(str(teamB), 46)}"
-            "</span>"
-            "</div>",
+            "<div style='display:flex;gap:14px;justify-content:center;align-items:stretch;"
+            "flex-wrap:wrap;'>"
+            + _card_a
+            + "<div style='align-self:center;flex:0 0 auto;width:40px;height:40px;border-radius:50%;"
+            "background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);"
+            "display:flex;align-items:center;justify-content:center;font-weight:800;"
+            "font-size:0.85em;opacity:0.75;'>VS</div>"
+            + _card_b
+            + "</div>"
+            + _duel_html,
             unsafe_allow_html=True,
         )
-        a_col, b_col = st.columns(2)
-        with a_col:
-            st.caption("Time 1")
-            st.markdown(
-                f"**{teamA_disp}**  \n"
-                f"Mapa: **{_format_num(oddA_map, 2)}** ({_format_pct(pA_map)})  \n"
-                f"MD3: **{_format_num(oddA_bo3, 2)}** ({_format_pct(pA_bo3)})  \n"
-                f"MD5: **{_format_num(oddA_bo5, 2)}** ({_format_pct(pA_bo5)})"
-            )
-        with b_col:
-            st.caption("Time 2")
-            st.markdown(
-                f"**{teamB_disp}**  \n"
-                f"Mapa: **{_format_num(oddB_map, 2)}** ({_format_pct(pB_map)})  \n"
-                f"MD3: **{_format_num(oddB_bo3, 2)}** ({_format_pct(pB_bo3)})  \n"
-                f"MD5: **{_format_num(oddB_bo5, 2)}** ({_format_pct(pB_bo5)})"
-            )
 
-        # 2ª opinião (Elo season + players): alerta de divergência no ML de mapa
-        if bool(_ml_runtime_cfg.get("ml_engine_compare")):
-            thr_pp = float(_fnum(_ml_runtime_cfg.get("ml_engine_alert_pp")) or 0.0)
-            main_p = float(_fnum(pA_map) or float("nan"))
-            other_p = float("nan")
-            main_name = "ML core v2" if ml_engine == "mlcore_v2" else "Elo season + players"
-            other_name = "Elo season + players" if ml_engine == "mlcore_v2" else "ML core v2"
-
-            if ml_engine == "mlcore_v2":
-                if _elo_info and not (isinstance(_elo_info, dict) and _elo_info.get("__error__")):
-                    other_p = float(_fnum(_elo_info.get("p_cal", _elo_info.get("p_raw"))) or float("nan"))
-            else:
-                if _ml_info and not (isinstance(_ml_info, dict) and _ml_info.get("__error__")):
-                    other_p = float(_fnum(_ml_info.get("p_cal", _ml_info.get("p_raw"))) or float("nan"))
-
-            if math.isfinite(main_p) and math.isfinite(other_p):
-                dpp = abs(main_p - other_p) * 100.0
-                if dpp >= thr_pp:
-                    st.warning(
-                        f"Divergência no ML (Mapa): {main_name}={_format_pct(main_p)} vs {other_name}={_format_pct(other_p)} "
-                        f"(Δ={dpp:.1f} pp). Revise parâmetros, recorte e lineup."
-                    )
+    # Aviso de "Divergência no ML" (2ª opinião Elo vs core) removido da Visão
+    # Geral a pedido do usuário (reforma 2026-06). O toggle ml_engine_compare
+    # continua existindo nos Parâmetros; só o warning saiu daqui.
 
     # "Detalhar cálculo (ML core v2)" removido da Visão Geral.
 
-    st.subheader("Médias esperadas (totais)")
-    if totals_mode == "series" and int(bo) > 1:
-        st.caption(f"Total da série (bo{bo}) via simulação (soma de mapas jogados). Para distribuição por mapa, usa AVG maps (gol.gg).")
-        st.dataframe(_series_totals_table(totals_avg), width='stretch')
-    else:
-        _vg_totals_tab = core_render_stateful_tab_selector(
-            st,
-            key="vg_totals_view_tab",
-            options=["AVG (gol.gg)", "MAP (se aplicável)"],
-            default="AVG (gol.gg)",
-            label="Totais",
-        )
-        if _vg_totals_tab == "AVG (gol.gg)":
-            st.dataframe(_totals_table(totals_avg), width='stretch')
-        elif _vg_totals_tab == "MAP (se aplicável)":
-            if map_mode == "avg":
-                st.info("Você está em map_mode=avg. Troque para map1..map5 em Ajustes de cálculo para ver MAP específico.")
-            else:
-                st.dataframe(_totals_table(totals_map), width='stretch')
-
-    if is_geral and totals_breakdown:
-        st.caption("Geral = mistura recency-ponderada das janelas (L5 50% · L10 30% · Ano todo 20%).")
-        _bd_order = ["kills", "towers", "dragons", "dragons_elemental", "barons", "inhibitors", "time"]
-        _bd_pt = {
-            "kills": "Kills", "towers": "Torres", "dragons": "Dragões",
-            "dragons_elemental": "Drag. elem.", "barons": "Barões",
-            "inhibitors": "Inibidores", "time": "Tempo",
-        }
-        _bd_labels = ["Ano todo", "L10", "L5"]
-        _bd_rows: List[Dict[str, Any]] = []
-        for _mk in _bd_order:
-            if not any(_mk in (totals_breakdown.get(_lb) or {}) for _lb in _bd_labels):
-                continue
-            _row: Dict[str, Any] = {"Métrica": _bd_pt.get(_mk, _mk)}
-            for _lb in _bd_labels:
-                _t = (totals_breakdown.get(_lb) or {}).get(_mk)
-                _mv = getattr(_t, "mean", None) if _t is not None else None
-                try:
-                    _ok = _mv is not None and math.isfinite(float(_mv))
-                except (TypeError, ValueError):
-                    _ok = False
-                if not _ok:
-                    _row[_lb] = "—"
-                elif _mk == "time":
-                    _row[_lb] = _min_to_mmss(float(_mv))
-                else:
-                    _row[_lb] = _format_num(float(_mv), 2)
-            _bd_rows.append(_row)
-        if _bd_rows:
-            with st.expander("Detalhe por janela (Ano todo / L10 / L5)", expanded=False):
-                st.dataframe(pd.DataFrame(_bd_rows), width='stretch', hide_index=True)
+    # Seção "Médias esperadas (totais)" removida da Visão Geral a pedido do
+    # usuário (2026-06-10, print). Os totais continuam na Análise de Linha e
+    # alimentando o Resumo — só a tabela visual saiu daqui.
 
     # Painel visual "Odds justas (linhas)" removido da Visão Geral (a pedido).
     # O cálculo do p_ml_scope é MANTIDO porque outras abas (Resumo, Consistência)

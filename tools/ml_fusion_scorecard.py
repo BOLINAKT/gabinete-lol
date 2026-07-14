@@ -36,14 +36,9 @@ from mlcore.train_offline import (
     _infer_team_meta_latest,
     _resolve_home_league,
 )
-from tools.ml_quality_scorecard import _grade_from_logloss, _metrics
+from tools.ml_quality_scorecard import _grade_from_logloss, _metrics, default_csvs
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CSVS = [
-    "CSV_HISTORICO/2024_LoL_esports_match_data_from_OraclesElixir.csv",
-    "CSV_HISTORICO/2025_LoL_esports_match_data_from_OraclesElixir.csv",
-    "CSV_DIARIO/2026_LoL_esports_match_data_from_OraclesElixir.csv",
-]
 
 
 def _safe_year(v) -> int | None:
@@ -58,10 +53,10 @@ def main() -> int:
     ap.add_argument("--artifact", default="ml_artifact.json")
     ap.add_argument("--players", default="players_artifact.json")
     ap.add_argument("--csv", action="append", default=None)
-    ap.add_argument("--season", type=int, default=2026)
+    ap.add_argument("--season", type=int, default=None, help="Default: ano mais recente presente nos dados.")
     args = ap.parse_args()
 
-    csvs = [p if Path(p).is_absolute() else str(ROOT / p) for p in (args.csv or DEFAULT_CSVS)]
+    csvs = [p if Path(p).is_absolute() else str(ROOT / p) for p in (args.csv or default_csvs())]
 
     frames = []
     for p in csvs:
@@ -87,7 +82,7 @@ def main() -> int:
     w_lineup = float(pl_meta.get("w_lineup", 0.0) or 0.0)
     p_art = PlayersArtifact.load_json(str(args.players))
 
-    season = int(args.season)
+    season = int(args.season) if args.season is not None else int(pd.to_numeric(games["year"], errors="coerce").max())
     elo_inter, elo_same, fus_inter, fus_same = [], [], [], []
     n_delta_nonzero = 0
     for r in games.itertuples(index=False):

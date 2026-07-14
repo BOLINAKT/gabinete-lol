@@ -122,11 +122,14 @@ def team_badge_html(team_name: str, size: int = 56) -> str:
         initials = (parts[0][0] + parts[1][0]).upper()
     color_idx = sum(ord(c) for c in name) % len(BADGE_COLORS)
     bg = BADGE_COLORS[color_idx]
+    # <span>, não <div>: o badge é usado dentro de <span> flex (ex.: header da
+    # Visão Geral) e div-dentro-de-span é HTML inválido — o navegador quebra o
+    # span pai pra reacomodar o div, destruindo o alinhamento logo+nome.
     return (
-        f"<div style='display:inline-flex;align-items:center;justify-content:center;"
+        f"<span style='display:inline-flex;align-items:center;justify-content:center;"
         f"width:{size}px;height:{size}px;border-radius:50%;background:{bg};"
-        f"color:white;font-weight:800;font-size:1.05em;"
+        f"color:white;font-weight:800;font-size:1.05em;flex:0 0 auto;"
         f"box-shadow:inset 0 1px 0 rgba(255,255,255,0.18);"
         f"border:1px solid rgba(255,255,255,0.15);'>"
-        f"{escape(initials)}</div>"
+        f"{escape(initials)}</span>"
     )

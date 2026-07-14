@@ -295,6 +295,25 @@ def main():
     Path(args.output).write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"[INFO] Report saved to {args.output}")
 
+    # Atualiza o manifest de frescor (banner do app). Sem isso o "Retreinar
+    # agora" treinava os modelos mas o aviso de envelhecimento NUNCA sumia —
+    # bug notado em 2026-07-05 (update_manifest_after_training só era chamado
+    # nos testes).
+    if args.save_models_dir:
+        try:
+            from app_core.live_models_status_core import update_manifest_after_training
+            n_accept = sum(1 for r in snapshot_results
+                           if not r.get("skipped") and (r.get("gate_decision") or {}).get("accept"))
+            update_manifest_after_training(
+                args.save_models_dir, list(csv_paths),
+                extra={"last_gate": {"report": str(args.output),
+                                     "accepted": int(n_accept),
+                                     "total": len(snapshot_results)}},
+            )
+            print(f"[INFO] Manifest atualizado em {args.save_models_dir}/manifest.json")
+        except Exception as exc:
+            print(f"[WARN] Falha ao atualizar manifest: {exc}")
+
 
 if __name__ == "__main__":
     main()

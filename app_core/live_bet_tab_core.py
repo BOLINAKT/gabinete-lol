@@ -134,7 +134,17 @@ def _build_live_scope(
                 relevant = [str(idx).strip() for idx in by_league.index.tolist() if str(idx).strip()]
             else:
                 relevant = [str(v).strip() for v in relevant_df["league"].dropna().astype(str).unique().tolist() if str(v).strip()]
-    options = ["Auto", *relevant, "Manual/contexto"]
+    # Todas as ligas do CSV completo como opções extras (depois das relevantes):
+    # sem isso, um campeonato futuro dos times (ex.: MSI antes de jogarem nele)
+    # nunca aparecia no seletor — só via "Manual/contexto" escondido.
+    extras: list[str] = []
+    if team_games is not None and not team_games.empty and "league" in team_games.columns:
+        _seen = set(relevant)
+        extras = sorted({
+            str(v).strip() for v in team_games["league"].dropna().astype(str).tolist()
+            if str(v).strip() and str(v).strip() not in _seen
+        })
+    options = ["Auto", *relevant, *extras, "Manual/contexto"]
     selected = str(selected_championship or "").strip()
     if not selected:
         selected = relevant[0] if relevant else "Auto"
@@ -424,8 +434,8 @@ def render_live_bet_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     render_tab_hero(
         st,
         title="Live-Bet",
-        subtitle="Leitura pre-jogo e draft para testar o confronto antes da camada live completa.",
-        chips=["Pre", "Draft", "Blue Side"],
+        subtitle="A aposta no momento certo: entre mapas (momentum validado), durante o mapa (estado → vitória) e leitura de draft.",
+        chips=["Entre mapas", "Durante o mapa", "Draft"],
     )
 
     team_games = ctx["team_games"]
@@ -529,6 +539,40 @@ def render_live_bet_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     st.caption(f"Contexto ativo: {team_a} x {team_b} | Campeonato: {context_label}")
     if scope_note and str(scope_note).strip():
         st.caption(scope_note)
+
+    # ---- ENTRE MAPAS (série ao vivo) --------------------------------------
+    # Primeira entrega do bloco in-game (2026-07-03): momentum de séries medido
+    # e aprovado no gate OOS (mapa-2 logloss +0.0084). Marca o placar e recebe
+    # a odd justa do próximo mapa (com momentum) + série restante + edge/stake.
+    with st.container(border=True):
+        render_tab_section(
+            st,
+            title="Entre mapas (série ao vivo)",
+            subtitle="Marque o placar da série: odd justa do próximo mapa com momentum validado + fechar série + edge contra a casa.",
+        )
+        try:
+            from app_core.live_between_maps_core import render_between_maps_block
+            render_between_maps_block(
+                st=st,
+                session_state=st.session_state,
+                team_a=str(team_a),
+                team_b=str(team_b),
+                artifact_path=str(ctx.get("artifact_path", "") or ""),
+                format_num_fn=format_num_fn,
+            )
+        except Exception as _exc_bm:
+            try:
+                from app_core.ui_notify_core import notify_exception
+                notify_exception(st, _exc_bm, context="Falha no bloco entre-mapas")
+            except Exception:
+                pass
+
+    # DURANTE O MAPA: caixa reservada AQUI (posição 2 da aba) para o painel
+    # estado→vitória (Fase 6). O código do painel roda lá no fim (depende de
+    # comp_compare/scope calculados no meio), mas renderiza NESTA posição —
+    # mesmo padrão de containers da reforma da Visão Geral. Antes ele ficava
+    # num expander colapsado no rodapé (o maior ativo validado, escondido).
+    _box_durante_mapa = st.container()
 
     render_tab_section(st, title="Pré-jogo", subtitle="Base do spot sem repetir informação na frente principal.")
     with st.spinner("Calculando resumo pré-jogo..."):
@@ -1140,7 +1184,12 @@ def render_live_bet_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         except Exception:
             playoffs_val = False
 
-        with st.expander("Predição calibrada (pré-jogo + modo avançado opcional)", expanded=False):
+        with _box_durante_mapa, st.container(border=True):
+            render_tab_section(
+                st,
+                title="Durante o mapa (estado → vitória)",
+                subtitle="Ouro/torres/objetivos/tempo do mapa em andamento → P(vitória) calibrada ao vivo (Fase 6, a camada mais validada do projeto).",
+            )
             render_live_state_panel(
                 st=st, session_state=st.session_state,
                 team_a=str(team_a), team_b=str(team_b),

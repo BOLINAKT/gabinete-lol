@@ -135,11 +135,19 @@ class TestLoadPhaseRules(unittest.TestCase):
             self.assertEqual(len(rules), 1)
             self.assertEqual(rules[0]["split"], "Qualify")
 
-    def test_template_file_is_noop(self):
-        # The shipped template must have empty rules (no surprise overrides).
+    def test_template_file_rules_are_valid(self):
+        # 2026-07-05: o arquivo deixou de ser template vazio — carrega a regra
+        # REAL do EWC 2026 main event (decisão do usuário). O guard agora é:
+        # toda regra shipped precisa ser completa/carregável (nada silencioso).
         template = Path(__file__).resolve().parents[2] / "competition_phases.json"
         if template.exists():
-            self.assertEqual(load_phase_rules(template), [])
+            raw = json.loads(template.read_text(encoding="utf-8"))
+            n_raw = len(raw.get("rules", []) or [])
+            rules = load_phase_rules(template)
+            self.assertEqual(len(rules), n_raw, "regra shipped invalida foi descartada em silencio")
+            for rule in rules:
+                self.assertIn("league", rule)
+                self.assertIn("split", rule)
 
     def test_apply_competition_phases_noop_missing(self):
         df = _df()

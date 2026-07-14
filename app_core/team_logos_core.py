@@ -60,6 +60,6 @@ def team_logo_html(team: str, size: int = 40) -> str:
         return (
             f"<img src='{uri}' alt='{_norm(team)}' "
             f"style='width:{size}px;height:{size}px;object-fit:contain;"
-            f"vertical-align:middle;border-radius:6px;'/>"
+            f"vertical-align:middle;border-radius:6px;flex:0 0 auto;'/>"
         )
     return team_badge_html(team, size=size)

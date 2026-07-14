@@ -113,7 +113,12 @@ def render_live_state_panel(
 
     _init_state(session_state, team_a, team_b)
 
-    _render_freshness_banner(st=st, session_state=session_state)
+    _render_freshness_banner(
+        st=st, session_state=session_state,
+        # sufixo por confronto: o Radar multi-jogo renderiza este painel em
+        # várias abas — chave fixa duplicaria o widget e derrubaria a página
+        key_suffix=f"_{str(team_a)[:16]}_{str(team_b)[:16]}",
+    )
 
     fmt_num = format_num_fn if callable(format_num_fn) else (lambda v, d=1: f"{float(v):.{int(d)}f}")
 
@@ -477,10 +482,11 @@ def _render_live_markets_section(
             key = f"lb_live_market_line_{market}_{str(team_a)[:20]}_{str(team_b)[:20]}"
             if key not in session_state:
                 session_state[key] = float(default_lines.get(market, 0.0))
+            # Sem value= — semear session E passar default juntos dispara o
+            # warning "created with a default value but also had its value set".
             line_val = st.number_input(
                 f"Linha {market_labels.get(market, market)}",
                 min_value=0.0, max_value=200.0, step=0.5,
-                value=float(session_state[key]),
                 key=key,
             )
             r = predict_market(
@@ -574,7 +580,7 @@ def _render_first_markets_section(
                 st.caption(f"{team_b}: **{pct_b:.1f}%**")
 
 
-def _render_freshness_banner(*, st: Any, session_state: MutableMapping[str, Any]) -> None:
+def _render_freshness_banner(*, st: Any, session_state: MutableMapping[str, Any], key_suffix: str = "") -> None:
     """Render a small banner showing whether the live models are up to date.
 
     Falls back silently if status helpers aren't importable (defensive).
@@ -628,7 +634,7 @@ def _render_freshness_banner(*, st: Any, session_state: MutableMapping[str, Any]
             st.caption("Clique em 'Retreinar agora' para regenerar os modelos com os dados mais recentes.")
 
     with cols[1]:
-        if not running and st.button("Retreinar agora", key="lb_live_retrain_btn", help="Roda tools/run_phase6_live_gate.py em background"):
+        if not running and st.button("Retreinar agora", key=f"lb_live_retrain_btn{key_suffix}", help="Roda tools/run_phase6_live_gate.py em background"):
             try:
                 cutoff = session_state.get("_live_models_val_cutoff", "2026-03-31")
                 info = launch_retrain_background(

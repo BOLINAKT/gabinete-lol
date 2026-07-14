@@ -213,10 +213,15 @@ def compute_temporal_profile(
     line: float,
     side_key: str,
     team_name: str,
+    full_year_df: Optional[pd.DataFrame] = None,
 ) -> TemporalProfile:
     """Compute the temporal hit-rate profile for a single team.
 
-    df_team: team-filtered and scope-filtered game rows (sorted ascending by date).
+    df_team: recorte das janelas RECENTES (L15/L10/L5) — pela regra do usuário,
+    em cross-league é o campeonato MAIS RECENTE do time.
+    full_year_df: quando fornecido, alimenta a janela "Ano todo" (regra: ano
+    inteiro SEM filtro de liga — todas as ligas/torneios). Sem ele, "Ano todo"
+    cai no df_team (comportamento antigo).
     """
     if df_team is None or df_team.empty:
         empty_windows = [WindowHitRate(lbl, 0, 0, None) for lbl in ("Ano todo", "L15", "L10", "L5")]
@@ -226,26 +231,34 @@ def compute_temporal_profile(
             trend_score=0.0, summary_line="— sem dados —",
         )
 
-    # Sort chronologically ascending so tail(N) = most recent N.
-    if "date" in df_team.columns:
-        df_sorted = df_team.copy()
-        df_sorted["_d"] = pd.to_datetime(df_sorted["date"], errors="coerce")
-        df_sorted = df_sorted.dropna(subset=["_d"]).sort_values("_d")
-    else:
-        df_sorted = df_team.copy()
+    is_ml = str(metric_key).lower() in ("ml", "ml_a", "ml_b")
 
-    # For ML market: use win rate instead of metric hit rate.
-    if str(metric_key).lower() in ("ml", "ml_a", "ml_b"):
-        combined = pd.to_numeric(df_sorted.get("win", pd.Series(dtype=float)), errors="coerce")
-        if str(side_key).strip().upper() == "B":
-            combined = combined.apply(lambda x: (1.0 - x) if pd.notna(x) else float("nan"))
+    def _series_of(df: Optional[pd.DataFrame]) -> Optional[pd.Series]:
+        if df is None or df.empty:
+            return None
+        d = df.copy()
+        if "date" in d.columns:
+            d["_d"] = pd.to_datetime(d["date"], errors="coerce")
+            d = d.dropna(subset=["_d"]).sort_values("_d")
+        if is_ml:
+            s = pd.to_numeric(d.get("win", pd.Series(dtype=float)), errors="coerce")
+            if str(side_key).strip().upper() == "B":
+                s = s.apply(lambda x: (1.0 - x) if pd.notna(x) else float("nan"))
+            return s
+        return _derive_combined_series(d, metric_key)
+
+    if is_ml:
         def _ml_hit(s: pd.Series, _line: float, _side: str) -> tuple[int, int]:
             dropped = s.dropna()
             return int((dropped > 0.5).sum()), len(dropped)
         hit_fn = lambda s, _l, _sd: _ml_hit(s, _l, _sd)
     else:
-        combined = _derive_combined_series(df_sorted, metric_key)
         hit_fn = _hit_rate
+
+    combined = _series_of(df_team)
+    combined_year = _series_of(full_year_df)
+    if combined_year is None or combined_year.dropna().empty:
+        combined_year = combined
 
     if combined is None or combined.dropna().empty:
         empty_windows = [WindowHitRate(lbl, 0, 0, None) for lbl in ("Ano todo", "L15", "L10", "L5")]
@@ -257,7 +270,7 @@ def compute_temporal_profile(
 
     windows: list[WindowHitRate] = []
     for label, n_last in [("Ano todo", None), ("L15", 15), ("L10", 10), ("L5", 5)]:
-        sub = combined if n_last is None else combined.iloc[-int(n_last):]
+        sub = combined_year if n_last is None else combined.iloc[-int(n_last):]
         h, n = hit_fn(sub, float(line), str(side_key))
         pct = (100.0 * h / n) if n > 0 else None
         windows.append(WindowHitRate(label=label, n=n, hits=h, pct=pct))
@@ -344,6 +357,8 @@ def score_candidate(
     df_b: pd.DataFrame,
     team_a: str,
     team_b: str,
+    df_a_full: Optional[pd.DataFrame] = None,
+    df_b_full: Optional[pd.DataFrame] = None,
 ) -> CandidateScore:
     """Compute a full CandidateScore for one row from the Resumo rows list."""
     row_key = f"{row.get('Mercado','')}|{row.get('Lado','')}|{row.get('Linha','')}"
@@ -382,9 +397,11 @@ def score_candidate(
     # Temporal profiles.
     if metric_key not in ("combo",):
         ta = compute_temporal_profile(df_a, metric_key=metric_key, line=line,
-                                       side_key=side_key, team_name=team_a)
+                                       side_key=side_key, team_name=team_a,
+                                       full_year_df=df_a_full)
         tb = compute_temporal_profile(df_b, metric_key=metric_key, line=line,
-                                       side_key=side_key, team_name=team_b)
+                                       side_key=side_key, team_name=team_b,
+                                       full_year_df=df_b_full)
     else:
         empty_w = [WindowHitRate(lbl, 0, 0, None) for lbl in ("Ano todo", "L15", "L10", "L5")]
         ta = TemporalProfile(team=team_a, windows=empty_w, trend="insufficient",
@@ -470,6 +487,8 @@ def rank_candidates(
     team_b: str,
     top_n: int = 5,
     sort_by: str = "score",
+    df_a_full: Optional[pd.DataFrame] = None,
+    df_b_full: Optional[pd.DataFrame] = None,
 ) -> list[CandidateScore]:
     """Score all rows and return the top_n ordered by the chosen key.
 
@@ -484,7 +503,8 @@ def rank_candidates(
             continue
         try:
             s = score_candidate(r, oc_map=oc_map, df_a=df_a, df_b=df_b,
-                                  team_a=team_a, team_b=team_b)
+                                  team_a=team_a, team_b=team_b,
+                                  df_a_full=df_a_full, df_b_full=df_b_full)
             scored.append(s)
         except Exception:
             continue

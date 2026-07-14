@@ -78,6 +78,8 @@ def build_train_offline_cmd(
     keep_playoffs: str | None = None,
     fit_players: bool = False,
     players_out: str | Path | None = None,
+    core: str | None = None,
+    whr_w2: float | None = None,
 ) -> List[str]:
     cmd: List[str] = [sys.executable, "-m", "mlcore.train_offline"]
     for p in (csv_paths or []):
@@ -93,10 +95,16 @@ def build_train_offline_cmd(
         cmd += ["--calibrate", str(calibrate)]
     if keep_playoffs is not None:
         cmd += ["--keep-playoffs", str(keep_playoffs)]
+    if core is not None:
+        cmd += ["--core", str(core)]
+    if whr_w2 is not None:
+        cmd += ["--whr-w2", str(float(whr_w2))]
     if bool(fit_players):
         cmd += ["--fit-players"]
         if players_out is not None:
             cmd += ["--players-out", str(players_out)]
+    else:
+        cmd += ["--no-fit-players"]
     return cmd
 
 
@@ -115,10 +123,24 @@ def resolve_train_offline_reuse_params(
         art = loader(artifact_path)
         out["k"] = float(getattr(art.model.params, "k", 26.0) or 26.0)
         out["scale"] = float(getattr(art.model.params, "scale_points", 400.0) or 400.0)
-        cal_a = float(getattr(art.calibrator, "a", 1.0) or 1.0)
-        cal_b = float(getattr(art.calibrator, "b", 0.0) or 0.0)
-        if abs(cal_a - 1.0) < 0.05 and abs(cal_b) < 0.05:
+        # Fidelidade ao deploy validado: core/w2 vêm do meta do artefato atual
+        # (LoL: whr/60; Dota: whr/20). Sem isso o retrain cai nos defaults e
+        # troca silenciosamente a configuração gateada.
+        meta = dict(getattr(art, "meta", None) or {})
+        if meta.get("core"):
+            out["core"] = str(meta["core"])
+        if meta.get("whr_w2") is not None:
+            out["whr_w2"] = float(meta["whr_w2"])
+        # players layer só se o artefato atual TEM (Dota ainda não tem)
+        out["fit_players"] = bool(meta.get("players_layer"))
+        if getattr(art, "calibrator", None) is None:
+            # artefato deployado sem calibrador (decisão medida) -> manter
             out["calibrate"] = "no"
+        else:
+            cal_a = float(getattr(art.calibrator, "a", 1.0) or 1.0)
+            cal_b = float(getattr(art.calibrator, "b", 0.0) or 0.0)
+            if abs(cal_a - 1.0) < 0.05 and abs(cal_b) < 0.05:
+                out["calibrate"] = "no"
     except (AttributeError, OSError, TypeError, ValueError, json.JSONDecodeError):
         pass
     return out

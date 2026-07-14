@@ -29,15 +29,15 @@ from app_core.style_matchup_core import (
 )
 from mlcore.artifact import MLArtifact
 from mlcore.bo import prob_win_series
-from mlcore.fit_ml_params import (
+from mlcore.fit_samples_core import (
     _build_lineup_cache,
     _fuse_probs_by_precision,
-    _load_style_team_games,
+    _load_team_games_multi as _load_style_team_games,
     _make_samples,
-    _meta_recent_evidence_from_sample,
     _sym_team_probs,
     Sample,
 )
+from mlcore.fit_form_core import _meta_recent_evidence_from_sample
 from mlcore.io_oracle import load_oracle_elixir_games
 from mlcore.lines_engine import Filters as LineFilters, build_profile
 from mlcore.players_layer import PlayersArtifact, load_match_player_rows

@@ -65,6 +65,16 @@ class EloParams:
     league_strength_cap_mult_other: float = 0.40
     tier_strength_cap_abs: float = 30.0
 
+    # MOVDA (arXiv 2506.00348): termo de margem-de-vitoria no update.
+    # R' = R + K(S-E) + mov_lambda*(MOV_real - E_MOV), com
+    # E_MOV = mov_alpha*tanh(mov_beta*dR) + mov_gamma (dR = diff implicito na p prevista).
+    # mov_lambda=0.0 (default) desliga por completo. Constantes fitadas em 2024-25
+    # (tools/eval_mov_elo.py, n=20252, MOV=diff de kills, resid_std=11.8 kills).
+    mov_lambda: float = 0.0
+    mov_alpha: float = 9.343
+    mov_beta: float = 0.005
+    mov_gamma: float = -0.056
+
     # Phase-1 scaffold (feature-flagged): dynamic K adjustment by uncertainty/volatility.
     # Disabled by default to preserve current behavior.
     dynamic_k_enabled: bool = False
@@ -355,10 +365,13 @@ class EloModel:
         red_league: Optional[str] = None,
         blue_tier: Optional[str] = None,
         red_tier: Optional[str] = None,
+        mov: Optional[float] = None,
     ) -> float:
         """One SGD-like update.
 
         League/tier strengths are updated only for inter-league / inter-tier games.
+        `mov` (margem de vitoria do blue, ex.: diff de kills) so tem efeito quando
+        params.mov_lambda != 0 — caso contrario o comportamento e identico ao legado.
         """
         bl = self._get_league(blue, blue_league)
         rl = self._get_league(red, red_league)
@@ -383,6 +396,24 @@ class EloModel:
 
         self.ratings[blue] = self.rating_raw(blue) + d_team
         self.ratings[red] = self.rating_raw(red) - d_team
+
+        # MOVDA: surpresa de margem ajusta o rating (zero-sum), igual ao validado
+        # em tools/eval_mov_elo.py (sem decay no termo, lambda pequeno).
+        if float(self.params.mov_lambda) != 0.0 and mov is not None:
+            try:
+                _mov_f = float(mov)
+            except (TypeError, ValueError):
+                _mov_f = float("nan")
+            if math.isfinite(_mov_f):
+                _p_c = min(max(float(p), 1e-6), 1.0 - 1e-6)
+                _dr = float(self.params.scale_points) * math.log10(_p_c / (1.0 - _p_c))
+                _e_mov = (
+                    float(self.params.mov_alpha) * math.tanh(float(self.params.mov_beta) * _dr)
+                    + float(self.params.mov_gamma)
+                )
+                _adj = float(self.params.mov_lambda) * (_mov_f - _e_mov)
+                self.ratings[blue] = self.rating_raw(blue) + _adj
+                self.ratings[red] = self.rating_raw(red) - _adj
 
         # League offsets (only on interleague)
         if bl != rl and float(self.params.k_league) != 0.0:
@@ -571,6 +602,10 @@ class EloModel:
                 "dynamic_k_volatility_mult_min": float(self.params.dynamic_k_volatility_mult_min),
                 "dynamic_k_volatility_mult_max": float(self.params.dynamic_k_volatility_mult_max),
                 "volatility_ewma_beta": float(self.params.volatility_ewma_beta),
+                "mov_lambda": float(self.params.mov_lambda),
+                "mov_alpha": float(self.params.mov_alpha),
+                "mov_beta": float(self.params.mov_beta),
+                "mov_gamma": float(self.params.mov_gamma),
             },
             "ratings": self.ratings,
             "games_played": self.games_played,
@@ -626,6 +661,11 @@ class EloModel:
             dynamic_k_volatility_mult_min=float(p.get("dynamic_k_volatility_mult_min", 0.80)),
             dynamic_k_volatility_mult_max=float(p.get("dynamic_k_volatility_mult_max", 1.35)),
             volatility_ewma_beta=float(p.get("volatility_ewma_beta", 0.08)),
+            # MOVDA: artefatos antigos (sem as chaves) caem em lambda=0 = comportamento legado.
+            mov_lambda=float(p.get("mov_lambda", 0.0)),
+            mov_alpha=float(p.get("mov_alpha", 9.343)),
+            mov_beta=float(p.get("mov_beta", 0.005)),
+            mov_gamma=float(p.get("mov_gamma", -0.056)),
         ))
 
         model.ratings = {str(k): float(v) for k, v in (d.get("ratings") or {}).items()}

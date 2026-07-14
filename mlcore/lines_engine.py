@@ -353,6 +353,104 @@ def matchup_expected_totals(pA: TeamProfile, pB: TeamProfile) -> Dict[Metric, Ma
     return out
 
 
+# ---------------------------------------------------------------------------
+# Blend Dixon-Coles (alavanca O, gate ACCEPT 2026-07-06)
+# tools/eval_totals_dixon_coles.py, fit hl 2025 / eval cego 2026 (5204 mapas):
+# média DC (ataque×defesa multiplicativo, decaimento 60d) blendada 50/50 com a
+# média V0 melhora o Brier de KILLS +0.0028, DRAGÕES +0.0012 e TEMPO +0.0005.
+# Torres/barões/inibs PIORAM → ficam de fora. DC PURO nunca vence — só o blend.
+# ---------------------------------------------------------------------------
+
+DC_BLEND_HL_DAYS = 60.0
+DC_BLEND_WEIGHT = 0.5
+DC_BLEND_MIN_EFF = 8.0
+_DC_BLEND_COLS = {"kills": ("kills_for", "kills_against"),
+                  "dragons": ("dragons_for", "dragons_against"),
+                  "time": ("game_time_min", None)}
+
+
+def _dc_decayed(dates: pd.Series, values: pd.Series, as_of: pd.Timestamp,
+                hl_days: float) -> tuple[float, float]:
+    """(média decaída, n efetivo) com half-life em dias."""
+    v = pd.to_numeric(values, errors="coerce")
+    d = pd.to_datetime(dates, errors="coerce")
+    ok = v.notna() & d.notna()
+    if not bool(ok.any()):
+        return float("nan"), 0.0
+    age = (as_of - d[ok]).dt.total_seconds() / 86400.0
+    w = 0.5 ** (age.clip(lower=0.0) / float(hl_days))
+    sw = float(w.sum())
+    if sw <= 1e-9:
+        return float("nan"), 0.0
+    return float((w * v[ok]).sum() / sw), sw
+
+
+def apply_dc_blend(
+    team_games: pd.DataFrame,
+    team_a: str,
+    team_b: str,
+    totals: Dict[Metric, MatchupTotals],
+    *,
+    hl_days: float = DC_BLEND_HL_DAYS,
+    blend: float = DC_BLEND_WEIGHT,
+    min_eff: float = DC_BLEND_MIN_EFF,
+) -> Dict[Metric, MatchupTotals]:
+    """Blenda a média V0 com a média Dixon-Coles nos mercados validados.
+
+    Falha graciosa: sem dado/amostra efetiva suficiente, mantém o V0 intacto.
+    A distribuição não muda (alavanca K validou o sd) — só a média desloca.
+    """
+    try:
+        if team_games is None or team_games.empty or "date" not in team_games.columns:
+            return totals
+        df = team_games
+        if "game_time_min" not in df.columns and "gamelength" in df.columns:
+            df = df.copy()
+            df["game_time_min"] = pd.to_numeric(df["gamelength"], errors="coerce") / 60.0
+        as_of = pd.to_datetime(df["date"], errors="coerce").max()
+        if pd.isna(as_of):
+            return totals
+        rows_a = df[df["team"].astype(str) == str(team_a)]
+        rows_b = df[df["team"].astype(str) == str(team_b)]
+        if rows_a.empty or rows_b.empty:
+            return totals
+
+        out = dict(totals)
+        for metric, (col_for, col_against) in _DC_BLEND_COLS.items():
+            tot = out.get(metric)
+            if tot is None or not math.isfinite(float(tot.mean)) or col_for not in df.columns:
+                continue
+            if col_against is None:
+                m_a, n_a = _dc_decayed(rows_a["date"], rows_a[col_for], as_of, hl_days)
+                m_b, n_b = _dc_decayed(rows_b["date"], rows_b[col_for], as_of, hl_days)
+                if min(n_a, n_b) < float(min_eff) or not (math.isfinite(m_a) and math.isfinite(m_b)):
+                    continue
+                dc_mean = 0.5 * (m_a + m_b)
+            else:
+                if col_against not in df.columns:
+                    continue
+                lm, ln = _dc_decayed(df["date"], df[col_for], as_of, hl_days)
+                if not math.isfinite(lm) or lm <= 1e-9 or ln < float(min_eff):
+                    continue
+                att_a, na1 = _dc_decayed(rows_a["date"], rows_a[col_for], as_of, hl_days)
+                def_a, na2 = _dc_decayed(rows_a["date"], rows_a[col_against], as_of, hl_days)
+                att_b, nb1 = _dc_decayed(rows_b["date"], rows_b[col_for], as_of, hl_days)
+                def_b, nb2 = _dc_decayed(rows_b["date"], rows_b[col_against], as_of, hl_days)
+                if min(na1, na2, nb1, nb2) < float(min_eff):
+                    continue
+                if not all(math.isfinite(x) for x in (att_a, def_a, att_b, def_b)):
+                    continue
+                dc_mean = (att_a * def_b + att_b * def_a) / lm
+            if not math.isfinite(dc_mean) or dc_mean <= 0:
+                continue
+            new_mean = (1.0 - float(blend)) * float(tot.mean) + float(blend) * float(dc_mean)
+            new_sd = float(math.sqrt(new_mean)) if tot.dist == "poisson" else float(tot.sd)
+            out[metric] = MatchupTotals(mean=float(new_mean), sd=new_sd, dist=tot.dist)
+        return out
+    except Exception:
+        return totals
+
+
 def _norm_cdf(x: float, mu: float, sd: float) -> float:
     # standard normal CDF via erf
     if sd <= 0:

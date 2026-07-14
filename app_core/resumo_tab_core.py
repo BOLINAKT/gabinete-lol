@@ -9,7 +9,7 @@ import pandas as pd
 
 from app_core.championship_stats_core import enrich_resumo_rows_with_stats_detail
 
-from app_core.resumo_runtime_core import SC_METRIC_COL, merge_with_default_lines, select_h2h_games
+from app_core.resumo_runtime_core import SC_METRIC_COL, merge_with_default_lines, select_h2h_games, v3_lines_for_metric
 from app_core.resumo_state_core import (
     get_resumo_view_state,
     set_resumo_market_trace,
@@ -694,13 +694,23 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         "Cada card mostra quais janelas (Ano / 15 / 10 / 5) passam para Liga e H2H."
     )
 
+    # Ponte: junta as linhas que o usuário adicionou na aba Análise de Linha (v3)
+    # às linhas legadas do ctx (hoje vazias, pois a tela de linhas foi desativada).
+    # Sem isso, qualquer linha digitada na Análise de Linha nunca chegava ao Resumo.
+    def _with_v3(metric_key: str, base_vals: Any) -> list[float]:
+        base = [float(x) for x in (base_vals or []) if isinstance(x, (int, float))]
+        for v in v3_lines_for_metric(session_state, metric_key, team_a, team_b):
+            if not any(abs(float(v) - float(x)) < 1e-9 for x in base):
+                base.append(float(v))
+        return base
+
     lines_by_metric = {
-        "kills": _ctx(ctx, "kills"),
-        "towers": _ctx(ctx, "towers"),
-        "dragons": _ctx(ctx, "dragons"),
-        "barons": _ctx(ctx, "barons"),
-        "inhibitors": _ctx(ctx, "inhibitors"),
-        "time": _ctx(ctx, "time_m"),
+        "kills": _with_v3("kills", _ctx(ctx, "kills")),
+        "towers": _with_v3("towers", _ctx(ctx, "towers")),
+        "dragons": _with_v3("dragons", _ctx(ctx, "dragons")),
+        "barons": _with_v3("barons", _ctx(ctx, "barons")),
+        "inhibitors": _with_v3("inhibitors", _ctx(ctx, "inhibitors")),
+        "time": _with_v3("time", _ctx(ctx, "time_m")),
     }
 
     # Valores de cálculo lidos do estado (sem UI de "ajuste fino" — removida).
@@ -805,7 +815,27 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         # lookup found nothing — keeps behavior safe for odd column layouts.
         df_h2h_a = df_a_all[df_a_all["opponent"] == team_b].copy()
         df_h2h_b = df_b_all[df_b_all["opponent"] == team_a].copy()
-    slices = recency_slices(df_a=df_a_all, df_b=df_b_all, df_h2h=df_h2h_a, id_col="gameid", date_col="date")
+
+    # Escopo pela REGRA DO USUÁRIO (feedback_cross_league_e_ewc_janelas):
+    # "Ano todo" = ano inteiro SEM filtro de liga; em CROSS-LEAGUE (liga
+    # dominante de A ≠ de B) as janelas 15/10/5 usam o campeonato MAIS RECENTE
+    # de cada time (ex.: MSI), não a liga doméstica. Estas fatias alimentam a
+    # Odd (Hist), os chips de recorte E o card temporal — bug flagrado
+    # 2026-07-06 (TSW×LYON no MSI: hist/janelas vinham de LCP/LCS).
+    from app_core.window_scope_core import resolve_window_scopes
+    _scopes = resolve_window_scopes(
+        team_games=team_games if isinstance(team_games, pd.DataFrame) else df_a_all,
+        df_a_used=df_a_all, df_b_used=df_b_all,
+        team_a=team_a, team_b=team_b,
+        year=_yr, map_mode=str(map_mode_ui or "avg"),
+        filters_cls=_ctx(ctx, "Filters"),
+    )
+    df_a_win, df_b_win = _scopes["df_a_win"], _scopes["df_b_win"]
+    df_a_full, df_b_full = _scopes["df_a_full"], _scopes["df_b_full"]
+
+    slices = recency_slices(df_a=df_a_win, df_b=df_b_win, df_h2h=df_h2h_a,
+                            id_col="gameid", date_col="date",
+                            df_a_year=df_a_full, df_b_year=df_b_full)
     df_league_year = slices["league_year"]
     df_h2h_year = slices["h2h_year"]
     df_league_5 = slices["league_5"]
@@ -837,10 +867,8 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             parse_lines_fn=parse_lines,
             parse_time_lines_fn=parse_time_lines,
         )
-        # Always keep the metric's standard default (27.5 kills, 11.5 torres,
-        # ...) AND add any custom line the user typed for this matchup. Fixed
-        # default set, so an empty field never resurfaces a line from a previous
-        # matchup.
+        # Padrão da métrica (27.5 kills, 11.5 torres, ...) + linhas digitadas
+        # para o confronto, SEMPRE juntas (digitou 28.5 → mostra 27.5 e 28.5).
         return merge_with_default_lines(metric_key, parsed)
 
     p_ml_row = float(view_state["p_ml_scope"])
@@ -1039,11 +1067,37 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     oc_map_all[matchup_key_oc] = oc_map_cur
     session_state[oc_store_key] = oc_map_all
 
+    # Teto de odd em TODOS os mercados — regra ATUALIZADA pelo usuário em
+    # 2026-07-10: "TODAS as apostas abaixo do teto devem aparecer (ML, combos,
+    # totais)". A pick entra se a odd do MODELO **ou** a odd HIST couber no
+    # teto (antes, regra 06-11, era só HIST — cortava ML com modelo 1.60 e
+    # hist 1.85, exatamente a ausência que ele notou). Sem NENHUMA odd
+    # verificável → fora, como antes.
+    try:
+        _mx_teto = float(max_odd)
+    except (TypeError, ValueError):
+        _mx_teto = None
+    if _mx_teto is not None and _mx_teto > 0:
+        def _odd_dentro_do_teto(r: dict) -> bool:
+            for campo in ("Odd (Hist)", "Odd (Modelo)"):
+                try:
+                    if float(r.get(campo)) <= float(_mx_teto):
+                        return True
+                except (TypeError, ValueError):
+                    continue
+            return False
+        rows = [r for r in rows if _odd_dentro_do_teto(r)]
+
+    # df_a_win/df_b_win/df_a_full/df_b_full vêm do bloco de escopo lá de cima
+    # (regra cross-league) — mesmos frames que alimentam as fatias da Odd Hist,
+    # então card temporal e odds ficam SEMPRE coerentes entre si.
     ranked = rank_candidates(
         rows,
         oc_map=oc_map_cur,
-        df_a=df_a_used,
-        df_b=df_b_used,
+        df_a=df_a_win,
+        df_b=df_b_win,
+        df_a_full=df_a_full,
+        df_b_full=df_b_full,
         team_a=team_a,
         team_b=team_b,
         top_n=60,

@@ -98,9 +98,15 @@ def build_runtime_param_defaults(base_defaults: Mapping[str, Any] | None) -> Dic
     out.setdefault("ml_series_coherence_post_max_dev_pp_bo5", 20.0)
     out.setdefault("ff_ml_state_alite_live", False)
     out.setdefault("ff_ml_state_areal_live", True)
-    out.setdefault("ff_ml_style_b_lite_live", True)
+    # style_matchup_b + meta_blend_c desligados: backtest A/B/C (replay frozen, 3500 jogos)
+    # mediu gain_logloss GLOBAL = -0.000417 e gain_brier = -0.000053 (ambos NEGATIVOS =
+    # pioram a nota), com 20/34 ligas piorando (LCK/LPL/LEC/LCP entre elas) e hard-fail de
+    # calibracao na faixa 1.30-1.50 do favorito (gap 5.8pp). Alem de nao agregar nota, eram
+    # a UNICA fonte da assimetria de troca de ordem (Time1<->Time2 mudava a odd ~7.7pp porque
+    # injetavam vies do slot azul num lado arbitrario no pre-jogo). decision=reject.
+    out.setdefault("ff_ml_style_b_lite_live", False)
     out.setdefault("ff_ml_league_rank_sos_live", True)
-    out.setdefault("ff_ml_meta_c_lite_live", True)
+    out.setdefault("ff_ml_meta_c_lite_live", False)
     out.setdefault("ff_ml_roster_continuity_live", True)
     out.setdefault("ff_ml_hier_calibration_live", True)
     out.setdefault("ff_ml_series_bo_dplite_live", True)

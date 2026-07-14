@@ -287,6 +287,8 @@ from app_core.champions_tab_core import render_champions_tab as core_render_cham
 from app_core.resumo_tab_core import render_resumo_tab as core_render_resumo_tab
 from app_core.identity_tab_core import render_identity_tab as core_render_identity_tab
 from app_core.live_bet_tab_core import render_live_bet_tab as core_render_live_bet_tab
+from app_core.radar_tab_core import render_radar_tab as core_render_radar_tab
+from app_core.meta_tab_core import render_meta_tab as core_render_meta_tab
 from app_core.identity_registry_core import (
     load_identity_registry as core_load_identity_registry,
     team_identity_candidates as core_team_identity_candidates,
@@ -330,6 +332,7 @@ from app_core.matchup_league_resolution_core import (
     resolve_runtime_team_leagues as core_resolve_runtime_team_leagues,
 )
 from app_core.csv_bootstrap_selector_ui_core import render_bootstrap_selector as core_render_bootstrap_selector
+from app_core.ml_quality_alarm_ui_core import render_ml_quality_alarm as core_render_ml_quality_alarm
 from app_core.technical_runtime_config_ui_core import render_technical_runtime_config_panel as core_render_technical_runtime_config_panel
 from app_core.trace_core import (
     build_combined_trace as core_build_combined_trace,
@@ -2238,6 +2241,8 @@ _csv_bootstrap_gate(
 _render_global_maintenance_banner(st, csv_path, artifact_path, collect_status_fn=_collect_maintenance_status)
 # Alerta global visível: observabilidade/shadow features (se houver falha de trace).
 _render_global_feature_trace_banner(st)
+# Alerta global visível: NOTA do ML caiu vs baseline (escrito pelo qualidade_alarme da manutenção).
+core_render_ml_quality_alarm(st=st, root=APP_ROOT)
 
 # Achievements path default (para ML core v2 e aba Vencedores)
 # - Mantém em sessão para que o ML use o mesmo arquivo que você edita na aba "Vencedores"
@@ -2332,8 +2337,32 @@ if nav_page == "Live-Bet":
             "fuzzy_match_one_fn": core_fuzzy_match_one,
             "format_num_fn": _format_num,
             "min_to_mmss_fn": _min_to_mmss,
+            "artifact_path": str(artifact_path),
         },
     )
+    st.stop()
+
+
+if nav_page == "Radar":
+    team_games = _load_team_games(csv_sig)
+    core_render_radar_tab(
+        st=st,
+        ctx={
+            "team_games": team_games,
+            "Filters": Filters,
+            "apply_filters_fn": apply_filters,
+            "csv_sig": csv_sig,
+            "load_player_rows_fn": _load_player_rows,
+            "format_num_fn": _format_num,
+            "min_to_mmss_fn": _min_to_mmss,
+            "artifact_path": str(artifact_path),
+        },
+    )
+    st.stop()
+
+
+if nav_page == "Meta":
+    core_render_meta_tab(st=st, ctx={"csv_sig": csv_sig})
     st.stop()
 
 
@@ -3068,7 +3097,19 @@ if pA.n_games == 0 or pB.n_games == 0:
     st.error("Sem jogos suficientes com esses filtros. Ajuste Split/Playoffs/League mode ou a janela.")
     st.caption("Aviso: os mercados do confronto podem ficar incompletos, mas abas independentes (ex.: Players/Campeões) continuam disponíveis.")
 
-totals = matchup_expected_totals(pA, pB)
+
+def _expected_totals_dc(_df: pd.DataFrame, _pA, _pB) -> Dict[str, Any]:
+    """Totais V0 + blend Dixon-Coles nos mercados validados (kills/dragões/
+    tempo; gate ACCEPT 2026-07-06, ver mlcore.lines_engine.apply_dc_blend)."""
+    _t = matchup_expected_totals(_pA, _pB)
+    try:
+        from mlcore.lines_engine import apply_dc_blend
+        return apply_dc_blend(_df, str(getattr(_pA, "team", "")), str(getattr(_pB, "team", "")), _t)
+    except Exception:
+        return _t
+
+
+totals = _expected_totals_dc(team_games, pA, pB)
 
 # AVG maps baseline (gol.gg style)
 pA_avg = pA
@@ -3077,7 +3118,7 @@ avg_totals = None
 if map_mode != "avg":
     pA_avg = build_profile(team_games, team=teamA, filters=filters, league_mode=league_mode, map_mode="avg", half_life_days=half_life_days, max_games=max_games)
     pB_avg = build_profile(team_games, team=teamB, filters=filters, league_mode=league_mode, map_mode="avg", half_life_days=half_life_days, max_games=max_games)
-    avg_totals = matchup_expected_totals(pA_avg, pB_avg)
+    avg_totals = _expected_totals_dc(team_games, pA_avg, pB_avg)
 
 totals_map = totals
 totals_avg = avg_totals if avg_totals is not None else totals
@@ -3091,11 +3132,11 @@ if is_geral:
     def _totals_for_window(_mg: Optional[int]) -> tuple[Dict[str, Any], Dict[str, Any]]:
         _pA = build_profile(team_games, team=teamA, filters=filters, league_mode=league_mode, map_mode=map_mode, half_life_days=half_life_days, max_games=_mg)
         _pB = build_profile(team_games, team=teamB, filters=filters, league_mode=league_mode, map_mode=map_mode, half_life_days=half_life_days, max_games=_mg)
-        _tm = matchup_expected_totals(_pA, _pB) if (_pA.n_games > 0 and _pB.n_games > 0) else {}
+        _tm = _expected_totals_dc(team_games, _pA, _pB) if (_pA.n_games > 0 and _pB.n_games > 0) else {}
         if map_mode != "avg":
             _pAa = build_profile(team_games, team=teamA, filters=filters, league_mode=league_mode, map_mode="avg", half_life_days=half_life_days, max_games=_mg)
             _pBa = build_profile(team_games, team=teamB, filters=filters, league_mode=league_mode, map_mode="avg", half_life_days=half_life_days, max_games=_mg)
-            _ta = matchup_expected_totals(_pAa, _pBa) if (_pAa.n_games > 0 and _pBa.n_games > 0) else _tm
+            _ta = _expected_totals_dc(team_games, _pAa, _pBa) if (_pAa.n_games > 0 and _pBa.n_games > 0) else _tm
         else:
             _ta = _tm
         return _tm, _ta
@@ -3147,7 +3188,7 @@ if (
         max_games=max_games,
     )
     if _prev_pA.n_games > 0 and _prev_pB.n_games > 0:
-        _prev_totals_map = matchup_expected_totals(_prev_pA, _prev_pB)
+        _prev_totals_map = _expected_totals_dc(_prev_team_games, _prev_pA, _prev_pB)
         if map_mode != "avg":
             _prev_pA_avg = build_profile(
                 _prev_team_games,
@@ -3168,7 +3209,7 @@ if (
                 max_games=max_games,
             )
             if _prev_pA_avg.n_games > 0 and _prev_pB_avg.n_games > 0:
-                _prev_totals_avg = matchup_expected_totals(_prev_pA_avg, _prev_pB_avg)
+                _prev_totals_avg = _expected_totals_dc(_prev_team_games, _prev_pA_avg, _prev_pB_avg)
         if not _prev_totals_avg:
             _prev_totals_avg = dict(_prev_totals_map)
         _prev_totals_for_lines = _prev_totals_map if totals_mode == "map" else _prev_totals_avg

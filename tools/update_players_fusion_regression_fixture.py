@@ -246,7 +246,9 @@ def main() -> int:
     root = Path(args.root).resolve()
     art_path = root / "ml_artifact.json"
     part_path = root / "players_artifact.json"
-    csv_path = root / "CSV_DIARIO" / "2026_LoL_esports_match_data_from_OraclesElixir.csv"
+    # CSV diario mais recente, sem ano cravado (sobrevive a virada de season).
+    _daily_candidates = sorted((root / "CSV_DIARIO").glob("*.csv"), key=lambda p: p.stat().st_mtime, reverse=True)
+    csv_path = _daily_candidates[0] if _daily_candidates else (root / "CSV_DIARIO" / "_missing.csv")
     fixture = root / "mlcore" / "tests" / "fixtures" / "players_fusion_regression.json"
     if not art_path.exists() or not part_path.exists() or not csv_path.exists():
         raise FileNotFoundError("Missing ml_artifact.json / players_artifact.json / daily csv.")

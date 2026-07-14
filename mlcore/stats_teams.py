@@ -40,6 +40,9 @@ BASE_COLS = [
     "firsttothreetowers",
     "elementaldrakes",
     "heralds",
+    # Dota (Gabinete Dota): mercado megacreeps; ausente no CSV do LoL -> o
+    # filtro "if c in available" ignora sem custo.
+    "megacreeps",
     "voidgrubs",
     "void_grubs",
     "atakhans",
@@ -225,6 +228,9 @@ def build_team_games(team_rows: pd.DataFrame) -> pd.DataFrame:
     _add_numeric_pair("csdiffat20", ["csdiffat20"])
     _add_numeric_pair("killsat15", ["killsat15"])
     _add_numeric_pair("killsat20", ["killsat20"])
+    # Dota (Gabinete Dota): megacreeps causados no jogo (0/1). O CSV do LoL
+    # nao tem a coluna -> no-op aqui.
+    _add_numeric_pair("megacreeps", ["megacreeps"])
 
     dc_src = _find_present_col(["datacompleteness"])
     if dc_src:
@@ -256,6 +262,8 @@ def build_team_games(team_rows: pd.DataFrame) -> pd.DataFrame:
         out["total_elementaldrakes"] = out["elementaldrakes_for"] + out["elementaldrakes_against"]
     out["total_nashors"] = out["barons_for"] + out["barons_against"]
     out["total_inhibitors"] = out["inhibitors_for"] + out["inhibitors_against"]
+    if "megacreeps_for" in out.columns and "megacreeps_against" in out.columns:
+        out["total_megacreeps"] = out["megacreeps_for"] + out["megacreeps_against"]
     if "killsat15_for" in out.columns and "killsat15_against" in out.columns:
         out["total_kills_at15"] = out["killsat15_for"] + out["killsat15_against"]
     if "killsat20_for" in out.columns and "killsat20_against" in out.columns:

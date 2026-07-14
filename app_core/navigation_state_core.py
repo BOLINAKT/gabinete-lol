@@ -6,7 +6,10 @@ from typing import Any, MutableMapping
 
 DEFAULT_NAV_MAIN = "Plays"
 DEFAULT_UI_PAGE_MODE = "Fluxo R\u00e1pido"
-TOP_NAV_OPTIONS = ("Plays", "Live-Bet", "Tecnico")
+# Live-Bet foi FUNDIDA na página Radar (2026-07-04, pedido do usuário):
+# entre-mapas e durante-o-mapa agora vivem lá. Navegações antigas pra
+# "Live-Bet" caem no Radar (ver resolve_nav_page).
+TOP_NAV_OPTIONS = ("Plays", "Radar", "Meta", "Tecnico")
 
 
 def get_nav_pending(session_state: MutableMapping[str, Any]) -> str:
@@ -92,12 +95,17 @@ def set_dismiss_update_banner(session_state: MutableMapping[str, Any], value: An
 def resolve_nav_page(session_state: MutableMapping[str, Any]) -> str:
     pending = consume_nav_pending(session_state)
     if pending:
-        if pending in {"Plays", "Live-Bet", "Tecnico"}:
+        if pending == "Live-Bet":
+            pending = "Radar"  # página fundida no Radar
+        if pending in {"Plays", "Radar", "Meta", "Tecnico"}:
             set_nav_main(session_state, pending)
         else:
             set_nav_main(session_state, "Plays")
             set_ui_page_mode(session_state, "Completo")
 
-    if str(get_nav_main(session_state, "Plays") or "").strip() == "Calibracoes":
+    _cur = str(get_nav_main(session_state, "Plays") or "").strip()
+    if _cur == "Calibracoes":
         set_nav_main(session_state, "Tecnico")
+    elif _cur == "Live-Bet":
+        set_nav_main(session_state, "Radar")
     return normalize_nav_main(get_nav_main(session_state, "Plays"))

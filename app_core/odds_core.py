@@ -373,7 +373,12 @@ def recency_slices(
     date_col: str = "date",
     dedupe_league: bool = True,
     backfill_unique_targets: bool = False,
+    df_a_year: pd.DataFrame | None = None,
+    df_b_year: pd.DataFrame | None = None,
 ) -> Dict[str, pd.DataFrame]:
+    """df_a/df_b alimentam as janelas RECENTES (15/10/5). Quando df_a_year/
+    df_b_year vierem, a fatia "Ano" usa ELES (regra do usuário: Ano todo = ano
+    inteiro sem filtro de liga; recentes = recorte/campeonato mais recente)."""
     def _league_slice(*parts: pd.DataFrame) -> pd.DataFrame:
         out = pd.concat(list(parts), ignore_index=True)
         if bool(dedupe_league):
@@ -416,7 +421,9 @@ def recency_slices(
             if not grew:
                 return merged
 
-    league_year = _league_slice(df_a, df_b)
+    _ya = df_a_year if isinstance(df_a_year, pd.DataFrame) and not df_a_year.empty else df_a
+    _yb = df_b_year if isinstance(df_b_year, pd.DataFrame) and not df_b_year.empty else df_b
+    league_year = _league_slice(_ya, _yb)
     league_15 = _league_recent_slice(15)
     league_10 = _league_recent_slice(10)
     league_5 = _league_recent_slice(5)

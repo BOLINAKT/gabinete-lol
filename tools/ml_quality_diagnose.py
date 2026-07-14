@@ -33,14 +33,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from mlcore.artifact import MLArtifact
 from mlcore.stats_teams import build_team_games, load_team_rows
+from tools.ml_quality_scorecard import default_csvs
 
 ROOT = Path(__file__).resolve().parents[1]
 INTL = {"EWC", "MSI", "WORLDS", "FST", "IEM", "FIRST STAND"}
-DEFAULT_CSVS = [
-    "CSV_HISTORICO/2024_LoL_esports_match_data_from_OraclesElixir.csv",
-    "CSV_HISTORICO/2025_LoL_esports_match_data_from_OraclesElixir.csv",
-    "CSV_DIARIO/2026_LoL_esports_match_data_from_OraclesElixir.csv",
-]
 BASELINE_PATH = ROOT / "ops" / "monitoring" / "ml_quality_baseline.json"
 
 # Limiares de regressão (quanto pior que o baseline para acender alerta).
@@ -80,9 +76,11 @@ def _load_games(csvs: list[str]) -> pd.DataFrame:
     return g[g["dl"].ne("") & g["ol"].ne("")].sort_values("date")
 
 
-def snapshot(artifact: str, season: int, recent_days: int) -> dict:
+def snapshot(artifact: str, season: int | None, recent_days: int) -> dict:
     art = MLArtifact.load_json(str(artifact if Path(artifact).is_absolute() else ROOT / artifact))
-    g = _load_games(DEFAULT_CSVS)
+    g = _load_games(default_csvs())
+    if season is None:
+        season = int(g["date"].dt.year.max())
     g = g[g["date"].dt.year == int(season)]
     if g.empty:
         return {"error": f"sem jogos {season}"}
@@ -188,7 +186,7 @@ def _diagnose(cur: dict, base: dict) -> list[dict]:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Diagnóstico de qualidade do ML (queda + solução).")
     ap.add_argument("--artifact", default="ml_artifact.json")
-    ap.add_argument("--season", type=int, default=2026)
+    ap.add_argument("--season", type=int, default=None, help="Default: ano mais recente presente nos dados.")
     ap.add_argument("--recent-days", type=int, default=45)
     ap.add_argument("--set-baseline", action="store_true", help="Salva o estado atual como baseline e sai.")
     args = ap.parse_args()
@@ -197,7 +195,8 @@ def main() -> int:
     if cur.get("error"):
         print("ERRO:", cur["error"]); return 2
 
-    print(f"\n=== DIAGNÓSTICO ML — {args.artifact} season={args.season} ===")
+    season_lbl = args.season if args.season is not None else f"{cur.get('season', 'auto')} (auto)"
+    print(f"\n=== DIAGNÓSTICO ML — {args.artifact} season={season_lbl} ===")
     print(f"{'dimensão':22} {'logloss':>9} {'ece':>8} {'acc':>7} {'n':>6}")
     for key, lab in (("inter", "inter-liga"), ("same", "mesma-liga"), ("geral_cal", "GERAL (calibrado)"),
                      ("geral_raw", "GERAL (cru)"), ("recent", f"recente {args.recent_days}d")):

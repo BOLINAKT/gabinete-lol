@@ -28,9 +28,10 @@ class TestLogoFallback(unittest.TestCase):
 
     def test_fallback_to_badge(self):
         # Sem arquivo → cai no badge de iniciais (sem <img>).
+        # Badge é <span> (2026-06: div-em-span quebrava o header da Visão Geral).
         html = team_logo_html("Gen.G__inexistente__xyz", 40)
         self.assertNotIn("<img", html)
-        self.assertIn("div", html.lower())  # badge é um <div>
+        self.assertIn("span", html.lower())
 
     def test_empty_team(self):
         # Nome vazio não deve quebrar.

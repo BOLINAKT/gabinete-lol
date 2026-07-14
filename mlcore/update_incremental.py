@@ -379,8 +379,19 @@ def main() -> None:
             team_meta[str(blue)] = {"league": str(bl), "tier": str(bt)}
             team_meta[str(red)] = {"league": str(rl), "tier": str(rt)}
 
+            # MOV (diff de kills) para o termo MOVDA — inerte quando o artefato
+            # tem mov_lambda=0 (artefatos antigos) ou quando kills faltam.
+            _mov_val = None
+            try:
+                _bk = float(getattr(r, "blue_teamkills"))
+                _rk = float(getattr(r, "red_teamkills"))
+                if _bk == _bk and _rk == _rk:  # not-NaN
+                    _mov_val = _bk - _rk
+            except (TypeError, ValueError, AttributeError):
+                _mov_val = None
+
             if use_new:
-                art.model.update(blue, red, bw, blue_league=bl, red_league=rl, blue_tier=bt, red_tier=rt)
+                art.model.update(blue, red, bw, blue_league=bl, red_league=rl, blue_tier=bt, red_tier=rt, mov=_mov_val)
             elif use_legacy:
                 art.model.update(blue, red, bw, league=lg_match, tier=tier_for_league(lg_match))
             else:

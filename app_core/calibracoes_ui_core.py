@@ -170,7 +170,8 @@ def render_calibracoes(root: Path, *, st: Any, ctx: Mapping[str, Any]) -> None:
     st.markdown("### Ações")
 
     colA, colB, colC = st.columns([1, 1, 1])
-    st.session_state.setdefault("cal_holdout_days", 180)
+    # 30 = deploy validado (tools/atualizar_modelo.py); 180 congela ratings fora da season.
+    st.session_state.setdefault("cal_holdout_days", 30)
     st.session_state.setdefault("cal_do_calib", "auto")
     st.session_state.setdefault("cal_keep_playoffs", "auto")
     with colA:

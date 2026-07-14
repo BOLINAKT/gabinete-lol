@@ -27,7 +27,8 @@ class NavigationStateCoreTests(unittest.TestCase):
         self.assertEqual(get_nav_pending(state), "")
         self.assertEqual(get_nav_main(state), "Plays")
         self.assertEqual(set_nav_main(state, "Tecnico"), "Tecnico")
-        self.assertEqual(set_nav_main(state, "Live-Bet"), "Live-Bet")
+        # Live-Bet saiu do nav (2026-07: fundida no Radar) -> normaliza pro default
+        self.assertEqual(set_nav_main(state, "Live-Bet"), "Plays")
         self.assertEqual(normalize_nav_main("Parâmetros"), "Plays")
         self.assertEqual(get_ui_page_mode(state), "Fluxo Rápido")
         self.assertEqual(set_ui_page_mode(state, "Completo"), "Completo")
@@ -45,9 +46,9 @@ class NavigationStateCoreTests(unittest.TestCase):
         state = {"_nav_pending": "Parametro antigo"}
         self.assertEqual(resolve_nav_page(state), "Plays")
         self.assertEqual(get_nav_main(state), "Plays")
-        state["_nav_pending"] = "Live-Bet"
-        self.assertEqual(resolve_nav_page(state), "Live-Bet")
-        self.assertEqual(get_nav_main(state), "Live-Bet")
+        state["_nav_pending"] = "Radar"
+        self.assertEqual(resolve_nav_page(state), "Radar")
+        self.assertEqual(get_nav_main(state), "Radar")
         state["nav_main"] = "Calibracoes"
         self.assertEqual(resolve_nav_page(state), "Tecnico")
 

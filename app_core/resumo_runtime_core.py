@@ -26,17 +26,52 @@ SC_METRIC_COL: dict[str, str] = _stats_combined_col_map()
 RESUMO_DEFAULT_LINES: dict[str, list[float]] = _stats_default_lines_map()
 
 
-def merge_with_default_lines(metric_key: str, parsed: list[float]) -> list[float]:
-    """Linhas a analisar para a métrica, RESPEITANDO o que o usuário digitou.
+# Ponte Análise de Linha (v3) → Resumo. A aba "Análise de Linha" salva as linhas
+# que o usuário adiciona em session_state["v3kills_lines_{mercado}_{timeA}_{timeB}"]
+# (lista de floats). O Resumo, por legado, lia de outro lugar (_lines_store, campos
+# lines_kills…) que só era preenchido pela tela de linhas DESATIVADA — por isso as
+# linhas adicionadas nunca chegavam ao Resumo. Mapa de métrica-do-Resumo → mercado-v3
+# (atenção: inibidores é "inibs" na v3, "inhibitors" no Resumo).
+_V3_MARKET_FOR_RESUMO_METRIC: dict[str, str] = {
+    "kills": "kills",
+    "towers": "towers",
+    "dragons": "dragons",
+    "barons": "barons",
+    "inhibitors": "inibs",
+    "time": "time",
+}
 
-    - Campo com linhas → usa EXATAMENTE essas (dedup + ordenado). O usuário tem
-      controle total: pode REMOVER o padrão (ex.: tirar 27.5 e deixar só 28.5).
-      Antes o padrão era forçado junto e não dava pra remover.
-    - Campo vazio → cai no padrão da métrica (ex.: kills 27.5). Como o padrão é
-      constante, um campo vazio nunca ressuscita uma linha de um confronto
-      anterior (sem "fantasma 25.5").
+
+def v3_lines_for_metric(session_state: Any, metric_key: str, team_a: Any, team_b: Any) -> list[float]:
+    """Linhas que o usuário adicionou na aba Análise de Linha (v3) para o confronto."""
+    v3m = _V3_MARKET_FOR_RESUMO_METRIC.get(str(metric_key or "").strip().lower())
+    if not v3m:
+        return []
+    ta = str(team_a or "").strip()
+    tb = str(team_b or "").strip()
+    val = session_state.get(f"v3kills_lines_{v3m}_{ta}_{tb}") if session_state is not None else None
+    out: list[float] = []
+    if isinstance(val, list):
+        for x in val:
+            try:
+                out.append(float(x))
+            except (TypeError, ValueError):
+                continue
+    return out
+
+
+def merge_with_default_lines(metric_key: str, parsed: list[float]) -> list[float]:
+    """Linhas a analisar para a métrica: PADRÃO + digitadas, JUNTAS.
+
+    Regra do usuário (2026-06-11): as linhas padrão (kills 27.5, torres 11.5,
+    dragões 4.5, tempo 32.5, barões/inibidores 1.5) aparecem SEMPRE, e qualquer
+    linha digitada para o confronto SOMA a elas (digitou 28.5 → mostra 27.5 E
+    28.5). Como o padrão é constante, um campo vazio nunca ressuscita uma linha
+    de um confronto anterior (sem "fantasma 25.5").
     """
-    cleaned: list[float] = []
+    cleaned: list[float] = [
+        float(x) for x in RESUMO_DEFAULT_LINES.get(str(metric_key).strip().lower(), [])
+    ]
     for v in (parsed or []):
         try:
             fv = float(v)
@@ -44,9 +79,7 @@ def merge_with_default_lines(metric_key: str, parsed: list[float]) -> list[float
             continue
         if not any(abs(fv - float(e)) < 1e-9 for e in cleaned):
             cleaned.append(fv)
-    if cleaned:
-        return sorted(cleaned)
-    return sorted(float(x) for x in RESUMO_DEFAULT_LINES.get(str(metric_key).strip().lower(), []))
+    return sorted(cleaned)
 
 
 def select_h2h_games(

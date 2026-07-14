@@ -121,10 +121,15 @@ class TestAugmentTotalColumns(unittest.TestCase):
         out = _augment_with_total_columns(df)
         self.assertNotIn("mv2_total_kills", out.columns)
 
-    def test_nan_treated_as_zero(self):
-        df = pd.DataFrame({"towers_for": [11, None], "towers_against": [None, 9]})
+    def test_nan_propagates_not_zero(self):
+        # Contrato NOVO (2026-07-11): jogo sem o dado (NaN — ex.: Dota com
+        # objetivos ainda não baixados) tem total NaN e fica FORA das janelas.
+        # O contrato antigo (NaN→0) criava "· 0" falso nos % da Recent Form.
+        df = pd.DataFrame({"towers_for": [11, None, 6], "towers_against": [None, 9, 5]})
         out = _augment_with_total_columns(df)
-        self.assertEqual(list(out["mv2_total_towers"]), [11.0, 9.0])
+        vals = list(out["mv2_total_towers"])
+        self.assertTrue(pd.isna(vals[0]) and pd.isna(vals[1]))
+        self.assertEqual(vals[2], 11.0)
 
     def test_empty_df_returned_as_is(self):
         df = pd.DataFrame()
