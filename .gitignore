@@ -32,8 +32,11 @@ ENV/
 
 # Dados e artefatos pesados (não são código; ficam só no disco, fora do git)
 ops/
-CSV_DIARIO/
-CSV_HISTORICO/
+# CSVs de dados são VERSIONADOS (projeto app-online 15/07): o robô do GitHub
+# Actions atualiza o diário e commita; PCs se atualizam com git pull.
+# Ingest/estado continuam fora (regra 2: estado != código).
+CSV_DIARIO/*.json
+CSV_HISTORICO/*.json
 backups/
 evidence/
 tmp/
@@ -77,3 +80,6 @@ wf_last_report.json
 
 # Bundles de release (modelo+dados pra enviar) - nao versionar
 release/
+
+# lixo de editor (LibreOffice abre o CSV e cria trava)
+.~lock.*#
