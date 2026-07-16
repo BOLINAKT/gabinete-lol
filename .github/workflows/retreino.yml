@@ -14,6 +14,14 @@ on:
   push:
     paths:
       - "CSV_DIARIO/*.csv"
+  # Rede de segurança SEM depender do secret GH_PAT: mesmo que um commit de
+  # CSV não dispare o push-trigger (anti-loop do GitHub p/ commits de robô),
+  # estas janelas passam ~40min depois das do robô de dados e aplicam o
+  # incremental (no-op barato quando não há nada novo).
+  schedule:
+    - cron: "57 9 * * *"
+    - cron: "3 16 * * *"
+    - cron: "21 22 * * *"
   workflow_dispatch: {}
 
 permissions:
@@ -65,5 +73,11 @@ jobs:
             echo "modelo não mudou (CSV sem jogos novos) — nada a commitar"
           else
             git commit -m "Robô: modelo atualizado (incremental pós-CSV novo)"
+            # push com retry: upload/robô podem commitar ao mesmo tempo
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado (concorrência) — rebase e retry $i/3"
+              git pull --rebase || exit 1
+            done
             git push
           fi

@@ -61,5 +61,11 @@ jobs:
             echo "sem mudança — nada a commitar"
           else
             git commit -m "Robô: CSV diário do Oracle's Elixir atualizado"
+            # push com retry: upload manual/retreino podem commitar junto
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado (concorrência) — rebase e retry $i/3"
+              git pull --rebase || exit 1
+            done
             git push
           fi
