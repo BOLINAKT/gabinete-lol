@@ -1,0 +1,69 @@
+# Robô de RETREINO (fase 2 do app-online, aprovado por ele 16/07): sempre que
+# o CSV diário mudar no repositório — não importa se veio do robô de dados,
+# do upload dele ou do amigo — o modelo se atualiza sozinho e o site renasce
+# com CSV E modelo frescos. Sem PC de ninguém.
+#
+# v1 deliberadamente simples e segura:
+# - incremental (mlcore.update_incremental): o MESMO comando que o app roda
+#   no boot; aplica só os jogos novos, segundos de CPU, risco ~zero.
+# - fixtures de regressão re-pinadas junto (suite dos PCs segue verde pós-pull).
+# - full retrain/params continuam nos ciclos maiores (PC ou evolução futura).
+name: Retreino (modelo segue o CSV)
+
+on:
+  push:
+    paths:
+      - "CSV_DIARIO/*.csv"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: retreino
+  cancel-in-progress: false
+
+jobs:
+  incremental:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # anti-eco: commits do próprio robô de retreino não tocam CSV_DIARIO,
+    # então não redisparam este workflow.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependências
+        run: pip install --quiet -r requirements.txt
+
+      - name: Incremental (aplica jogos novos ao modelo)
+        run: |
+          python -m mlcore.update_incremental \
+            --artifact ml_artifact.json \
+            --csv CSV_DIARIO/2026_LoL_esports_match_data_from_OraclesElixir.csv \
+            --players players_artifact.json
+
+      - name: Re-pinar fixtures de regressão no modelo novo
+        run: python tools/update_regression_fixtures.py
+
+      - name: Guardas pós-retreino (nunca publicar modelo quebrado)
+        run: |
+          python -m unittest \
+            mlcore.tests.test_live_artifact_complete \
+            mlcore.tests.test_odds_regression \
+            mlcore.tests.test_odds_regression_40 -v 2>&1 | tail -5
+
+      - name: Commitar modelo atualizado
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add ml_artifact.json players_artifact.json mlcore/tests/fixtures/
+          if git diff --cached --quiet; then
+            echo "modelo não mudou (CSV sem jogos novos) — nada a commitar"
+          else
+            git commit -m "Robô: modelo atualizado (incremental pós-CSV novo)"
+            git push
+          fi
