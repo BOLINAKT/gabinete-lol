@@ -196,6 +196,14 @@ def validate_csv_upload(file_bytes: bytes, current_csv_path: str) -> tuple[bool,
     return True, f"OK: {new_n} jogos, última partida {new_dmax}.", info
 
 
+def _gh_error_detail(resp: Any) -> str:
+    """Extrai a mensagem real do GitHub (nunca mais adivinhar um 422)."""
+    try:
+        return str((resp.json() or {}).get("message") or "")[:160]
+    except Exception:
+        return ""
+
+
 def commit_csv_to_repo(
     file_bytes: bytes,
     *,
@@ -204,41 +212,66 @@ def commit_csv_to_repo(
     repo_path: str,
     message: str,
     get_fn: Any = None,
-    put_fn: Any = None,
+    post_fn: Any = None,
+    patch_fn: Any = None,
+    branch: str = "master",
 ) -> tuple[bool, str]:
-    """Commita o CSV no GitHub via contents API (persistência real do site)."""
+    """Commita o CSV via Git Data API (blob→árvore→commit→ref).
+
+    A contents API recusa arquivos grandes (422 no CSV de ~47MB, visto
+    2026-07-16 no teste real dele); a Git Data API é o caminho documentado
+    para blobs grandes. Cada passo devolve o erro REAL do GitHub."""
     import base64
 
     try:
-        if get_fn is None or put_fn is None:
+        if get_fn is None or post_fn is None or patch_fn is None:
             import requests
 
             get_fn = get_fn or requests.get
-            put_fn = put_fn or requests.put
-        headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
-        folder = repo_path.rsplit("/", 1)[0]
-        fname = repo_path.rsplit("/", 1)[1]
-        sha = ""
-        listing = get_fn(f"https://api.github.com/repos/{repo}/contents/{folder}",
-                         headers=headers, timeout=30)
-        if int(getattr(listing, "status_code", 0)) == 200:
-            for item in (listing.json() or []):
-                if str(item.get("name")) == fname:
-                    sha = str(item.get("sha") or "")
-                    break
-        body = {
-            "message": message,
+            post_fn = post_fn or requests.post
+            patch_fn = patch_fn or requests.patch
+        hdr = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
+        api = f"https://api.github.com/repos/{repo}"
+
+        ref = get_fn(f"{api}/git/ref/heads/{branch}", headers=hdr, timeout=30)
+        if int(getattr(ref, "status_code", 0)) != 200:
+            return False, f"não achei o branch (HTTP {ref.status_code} {_gh_error_detail(ref)})"
+        base_commit_sha = str(ref.json()["object"]["sha"])
+
+        base_commit = get_fn(f"{api}/git/commits/{base_commit_sha}", headers=hdr, timeout=30)
+        if int(getattr(base_commit, "status_code", 0)) != 200:
+            return False, f"commit base falhou (HTTP {base_commit.status_code} {_gh_error_detail(base_commit)})"
+        base_tree_sha = str(base_commit.json()["tree"]["sha"])
+
+        blob = post_fn(f"{api}/git/blobs", headers=hdr, timeout=600, json={
             "content": base64.b64encode(file_bytes).decode("ascii"),
-            "branch": "master",
-        }
-        if sha:
-            body["sha"] = sha
-        resp = put_fn(f"https://api.github.com/repos/{repo}/contents/{repo_path}",
-                      json=body, headers=headers, timeout=300)
-        code = int(getattr(resp, "status_code", 0))
-        if code in (200, 201):
-            return True, "CSV publicado! O site renasce com ele em ~2-3 min (recarrega a página)."
-        return False, f"GitHub recusou o envio (HTTP {code})."
+            "encoding": "base64",
+        })
+        if int(getattr(blob, "status_code", 0)) != 201:
+            return False, f"envio do arquivo falhou (HTTP {blob.status_code} {_gh_error_detail(blob)})"
+        blob_sha = str(blob.json()["sha"])
+
+        tree = post_fn(f"{api}/git/trees", headers=hdr, timeout=60, json={
+            "base_tree": base_tree_sha,
+            "tree": [{"path": repo_path, "mode": "100644", "type": "blob", "sha": blob_sha}],
+        })
+        if int(getattr(tree, "status_code", 0)) != 201:
+            return False, f"árvore falhou (HTTP {tree.status_code} {_gh_error_detail(tree)})"
+
+        commit = post_fn(f"{api}/git/commits", headers=hdr, timeout=60, json={
+            "message": message,
+            "tree": str(tree.json()["sha"]),
+            "parents": [base_commit_sha],
+        })
+        if int(getattr(commit, "status_code", 0)) != 201:
+            return False, f"commit falhou (HTTP {commit.status_code} {_gh_error_detail(commit)})"
+
+        upd = patch_fn(f"{api}/git/refs/heads/{branch}", headers=hdr, timeout=30, json={
+            "sha": str(commit.json()["sha"]),
+        })
+        if int(getattr(upd, "status_code", 0)) != 200:
+            return False, f"atualização do branch falhou (HTTP {upd.status_code} {_gh_error_detail(upd)}) — alguém commitou ao mesmo tempo? tenta de novo"
+        return True, "CSV publicado! O site renasce com ele em ~2-3 min (recarrega a página)."
     except Exception as exc:
         return False, f"Falha ao publicar: {type(exc).__name__}"
 
