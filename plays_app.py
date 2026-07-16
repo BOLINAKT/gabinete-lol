@@ -3020,6 +3020,7 @@ if ml_engine == "mlcore_v2" or bool(_ml_runtime_cfg["ml_engine_compare"]):
         )
 
         _ml_info = _core_result.get("ml_info")
+        st.session_state["_ml_v2_last_error"] = str(_core_result.get("ml_error", "") or "")
         p_map_raw = float(_core_result.get("p_map_raw", float("nan")))
         p_map_cal = float(_core_result.get("p_map_cal", float("nan")))
         _lgA = str(_core_result.get("league_a", ""))
@@ -3082,7 +3083,12 @@ core_apply_players_context_runtime_override(
 )
 
 if ml_engine == "mlcore_v2" and not math.isfinite(p_map_cal):
-    st.warning("Não consegui calcular p_map via ML core v2 com esse ml_artifact.json. (ML fica indisponível, mas Totais continuam.)")
+    _ml_v2_err = str(st.session_state.get("_ml_v2_last_error", "") or "")
+    st.warning(
+        "Não consegui calcular p_map via ML core v2 com esse ml_artifact.json. "
+        "(ML fica indisponível, mas Totais continuam.)"
+        + (f"\n\nMotivo: `{_ml_v2_err}`" if _ml_v2_err else "")
+    )
 
 
 map_mode = normalize_map_mode(map_mode_ui)
