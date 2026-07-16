@@ -196,14 +196,6 @@ def validate_csv_upload(file_bytes: bytes, current_csv_path: str) -> tuple[bool,
     return True, f"OK: {new_n} jogos, última partida {new_dmax}.", info
 
 
-def _gh_error_detail(resp: Any) -> str:
-    """Extrai a mensagem real do GitHub (nunca mais adivinhar um 422)."""
-    try:
-        return str((resp.json() or {}).get("message") or "")[:160]
-    except Exception:
-        return ""
-
-
 def commit_csv_to_repo(
     file_bytes: bytes,
     *,
@@ -211,69 +203,67 @@ def commit_csv_to_repo(
     repo: str,
     repo_path: str,
     message: str,
-    get_fn: Any = None,
-    post_fn: Any = None,
-    patch_fn: Any = None,
+    run_fn: Any = None,
     branch: str = "master",
+    clone_url: str = "",
 ) -> tuple[bool, str]:
-    """Commita o CSV via Git Data API (blob→árvore→commit→ref).
+    """Commita o CSV via GIT DE VERDADE (clone esparso temporário + push).
 
-    A contents API recusa arquivos grandes (422 no CSV de ~47MB, visto
-    2026-07-16 no teste real dele); a Git Data API é o caminho documentado
-    para blobs grandes. Cada passo devolve o erro REAL do GitHub."""
-    import base64
+    Por quê: NENHUMA API do GitHub aceita o CSV de ~47MB — a contents API e a
+    Git Data API respondem 422 "input too large... create the blob in a local
+    clone and push" (testado por ele 2026-07-16). O clone esparso baixa só o
+    essencial; o push é fast-forward (conflito concorrente = erro explicado,
+    basta tentar de novo)."""
+    import subprocess
+    import tempfile
+    import shutil
 
+    def _default_run(args: list, cwd: str | None = None, timeout: int = 300):
+        return subprocess.run(
+            args, cwd=cwd, capture_output=True, text=True,
+            encoding="utf-8", errors="replace", timeout=timeout,
+        )
+
+    run = run_fn or _default_run
+    url = clone_url or f"https://x-access-token:{token}@github.com/{repo}.git"
+    tmp = tempfile.mkdtemp(prefix="gab_upload_")
     try:
-        if get_fn is None or post_fn is None or patch_fn is None:
-            import requests
+        steps = [
+            ("clone", ["git", "clone", "--depth", "1", "--filter=blob:none",
+                       "--sparse", "--branch", branch, url, tmp], None, 300),
+            ("sparse", ["git", "-C", tmp, "sparse-checkout", "set",
+                        repo_path.rsplit("/", 1)[0]], None, 120),
+        ]
+        for name, args, cwd, tmo in steps:
+            cp = run(args, cwd=cwd, timeout=tmo)
+            if int(getattr(cp, "returncode", 1)) != 0:
+                err = str(getattr(cp, "stderr", "") or "")[-200:]
+                return False, f"{name} falhou: {err or 'git indisponível'}"
 
-            get_fn = get_fn or requests.get
-            post_fn = post_fn or requests.post
-            patch_fn = patch_fn or requests.patch
-        hdr = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
-        api = f"https://api.github.com/repos/{repo}"
+        target = Path(tmp) / repo_path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(file_bytes)
 
-        ref = get_fn(f"{api}/git/ref/heads/{branch}", headers=hdr, timeout=30)
-        if int(getattr(ref, "status_code", 0)) != 200:
-            return False, f"não achei o branch (HTTP {ref.status_code} {_gh_error_detail(ref)})"
-        base_commit_sha = str(ref.json()["object"]["sha"])
-
-        base_commit = get_fn(f"{api}/git/commits/{base_commit_sha}", headers=hdr, timeout=30)
-        if int(getattr(base_commit, "status_code", 0)) != 200:
-            return False, f"commit base falhou (HTTP {base_commit.status_code} {_gh_error_detail(base_commit)})"
-        base_tree_sha = str(base_commit.json()["tree"]["sha"])
-
-        blob = post_fn(f"{api}/git/blobs", headers=hdr, timeout=600, json={
-            "content": base64.b64encode(file_bytes).decode("ascii"),
-            "encoding": "base64",
-        })
-        if int(getattr(blob, "status_code", 0)) != 201:
-            return False, f"envio do arquivo falhou (HTTP {blob.status_code} {_gh_error_detail(blob)})"
-        blob_sha = str(blob.json()["sha"])
-
-        tree = post_fn(f"{api}/git/trees", headers=hdr, timeout=60, json={
-            "base_tree": base_tree_sha,
-            "tree": [{"path": repo_path, "mode": "100644", "type": "blob", "sha": blob_sha}],
-        })
-        if int(getattr(tree, "status_code", 0)) != 201:
-            return False, f"árvore falhou (HTTP {tree.status_code} {_gh_error_detail(tree)})"
-
-        commit = post_fn(f"{api}/git/commits", headers=hdr, timeout=60, json={
-            "message": message,
-            "tree": str(tree.json()["sha"]),
-            "parents": [base_commit_sha],
-        })
-        if int(getattr(commit, "status_code", 0)) != 201:
-            return False, f"commit falhou (HTTP {commit.status_code} {_gh_error_detail(commit)})"
-
-        upd = patch_fn(f"{api}/git/refs/heads/{branch}", headers=hdr, timeout=30, json={
-            "sha": str(commit.json()["sha"]),
-        })
-        if int(getattr(upd, "status_code", 0)) != 200:
-            return False, f"atualização do branch falhou (HTTP {upd.status_code} {_gh_error_detail(upd)}) — alguém commitou ao mesmo tempo? tenta de novo"
+        for name, args in [
+            ("config-nome", ["git", "-C", tmp, "config", "user.name", "Upload pelo site"]),
+            ("config-email", ["git", "-C", tmp, "config", "user.email", "upload@gabinete.local"]),
+            ("add", ["git", "-C", tmp, "add", repo_path]),
+            ("commit", ["git", "-C", tmp, "commit", "-m", message]),
+            ("push", ["git", "-C", tmp, "push", "origin", f"HEAD:{branch}"]),
+        ]:
+            cp = run(args, cwd=None, timeout=600 if name == "push" else 60)
+            if int(getattr(cp, "returncode", 1)) != 0:
+                err = str(getattr(cp, "stderr", "") or "")[-200:]
+                if name == "commit" and "nothing to commit" in (err + str(getattr(cp, "stdout", ""))):
+                    return False, "Sem mudança: o repositório já tem exatamente esse arquivo."
+                if name == "push":
+                    return False, f"push recusado ({err[-120:]}) — alguém publicou ao mesmo tempo; tenta de novo."
+                return False, f"{name} falhou: {err}"
         return True, "CSV publicado! O site renasce com ele em ~2-3 min (recarrega a página)."
     except Exception as exc:
         return False, f"Falha ao publicar: {type(exc).__name__}"
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
 
 
 def render_csv_upload_panel(st: Any, csv_path: str) -> None:
