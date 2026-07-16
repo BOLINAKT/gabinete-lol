@@ -84,3 +84,6 @@ release/
 
 # bytecode RECUPERADO carregado em runtime (fonte perdida) - PRECISA viajar
 !mlcore/_recovered/*.pyc
+
+# Estado de maquina (overrides com caminho absoluto) - NUNCA versionar
+.gabinete_settings.json
