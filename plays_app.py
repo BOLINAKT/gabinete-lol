@@ -2237,6 +2237,10 @@ _csv_bootstrap_gate(
     artifact_path=artifact_path,
 )
 
+# Selo do modo visualização (nuvem): frescor dos dados no topo.
+from app_core.viewer_mode_core import render_viewer_badge as _render_viewer_badge
+_render_viewer_badge(st, csv_path)
+
 # Alerta global visível: drift/falta de parâmetros/calibração.
 _render_global_maintenance_banner(st, csv_path, artifact_path, collect_status_fn=_collect_maintenance_status)
 # Alerta global visível: observabilidade/shadow features (se houver falha de trace).

@@ -48,7 +48,6 @@ live_models/
 
 # Artefatos ML pesados (gerados automaticamente)
 ml_trace_last.json
-ml_confidence_baseline.json
 
 # Cache e logs
 *.log
@@ -66,12 +65,11 @@ user_lines_store.json
 # Estado/relatorios gerados em runtime (mudam a cada execucao - nao versionar)
 csv_bootstrap_*.json
 *.csv_ingest.json
-ml_artifact.json
-players_artifact.json
-team_state_artifact.json
-params_fitted.json
 data_leakage_label_report.json
-wf_last_report.json
+# Artifacts do MODELO agora sao VERSIONADOS (projeto app-online 15/07): o
+# clone da nuvem (Streamlit Cloud) precisa nascer com o cerebro, e o robo
+# fase 2 retreina e commita. Estado de maquina (locks, caches, schedules)
+# continua fora.
 
 # Backups locais do artefato pre-deploy (nao versionar)
 *.pre_sos
