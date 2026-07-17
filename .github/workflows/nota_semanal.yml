@@ -1,0 +1,54 @@
+# Vigia da NOTA (fase 2 da campanha — confiabilidade): roda o scorecard
+# oficial (fusion) toda semana na nuvem e ABRE ISSUE (GitHub manda e-mail)
+# se a nota cair do piso. Proteção contra o incidente holdout-180 (modelo
+# degradado 4 dias sem ninguém ver, 06/2026) agora que retreino é autônomo.
+name: Nota semanal (vigia de qualidade)
+
+on:
+  schedule:
+    - cron: "11 8 * * 1"  # segunda de manhã
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  scorecard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependências
+        run: pip install --quiet -r requirements.txt
+
+      - name: Rodar scorecard oficial (fusion)
+        run: |
+          python tools/ml_fusion_scorecard.py 2>&1 | tee scorecard_out.txt
+
+      - name: Avaliar piso e alertar se cair
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PISO: "8.5"
+        run: |
+          nota=$(grep -oE "NOTA FUSAO \(real\).*: *[0-9]+\.[0-9]+" scorecard_out.txt | grep -oE "[0-9]+\.[0-9]+" | tail -1)
+          echo "nota medida: ${nota:-NAO_ENCONTRADA}"
+          if [ -z "$nota" ]; then
+            titulo="🚨 Vigia da nota: scorecard não produziu nota"
+            corpo="O workflow semanal rodou mas não conseguiu extrair a NOTA do scorecard. Ver logs do run."
+          elif [ "$(echo "$nota < $PISO" | bc -l)" = "1" ]; then
+            titulo="🚨 Vigia da nota: caiu para $nota (piso $PISO)"
+            corpo="A nota oficial (fusion scorecard, replay cego na temporada) caiu para **$nota**. Últimas suspeitas de praxe: retreino com CSV truncado, calibrador achatado, artifact incompleto. Rodar tools/ml_quality_diagnose.py no PC."
+          else
+            echo "nota $nota >= piso $PISO — tudo certo"; exit 0
+          fi
+          curl -s -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/issues" \
+            -d "{\"title\": $(python -c "import json,sys; print(json.dumps(sys.argv[1]))" "$titulo"), \"body\": $(python -c "import json,sys; print(json.dumps(sys.argv[1]))" "$corpo")}"
