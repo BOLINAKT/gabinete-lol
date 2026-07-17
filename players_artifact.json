@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "updated_at": "2026-07-16T20:21:04Z",
+  "updated_at": "2026-07-17T06:33:13Z",
   "half_life_days": 180.0,
   "k": 0.15,
   "shrink_m": 20.0,
@@ -758,11 +758,11 @@
       "last_tier": "MINOR"
     },
     "nan|||Jungle": {
-      "r": 0.07179856033016901,
-      "gp": 659,
-      "last_date": "2026-05-24",
-      "last_league": "CD",
-      "last_tier": "MINOR"
+      "r": -0.13916122257130376,
+      "gp": 666,
+      "last_date": "2026-07-16",
+      "last_league": "ROL",
+      "last_tier": "ERL"
     },
     "oe:player:5baf54f4030e168391201d9fa0efa71|||Mid": {
       "r": 0.14878964349992652,
@@ -1619,9 +1619,9 @@
       "last_tier": "T1"
     },
     "oe:player:4367b1100c2577e20e13ae9e3afd835|||Bot": {
-      "r": 0.7258031288290389,
-      "gp": 145,
-      "last_date": "2026-06-05",
+      "r": 0.6244487076928991,
+      "gp": 148,
+      "last_date": "2026-07-16",
       "last_league": "LES",
       "last_tier": "ERL"
     },
@@ -1829,10 +1829,10 @@
       "last_tier": "MINOR"
     },
     "oe:player:885383f16fccd10370814fcd862aa10|||Bot": {
-      "r": -0.12684527935913106,
-      "gp": 81,
-      "last_date": "2025-09-05",
-      "last_league": "RL",
+      "r": -0.11229702942104494,
+      "gp": 83,
+      "last_date": "2026-07-16",
+      "last_league": "AL",
       "last_tier": "MINOR"
     },
     "oe:player:eccaa7dbe1dc3d1de23c308c28bc114|||Bot": {
@@ -2389,9 +2389,9 @@
       "last_tier": "MINOR"
     },
     "oe:player:5cfc41b7eccda649db08ead84343554|||Bot": {
-      "r": -0.0008751438570840722,
-      "gp": 238,
-      "last_date": "2026-07-15",
+      "r": -0.00552145748605818,
+      "gp": 241,
+      "last_date": "2026-07-16",
       "last_league": "LES",
       "last_tier": "ERL"
     },
@@ -2725,9 +2725,9 @@
       "last_tier": "ERL"
     },
     "oe:player:1a054b9e92d2152d185c99911b65bee|||Jungle": {
-      "r": -0.07701389957707466,
-      "gp": 139,
-      "last_date": "2026-07-15",
+      "r": -0.09973917743467067,
+      "gp": 142,
+      "last_date": "2026-07-16",
       "last_league": "LES",
       "last_tier": "ERL"
     },
@@ -2865,9 +2865,9 @@
       "last_tier": "ERL"
     },
     "oe:player:6fc5fe723eed4ba4c230292be365c66|||Jungle": {
-      "r": 0.30947686650572703,
-      "gp": 199,
-      "last_date": "2026-06-05",
+      "r": 0.28729880912940514,
+      "gp": 202,
+      "last_date": "2026-07-16",
       "last_league": "LES",
       "last_tier": "ERL"
     },
@@ -3166,11 +3166,11 @@
       "last_tier": "MINOR"
     },
     "oe:player:64663f4646781c9c0110838b905daa2|||Mid": {
-      "r": 0.30361875109364217,
-      "gp": 173,
-      "last_date": "2026-03-13",
-      "last_league": "EM",
-      "last_tier": "ERL"
+      "r": 0.25434609556419696,
+      "gp": 175,
+      "last_date": "2026-07-16",
+      "last_league": "AL",
+      "last_tier": "MINOR"
     },
     "oe:player:501007c5ed71f0153348a2352ed154f|||Bot": {
       "r": 0.0524467513274447,
@@ -5665,11 +5665,11 @@
       "last_tier": "ERL"
     },
     "oe:player:cbdaba5605992f8e1635ad782152d65|||Top": {
-      "r": -0.7240729660977328,
-      "gp": 106,
-      "last_date": "2026-05-12",
-      "last_league": "PRM",
-      "last_tier": "ERL"
+      "r": -0.6172042441453321,
+      "gp": 108,
+      "last_date": "2026-07-16",
+      "last_league": "AL",
+      "last_tier": "MINOR"
     },
     "oe:player:b9ccf86bc1be84e6200f498b2e0ef33|||Jungle": {
       "r": -0.08472283986830423,
@@ -6001,9 +6001,9 @@
       "last_tier": "MINOR"
     },
     "oe:player:807b957f35713431f56182cb25af089|||Support": {
-      "r": 0.9046970748839883,
-      "gp": 179,
-      "last_date": "2026-05-26",
+      "r": 0.7443896759575553,
+      "gp": 182,
+      "last_date": "2026-07-16",
       "last_league": "ROL",
       "last_tier": "ERL"
     },
@@ -6365,9 +6365,9 @@
       "last_tier": "ERL"
     },
     "oe:player:1ee921aeb89df0c447cb6d54a6e8db3|||Top": {
-      "r": 0.6972193998211199,
-      "gp": 187,
-      "last_date": "2026-06-05",
+      "r": 0.5995633692480082,
+      "gp": 190,
+      "last_date": "2026-07-16",
       "last_league": "LES",
       "last_tier": "ERL"
     },
@@ -6750,10 +6750,10 @@
       "last_tier": "ERL"
     },
     "oe:player:acfdf3b694c6ffc32396b64edb82bd8|||Top": {
-      "r": -0.2088079593066812,
-      "gp": 125,
-      "last_date": "2026-05-21",
-      "last_league": "LFL",
+      "r": -0.09654325170415057,
+      "gp": 128,
+      "last_date": "2026-07-16",
+      "last_league": "ROL",
       "last_tier": "ERL"
     },
     "oe:player:691e0ad4afc3da3e472014cd65abcad|||Top": {
@@ -7002,10 +7002,10 @@
       "last_tier": "MINOR"
     },
     "oe:player:81317166070e5727aa15670f1d996b3|||Jungle": {
-      "r": -0.09182653198488117,
-      "gp": 120,
-      "last_date": "2026-04-28",
-      "last_league": "EBL",
+      "r": -0.02133794485349269,
+      "gp": 123,
+      "last_date": "2026-07-16",
+      "last_league": "ROL",
       "last_tier": "ERL"
     },
     "oe:player:ae50e71f31d35aee5c589498e3c1b17|||Jungle": {
@@ -8367,9 +8367,9 @@
       "last_tier": "ERL"
     },
     "oe:player:388f53a1853c83dd27e09b4d8f80e3c|||Bot": {
-      "r": 0.9508042316291878,
-      "gp": 152,
-      "last_date": "2026-05-26",
+      "r": 0.7868667211824215,
+      "gp": 155,
+      "last_date": "2026-07-16",
       "last_league": "ROL",
       "last_tier": "ERL"
     },
@@ -8381,10 +8381,10 @@
       "last_tier": "ERL"
     },
     "oe:player:2fc47d506de431ba77f2af233f558e4|||Support": {
-      "r": -0.035133985473721374,
-      "gp": 57,
-      "last_date": "2026-03-12",
-      "last_league": "EM",
+      "r": 0.02636828670917726,
+      "gp": 60,
+      "last_date": "2026-07-16",
+      "last_league": "ROL",
       "last_tier": "ERL"
     },
     "oe:player:1f892f04e94e144dadcc8be197d4f5b|||Support": {
@@ -9382,9 +9382,9 @@
       "last_tier": "MINOR"
     },
     "oe:player:6520964cefa9d79079bf664b7453cfc|||Mid": {
-      "r": 0.8242174065784826,
-      "gp": 174,
-      "last_date": "2026-06-05",
+      "r": 0.7037171190345551,
+      "gp": 177,
+      "last_date": "2026-07-16",
       "last_league": "LES",
       "last_tier": "ERL"
     },
@@ -9571,9 +9571,9 @@
       "last_tier": "ERL"
     },
     "oe:player:1c6282fdf403e4e63f3b339d0bca034|||Support": {
-      "r": -0.06356927557150065,
-      "gp": 116,
-      "last_date": "2025-08-18",
+      "r": -0.09098693692437916,
+      "gp": 118,
+      "last_date": "2026-07-16",
       "last_league": "AL",
       "last_tier": "MINOR"
     },
@@ -10236,11 +10236,11 @@
       "last_tier": "ERL"
     },
     "oe:player:82a7ba77bb1c635ce1b23a4eaf65f4f|||Support": {
-      "r": -0.16238052166855332,
-      "gp": 40,
-      "last_date": "2026-05-27",
-      "last_league": "NLC",
-      "last_tier": "ERL"
+      "r": -0.2010043957421678,
+      "gp": 42,
+      "last_date": "2026-07-16",
+      "last_league": "AL",
+      "last_tier": "MINOR"
     },
     "oe:player:fa5f4922f5a1ee6b72c26ffdf54db68|||Top": {
       "r": -0.14593205575514506,
@@ -10859,10 +10859,10 @@
       "last_tier": "ERL"
     },
     "oe:player:c659697694306de62d978569b84c344|||Top": {
-      "r": -0.09069409785667691,
-      "gp": 164,
-      "last_date": "2026-04-28",
-      "last_league": "EBL",
+      "r": -0.015759195519115192,
+      "gp": 167,
+      "last_date": "2026-07-16",
+      "last_league": "ROL",
       "last_tier": "ERL"
     },
     "oe:player:0c02ac62f11fd279e6b02c97c545c13|||Jungle": {
@@ -10985,9 +10985,9 @@
       "last_tier": "MINOR"
     },
     "oe:player:cb15090b89e91fddb1cc57a00afe58f|||Support": {
-      "r": 0.8440618930402297,
-      "gp": 182,
-      "last_date": "2026-06-05",
+      "r": 0.7199219518093051,
+      "gp": 185,
+      "last_date": "2026-07-16",
       "last_league": "LES",
       "last_tier": "ERL"
     },
@@ -11636,9 +11636,9 @@
       "last_tier": "T1"
     },
     "oe:player:04810982943b775ab05c74bc06b44b7|||Top": {
-      "r": -0.06735182846849884,
-      "gp": 4,
-      "last_date": "2024-05-31",
+      "r": -0.07822609198193628,
+      "gp": 6,
+      "last_date": "2026-07-16",
       "last_league": "AL",
       "last_tier": "MINOR"
     },
@@ -14233,11 +14233,11 @@
       "last_tier": "MINOR"
     },
     "oe:player:02be2c707e3d044459e9b210bc90121|||Jungle": {
-      "r": -0.05739064322436989,
-      "gp": 45,
-      "last_date": "2025-09-23",
-      "last_league": "EM",
-      "last_tier": "ERL"
+      "r": 0.0580652667696647,
+      "gp": 47,
+      "last_date": "2026-07-16",
+      "last_league": "AL",
+      "last_tier": "MINOR"
     },
     "oe:player:8df758d3b1cc035e768a9e9937ac322|||Bot": {
       "r": 0.03172146657648062,
@@ -14387,9 +14387,9 @@
       "last_tier": "ERL"
     },
     "oe:player:cc51227ea88c71dabc8f6e601b0ec41|||Support": {
-      "r": 0.012280112146164167,
-      "gp": 105,
-      "last_date": "2026-07-15",
+      "r": 0.013096975187493358,
+      "gp": 108,
+      "last_date": "2026-07-16",
       "last_league": "LES",
       "last_tier": "ERL"
     },
@@ -15850,11 +15850,11 @@
       "last_tier": "MINOR"
     },
     "oe:player:27e4eea238ec423752d3144c149b88f|||Mid": {
-      "r": 0.04611278896140859,
-      "gp": 80,
-      "last_date": "2025-09-12",
-      "last_league": "AL",
-      "last_tier": "MINOR"
+      "r": -0.03333638194079266,
+      "gp": 83,
+      "last_date": "2026-07-16",
+      "last_league": "ROL",
+      "last_tier": "ERL"
     },
     "oe:player:371dfc158ccca5d527f0b5b11743e20|||Bot": {
       "r": 0.36171278513850524,
@@ -17789,9 +17789,9 @@
       "last_tier": "MINOR"
     },
     "oe:player:5657e08aa206a6122f8d38e1676bdc5|||Mid": {
-      "r": 0.9335130151940265,
-      "gp": 87,
-      "last_date": "2026-05-26",
+      "r": 0.773755733221224,
+      "gp": 90,
+      "last_date": "2026-07-16",
       "last_league": "ROL",
       "last_tier": "ERL"
     },
@@ -19301,9 +19301,9 @@
       "last_tier": "ERL"
     },
     "oe:player:d18a2aec1fa9649ae9a48bded2f4ccf|||Top": {
-      "r": -0.03291150847089318,
-      "gp": 84,
-      "last_date": "2026-07-15",
+      "r": -0.036958408355190375,
+      "gp": 87,
+      "last_date": "2026-07-16",
       "last_league": "LES",
       "last_tier": "ERL"
     },
@@ -19847,9 +19847,9 @@
       "last_tier": "ERL"
     },
     "oe:player:b50c8d6047685ab14db52fcd58f59d6|||Bot": {
-      "r": -0.19025296713312376,
-      "gp": 48,
-      "last_date": "2026-02-12",
+      "r": -0.03516810574157373,
+      "gp": 50,
+      "last_date": "2026-07-16",
       "last_league": "AL",
       "last_tier": "MINOR"
     },
@@ -21758,9 +21758,9 @@
       "last_tier": "MINOR"
     },
     "oe:player:213b7ff3ba0e2f601dfd2f8b325fc31|||Bot": {
-      "r": 0.13100716699013418,
-      "gp": 72,
-      "last_date": "2026-06-02",
+      "r": 0.1049884013413685,
+      "gp": 75,
+      "last_date": "2026-07-16",
       "last_league": "ROL",
       "last_tier": "ERL"
     },
@@ -24628,10 +24628,10 @@
       "last_tier": "ERL"
     },
     "oe:player:109c333d5ae82b7b38283b47a0beb73|||Bot": {
-      "r": -0.02245271396182768,
-      "gp": 8,
-      "last_date": "2025-05-09",
-      "last_league": "LPLOL",
+      "r": -0.05300345209985233,
+      "gp": 11,
+      "last_date": "2026-07-16",
+      "last_league": "ROL",
       "last_tier": "ERL"
     },
     "oe:player:a4789b372c90f205df8abe782ea8c51|||Support": {
@@ -24775,9 +24775,9 @@
       "last_tier": "MINOR"
     },
     "oe:player:82e966ac8c3088168c3c6bd74769eae|||Jungle": {
-      "r": -0.12082140482701284,
-      "gp": 130,
-      "last_date": "2026-06-04",
+      "r": -0.027899526126965925,
+      "gp": 132,
+      "last_date": "2026-07-16",
       "last_league": "AL",
       "last_tier": "MINOR"
     },
@@ -24845,11 +24845,11 @@
       "last_tier": "MINOR"
     },
     "oe:player:9d04b6572e137eb28b2c444c1c7d3fa|||Bot": {
-      "r": -0.1454685714645784,
-      "gp": 55,
-      "last_date": "2025-07-25",
-      "last_league": "AL",
-      "last_tier": "MINOR"
+      "r": 0.011834155843630352,
+      "gp": 58,
+      "last_date": "2026-07-16",
+      "last_league": "ROL",
+      "last_tier": "ERL"
     },
     "oe:player:974996ad948ff3a736c3d230695df75|||Jungle": {
       "r": -0.11863978790658855,
@@ -26035,9 +26035,9 @@
       "last_tier": "ERL"
     },
     "oe:player:1e6aa6caa55ba645b3e8d090501ceed|||Top": {
-      "r": -0.043581789777007274,
-      "gp": 54,
-      "last_date": "2026-06-04",
+      "r": 0.037759558887389244,
+      "gp": 56,
+      "last_date": "2026-07-16",
       "last_league": "AL",
       "last_tier": "MINOR"
     },
@@ -26644,9 +26644,9 @@
       "last_tier": "MINOR"
     },
     "oe:player:3360bddfd5a9895c2444f9b5a290bf3|||Support": {
-      "r": 0.05836311202640672,
-      "gp": 48,
-      "last_date": "2026-05-06",
+      "r": 0.11146472377599265,
+      "gp": 50,
+      "last_date": "2026-07-16",
       "last_league": "AL",
       "last_tier": "MINOR"
     },
@@ -27624,9 +27624,9 @@
       "last_tier": "MINOR"
     },
     "oe:player:1064292c3355d4184f64b5875458fb7|||Support": {
-      "r": -0.011575188800407477,
-      "gp": 98,
-      "last_date": "2026-05-20",
+      "r": 0.06399128627874584,
+      "gp": 100,
+      "last_date": "2026-07-16",
       "last_league": "AL",
       "last_tier": "MINOR"
     },
@@ -28184,10 +28184,10 @@
       "last_tier": "MINOR"
     },
     "oe:player:8b335865b2c0a24c0b6386043da4be4|||Jungle": {
-      "r": -0.12231574466091513,
-      "gp": 10,
-      "last_date": "2025-08-08",
-      "last_league": "NLC",
+      "r": 0.030397798160250886,
+      "gp": 13,
+      "last_date": "2026-07-16",
+      "last_league": "ROL",
       "last_tier": "ERL"
     },
     "oe:player:5873b1fb84fee6da2afd5f1ec75d917|||Bot": {
@@ -28282,9 +28282,9 @@
       "last_tier": "MINOR"
     },
     "oe:player:c4e4ca0da32c4177a79e06dabce7aa6|||Bot": {
-      "r": -0.07153731068607477,
-      "gp": 92,
-      "last_date": "2026-06-04",
+      "r": 0.013585761846958616,
+      "gp": 94,
+      "last_date": "2026-07-16",
       "last_league": "AL",
       "last_tier": "MINOR"
     },
@@ -30305,23 +30305,23 @@
       "last_tier": "ERL"
     },
     "oe:player:cf229be6faa6e913911b7cf03f8d129|||Top": {
-      "r": 0.1570363916669113,
-      "gp": 55,
-      "last_date": "2026-06-02",
+      "r": 0.06080052803779276,
+      "gp": 58,
+      "last_date": "2026-07-16",
       "last_league": "ROL",
       "last_tier": "ERL"
     },
     "oe:player:606fd948f46592bf98fe45545d5f5f3|||Jungle": {
-      "r": 0.16900372850713963,
-      "gp": 53,
-      "last_date": "2026-06-02",
+      "r": 0.07949145158602111,
+      "gp": 56,
+      "last_date": "2026-07-16",
       "last_league": "ROL",
       "last_tier": "ERL"
     },
     "oe:player:d5f499b7b71268039cdb607963f5ba8|||Mid": {
-      "r": 0.13450089611140978,
-      "gp": 56,
-      "last_date": "2026-06-02",
+      "r": 0.10684056351455337,
+      "gp": 59,
+      "last_date": "2026-07-16",
       "last_league": "ROL",
       "last_tier": "ERL"
     },
@@ -30375,9 +30375,9 @@
       "last_tier": "MINOR"
     },
     "oe:player:bdf93ad7c1fe51ee32ca862050110f0|||Bot": {
-      "r": -0.23855785109963354,
-      "gp": 52,
-      "last_date": "2026-06-05",
+      "r": -0.27369196206607915,
+      "gp": 54,
+      "last_date": "2026-07-16",
       "last_league": "AL",
       "last_tier": "MINOR"
     },
@@ -31509,9 +31509,9 @@
       "last_tier": "ERL"
     },
     "oe:player:4f6d6b2c4c29033ff5437cee2a7587e|||Mid": {
-      "r": 0.007265368615917908,
-      "gp": 45,
-      "last_date": "2026-07-15",
+      "r": 0.007360154021739847,
+      "gp": 48,
+      "last_date": "2026-07-16",
       "last_league": "LES",
       "last_tier": "ERL"
     },
@@ -32790,9 +32790,9 @@
       "last_tier": "MINOR"
     },
     "oe:player:3632f7faea4f2308800dc03eaeb2179|||Mid": {
-      "r": -0.07855910459292342,
-      "gp": 40,
-      "last_date": "2026-06-04",
+      "r": 0.009224701494695488,
+      "gp": 42,
+      "last_date": "2026-07-16",
       "last_league": "AL",
       "last_tier": "MINOR"
     },
@@ -34872,6 +34872,55 @@
       "r": -0.03776714934108315,
       "gp": 1,
       "last_date": "2026-07-15",
+      "last_league": "AL",
+      "last_tier": "MINOR"
+    },
+    "oe:player:c0d46cb2c3bf0473ce98bbb3351753d|||Top": {
+      "r": 0.05346657330301699,
+      "gp": 2,
+      "last_date": "2026-07-16",
+      "last_league": "AL",
+      "last_tier": "MINOR"
+    },
+    "oe:player:62639de53c8019321687be2c6cbabc5|||Mid": {
+      "r": -0.06672572844969962,
+      "gp": 2,
+      "last_date": "2026-07-16",
+      "last_league": "AL",
+      "last_tier": "MINOR"
+    },
+    "oe:player:a11a2f5bbd0604fc798b5b63c9b38ba|||Support": {
+      "r": -0.0010088518912867023,
+      "gp": 3,
+      "last_date": "2026-07-16",
+      "last_league": "ROL",
+      "last_tier": "ERL"
+    },
+    "oe:player:9b7ca0a4b3b3bcfeceffb7bb506b6e8|||Top": {
+      "r": -0.05114607097000817,
+      "gp": 3,
+      "last_date": "2026-07-16",
+      "last_league": "ROL",
+      "last_tier": "ERL"
+    },
+    "oe:player:0fc8ccd22b98f8e767d7e2573cf40ec|||Mid": {
+      "r": 0.04747470848962351,
+      "gp": 3,
+      "last_date": "2026-07-16",
+      "last_league": "ROL",
+      "last_tier": "ERL"
+    },
+    "oe:player:4f720e8049c47155a1f9d56cf70237d|||Support": {
+      "r": -0.047995791676434016,
+      "gp": 3,
+      "last_date": "2026-07-16",
+      "last_league": "ROL",
+      "last_tier": "ERL"
+    },
+    "oe:player:253d2567e69eb6a57a25fb5e9e27d30|||Mid": {
+      "r": -0.07605235196559898,
+      "gp": 2,
+      "last_date": "2026-07-16",
       "last_league": "AL",
       "last_tier": "MINOR"
     }
