@@ -3112,11 +3112,17 @@ if pA.n_games == 0 or pB.n_games == 0:
 
 def _expected_totals_dc(_df: pd.DataFrame, _pA, _pB) -> Dict[str, Any]:
     """Totais V0 + blend Dixon-Coles nos mercados validados (kills/dragões/
-    tempo; gate ACCEPT 2026-07-06, ver mlcore.lines_engine.apply_dc_blend)."""
+    tempo; gate ACCEPT 2026-07-06, ver mlcore.lines_engine.apply_dc_blend)
+    + calibração global do sd do TEMPO (gate ACCEPT 2026-07-17)."""
     _t = matchup_expected_totals(_pA, _pB)
     try:
         from mlcore.lines_engine import apply_dc_blend
-        return apply_dc_blend(_df, str(getattr(_pA, "team", "")), str(getattr(_pB, "team", "")), _t)
+        _t = apply_dc_blend(_df, str(getattr(_pA, "team", "")), str(getattr(_pB, "team", "")), _t)
+    except Exception:
+        pass
+    try:
+        from mlcore.lines_engine import apply_time_sd_calibration
+        return apply_time_sd_calibration(_t)
     except Exception:
         return _t
 

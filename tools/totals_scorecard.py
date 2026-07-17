@@ -29,6 +29,8 @@ from mlcore.lines_engine import (
     MatchupTotals,
     _combine_sd,
     _norm_cdf,
+    apply_dc_blend,
+    apply_time_sd_calibration,
     build_profile,
     matchup_expected_totals,
     prob_over_from_total,
@@ -115,7 +117,7 @@ def main() -> int:
     print(f"[totals_scorecard] season={season} | mapas={len(g)} | half_life={args.half_life_days}")
 
     flt = Filters()
-    results: dict[str, dict[str, list]] = {m[0]: {"v0": [], "v1": [], "v2": []} for m in MARKETS}
+    results: dict[str, dict[str, list]] = {m[0]: {"v0": [], "v1": [], "v2": [], "prod": []} for m in MARKETS}
     profile_cache: dict[tuple[str, str], object] = {}
 
     last_cut = None
@@ -143,6 +145,12 @@ def main() -> int:
         if int(getattr(pA, "n_games", 0)) < int(args.min_hist_games) or int(getattr(pB, "n_games", 0)) < int(args.min_hist_games):
             continue
         totals = matchup_expected_totals(pA, pB)
+        # "prod" = caminho DEPLOYADO no app (plays_app._expected_totals_dc):
+        # blend Dixon-Coles (ACCEPT 07-06) + calibração do sd do tempo
+        # (ACCEPT 07-17), prequencial com o hist do dia.
+        totals_prod = apply_time_sd_calibration(
+            apply_dc_blend(hist, str(r.team), str(r.opponent), totals)
+        )
 
         for metric, line, col_for, col_against in MARKETS:
             tot = totals.get(metric)
@@ -171,22 +179,28 @@ def main() -> int:
                 results[metric]["v1"].append((float(p1), y))
             if math.isfinite(p2):
                 results[metric]["v2"].append((float(p2), y))
+            tot_p = totals_prod.get(metric)
+            if tot_p is not None and math.isfinite(float(tot_p.mean)):
+                pp = prob_over_from_total(tot_p, float(line))
+                if math.isfinite(pp):
+                    results[metric]["prod"].append((float(pp), y))
 
         if (idx + 1) % 1000 == 0:
             print(f"[totals_scorecard] {idx + 1}/{len(g)}", flush=True)
 
     print(f"\n{'mercado':12} {'var':>4} {'n':>5} {'brier':>8} {'logloss':>9} {'ece':>7} {'sharp':>7}")
     for metric, line, _, _ in MARKETS:
-        for tag in ("v0", "v1", "v2"):
+        for tag in ("v0", "v1", "v2", "prod"):
             m = _metrics(results[metric][tag])
             label = f"{metric} O{line:g}" if tag == "v0" else ""
             print(f"{label:12} {tag:>4} {m['n']:>5} {m['brier']:>8.4f} {m['logloss']:>9.4f} {m['ece']:>7.4f} {m['sharp']:>7.3f}")
         m0 = _metrics(results[metric]["v0"])
-        for tag in ("v1", "v2"):
+        for tag in ("v1", "v2", "prod"):
             mx = _metrics(results[metric][tag])
             if m0["n"] and mx["n"] and math.isfinite(m0["brier"]) and math.isfinite(mx["brier"]):
                 gain = m0["brier"] - mx["brier"]
-                print(f"{'':12} {'d' + tag[-1]:>4} {'':>5} {gain:>+8.4f}  ({tag} melhor se >0)")
+                dlab = "dP" if tag == "prod" else ("d" + tag[-1])
+                print(f"{'':12} {dlab:>4} {'':>5} {gain:>+8.4f}  ({tag} melhor se >0)")
     return 0
 
 
