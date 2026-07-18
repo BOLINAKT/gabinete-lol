@@ -298,11 +298,25 @@ def comp_complexity(f: Files) -> dict:
 
 
 def comp_dead_code(root: Path, f: Files) -> dict:
-    """11. Código morto [TUDO−TESTS] (vulture conf>=80; -0.1/item)."""
+    """11. Código morto [TUDO−TESTS] (vulture conf>=80; -0.1/item).
+
+    Ignora os "unused import" do plays_app: consumidos por reflexão
+    (globals()->ctx), invisíveis à análise estática — mesma exclusão do
+    componente pyflakes (varredura 18/07). Demais achados do plays_app
+    (unreachable, unused variable) contam normalmente."""
     targets = [str(p) for p in f.prod + f.tools + f.scripts]
     rc, out = _run(root, [sys.executable, "-m", "vulture", *targets, "--min-confidence", "80"], timeout=900)
-    items = [ln for ln in out.splitlines() if ".py:" in ln]
-    return {"score": round(max(0.0, 10.0 - 0.1 * len(items)), 2), "detail": f"{len(items)} itens (conf>=80%)"}
+    items = []
+    ignored_playsapp = 0
+    for ln in out.splitlines():
+        if ".py:" not in ln:
+            continue
+        if "plays_app.py" in ln.replace("\\", "/") and "unused import" in ln:
+            ignored_playsapp += 1
+            continue
+        items.append(ln)
+    return {"score": round(max(0.0, 10.0 - 0.1 * len(items)), 2),
+            "detail": f"{len(items)} itens ({ignored_playsapp} imports plays_app globals ignorados)"}
 
 
 def comp_layers(f: Files) -> dict:
