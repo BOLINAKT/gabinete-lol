@@ -197,6 +197,24 @@ def main() -> int:
     data = _load_json(exp_path)
     cases_in = list(data.get("cases", []))
 
+    # Alarme de validade (18/07): as bandas de março apodreceram caladas por
+    # 4 meses e o gate passou a reprovar QUALQUER candidato. Bandas velhas
+    # demais = aviso alto no stdout + flag no relatório (não muda a decisão;
+    # quem promove precisa VER que a régua está vencida).
+    STALE_DAYS = 45
+    stale_days = None
+    try:
+        import time as _time
+        from datetime import datetime as _dt
+        gen = str(((data.get("repin_meta") or {}).get("generated_at")) or "")
+        ts = _dt.fromisoformat(gen).timestamp() if gen else exp_path.stat().st_mtime
+        stale_days = int((_time.time() - ts) / 86400)
+    except Exception:
+        pass
+    if stale_days is not None and stale_days > STALE_DAYS:
+        print(f"AVISO: bandas das ancoras tem {stale_days} dias (> {STALE_DAYS}) — "
+              f"re-pinar com tools/repin_key_matchup_expectations.py antes de confiar no gate.")
+
     rows: List[Dict[str, Any]] = []
     ok_count = 0
     fail_count = 0
@@ -252,6 +270,8 @@ def main() -> int:
             "pass_rate": (float(ok_count) / float(total)) if total else 0.0,
         },
         "decision": _decide(ok_count, fail_count, total),
+        "expectations_stale_days": stale_days,
+        "expectations_stale": bool(stale_days is not None and stale_days > STALE_DAYS),
         "cases": rows,
     }
     Path(args.out).write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")

@@ -214,6 +214,19 @@ def main() -> int:
 
     if overall_ok:
         print(f"[ok] Promocao aprovada: {out_dir}")
+        # Promoção aprovada = novo estado BOM => re-pina as bandas das âncoras
+        # a partir dele (guarda de deriva; decisão dele 18/07 — as bandas de
+        # março apodreceram caladas e passaram a reprovar tudo). Falha do
+        # re-pin NÃO derruba a promoção (bandas antigas ficam + alarme de
+        # idade do anchor_regression_suite avisa).
+        try:
+            rp = subprocess.run(
+                [sys.executable, "tools/repin_key_matchup_expectations.py"],
+                cwd=str(ROOT), capture_output=True, text=True, timeout=3600,
+            )
+            print(f"[repin] bandas das ancoras: {'ok' if rp.returncode == 0 else 'FALHOU (bandas antigas mantidas)'}")
+        except Exception as exc:
+            print(f"[repin] FALHOU ({type(exc).__name__}) — bandas antigas mantidas")
         return 0
 
     print(f"[error] Promocao reprovada: {out_dir}")
