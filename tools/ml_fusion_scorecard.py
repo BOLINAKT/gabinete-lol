@@ -140,6 +140,20 @@ def main() -> int:
     nota_fus = 0.45 * _grade_from_logloss(fused_blend["inter-liga"]) + 0.55 * _grade_from_logloss(fused_blend["mesma-liga"])
     print(f"\nNOTA Elo-core   (45% inter + 55% mesma): {nota_elo:.2f} / 10")
     print(f"NOTA FUSAO (real) (45% inter + 55% mesma): {nota_fus:.2f} / 10")
+    try:
+        import json as _json
+        import time as _time
+        from pathlib import Path as _Path
+        _ev = _Path(__file__).resolve().parents[1] / "evidence"
+        _ev.mkdir(exist_ok=True)
+        (_ev / "fusion_scorecard.json").write_text(_json.dumps({
+            "generated_at": _time.strftime("%Y-%m-%dT%H:%M:%S"),
+            "nota_fusao": round(float(nota_fus), 2), "nota_elo_core": round(float(nota_elo), 2),
+            "inter_logloss": round(float(fused_blend["inter-liga"]), 4),
+            "same_logloss": round(float(fused_blend["mesma-liga"]), 4),
+        }, ensure_ascii=False, indent=1), encoding="utf-8")
+    except Exception:
+        pass
     return 0
 
 

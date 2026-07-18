@@ -201,6 +201,32 @@ def main() -> int:
                 gain = m0["brier"] - mx["brier"]
                 dlab = "dP" if tag == "prod" else ("d" + tag[-1])
                 print(f"{'':12} {dlab:>4} {'':>5} {gain:>+8.4f}  ({tag} melhor se >0)")
+
+    # NOTA CONSOLIDADA (régua formalizada 18/07): nota = 8.0 - 68*(brier-0.2067),
+    # variante PROD (caminho deployado), por mercado; nota dos totais = média.
+    def _grade(brier: float) -> float:
+        return max(0.0, min(10.0, 8.0 - 68.0 * (brier - 0.2067)))
+    per_market = {}
+    for metric, _line, _, _ in MARKETS:
+        mp = _metrics(results[metric]["prod"])
+        if mp["n"] and math.isfinite(mp["brier"]):
+            per_market[metric] = round(_grade(mp["brier"]), 2)
+    nota_totais = sum(per_market.values()) / len(per_market) if per_market else float("nan")
+    print(f"\nNOTA DOS TOTAIS (prod, régua 8.0-68*(brier-0.2067)): {nota_totais:.2f}")
+    print("  por mercado: " + ", ".join(f"{k}={v}" for k, v in per_market.items()))
+    try:
+        import json as _json
+        import time as _time
+        from pathlib import Path as _Path
+        _ev = _Path(__file__).resolve().parents[1] / "evidence"
+        _ev.mkdir(exist_ok=True)
+        (_ev / "totals_scorecard.json").write_text(_json.dumps({
+            "generated_at": _time.strftime("%Y-%m-%dT%H:%M:%S"),
+            "nota_totais": round(float(nota_totais), 2) if math.isfinite(nota_totais) else None,
+            "por_mercado": per_market, "season": int(season),
+        }, ensure_ascii=False, indent=1), encoding="utf-8")
+    except Exception:
+        pass
     return 0
 
 
