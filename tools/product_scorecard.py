@@ -39,9 +39,9 @@ PHASES = [
     ("Players",          5, "players_scorecard.json",     "nota_players",       9.0, "tools/players_scorecard.py"),
     ("Portabilidade",    5, "portability_scorecard.json", "nota_portabilidade", 10.0, "tools/portability_scorecard.py"),
 ]
-# Visual: sem régua numérica — aceite explícito do dono (18/07 "visual já está
-# bom"). Entra como aceite, não medição; peso 5.
-VISUAL = ("Visual", 5, 8.5, "aceite do dono (não medido — 'visual já está bom', 18/07)")
+# Visual REMOVIDO da nota (decisão dele 18/07): não é dimensão de medição —
+# é dirigido por feedback direto ("o que eu não gostar eu peço para mudar").
+# Com isso a nota do produto é 100% MEDIDA por régua (zero rubrica).
 
 
 def _age_days(iso: str) -> float | None:
@@ -92,21 +92,13 @@ def main() -> int:
         wsum += peso
         psum += peso * float(nota)
 
-    # Visual (aceite)
-    vname, vpeso, vnota, vsrc = VISUAL
-    print(f"{vname:18} {vpeso:>4} {vnota:>6.2f} {'—':>5} {'aceite':>7}  {vsrc}")
-    rows.append((vname, vpeso, vnota, None))
-    wsum += vpeso
-    psum += vpeso * vnota
-
     produto = psum / wsum if wsum > 0 else float("nan")
-    # teto do produto = média ponderada dos tetos (Visual usa a própria nota-aceite)
     teto_psum = sum(p * (t if t is not None else n) for (_n, p, n, t) in rows)
     teto_prod = teto_psum / wsum if wsum > 0 else float("nan")
 
     print(f"\nNOTA DO PRODUTO = {produto:.2f} / 10   (teto real do conjunto ~{teto_prod:.1f})")
-    medidas = sum(1 for r in rows if r[0] != "Visual")
-    print(f"  {medidas}/{len(rows)} fases com nota MEDIDA por régua reproduzível (só Visual é aceite do dono).")
+    print(f"  {len(rows)}/{len(rows)} fases com nota MEDIDA por régua reproduzível (Visual saiu da nota: "
+          "dirigido por feedback dele, não por medição).")
     if stale:
         print(f"  ⚠ AVISO — réguas VELHAS (> {STALE_DAYS}d), re-rodar: {', '.join(stale)}")
     print("\n  Onde ainda há subida REAL (nota < teto): " +
