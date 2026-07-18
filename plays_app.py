@@ -297,6 +297,16 @@ from app_core.identity_registry_core import (
 from app_core.league_transfer_features_core import (
     load_league_transfer_features as core_load_league_transfer_features,
 )
+from app_core.schedule_agenda_ui_core import (
+    render_schedule_agenda_expander as core_render_schedule_agenda_expander,
+)
+from app_core.lines_stage_ui_core import (
+    render_lines_stage as core_render_lines_stage,
+)
+from app_core.nav_pages_core import (
+    render_live_bet_page as core_render_live_bet_page,
+    render_radar_page as core_render_radar_page,
+)
 from app_core.matchup_selection_core import (
     render_matchup_selection as core_render_matchup_selection,
     team_with_league_label as _team_with_league_label,
@@ -2296,75 +2306,29 @@ core_normalize_matchup_selection_teams(
 )
 
 if nav_page == "Live-Bet":
-    team_games = _load_team_games(csv_sig)
-    years = sorted([int(y) for y in team_games["year"].dropna().unique().tolist()]) if team_games is not None and not team_games.empty else [int(season_year)]
-    _results_runtime_live = core_resolve_results_runtime_settings(
+    core_render_live_bet_page(
         st.session_state,
         season_year=season_year,
-        years=years,
+        teams=teams,
+        csv_sig=csv_sig,
+        artifact_path=artifact_path,
+        load_team_games_fn=_load_team_games,
+        load_player_rows_fn=_load_player_rows,
+        state_get_str_fn=state_get_str,
+        format_num_fn=_format_num,
+        min_to_mmss_fn=_min_to_mmss,
     )
-    _live_year_opt = _results_runtime_live["year_opt"]
-    _live_split_opt = _results_runtime_live["split_opt"]
-    _live_playoffs_opt = _results_runtime_live["playoffs_opt"]
-    _live_fixed_league = _results_runtime_live["fixed_league"]
-    _live_filters = Filters(
-        year=None if _live_year_opt == "All" else int(_live_year_opt),
-        league=None,
-        split=None if _live_split_opt == "All" else str(_live_split_opt),
-        playoffs=None if _live_playoffs_opt == "all" else (True if _live_playoffs_opt == "true" else False),
-    )
-    if _results_runtime_live["league_mode"] == "fixed" and _live_fixed_league and _live_fixed_league != "All":
-        _live_filters = Filters(
-            year=_live_filters.year,
-            league=_live_fixed_league,
-            split=_live_filters.split,
-            playoffs=_live_filters.playoffs,
-        )
-
-    _team_a_live = str(st.session_state.get("teamA") or (teams[0] if teams else ""))
-    _team_b_live = str(st.session_state.get("teamB") or "")
-    if not _team_b_live or _team_b_live == _team_a_live:
-        _team_b_live = next((t for t in teams if str(t) != _team_a_live), _team_a_live)
-
-    core_render_live_bet_tab(
-        st=st,
-        ctx={
-            "team_games": team_games,
-            "Filters": Filters,
-            "active_filters": _live_filters,
-            "apply_filters_fn": apply_filters,
-            "teamA": _team_a_live,
-            "teamB": _team_b_live,
-            "csv_sig": csv_sig,
-            "state_get_str_fn": state_get_str,
-            "load_player_rows_fn": _load_player_rows,
-            "apply_filters_players_fn": core_apply_filters_players,
-            "champion_vocab_fn": core_champion_vocab,
-            "fuzzy_match_one_fn": core_fuzzy_match_one,
-            "format_num_fn": _format_num,
-            "min_to_mmss_fn": _min_to_mmss,
-            "artifact_path": str(artifact_path),
-        },
-    )
-    st.stop()
 
 
 if nav_page == "Radar":
-    team_games = _load_team_games(csv_sig)
-    core_render_radar_tab(
-        st=st,
-        ctx={
-            "team_games": team_games,
-            "Filters": Filters,
-            "apply_filters_fn": apply_filters,
-            "csv_sig": csv_sig,
-            "load_player_rows_fn": _load_player_rows,
-            "format_num_fn": _format_num,
-            "min_to_mmss_fn": _min_to_mmss,
-            "artifact_path": str(artifact_path),
-        },
+    core_render_radar_page(
+        csv_sig=csv_sig,
+        artifact_path=artifact_path,
+        load_team_games_fn=_load_team_games,
+        load_player_rows_fn=_load_player_rows,
+        format_num_fn=_format_num,
+        min_to_mmss_fn=_min_to_mmss,
     )
-    st.stop()
 
 
 if nav_page == "Meta":
@@ -2390,166 +2354,11 @@ core_get_schedule_games(st.session_state)
 core_ensure_schedule_alias_state(st.session_state)
 core_set_schedule_unknown_aliases(st.session_state, core_has_schedule_unknown_aliases(st.session_state))
 
-with st.expander("Jogos (agenda) - colar / adicionar", expanded=False):
-    st.caption("Cole aqui um bloco de jogos (data, hora, time A, time B). O app tenta inferir a liga pelos cabeçalhos e te pede para mapear times desconhecidos.")
-
-    _alias_path = APP_ROOT / "user_team_aliases.json"
-
-    # ---- UI de importação ----
-    st.session_state.setdefault("plays_schedule_default_bo", 3)
-    default_bo = st.selectbox("BO padrão (para os jogos importados)", [1, 3, 5], key="plays_schedule_default_bo")
-
-    txt = st.text_area(
-        "Cole os jogos aqui (formato livre)",
-        height=220,
-        key="plays_schedule_text",
-        placeholder="Ex.:\\nLeague IconLCKFlag Icon\\n22/01\\n05:00\\nBRION\\nHanwha Life Esports\\n-\\n-\\n..."
-    )
-    core_persist_schedule_runtime_state(st.session_state)
-
-    cA, cB, cC = st.columns([1,1,2])
-    with cA:
-        parse_clicked = st.button("Processar texto", width='stretch', key="plays_schedule_parse_btn")
-    with cB:
-        clear_clicked = st.button("Limpar texto", width='stretch', key="plays_schedule_clear_btn")
-    with cC:
-        if st.button("Limpar agenda (lista atual)", width='stretch', key="plays_schedule_clear_list"):
-            core_clear_schedule_games(st.session_state)
-            st.success("Agenda limpa.")
-
-    if clear_clicked:
-        core_clear_schedule_text(st.session_state)
-        st.rerun()
-
-
-    with st.expander("Adicionar 1 jogo manual", expanded=False):
-        st.session_state.setdefault("plays_manual_date", "")
-        st.session_state.setdefault("plays_manual_time", "")
-        st.session_state.setdefault("plays_manual_league", "")
-        st.session_state.setdefault("plays_manual_teamA", "")
-        st.session_state.setdefault("plays_manual_teamB", "")
-        st.session_state.setdefault("plays_manual_bo", 3)
-        cM1, cM2, cM3 = st.columns([1,1,1])
-        with cM1:
-            m_date = st.text_input("Data (DD/MM)", key="plays_manual_date", placeholder="22/01")
-        with cM2:
-            m_time = st.text_input("Hora (HH:MM)", key="plays_manual_time", placeholder="05:00")
-        with cM3:
-            m_league = st.text_input("Liga (opcional)", key="plays_manual_league", placeholder="LCK")
-
-        cM4, cM5, cM6 = st.columns([2,2,1])
-        with cM4:
-            m_teamA = st.text_input("Time A (como você tem)", key="plays_manual_teamA", placeholder="BRION")
-        with cM5:
-            m_teamB = st.text_input("Time B (como você tem)", key="plays_manual_teamB", placeholder="Hanwha Life Esports")
-        with cM6:
-            m_bo = st.selectbox("BO", [1,3,5], key="plays_manual_bo")
-
-        if st.button("Adicionar (vai pedir mapeamento se precisar)", width='stretch', key="plays_manual_add"):
-            # valida mínimo
-            if not (m_date.strip() and m_time.strip() and m_teamA.strip() and m_teamB.strip()):
-                st.warning("Preencha pelo menos Data, Hora, Time A e Time B.")
-            else:
-                pending_now = core_get_pending_schedule_import(st.session_state)
-                pending_now.append({
-                    "date": m_date.strip(),
-                    "time": m_time.strip(),
-                    "league": m_league.strip(),
-                    "teamA_raw": m_teamA.strip(),
-                    "teamB_raw": m_teamB.strip(),
-                })
-                core_save_pending_schedule_import(st.session_state, pending_now)
-                st.success("Adicionado à prévia. Agora mapeie (se necessário) e clique em **Adicionar à agenda**.")
-                st.rerun()
-
-    if parse_clicked:
-        parsed = core_parse_schedule_text(txt)
-        if not parsed:
-            st.warning("Não consegui encontrar jogos nesse texto. Dica: precisa ter linhas com hora (HH:MM) e logo depois 2 linhas de times.")
-        else:
-            core_save_pending_schedule_import(st.session_state, parsed)
-            st.success(f"Encontrados: {len(parsed)} jogo(s). Agora confira o mapeamento e clique em **Adicionar à agenda**.")
-            st.rerun()
-
-    pending = core_get_pending_schedule_import(st.session_state)
-    core_set_schedule_unknown_aliases(st.session_state, False)
-    if isinstance(pending, list) and pending:
-        st.markdown("#### Prévia (antes de adicionar)")
-        st.dataframe(pd.DataFrame(pending), width='stretch', hide_index=True)
-
-        aliases = core_load_schedule_aliases(st.session_state, _alias_path)
-
-        # detecta times não resolvidos
-        unknowns: List[str] = []
-        for g in pending:
-            a_raw = str(g.get("teamA_raw", "") or "").strip()
-            b_raw = str(g.get("teamB_raw", "") or "").strip()
-            a_res, ok_a = core_resolve_schedule_team(a_raw, teams, aliases)
-            b_res, ok_b = core_resolve_schedule_team(b_raw, teams, aliases)
-            if not ok_a and a_raw:
-                unknowns.append(a_raw)
-            if not ok_b and b_raw:
-                unknowns.append(b_raw)
-        unknowns = sorted(list({u for u in unknowns}))
-        core_set_schedule_unknown_aliases(st.session_state, bool(unknowns))
-
-        mapping: Dict[str, str] = {}
-        if unknowns:
-            st.markdown("#### Mapear times desconhecidos")
-            st.caption("Se o nome do site não bater com o nome do CSV, escolha o time correto aqui. Isso fica salvo (apelido -> time do CSV).")
-            for raw in unknowns:
-                sug = core_suggest_schedule_teams(raw, teams)
-                pick = st.selectbox(
-                    f"Esse time '{raw}' seria qual",
-                    options=["", *sug],
-                    key=f"map_{core_normalize_schedule_team_key(raw)}",
-                )
-                if pick:
-                    mapping[raw] = pick
-
-        c1, c2 = st.columns([1,1])
-        with c1:
-            add_clicked = st.button("Adicionar à agenda", type="primary", width='stretch', key="plays_schedule_add_btn")
-        with c2:
-            cancel_clicked = st.button("Cancelar importação", width='stretch', key="plays_schedule_cancel_btn")
-
-        if cancel_clicked:
-            core_clear_pending_schedule_import(st.session_state)
-            st.info("Importação cancelada.")
-            st.rerun()
-
-        if add_clicked:
-            # aplica mapping + aliases existentes
-            aliases = core_load_schedule_aliases(st.session_state, _alias_path)
-            for raw, canon in mapping.items():
-                if canon:
-                    aliases[core_normalize_schedule_team_key(raw)] = canon
-            core_save_schedule_aliases(st.session_state, _alias_path, aliases)
-
-            out_games: List[Dict[str, Any]] = []
-            for g in pending:
-                a_raw = str(g.get("teamA_raw", "") or "").strip()
-                b_raw = str(g.get("teamB_raw", "") or "").strip()
-                a_res, ok_a = core_resolve_schedule_team(a_raw, teams, aliases)
-                b_res, ok_b = core_resolve_schedule_team(b_raw, teams, aliases)
-
-                # se ainda ficou desconhecido, mantém raw (não bloqueia), mas não vai carregar automático pro confronto
-                out_games.append({
-                    "date": str(g.get("date", "") or "").strip(),
-                    "time": str(g.get("time", "") or "").strip(),
-                    "league": str(g.get("league", "") or "").strip(),
-                    "teamA": a_res,
-                    "teamB": b_res,
-                    "bo": int(default_bo),
-                    "lines": "",
-                })
-
-            core_append_schedule_games(st.session_state, out_games)
-            core_clear_pending_schedule_import(st.session_state)
-            st.success(f"Adicionados: {len(out_games)} jogo(s) na agenda.")
-            st.rerun()
-
-    st.caption(f"Agenda atual: {len(core_get_schedule_games(st.session_state))} jogo(s).")
+core_render_schedule_agenda_expander(
+    st.session_state,
+    app_root=APP_ROOT,
+    teams=teams,
+)
 
 
 teamA, teamB, bo = core_render_matchup_selection(
@@ -2614,83 +2423,20 @@ if flow_stage == "select":
 # Etapa 2 — preencher linhas
 # -----------------------------
 if flow_stage == "lines":
-    st.subheader("Linhas (preencha e confirme)")
-
-    # garante que as linhas exibidas correspondem ao confronto atual (season + times)
-    key = build_matchup_key(season_label, teamA, teamB)
-    core_set_matchup_key(st.session_state, key)
-    if core_get_lines_loaded_key(st.session_state) != key:
-        _load_lines_for_matchup(key)
-        core_set_lines_loaded_key(st.session_state, key)
-
-    st.caption("Use vírgula para separar múltiplas linhas. Decimal usa **ponto**. Tempo: x, x.0, x.5.")
-
-    with st.expander("Padrão global de linhas (opcional)", expanded=False):
-        st.caption("Se você costuma usar as mesmas linhas em vários confrontos, salve aqui para preencher automaticamente quando não houver linhas salvas para o confronto.")
-        cP1, cP2 = st.columns(2)
-        with cP1:
-            if st.button("Salvar como padrão global", width='stretch', key="lines_global_save"):
-                _save_lines_for_matchup(_LINES_STORE_DEFAULTS_KEY)
-                st.success("Padrão global salvo.")
-        with cP2:
-            if st.button("Limpar padrão global", width='stretch', key="lines_global_clear"):
-                s = _lines_store()
-                if isinstance(s, dict):
-                    s.pop(_LINES_STORE_DEFAULTS_KEY, None)
-                    _persist_lines_store_disk(s)
-                st.success("Padrão global removido.")
-
-    g1, g2, g3 = st.columns(3)
-    with g1:
-        st.text_input("Kills (ex: 27.5, 30.5)", key="lines_kills", on_change=_save_lines_for_matchup, args=(key,))
-        st.text_input("Torres (ex: 11.5, 12.5)", key="lines_towers", on_change=_save_lines_for_matchup, args=(key,))
-    with g2:
-        st.text_input("Dragões (ex: 4.5, 5.5)", key="lines_dragons", on_change=_save_lines_for_matchup, args=(key,))
-        st.text_input("Barões (ex: 1.5)", key="lines_barons", on_change=_save_lines_for_matchup, args=(key,))
-    with g3:
-        st.text_input("Inibidores (ex: 1.5)", key="lines_inhib", on_change=_save_lines_for_matchup, args=(key,))
-        st.text_input("Tempo (ex: 32, 32.5)", key="lines_time", on_change=_save_lines_for_matchup, args=(key,))
-
-    _lines_extras_ctx = st.expander("Extras (opcional)", expanded=False)
-    with _lines_extras_ctx:
-        st.text_input(f"Total Kills {teamA} (ex: 16.5)", key="teamA_kills_line_text", on_change=_save_lines_for_matchup, args=(key,))
-        st.text_input(f"Total Kills {teamB} (ex: 15.5)", key="teamB_kills_line_text", on_change=_save_lines_for_matchup, args=(key,))
-
-        st.caption("Handicap: interpreta como (métrica_for + handicap) > métrica_against (sem push; use .5).")
-        _hc_team_cur, hc_team_opts = core_resolve_hc_kills_team(st.session_state, team_a=teamA, team_b=teamB)
-        st.selectbox(
-            "Handicap Kills — Time",
-            options=hc_team_opts,
-            key="hc_kills_team",
-            on_change=_save_lines_for_matchup,
-            args=(key,),
-        )
-        _hc_team, _ = core_resolve_hc_kills_team(st.session_state, team_a=teamA, team_b=teamB, write_back=False)
-        st.text_input(f"HC Kills ({_hc_team}) (ex: -2.5)", key="hc_kills_text", on_change=_save_lines_for_matchup, args=(key,))
-        _hc_val_preview = _parse_single_float(st.session_state.get("hc_kills_text", ""))
-        if _hc_val_preview is not None:
-            _hc_other = teamB if _hc_team == teamA else teamA
-            st.caption(f"Outro lado (automático): **{_hc_other} {(-_hc_val_preview):+g}**")
-        st.text_input(f"HC Torres {teamA} (ex: -3.5)", key="hc_towers_text", on_change=_save_lines_for_matchup, args=(key,))
-        st.text_input(f"HC Dragões {teamA} (ex: -1.5)", key="hc_dragons_text", on_change=_save_lines_for_matchup, args=(key,))
-
-        st.text_input("Linha Kills (para ML + Totais)", key="combo_kills_text", on_change=_save_lines_for_matchup, args=(key,))
-        st.text_input("Linha Tempo (para ML + Totais)", key="combo_time_text", on_change=_save_lines_for_matchup, args=(key,))
-
-    c1, c2 = st.columns([2, 1])
-    with c1:
-        if st.button("Salvar linhas e ver resultados", width='stretch'):
-            # persiste linhas para esse confronto (para reaparecer ao editar, e ao voltar sem trocar times)
-            _save_lines_for_matchup(build_matchup_key(season_label, teamA, teamB))
-            core_set_flow_stage(st.session_state, "results")
-            core_request_analysis_refresh(st.session_state)
-            _request_streamlit_rerun()
-    with c2:
-        if st.button("Voltar", width='stretch'):
-            _reset_flow(keep_config=True)
-            _request_streamlit_rerun()
-
-    st.stop()
+    core_render_lines_stage(
+        st.session_state,
+        season_label=season_label,
+        team_a=teamA,
+        team_b=teamB,
+        matchup_key_fn=build_matchup_key,
+        load_lines_for_matchup_fn=_load_lines_for_matchup,
+        save_lines_for_matchup_fn=_save_lines_for_matchup,
+        lines_store_fn=_lines_store,
+        persist_lines_store_fn=_persist_lines_store_disk,
+        lines_store_defaults_key=_LINES_STORE_DEFAULTS_KEY,
+        reset_flow_fn=_reset_flow,
+        request_rerun_fn=_request_streamlit_rerun,
+    )
 
 # -----------------------------
 # Etapa 3 — resultados
