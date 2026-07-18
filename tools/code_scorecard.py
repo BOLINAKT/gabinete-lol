@@ -178,13 +178,68 @@ def comp_duplication(f: Files) -> dict:
 
 
 def comp_pyflakes(root: Path, f: Files) -> dict:
-    """6. Higiene pyflakes [TUDO] (-0.1/aviso)."""
-    n = 0
+    """6. Higiene pyflakes [TUDO] (-0.1/aviso ACIONÁVEL).
+
+    Só conta avisos SEM `# noqa` na linha citada: o pyflakes puro (diferente
+    do flake8) não respeita a supressão que o dev marcou de propósito —
+    re-exports (`# noqa: F401 - re-exported`), probes de disponibilidade em
+    try/except etc. Contá-los penalizava higiene intencional (lição da
+    varredura 18/07). O `plays_app` usa o padrão globals()->ctx: seus imports
+    "unused" são consumidos por reflexão; ficam de fora deste componente."""
+    src_cache: dict[str, list[str]] = {}
+
+    def _has_noqa(path_str: str, line_no: int, symbol: str = "") -> bool:
+        try:
+            lines = src_cache.get(path_str)
+            if lines is None:
+                lines = (root / path_str).read_text(encoding="utf-8", errors="replace").splitlines()
+                src_cache[path_str] = lines
+            if not (0 < line_no <= len(lines)):
+                return False
+            if "# noqa" in lines[line_no - 1].lower():
+                return True
+            # Import multi-linha: pyflakes aponta o `from X import (`, mas o
+            # `# noqa` fica na linha do símbolo. Varre até o `)` e casa o símbolo.
+            if symbol and lines[line_no - 1].rstrip().endswith("("):
+                for j in range(line_no, min(line_no + 40, len(lines))):
+                    ltxt = lines[j]
+                    if symbol in ltxt and "# noqa" in ltxt.lower():
+                        return True
+                    if ltxt.rstrip().endswith(")"):
+                        break
+            return False
+        except (OSError, IndexError):
+            return False
+
+    # path:line:col: message — path pode ter drive do Windows (C:\...), então
+    # casa o path completo de forma não-gulosa antes de :line:col:.
+    line_re = re.compile(r"^(.*?):(\d+):\d+: (.*)$")
+    actionable, suppressed, skipped_playsapp = 0, 0, 0
     batch = [str(p) for p in f.all]
     for i in range(0, len(batch), 150):
         rc, out = _run(root, [sys.executable, "-m", "pyflakes", *batch[i:i + 150]], timeout=600)
-        n += len([ln for ln in out.splitlines() if ln.strip()])
-    return {"score": round(max(0.0, 10.0 - 0.1 * n), 2), "detail": f"{n} avisos"}
+        for ln in out.splitlines():
+            if not ln.strip():
+                continue
+            m = line_re.match(ln)
+            if not m:
+                actionable += 1
+                continue
+            path_str, line_no, msg = m.group(1), int(m.group(2)), m.group(3)
+            if path_str.replace("\\", "/").endswith("plays_app.py"):
+                skipped_playsapp += 1
+                continue
+            # símbolo entre aspas na mensagem, último componente pontilhado
+            sym = ""
+            qm = re.search(r"'([^']+)'", msg)
+            if qm:
+                sym = qm.group(1).split(".")[-1].split(" ")[0]
+            if _has_noqa(path_str, line_no, sym):
+                suppressed += 1
+            else:
+                actionable += 1
+    return {"score": round(max(0.0, 10.0 - 0.1 * actionable), 2),
+            "detail": f"{actionable} avisos acionaveis ({suppressed} noqa + {skipped_playsapp} plays_app globals ignorados)"}
 
 
 def comp_e2e(f: Files) -> dict:
