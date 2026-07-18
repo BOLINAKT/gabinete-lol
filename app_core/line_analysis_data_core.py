@@ -8,9 +8,47 @@ externo do radar_tab_core continuam funcionando sem alteração.
 """
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
 import pandas as pd
+
+from app_core.championship_stats_core import STATS_MARKET_CONFIG
+
+# Mapas derivados do registro central (add/remover mercado = editar só o
+# STATS_MARKET_CONFIG). Usados pelos renderers da Análise de Linha.
+_MARKET_KEYS: dict[str, str] = {
+    label: str(cfg["metric_key"]) for label, cfg in STATS_MARKET_CONFIG.items()
+}
+_METRIC_COL: dict[str, str] = {
+    str(cfg["metric_key"]): str(cfg["combined_col"]) for cfg in STATS_MARKET_CONFIG.values()
+}
+
+_MARKETS_V2_DEFAULT = [
+    {"label": "Total de kills",   "key": "kills",   "metric_col": "mv2_total_kills",   "direction": "Over", "default_line": 27.5},
+    {"label": "Total de torres",  "key": "towers",  "metric_col": "mv2_total_towers",  "direction": "Over", "default_line": 11.5},
+    {"label": "Total de drakes",  "key": "dragons", "metric_col": "mv2_total_dragons", "direction": "Over", "default_line": 4.5},
+    {"label": "Duração (min)",    "key": "time",    "metric_col": "game_time_min",     "direction": "Over", "default_line": 32.5},
+]
+
+
+def _safe_pct(series: "pd.Series", line: float, direction: str) -> float:
+    try:
+        s = pd.to_numeric(series, errors="coerce").dropna()
+        if s.empty:
+            return float("nan")
+        if direction == "Under":
+            return 100.0 * float((s <= line).mean())
+        return 100.0 * float((s > line).mean())
+    except (TypeError, ValueError, KeyError):
+        return float("nan")
+
+
+def _get_metric_col(market_label: str) -> Optional[str]:
+    key = _MARKET_KEYS.get(market_label)
+    if not key:
+        return None
+    return _METRIC_COL.get(key)
+
 
 # Passo 2 do registro central (2026-07-06): os 6 mercados CORE derivam de
 # STATS_MARKET_CONFIG (v3_core_markets) — add/remover mercado de stats = editar

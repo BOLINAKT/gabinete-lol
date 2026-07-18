@@ -53,6 +53,20 @@ class TestLineAnalysisDataCore(unittest.TestCase):
         from app_core.line_analysis_tab_core import _augment_with_total_columns as reexp
         self.assertIs(reexp, _augment_with_total_columns)
 
+    def test_safe_pct_over_under_and_nan(self):
+        from app_core.line_analysis_data_core import _safe_pct
+        self.assertEqual(_safe_pct(pd.Series([1, 2, 3, 4]), 2.5, "Over"), 50.0)
+        self.assertEqual(_safe_pct(pd.Series([1, 2, 3, 4]), 2.5, "Under"), 50.0)
+        self.assertTrue(pd.isna(_safe_pct(pd.Series([], dtype=float), 2.5, "Over")))
+
+    def test_get_metric_col_maps_from_registry(self):
+        from app_core.line_analysis_data_core import _get_metric_col
+        self.assertEqual(_get_metric_col("Kills"), "total_kills")
+        self.assertIsNone(_get_metric_col("MercadoInexistente"))
+        # re-export por tab_core aponta o mesmo objeto
+        from app_core.line_analysis_tab_core import _get_metric_col as reexp
+        self.assertIs(reexp, _get_metric_col)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -12,7 +12,6 @@ from typing import Any, Callable, MutableMapping, Optional
 
 import pandas as pd
 
-from app_core.championship_stats_core import STATS_MARKET_CONFIG
 from app_core.market import parse_lines_text, parse_time_lines_text
 from mlcore.bo import prob_win_series
 from app_core.shared_formatters import fmt_delta_pp, fmt_num, fmt_pct, fmt_status
@@ -21,20 +20,15 @@ from app_core.tab_filters_core import collect_year_split_league_options, scope_h
 from app_core.tab_state_core import normalize_select_key, select_placeholder
 from app_core.tab_ui_core import render_tab_hero, render_tab_section
 
-_MARKET_KEYS: dict[str, str] = {
-    label: str(cfg["metric_key"]) for label, cfg in STATS_MARKET_CONFIG.items()
-}
-_METRIC_COL: dict[str, str] = {
-    str(cfg["metric_key"]): str(cfg["combined_col"]) for cfg in STATS_MARKET_CONFIG.values()
-}
-
-
-_MARKETS_V2_DEFAULT = [
-    {"label": "Total de kills",   "key": "kills",   "metric_col": "mv2_total_kills",   "direction": "Over", "default_line": 27.5},
-    {"label": "Total de torres",  "key": "towers",  "metric_col": "mv2_total_towers",  "direction": "Over", "default_line": 11.5},
-    {"label": "Total de drakes",  "key": "dragons", "metric_col": "mv2_total_dragons", "direction": "Over", "default_line": 4.5},
-    {"label": "Duração (min)",    "key": "time",    "metric_col": "game_time_min",     "direction": "Over", "default_line": 32.5},
-]
+# Camada de dados/config movida p/ line_analysis_data_core (fatiamento 18/07);
+# re-exportada aqui p/ compat dos usos internos e importadores externos.
+from app_core.line_analysis_data_core import (  # noqa: F401 - re-export
+    _MARKET_KEYS,
+    _METRIC_COL,
+    _MARKETS_V2_DEFAULT,
+    _safe_pct,
+    _get_metric_col,
+)
 
 
 # ============================================================================
@@ -1463,25 +1457,6 @@ def _render_v3_kills_subpanel(
                     **panel_ctx,
                 )
     return  # All per-line content rendered via helper; legacy below is dead.
-
-
-def _safe_pct(series: pd.Series, line: float, direction: str) -> float:
-    try:
-        s = pd.to_numeric(series, errors="coerce").dropna()
-        if s.empty:
-            return float("nan")
-        if direction == "Under":
-            return 100.0 * float((s <= line).mean())
-        return 100.0 * float((s > line).mean())
-    except (TypeError, ValueError, KeyError):
-        return float("nan")
-
-
-def _get_metric_col(market_label: str) -> str | None:
-    key = _MARKET_KEYS.get(market_label)
-    if not key:
-        return None
-    return _METRIC_COL.get(key)
 
 
 def render_line_analysis_tab(
