@@ -594,28 +594,33 @@ from app_core.feature_trace_append_core import append_feature_trace as _append_f
 from app_core.players_artifact_runtime_core import resolve_runtime_players_artifact_path as _resolve_runtime_players_artifact_path_core
 
 
-def _league_macro_key(league: Any) -> str:
-    return str(shared_league_macro_key(league, unknown="OTHER"))
+# Helpers movidos p/ runtime_wrappers_core (fatiamento 18/07); re-importados
+# aqui para o namespace/ctx do app seguir idêntico.
+from app_core.runtime_wrappers_core import (  # noqa: E402,F401 - re-export
+    _clear_streamlit_cache_data,
+    _df_contract_view,
+    _ensure_lineup_runtime_state,
+    _expected_totals_dc,
+    _feature_flag_enabled,
+    _get_lineup_loaded_key,
+    _get_lineup_runtime_settings,
+    _get_lineup_selected,
+    _league_macro_key,
+    _lines_table,
+    _lines_table_with_p_ml,
+    _load_lineup_for_matchup,
+    _render_odds_cards,
+    _request_streamlit_rerun,
+    _save_lineup_for_matchup,
+    _set_lineup_loaded_key,
+)
 
 
 # _team_with_league_label imported from app_core.matchup_selection_core
 
 
-def _clear_streamlit_cache_data() -> None:
-    cache_data = getattr(st, "cache_data", None)
-    clear_fn = getattr(cache_data, "clear", None) if cache_data is not None else None
-    if callable(clear_fn):
-        clear_fn()
 
 
-def _request_streamlit_rerun() -> None:
-    rerun_fn = getattr(st, "rerun", None)
-    if callable(rerun_fn):
-        rerun_fn()
-        return
-    experimental_rerun_fn = getattr(st, "experimental_rerun", None)
-    if callable(experimental_rerun_fn):
-        experimental_rerun_fn()
 
 
 
@@ -713,13 +718,22 @@ def _init_app_settings_once() -> None:
 # -----------------------------
 # Helpers
 # -----------------------------
-def _file_sig(path: str) -> Tuple[str, int, int]:
-    p = Path(path)
-    try:
-        st_ = p.stat()
-        return (str(p.resolve()), int(st_.st_size), int(st_.st_mtime))
-    except OSError:
-        return (str(p), 0, 0)
+# Helpers movidos p/ artifact_loaders_core (fatiamento 18/07); re-importados
+# aqui para o namespace/ctx do app seguir idêntico.
+from app_core.artifact_loaders_core import (  # noqa: E402,F401 - re-export
+    _artifact_sig,
+    _file_sig,
+    _load_achievements_cached,
+    _load_artifact_cached,
+    _load_fitted_params_cached,
+    _load_league_transfer_features_cached,
+    _load_ml_confidence_baseline_cached,
+    _load_players_artifact_cached,
+    _load_players_impact,
+    _load_team_state_artifact_cached,
+    _patch_changed_leagues_set,
+    _resolve_relpath,
+)
 
 
 
@@ -850,83 +864,21 @@ def _series_sims_cached(
 # ML core v2: carregar artifact, calcular total_strength, ML e ranking
 # -----------------------------
 
-def _resolve_relpath(base_file: str, maybe_rel: str) -> str:
-    p = Path(maybe_rel)
-    if p.is_absolute():
-        return str(p)
-    return str((Path(base_file).parent / p).resolve())
 
 
-def _artifact_sig(path: str) -> Tuple[str, int, int]:
-    return _file_sig(path)
 
 
-@st.cache_resource(show_spinner=False)
-def _load_artifact_cached(art_sig: Tuple[str, int, int]) -> MLArtifact:
-    art_path, _size, _mtime = art_sig
-    return MLArtifact.load_json(art_path)
 
 
-@st.cache_data(show_spinner=False)
-def _load_achievements_cached(ach_sig: Tuple[str, int, int]) -> Dict[str, Any]:
-    """Carrega achievements.json com tolerância a erros.
-
-    Nunca deve derrubar o app (ex.: JSON corrompido). Em caso de falha,
-    retorna um dict com '__load_error__' para o chamador decidir o fallback.
-    """
-    ach_path, _size, _mtime = ach_sig
-    try:
-        return load_achievements(ach_path)
-    except (OSError, TypeError, ValueError, json.JSONDecodeError) as e:
-        return {
-            "__load_error__": f"{type(e).__name__}: {e}",
-            "__path__": str(ach_path),
-        }
 
 
-@st.cache_data(show_spinner=False)
-def _load_players_artifact_cached(p_sig: Tuple[str, int, int]) -> PlayersArtifact:
-    p_path, _size, _mtime = p_sig
-    return PlayersArtifact.load_json(p_path)
-
-@st.cache_data(show_spinner=False)
-def _load_fitted_params_cached(cfg_sig: Tuple[str, int, int]) -> Dict[str, Any]:
-    cfg_path, _size, _mtime = cfg_sig
-    try:
-        with open(cfg_path, "r", encoding="utf-8") as f:
-            d = json.load(f)
-        if isinstance(d, dict):
-            return d
-    except (OSError, TypeError, ValueError, json.JSONDecodeError):
-        pass
-    return {}
 
 
-@st.cache_data(show_spinner=False)
-def _load_ml_confidence_baseline_cached(cfg_sig: Tuple[str, int, int]) -> Dict[str, Any]:
-    cfg_path, _size, _mtime = cfg_sig
-    try:
-        with open(cfg_path, "r", encoding="utf-8") as f:
-            d = json.load(f)
-        if isinstance(d, dict):
-            return d
-    except (OSError, TypeError, ValueError, json.JSONDecodeError):
-        pass
-    return {}
 
 
-@st.cache_data(show_spinner=False)
-def _load_team_state_artifact_cached(cfg_sig: Tuple[str, int, int]) -> Dict[str, Any]:
-    cfg_path, _size, _mtime = cfg_sig
-    d = core_load_team_state_artifact(cfg_path)
-    return d if isinstance(d, dict) else {}
 
 
-@st.cache_data(show_spinner=False)
-def _load_league_transfer_features_cached(cfg_sig: Tuple[str, int, int]) -> Dict[str, Any]:
-    cfg_path, _size, _mtime = cfg_sig
-    d = core_load_league_transfer_features(cfg_path)
-    return d if isinstance(d, dict) else {}
+
 
 
 
@@ -938,8 +890,6 @@ def _patch_meta_guard_payload(
     return _patch_meta_guard_payload_core(csv_sig, fit_sig, ctx=globals())
 
 
-def _patch_changed_leagues_set(changed_rows: Any) -> set:
-    return _patch_changed_leagues_set_core(changed_rows)
 
 
 
@@ -947,8 +897,16 @@ def _ach_layer_for_artifact(art: MLArtifact, artifact_path: str, ach_override_pa
     return _ach_layer_for_artifact_core(art, artifact_path, ach_override_path, ctx=globals())
 
 
-def _p_from_diff_points(diff_points: float, scale_points: float = 400.0) -> float:
-    return float(core_p_from_diff_points(diff_points, scale_points=scale_points, clip_prob_fn=clip_prob))
+# Helpers movidos p/ ml_adjust_helpers_core (fatiamento 18/07); re-importados
+# aqui para o namespace/ctx do app seguir idêntico.
+from app_core.ml_adjust_helpers_core import (  # noqa: E402,F401 - re-export
+    _apply_ml_marginal_trust_adjust,
+    _apply_ml_uncertainty_adjust,
+    _fuse_probs_by_precision,
+    _p_from_diff_points,
+    _strength_breakdown,
+    _wf_correct_p_map,
+)
 
 
 
@@ -1089,30 +1047,6 @@ def _infer_match_league_from_csv(_csv_sig: Tuple[str, int, int], teamA: str, tea
 
 
 
-def _strength_breakdown(
-    *,
-    art: MLArtifact,
-    team: str,
-    as_of: date,
-    team_meta: Dict[str, Dict[str, str]],
-    ach_layer: Dict[str, Any],
-    league_hint: Optional[str] = None,
-    tier_hint: Optional[str] = None,
-) -> Dict[str, Any]:
-    return core_strength_breakdown(
-        art=art,
-        team=team,
-        as_of=as_of,
-        team_meta=team_meta,
-        ach_layer=ach_layer,
-        norm_league_fn=core_norm_league,
-        tier_from_league_fn=core_tier_from_league,
-        tier_base_points_fn=tier_base_points,
-        league_base_points_fn=league_base_points,
-        team_boost_points_fn=team_boost_points,
-        league_hint=league_hint,
-        tier_hint=tier_hint,
-    )
 
 
 def _mlcore_p_map_v2(
@@ -1197,67 +1131,8 @@ def _apply_ml_microseg_calibration(
 
 
 
-def _apply_ml_uncertainty_adjust(
-    p_in: float,
-    ml_info,
-    *,
-    enabled: bool = True,
-    strength: float = 0.55,
-    prior_games: float = 22.0,
-    max_shrink: float = 0.65,
-):
-    return _apply_ml_uncertainty_adjust_core(
-        p_in,
-        ml_info,
-        clip_prob_fn=clip_prob,
-        enabled=enabled,
-        strength=strength,
-        prior_games=prior_games,
-        max_shrink=max_shrink,
-    )
 
 
-def _apply_ml_marginal_trust_adjust(
-    p_in: float,
-    ml_info,
-    *,
-    league: str = "",
-    enabled: bool = True,
-    strength: float = 0.70,
-    prior_games: float = 28.0,
-    max_shrink: float = 0.72,
-    cap_prob: float = 0.84,
-    confidence_score=None,
-    score_soft: float = 68.0,
-    score_hard: float = 46.0,
-    exclude_leagues=None,
-    band_tuning: bool = True,
-    band_coeffs=None,
-):
-    return _apply_ml_marginal_trust_adjust_core(
-        p_in,
-        ml_info,
-        clip_prob_fn=clip_prob,
-        norm_league_key_fn=core_norm_league_key,
-        tier_from_league_fn=core_tier_from_league,
-        ml_league_conf_band_fn=core_ml_league_conf_band,
-        ml_marginal_band_profile_fn=core_ml_marginal_band_profile,
-        league_is_excluded_fn=core_league_is_excluded,
-        is_marginal_league_for_ml_fn=core_is_marginal_league_for_ml,
-        sanitize_ml_marginal_band_coeffs_fn=core_sanitize_ml_marginal_band_coeffs,
-        league=league,
-        enabled=enabled,
-        strength=strength,
-        prior_games=prior_games,
-        max_shrink=max_shrink,
-        cap_prob=cap_prob,
-        confidence_score=confidence_score,
-        score_soft=score_soft,
-        score_hard=score_hard,
-        exclude_leagues=exclude_leagues if exclude_leagues is not None else "",
-        band_tuning=band_tuning,
-        band_coeffs=band_coeffs,
-    )
 
 # -----------------------------
 # ML engine alternativo: Elo season (time) + Elo global (players)
@@ -1379,42 +1254,20 @@ def _save_lines_for_matchup(key: str) -> None:
 # -----------------------------
 
 
-def _load_lineup_for_matchup(key: str) -> None:
-    _load_lineup_for_matchup_impl(st.session_state, key)
 
 
-def _save_lineup_for_matchup(key: str) -> None:
-    _save_lineup_for_matchup_impl(st.session_state, key)
 
 
-def _ensure_lineup_runtime_state() -> Dict[str, Any]:
-    return _ensure_lineup_runtime_state_impl(st.session_state)
 
 
-def _get_lineup_runtime_settings() -> Dict[str, Any]:
-    return _get_lineup_runtime_settings_impl(st.session_state)
 
 
-def _get_lineup_loaded_key() -> str:
-    return _get_lineup_loaded_key_impl(st.session_state)
 
 
-def _set_lineup_loaded_key(key: str) -> str:
-    return _set_lineup_loaded_key_impl(st.session_state, key)
 
 
-def _get_lineup_selected(side: str, *, mode: str = "manual") -> dict:
-    return _get_lineup_selected_impl(st.session_state, side, mode=mode)
 
 
-@st.cache_data(show_spinner=False)
-def _load_players_impact(players_sig: tuple) -> pd.DataFrame:
-    csv_path = str(players_sig[0])
-    return core_load_players_impact(
-        csv_path=csv_path,
-        norm_pos_fn=_norm_pos,
-        parse_pct_fn=_parse_pct,
-    )
 
 
 _apply_shrink_m = core_apply_shrink_m
@@ -1477,24 +1330,6 @@ def _elo_rank_table(
 # Helpers de exibição (tirar colunas irrelevantes)
 # -----------------------------
 
-def _df_contract_view(
-    df: pd.DataFrame | None,
-    required_cols: list[str],
-    *,
-    optional_cols: list[str] | None = None,
-    context: str = "",
-    fill_value: Any = "-",
-    warn_on_missing: bool = True,
-) -> pd.DataFrame:
-    return core_df_contract_view(
-        df=df,
-        required_cols=required_cols,
-        optional_cols=optional_cols,
-        context=context,
-        fill_value=fill_value,
-        warn_on_missing=warn_on_missing,
-        warning_fn=st.warning,
-    )
 
 def _display_ou_table(df: pd.DataFrame) -> pd.DataFrame:
     return core_display_ou_table(
@@ -1515,60 +1350,13 @@ def _display_ml_totals_table(df: pd.DataFrame, team_label: Optional[str] = None)
     )
 
 
-def _render_odds_cards(df_raw: pd.DataFrame, mode: str = 'ou', table_label: str = 'Ver tabela') -> None:
-    return _render_odds_cards_core(df_raw, mode, table_label, st=st)
-
-
-def _lines_table(metric: str, lines_list: List[float], total_obj) -> pd.DataFrame:
-    return _lines_table_core(metric, lines_list, total_obj, st=st)
-
-
-def _lines_table_with_p_ml(metric: str, lines_list: List[float], total_obj, p_ml_value: float) -> pd.DataFrame:
-    return _lines_table_with_p_ml_core(metric, lines_list, total_obj, p_ml_value, st=st)
 
 
 
-def _fuse_probs_by_precision(
-    *,
-    p_team: float,
-    p_players: float,
-    n_team: float,
-    n_players: float,
-    team_scale: float = 1.0,
-    players_scale: float = 1.0,
-    coverage: Optional[float] = None,
-    transfer_signal: float = 0.0,
-    lineup_continuity: Optional[float] = None,
-    roster_changed: bool = False,
-    season_phase: str = "auto",
-) -> Dict[str, Any]:
-    nt = float(n_team) if math.isfinite(float(n_team)) else 0.0
-    np_ = float(n_players) if math.isfinite(float(n_players)) else 0.0
-    ts = float(team_scale) if math.isfinite(float(team_scale)) else 1.0
-    ps = float(players_scale) if math.isfinite(float(players_scale)) else 1.0
-    return core_fuse_with_coherence_guard(
-        p_team=float(p_team),
-        p_players=float(p_players),
-        n_team=float(max(0.0, nt)),
-        n_players=float(max(0.0, np_)),
-        team_scale=float(max(0.0, ts)),
-        players_scale=float(max(0.0, ps)),
-        coverage=coverage,
-        transfer_signal=float(transfer_signal),
-        lineup_continuity=lineup_continuity,
-        roster_changed=bool(roster_changed),
-        season_phase=str(season_phase or "auto"),
-        team_weight_early=float(st.session_state.get("fusion_team_weight_early", 0.58) or 0.58),
-        team_weight_mid=float(st.session_state.get("fusion_team_weight_mid", 0.75) or 0.75),
-        team_weight_playoffs=float(st.session_state.get("fusion_team_weight_playoffs", 0.82) or 0.82),
-        early_season_team_weight=float(st.session_state.get("fusion_early_season_team_weight", 0.55) or 0.55),
-        season_knee_games=float(st.session_state.get("fusion_season_knee_games", 18.0) or 18.0),
-        coverage_power=float(st.session_state.get("fusion_coverage_power", 1.5) or 1.5),
-        transfer_boost=float(st.session_state.get("fusion_transfer_boost", 0.35) or 0.35),
-        divergence_pp_cap=float(st.session_state.get("fusion_divergence_pp_cap", 22.0) or 22.0),
-        divergence_low_coverage=float(st.session_state.get("fusion_divergence_low_coverage", 0.30) or 0.30),
-        divergence_shrink=float(st.session_state.get("fusion_divergence_shrink", 0.35) or 0.35),
-    )
+
+
+
+
 
 
 
@@ -1809,9 +1597,6 @@ def _resolve_players_artifact_path(artifact_path: str, root: Path) -> str:
     )
 
 
-def _feature_flag_enabled(flag_key: str, default: bool = False) -> bool:
-    """Safe feature-flag read from session_state (tolerates stale/invalid values)."""
-    return bool(core_coerce_feature_flag(st.session_state.get(str(flag_key), default), default=default))
 
 
 def _append_feature_trace(
@@ -1864,35 +1649,29 @@ def _run_auto_maintenance_now(
     return _run_auto_maintenance_now_flow(csv_path_s, artifact_path_s, status, force_full=force_full, progress_cb=progress_cb, st=st, ctx=globals())
 
 
-def _read_artifact_summary(artifact_path: str) -> dict:
-    return dict(core_read_artifact_summary_path(artifact_path))
-
-
-def _run_cmd(
-    cmd,
-    *,
-    timeout_s=None,
-    heartbeat_cb=None,
-    heartbeat_interval_s: float = 2.0,
-):
-    return _run_cmd_core(cmd, timeout_s=timeout_s, heartbeat_cb=heartbeat_cb, heartbeat_interval_s=heartbeat_interval_s)
-
-
-
-def _read_json_file_safe(path_like: str | Path) -> Dict[str, Any]:
-    return dict(core_read_json_file_safe(path_like))
+# Helpers movidos p/ diagnostics_helpers_core (fatiamento 18/07); re-importados
+# aqui para o namespace/ctx do app seguir idêntico.
+from app_core.diagnostics_helpers_core import (  # noqa: E402,F401 - re-export
+    _enrich_params_with_ml_marginal_band_coeffs,
+    _generate_and_persist_ml_confidence_baseline,
+    _read_artifact_summary,
+    _read_json_file_safe,
+    _run_calibration_diag_cached,
+    _run_cmd,
+    _run_layer_validation_cached,
+    _run_walkforward_cached,
+)
 
 
 
 
 
 
-def _enrich_params_with_ml_marginal_band_coeffs(params_obj: Any, *, root: Path) -> Tuple[Dict[str, Any], str]:
-    return core_enrich_params_with_ml_marginal_band_coeffs(
-        params_obj,
-        root=root,
-        sanitize_band_coeffs_fn=core_sanitize_ml_marginal_band_coeffs,
-    )
+
+
+
+
+
 
 
 
@@ -1900,90 +1679,14 @@ def _enrich_params_with_ml_marginal_band_coeffs(params_obj: Any, *, root: Path) 
 def _backup_file_if_exists(path_like, *, tag: str = "manual") -> str:
     return _backup_file_if_exists_core(path_like, tag=tag, app_root=APP_ROOT)
 
-@st.cache_data(show_spinner=False, ttl=1800)
-def _run_walkforward_cached(
-    csv_paths: tuple[str, ...],
-    min_train_games: int,
-    k: float,
-    scale: float,
-    artifact_path: str = "",
-    players_artifact_path: str = "",
-    team_scale: float = 1.0,
-    players_scale: float = 1.0,
-    bins: int = 10,
-    min_league_games: int = 250,
-    params_fitted_path: str = "",
-) -> dict:
-    clean = [str(Path(p).expanduser()) for p in (csv_paths or ()) if str(p).strip()]
-    return run_walkforward(
-        clean,
-        min_train_games=int(min_train_games),
-        k=float(k),
-        scale=float(scale),
-        artifact_path=str(Path(str(artifact_path)).expanduser()) if str(artifact_path or "").strip() else "",
-        players_artifact_path=str(Path(str(players_artifact_path)).expanduser()) if str(players_artifact_path or "").strip() else "",
-        team_scale=float(team_scale),
-        players_scale=float(players_scale),
-        bins=int(bins),
-        min_league_games=int(min_league_games),
-        params_fitted_path=str(Path(str(params_fitted_path)).expanduser()) if str(params_fitted_path or "").strip() else "",
-    )
-
-
-@st.cache_data(show_spinner=False, ttl=1800)
-def _run_layer_validation_cached(
-    csv_paths: tuple[str, ...],
-    artifact_path: str,
-    players_artifact_path: str,
-    min_train_games: int,
-    team_scale: float,
-    players_scale: float,
-    min_league_games: int,
-) -> dict:
-    clean = [str(Path(p).expanduser()) for p in (csv_paths or ()) if str(p).strip()]
-    return run_layer_validation(
-        artifact_path=str(Path(str(artifact_path)).expanduser()),
-        players_artifact_path=str(Path(str(players_artifact_path)).expanduser()),
-        csv_paths=clean,
-        min_train_games=int(min_train_games),
-        team_scale=float(team_scale),
-        players_scale=float(players_scale),
-        min_league_games=int(min_league_games),
-    )
-
-
-@st.cache_data(show_spinner=False, ttl=1800)
-def _run_calibration_diag_cached(
-    csv_paths: tuple[str, ...],
-    artifact_path: str,
-    players_artifact_path: str,
-    team_scale: float,
-    players_scale: float,
-    bins: int,
-    min_league_games: int,
-) -> dict:
-    clean = [str(Path(p).expanduser()) for p in (csv_paths or ()) if str(p).strip()]
-    return run_calibration_diagnostics(
-        artifact_path=str(Path(str(artifact_path)).expanduser()),
-        players_artifact_path=str(Path(str(players_artifact_path)).expanduser()),
-        csv_paths=clean,
-        team_scale=float(team_scale),
-        players_scale=float(players_scale),
-        bins=int(bins),
-        min_league_games=int(min_league_games),
-    )
 
 
 
 
-def _generate_and_persist_ml_confidence_baseline(
-    *,
-    root: Path,
-    lv_report: Optional[Dict[str, Any]],
-    wf_report: Optional[Dict[str, Any]],
-    params_fit: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
-    return _generate_and_persist_ml_confidence_baseline_core(root=root, lv_report=lv_report, wf_report=wf_report, params_fit=params_fit)
+
+
+
+
 
 
 def _generate_and_persist_team_state_artifact(
@@ -2029,13 +1732,6 @@ def _run_daily_pipeline(
 
 
 
-def _wf_correct_p_map(
-    report,
-    p_in: float,
-    league_hint: str = "",
-    strength: float = 0.60,
-):
-    return _wf_correct_p_map_core(report, p_in, league_hint=league_hint, strength=strength)
 
 
 
@@ -2690,21 +2386,6 @@ if pA.n_games == 0 or pB.n_games == 0:
     st.caption("Aviso: os mercados do confronto podem ficar incompletos, mas abas independentes (ex.: Players/Campeões) continuam disponíveis.")
 
 
-def _expected_totals_dc(_df: pd.DataFrame, _pA, _pB) -> Dict[str, Any]:
-    """Totais V0 + blend Dixon-Coles nos mercados validados (kills/dragões/
-    tempo; gate ACCEPT 2026-07-06, ver mlcore.lines_engine.apply_dc_blend)
-    + calibração global do sd do TEMPO (gate ACCEPT 2026-07-17)."""
-    _t = matchup_expected_totals(_pA, _pB)
-    try:
-        from mlcore.lines_engine import apply_dc_blend
-        _t = apply_dc_blend(_df, str(getattr(_pA, "team", "")), str(getattr(_pB, "team", "")), _t)
-    except Exception:
-        pass
-    try:
-        from mlcore.lines_engine import apply_time_sd_calibration
-        return apply_time_sd_calibration(_t)
-    except Exception:
-        return _t
 
 
 totals = _expected_totals_dc(team_games, pA, pB)
