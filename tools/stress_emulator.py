@@ -58,6 +58,15 @@ if at.exception:
 
 for c in cenarios:
     try:
+        # Com --interagir o cenário anterior deixa o estado sujo (um filtro
+        # alterado muda a lista de times e o próximo cenário não acha o seu).
+        # Sessão nova por cenário = isolamento real (custa ~7s a mais).
+        if c.get("interagir"):
+            at = AppTest.from_file("plays_app.py", default_timeout=900)
+            at.run()
+            _e = [b for b in at.button if b.label == "Entrar no app"]
+            if _e:
+                _e[0].click(); at.run()
         at.session_state["teamA"] = c["a"]
         at.session_state["teamB"] = c["b"]
         at.session_state["bo"] = c["bo"]
@@ -83,6 +92,45 @@ for c in cenarios:
             if at.exception:
                 falhas.append({"cenario": c, "fase": f"aba:{nome}", "erro": str(at.exception[0])[:400]})
                 break
+
+        # INTERAÇÃO (o bug de 18/07 só apareceu quando ELE clicou): aciona os
+        # widgets SEGUROS e re-roda, procurando quebras que o render não mostra.
+        if c.get("interagir") and not at.exception:
+            proibidos = tuple(p.lower() for p in c.get("proibidos") or ())
+            # 1) botões seguros (lista negra fora)
+            for b in list(at.button):
+                lbl = str(getattr(b, "label", "") or "").strip().lower()
+                if not lbl or any(p in lbl for p in proibidos):
+                    continue
+                try:
+                    b.click(); at.run()
+                except Exception as exc:
+                    falhas.append({"cenario": c, "fase": f"click:{lbl[:40]}",
+                                   "erro": f"{type(exc).__name__}: {exc}"[:300]})
+                    break
+                if at.exception:
+                    falhas.append({"cenario": c, "fase": f"click:{lbl[:40]}",
+                                   "erro": str(at.exception[0])[:400]})
+                    break
+            # 2) alterna selectboxes/radios (troca de opção = caminho novo)
+            if not at.exception:
+                for w in (list(at.selectbox)[:6] + list(at.radio)[:4]):
+                    try:
+                        opts = [o for o in (w.options or []) if o]
+                        if len(opts) < 2:
+                            continue
+                        atual = w.value
+                        novo = next((o for o in opts if o != atual), None)
+                        if novo is None:
+                            continue
+                        w.set_value(novo) if hasattr(w, "set_value") else w.select(novo)
+                        at.run()
+                    except Exception:
+                        continue  # widget que não aceita troca: ignora
+                    if at.exception:
+                        falhas.append({"cenario": c, "fase": f"widget:{str(getattr(w,'label',''))[:35]}",
+                                       "erro": str(at.exception[0])[:400]})
+                        break
         feitos += 1
     except Exception as exc:
         falhas.append({"cenario": c, "fase": "driver", "erro": f"{type(exc).__name__}: {exc}"[:300]})
@@ -111,6 +159,18 @@ def _times_reais() -> list[tuple[str, str]]:
 # modos de página do app (cada um ativa um conjunto de abas diferente)
 MODOS_PAGINA = ["Completo", "Fluxo Rápido", "Mercados", "Análise"]
 
+# LISTA NEGRA de botões — NUNCA clicar (disparam treino/manutenção/escrita em
+# disco/publicação ou destroem estado). O GABINETE_E2E=1 já recusa subprocesso,
+# mas isto é defesa em profundidade: o emulador não pode mexer no seu modelo.
+BOTOES_PROIBIDOS = (
+    "treino", "retrein", "manuten", "atualizar", "fit", "promov", "rollback",
+    "baseline", "publicar", "upload", "enviar", "limpar", "remover", "resetar",
+    "apagar", "excluir", "trocar csv", "rodar", "gerar", "auto-", "recalibrar",
+    "drift", "aplicar", "salvar", "walk-forward", "smoke", "diária", "diaria",
+    "🗑", "✕", "adicionar", "importar", "cancelar", "voltar", "continuar",
+    "entrar no app", "analisar",  # controlados pelo próprio driver
+)
+
 LINHAS_RUINS = [
     {"lines_kills": "abc"},                    # texto onde espera número
     {"lines_kills": "999999"},                 # absurdo
@@ -135,6 +195,9 @@ def main() -> int:
     ap.add_argument("--matchups", type=int, default=12)
     ap.add_argument("--seed", type=int, default=20260718)
     ap.add_argument("--deep", action="store_true", help="inclui entradas ruins e estados atípicos")
+    ap.add_argument("--interagir", action="store_true",
+                    help="clica nos botões SEGUROS e alterna widgets dentro das abas "
+                         "(lista negra bloqueia treino/manutenção/publicação/limpeza)")
     ap.add_argument("--timeout", type=int, default=3600)
     args = ap.parse_args()
 
@@ -163,6 +226,9 @@ def main() -> int:
         # exatamente a lacuna que escondeu um bug de 6 semanas (19/07).
         modo = MODOS_PAGINA[i % len(MODOS_PAGINA)]
         c = {"a": a, "b": b, "bo": rnd.choice([1, 3, 5]), "tipo": tipo, "modo": modo}
+        if args.interagir:
+            c["interagir"] = True
+            c["proibidos"] = list(BOTOES_PROIBIDOS)
         if args.deep:
             if i % 3 == 0:
                 c["linhas"] = dict(rnd.choice(LINHAS_RUINS))
