@@ -1780,6 +1780,65 @@ _csv_bootstrap_gate(
 # Selo do modo visualização (nuvem): frescor dos dados no topo + upload de CSV.
 from app_core.viewer_mode_core import render_csv_upload_panel as _render_csv_upload_panel
 from app_core.viewer_mode_core import render_viewer_badge as _render_viewer_badge
+
+# Nomes que a aba Parametros pede via ctx.get e que NUNCA chegaram ao
+# globals() do plays_app (bug desde 02/06: 35 viravam None -> a aba
+# quebrava no modo Completo). Import explicito conserta o contrato.
+from app_core.feature_flags_ui_core import (  # noqa: F401 - ctx da aba Parametros
+    render_feature_flags_shadow_trace_panel as core_render_feature_flags_shadow_trace_panel,
+)
+from app_core.flow_runtime_core import (  # noqa: F401 - ctx da aba Parametros
+    build_training_csv_list as _build_training_csv_list,
+)
+from app_core.governance_report_core import (  # noqa: F401 - ctx da aba Parametros
+    build_anchor_cases_rows as core_build_anchor_cases_rows,
+    build_leakage_file_rows as core_build_leakage_file_rows,
+    build_parts_rows as core_build_parts_rows,
+    build_phase12_by_league_rows as core_build_phase12_by_league_rows,
+    build_stop_rules_banner as core_build_stop_rules_banner,
+    build_stop_rules_global_band_rows as core_build_stop_rules_global_band_rows,
+    build_stop_rules_league_band_rows as core_build_stop_rules_league_band_rows,
+    build_stop_rules_major_rows as core_build_stop_rules_major_rows,
+    decision_banner_parts as core_decision_banner_parts,
+)
+from app_core.governance_runtime_core import (  # noqa: F401 - ctx da aba Parametros
+    append_governance_log as core_append_governance_log,
+    combine_governance_decisions as core_combine_governance_decisions,
+    normalize_governance_decision as core_normalize_governance_decision,
+    run_governance_commands as core_run_governance_commands,
+    run_governance_operation as core_run_governance_operation,
+)
+from app_core.ml_oos_gate_core import (  # noqa: F401 - ctx da aba Parametros
+    wf_gate_multiplier as _wf_gate_multiplier,
+)
+from app_core.ml_session_runtime_core import (  # noqa: F401 - ctx da aba Parametros
+    get_fit_scale_state as core_get_fit_scale_state,
+    get_pre_delivery_report as core_get_pre_delivery_report,
+    set_fit_base_scales as core_set_fit_base_scales,
+    set_pending_apply_param_values as core_set_pending_apply_param_values,
+    set_pre_delivery_report as core_set_pre_delivery_report,
+)
+from app_core.navigation_state_core import (  # noqa: F401 - ctx da aba Parametros
+    consume_flash_saved_profile_msg as core_consume_flash_saved_profile_msg,
+)
+from app_core.runtime_session_state_core import (  # noqa: F401 - ctx da aba Parametros
+    get_cal_diag_last_report as core_get_cal_diag_last_report,
+    get_daily_pipeline_report as core_get_daily_pipeline_report,
+    get_governance_last_log as core_get_governance_last_log,
+    set_daily_pipeline_report as core_set_daily_pipeline_report,
+    set_governance_last_log as core_set_governance_last_log,
+    set_lv_last_report as core_set_lv_last_report,
+    set_ml_confidence_baseline_last_report as core_set_ml_confidence_baseline_last_report,
+    set_quick_maint_last_log as core_set_quick_maint_last_log,
+    set_team_state_artifact_last_report as core_set_team_state_artifact_last_report,
+    set_wf_last_report as core_set_wf_last_report,
+)
+from app_core.technical_calibration_ui_core import (  # noqa: F401 - ctx da aba Parametros
+    render_calibration_support_panels as core_render_calibration_support_panels,
+)
+from app_core.technical_fit_calibration_ui_core import (  # noqa: F401 - ctx da aba Parametros
+    render_fit_calibration_panel as core_render_fit_calibration_panel,
+)
 _render_viewer_badge(st, csv_path)
 _render_csv_upload_panel(st, csv_path)
 

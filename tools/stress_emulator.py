@@ -61,6 +61,8 @@ for c in cenarios:
         at.session_state["teamA"] = c["a"]
         at.session_state["teamB"] = c["b"]
         at.session_state["bo"] = c["bo"]
+        if c.get("modo"):
+            at.session_state["ui_page_mode"] = c["modo"]
         for k, v in (c.get("state") or {}).items():
             at.session_state[k] = v
         for k, v in (c.get("linhas") or {}).items():
@@ -105,6 +107,9 @@ def _times_reais() -> list[tuple[str, str]]:
         out.append((str(r.team), lg))
     return out
 
+
+# modos de página do app (cada um ativa um conjunto de abas diferente)
+MODOS_PAGINA = ["Completo", "Fluxo Rápido", "Mercados", "Análise"]
 
 LINHAS_RUINS = [
     {"lines_kills": "abc"},                    # texto onde espera número
@@ -153,7 +158,11 @@ def main() -> int:
         else:                      # cross-região
             (a, la), (b, lb) = rnd.sample(times, 2)
             tipo = f"cross:{la}x{lb}"
-        c = {"a": a, "b": b, "bo": rnd.choice([1, 3, 5]), "tipo": tipo}
+        # varia o MODO da página: abas diferentes ficam ativas em cada um, e
+        # "Completo" é o único que renderiza Parâmetros/Identidade — foi
+        # exatamente a lacuna que escondeu um bug de 6 semanas (19/07).
+        modo = MODOS_PAGINA[i % len(MODOS_PAGINA)]
+        c = {"a": a, "b": b, "bo": rnd.choice([1, 3, 5]), "tipo": tipo, "modo": modo}
         if args.deep:
             if i % 3 == 0:
                 c["linhas"] = dict(rnd.choice(LINHAS_RUINS))
