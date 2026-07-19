@@ -20,6 +20,8 @@ from app_core.tab_filters_core import collect_year_split_league_options, scope_h
 from app_core.tab_state_core import normalize_select_key, select_placeholder
 from app_core.tab_ui_core import render_tab_hero, render_tab_section
 
+from app_core.championship_stats_core import STATS_MARKET_CONFIG
+
 # Camada de dados/config movida p/ line_analysis_data_core (fatiamento 18/07);
 # re-exportada aqui p/ compat dos usos internos e importadores externos.
 from app_core.line_analysis_data_core import (  # noqa: F401 - re-export

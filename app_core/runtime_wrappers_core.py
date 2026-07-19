@@ -9,41 +9,26 @@ from __future__ import annotations
 
 from app_core.display_tables_core import (
     df_contract_view as core_df_contract_view,
-    display_ou_table as core_display_ou_table,
-    display_ml_totals_table as core_display_ml_totals_table,
 )
 from app_core.lines_table_core import lines_table as _lines_table_core, lines_table_with_p_ml as _lines_table_with_p_ml_core
 from app_core.lineup_state import (
-    POS_CANON as _POS_CANON,
     ensure_lineup_runtime_state as _ensure_lineup_runtime_state_impl,
     get_lineup_loaded_key as _get_lineup_loaded_key_impl,
     get_lineup_runtime_settings as _get_lineup_runtime_settings_impl,
     set_lineup_loaded_key as _set_lineup_loaded_key_impl,
-    norm_pos as _norm_pos,
-    norm_pos_ml as _norm_pos_ml,
-    parse_pct as _parse_pct,
     load_lineup_for_matchup as _load_lineup_for_matchup_impl,
     save_lineup_for_matchup as _save_lineup_for_matchup_impl,
     get_lineup_selected as _get_lineup_selected_impl,
 )
 from app_core.odds_cards_ui_core import render_odds_cards as _render_odds_cards_core
 from app_core.trace_core import (
-    build_combined_trace as core_build_combined_trace,
     coerce_feature_flag as core_coerce_feature_flag,
 )
 from mlcore.league_context import league_macro_key as shared_league_macro_key
 from mlcore.lines_engine import (
-    build_profile,
-    filter_team_games,
     matchup_expected_totals,
-    simulate_series_total,
-    total_over_prob,
-    normalize_map_mode,
-    _combine_mean,
-    _combine_sd,
-    MatchupTotals,
 )
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
 import pandas as pd
 import streamlit as st
 

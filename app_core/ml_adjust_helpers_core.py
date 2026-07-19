@@ -11,14 +11,10 @@ from app_core.fusion_core import (
     fuse_with_coherence_guard as core_fuse_with_coherence_guard,
 )
 from app_core.ml_artifact_pricing_core import (
-    mlcore_p_map_v2 as core_mlcore_p_map_v2,
     p_from_diff_points as core_p_from_diff_points,
     strength_breakdown as core_strength_breakdown,
-    team_meta_from_artifact as _team_meta_from_artifact,
 )
 from app_core.ml_league_runtime_core import (
-    MAJOR_LEAGUES as CORE_ML_MAJOR_LEAGUES,
-    canon_league_display_label as core_canon_league_display_label,
     is_marginal_league_for_ml as core_is_marginal_league_for_ml,
     league_is_excluded as core_league_is_excluded,
     ml_league_conf_band as core_ml_league_conf_band,
@@ -34,14 +30,13 @@ from app_core.ml_oos_gate_core import (
 from app_core.ml_probability_adjustments_core import (
     apply_ml_uncertainty_adjust as _apply_ml_uncertainty_adjust_core,
     apply_ml_marginal_trust_adjust as _apply_ml_marginal_trust_adjust_core,
-    apply_ml_microseg_calibration as _apply_ml_microseg_calibration_core,
 )
 from datetime import date
-from mlcore.achievements import load_achievements, team_boost_points
+from mlcore.achievements import team_boost_points
 from mlcore.artifact import MLArtifact
 from mlcore.tiers import tier_base_points, league_base_points
 from mlcore.utils import clip_prob
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional
 import math
 import streamlit as st
 
