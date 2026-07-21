@@ -224,6 +224,7 @@ from app_core.analysis_runtime_state_core import (
     resolve_active_line_texts as core_resolve_active_line_texts,
     stable_seed_from_parts as _stable_seed_from_parts,
 )
+from app_core.stats_config import flow_line_keys as _flow_line_keys
 from app_core.maintenance_runtime_core import (
     read_artifact_summary_path as core_read_artifact_summary_path,
 )
@@ -2126,12 +2127,15 @@ _line_texts = core_resolve_active_line_texts(
     flow_stage=str(flow_stage),
     saved_lines=_saved,
 )
-kills_lines = _line_texts["lines_kills"]
-towers_lines = _line_texts["lines_towers"]
-dragons_lines = _line_texts["lines_dragons"]
-barons_lines = _line_texts["lines_barons"]
-inhib_lines = _line_texts["lines_inhib"]
-time_lines = _line_texts["lines_time"]
+# line_keys vêm do registro central (ordem travada em test_flow_line_keys_registry:
+# kills, towers, dragons, barons, inhib, time) — sem literais "lines_X" aqui.
+_lk_kills, _lk_towers, _lk_dragons, _lk_barons, _lk_inhib, _lk_time = _flow_line_keys()
+kills_lines = _line_texts[_lk_kills]
+towers_lines = _line_texts[_lk_towers]
+dragons_lines = _line_texts[_lk_dragons]
+barons_lines = _line_texts[_lk_barons]
+inhib_lines = _line_texts[_lk_inhib]
+time_lines = _line_texts[_lk_time]
 
 teamA_kills_line_text = _line_texts["teamA_kills_line_text"]
 teamB_kills_line_text = _line_texts["teamB_kills_line_text"]
