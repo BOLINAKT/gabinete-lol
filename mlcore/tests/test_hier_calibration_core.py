@@ -1,6 +1,53 @@
+import math
 import unittest
 
-from app_core.hier_calibration_core import apply_hier_calibration_live
+from app_core.hier_calibration_core import (
+    _node_n,
+    _node_se,
+    _node_stats,
+    _sh,
+    apply_hier_calibration_live,
+)
+
+
+class HierHelperTests(unittest.TestCase):
+    """Helpers extraídos de apply_hier_calibration_live (21/07, era nested;
+    hiercal_golden provou saída idêntica). Agora testáveis isolados."""
+
+    def test_node_n_pega_primeiro_positivo(self):
+        self.assertEqual(_node_n({"wf_n": 300, "n": 5}), 300.0)  # wf_n primeiro
+        self.assertEqual(_node_n({"n": 42}), 42.0)
+        self.assertEqual(_node_n({}), 0.0)
+        self.assertEqual(_node_n("lixo"), 0.0)
+
+    def test_node_se_direto_ou_derivado(self):
+        self.assertEqual(_node_se({"score_se": 0.5}, 4.0), 0.5)           # direto
+        self.assertAlmostEqual(_node_se({"score_var": 0.25}, 4.0), 0.5)   # de var
+        # sem se/var/n: cai no piso max(0.8, sigma0)
+        self.assertEqual(_node_se({}, 4.0), 4.0)
+        # com n: sigma0/sqrt(n)
+        self.assertAlmostEqual(_node_se({"wf_n": 100}, 4.0), 0.4, places=9)
+
+    def test_sh_shrink_por_amostra(self):
+        self.assertAlmostEqual(_sh(100, 100), 0.5, places=9)  # n==k -> 0.5
+        self.assertGreater(_sh(400, 100), _sh(100, 100))       # mais n -> menos shrink
+        self.assertEqual(_sh(0, 100), 0.0)
+
+    def test_node_stats_significancia_e_peso(self):
+        _KW = dict(k_shrink=120.0, sigma0=4.0, z_gate=1.96, fdr_q_alpha=0.10)
+        # viés forte, amostra grande, z alto -> aplicado com peso positivo
+        forte = _node_stats({"score_bias": 2.0, "wf_n": 300, "score_z": 3.0}, **_KW)
+        self.assertGreater(forte["weight"], 0.0)
+        self.assertGreater(abs(forte["bias_adj"]), 0.0)
+        self.assertTrue(forte["fdr_reject"])
+        # z baixo -> sig_mult encolhe o viés ajustado
+        fraco = _node_stats({"score_bias": 2.0, "wf_n": 300, "score_z": 0.3}, **_KW)
+        self.assertLess(abs(fraco["bias_adj"]), abs(forte["bias_adj"]))
+
+    def test_node_stats_campos_finitos(self):
+        st = _node_stats({"score_bias": 1.0, "wf_n": 50}, k_shrink=120.0, sigma0=4.0, z_gate=1.96, fdr_q_alpha=0.10)
+        for k in ("bias", "bias_adj", "n", "se", "var", "z", "weight", "sig_mult"):
+            self.assertTrue(math.isfinite(st[k]), f"{k} não finito")
 
 
 class TestHierCalibrationCore(unittest.TestCase):
