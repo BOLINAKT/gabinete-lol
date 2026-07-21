@@ -117,3 +117,32 @@ já tem destino — o alívio começa antes da migração terminar.
 - A regra: nada se move sem rede provando idêntico.
 
 Reaja em cima: o que está certo, o que você quer diferente, e por onde começar.
+
+---
+
+## STATUS (atualizado 21/07, sessão autônoma)
+
+**Passo 1 (config / fonte única) — FEITO na parte segura:**
+- ✅ **Mercados** são fonte única de verdade. Eliminada a última cópia escondida
+  (`FRIENDLY_MARKET_CONFIG` no perfil do oponente, que tinha Dragões/Barões à
+  mão). Varredura do código inteiro confirmou: nenhuma outra cópia. Adicionar/
+  remover mercado = **1 lugar** (`STATS_MARKET_CONFIG`). Commit b2019e6.
+- ✅ **Limiares** (`sc_th_*`) derivam do registro (eram literais em app_state).
+  Commit 68735eb.
+- ✅ Dedup real: `_node_base_stats` comum entre `_node_stats`/`_pair_stats` no
+  hier_calibration. Commit 35d3cf8.
+
+**Onde parei e POR QUÊ (o que precisa de VOCÊ):**
+- Os outros "duplicados" (`_safe_logit`, `_safe_sigmoid`, `_norm_team_key` em
+  2-3 lugares) são **VARIANTES**, não cópias — assinaturas/corpos diferentes.
+  Consolidá-los mudaria comportamento (ex.: o matching de time do `resumo`
+  trata mojibake, os outros não). **Precisa da sua decisão** sobre qual é a
+  canônica antes de unificar. Não mexi.
+- **Passos 2-5** (estado, domínio, UI, espinha `plays_app`): os que sobram de
+  peso são UI e a espinha `globals→ctx`. A prova deles é **visual, sua** — o
+  E2E prova o caminho feliz, mas quem pega o problema é você clicando (lição do
+  microseg). **Esperam por você.**
+
+**Próximo passo quando você voltar:** decidir a canônica dos helpers-variante
+(rápido) e/ou começar o passo 2 (estado) OU o fatiamento de UI com validação
+visual. A base já está bem mais arrumada: adicionar mercado/limiar não dói mais.
