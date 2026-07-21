@@ -493,6 +493,48 @@ def _recenter_mu(st: TeamState, *, prior_mu: float, shrink: float) -> float:
     return float(prev - st.mu)
 
 
+def _resolve_scoped_param(
+    global_v: float,
+    by_league: Dict[str, float],
+    by_patch: Dict[str, float],
+    league_v: str,
+    patch_v: str,
+) -> float:
+    """Resolve um parâmetro global -> override por liga -> mistura por patch.
+
+    Extraído de build_team_state_artifact (era nested, 19/07 refactor guiado por
+    equivalence_check). Puro: liga sobrescreve o global; patch mistura 65/35 por
+    cima. Chamado ~10x com escopos diferentes (info_scale, quality_k, qwl_*)."""
+    out_v = float(global_v)
+    lgk = _norm_upper_key(league_v)
+    ptk = _norm_upper_key(patch_v)
+    if lgk and lgk in by_league:
+        out_v = float(by_league[lgk])
+    if ptk and ptk in by_patch:
+        out_v = float((0.65 * out_v) + (0.35 * float(by_patch[ptk])))
+    return float(out_v)
+
+
+def _resolve_effective_params(
+    specs: Dict[str, Tuple[float, Dict[str, float], Dict[str, float], Optional[float], Optional[float]]],
+    league: str,
+    patch_k: str,
+) -> Dict[str, float]:
+    """Resolve TODOS os params efetivos (por liga/patch) de um jogo de uma vez.
+
+    Extraído de build_team_state_artifact (era ~80 linhas de `x_eff =
+    clip(resolve(...))` repetidas no loop). Data-driven: cada spec é
+    (global, by_league, by_patch, lo, hi); lo=None -> sem clip. Puro; a rede
+    de equivalência (equivalence_check) prova mu/sigma idênticos em 856 times."""
+    out: Dict[str, float] = {}
+    for name, (global_v, by_league, by_patch, lo, hi) in specs.items():
+        v = _resolve_scoped_param(float(global_v), by_league, by_patch, league, patch_k)
+        if lo is not None and hi is not None:
+            v = _clip(v, float(lo), float(hi))
+        out[name] = float(v)
+    return out
+
+
 def build_team_state_artifact(
     csv_paths: Iterable[str],
     *,
@@ -759,15 +801,18 @@ def build_team_state_artifact(
     map_qwl_opp_ctx_lg = _coerce_float_map(qwl_opponent_context_mix_by_league)
     map_qwl_opp_ctx_patch = _coerce_float_map(qwl_opponent_context_mix_by_patch)
 
-    def _resolve_param(global_v: float, by_league: Dict[str, float], by_patch: Dict[str, float], league_v: str, patch_v: str) -> float:
-        out_v = float(global_v)
-        lgk = _norm_upper_key(league_v)
-        ptk = _norm_upper_key(patch_v)
-        if lgk and lgk in by_league:
-            out_v = float(by_league[lgk])
-        if ptk and ptk in by_patch:
-            out_v = float((0.65 * out_v) + (0.35 * float(by_patch[ptk])))
-        return float(out_v)
+    # Specs dos params efetivos por jogo: nome -> (global, by_league, by_patch,
+    # lo, hi). lo/hi None = sem clip. Resolvido por _resolve_effective_params
+    # (mantém os MESMOS limites históricos por escopo).
+    _scoped_param_specs: Dict[str, Tuple[float, Dict[str, float], Dict[str, float], Optional[float], Optional[float]]] = {
+        "bayes_info_scale": (float(bayes_info_scale), map_bayes_lg, map_bayes_patch, None, None),
+        "quality_k_boost": (float(quality_k_boost), map_quality_lg, map_quality_patch, None, None),
+        "qwl_surplus_mix": (float(qwl_surplus_mix), map_qwl_mix_lg, map_qwl_mix_patch, 0.0, 1.0),
+        "qwl_throw_weight": (float(qwl_throw_weight), map_qwl_throw_lg, map_qwl_throw_patch, 0.60, 1.80),
+        "qwl_comeback_weight": (float(qwl_comeback_weight), map_qwl_comeback_lg, map_qwl_comeback_patch, 0.30, 1.20),
+        "qwl_phase_dynamic_strength": (float(qwl_phase_dynamic_strength), map_qwl_phase_dyn_lg, map_qwl_phase_dyn_patch, 0.0, 0.80),
+        "qwl_opponent_context_mix": (float(qwl_opponent_context_mix), map_qwl_opp_ctx_lg, map_qwl_opp_ctx_patch, 0.0, 1.0),
+    }
 
     # Incremental is only safe for append-only updates. If a new unseen game is older than the
     # seed max_date, rebuild from scratch to preserve chronological state updates.
@@ -901,89 +946,14 @@ def build_team_state_artifact(
         league = str(r.league or "").strip()
         split = str(r.split or "").strip()
         playoffs = bool(r.playoffs) if getattr(r, "playoffs", None) is not None else None
-        bayes_info_scale_eff = float(
-            _resolve_param(
-                float(bayes_info_scale),
-                map_bayes_lg,
-                map_bayes_patch,
-                str(league),
-                str(patch_k),
-            )
-        )
-        quality_k_boost_eff = float(
-            _resolve_param(
-                float(quality_k_boost),
-                map_quality_lg,
-                map_quality_patch,
-                str(league),
-                str(patch_k),
-            )
-        )
-        qwl_surplus_mix_eff = float(
-            _clip(
-                _resolve_param(
-                    float(qwl_surplus_mix),
-                    map_qwl_mix_lg,
-                    map_qwl_mix_patch,
-                    str(league),
-                    str(patch_k),
-                ),
-                0.0,
-                1.0,
-            )
-        )
-        qwl_throw_weight_eff = float(
-            _clip(
-                _resolve_param(
-                    float(qwl_throw_weight),
-                    map_qwl_throw_lg,
-                    map_qwl_throw_patch,
-                    str(league),
-                    str(patch_k),
-                ),
-                0.60,
-                1.80,
-            )
-        )
-        qwl_comeback_weight_eff = float(
-            _clip(
-                _resolve_param(
-                    float(qwl_comeback_weight),
-                    map_qwl_comeback_lg,
-                    map_qwl_comeback_patch,
-                    str(league),
-                    str(patch_k),
-                ),
-                0.30,
-                1.20,
-            )
-        )
-        qwl_phase_dynamic_strength_eff = float(
-            _clip(
-                _resolve_param(
-                    float(qwl_phase_dynamic_strength),
-                    map_qwl_phase_dyn_lg,
-                    map_qwl_phase_dyn_patch,
-                    str(league),
-                    str(patch_k),
-                ),
-                0.0,
-                0.80,
-            )
-        )
-        qwl_opponent_context_mix_eff = float(
-            _clip(
-                _resolve_param(
-                    float(qwl_opponent_context_mix),
-                    map_qwl_opp_ctx_lg,
-                    map_qwl_opp_ctx_patch,
-                    str(league),
-                    str(patch_k),
-                ),
-                0.0,
-                1.0,
-            )
-        )
+        _eff = _resolve_effective_params(_scoped_param_specs, str(league), str(patch_k))
+        bayes_info_scale_eff = _eff["bayes_info_scale"]
+        quality_k_boost_eff = _eff["quality_k_boost"]
+        qwl_surplus_mix_eff = _eff["qwl_surplus_mix"]
+        qwl_throw_weight_eff = _eff["qwl_throw_weight"]
+        qwl_comeback_weight_eff = _eff["qwl_comeback_weight"]
+        qwl_phase_dynamic_strength_eff = _eff["qwl_phase_dynamic_strength"]
+        qwl_opponent_context_mix_eff = _eff["qwl_opponent_context_mix"]
 
         sb = _get_or_create_team(states, blue_name)
         sr = _get_or_create_team(states, red_name)

@@ -10,6 +10,8 @@ import pandas as pd
 from mlcore.state_team_artifact import (
     _days_between_iso,
     _file_sig_info,
+    _resolve_effective_params,
+    _resolve_scoped_param,
     _safe_iso_date,
     _same_source_path_order,
     _team_state_from_dict,
@@ -17,6 +19,54 @@ from mlcore.state_team_artifact import (
     load_team_state_artifact,
     save_team_state_artifact,
 )
+
+
+class ResolveScopedParamTests(unittest.TestCase):
+    """Helper extraído do build (19/07): global -> override liga -> mistura patch.
+    Antes era nested (intestável); a rede de equivalência provou 856 times iguais."""
+
+    def test_sem_override_devolve_global(self):
+        self.assertEqual(_resolve_scoped_param(1.0, {}, {}, "LCK", "14.1"), 1.0)
+
+    def test_liga_sobrescreve_global(self):
+        v = _resolve_scoped_param(1.0, {"LCK": 2.0}, {}, "LCK", "14.1")
+        self.assertEqual(v, 2.0)
+
+    def test_patch_mistura_65_35_por_cima(self):
+        # global 1.0 (sem liga), patch 3.0 -> 0.65*1 + 0.35*3 = 1.70
+        v = _resolve_scoped_param(1.0, {}, {"14.1": 3.0}, "LCK", "14.1")
+        self.assertAlmostEqual(v, 1.70, places=9)
+
+    def test_liga_e_patch_juntos(self):
+        # liga leva a base pra 2.0, depois patch mistura: 0.65*2 + 0.35*4 = 2.70
+        v = _resolve_scoped_param(1.0, {"LCK": 2.0}, {"14.1": 4.0}, "LCK", "14.1")
+        self.assertAlmostEqual(v, 2.70, places=9)
+
+    def test_chave_normaliza_maiuscula(self):
+        # a chave do map é casada via _norm_upper_key
+        v = _resolve_scoped_param(1.0, {"LCK": 2.0}, {}, "lck", "14.1")
+        self.assertEqual(v, 2.0)
+
+
+class ResolveEffectiveParamsTests(unittest.TestCase):
+    """Resolve todos os params efetivos de um jogo via specs (global,by_lg,by_pt,lo,hi)."""
+
+    def test_aplica_clip_quando_ha_limites(self):
+        specs = {"x": (5.0, {}, {}, 0.0, 1.0)}  # global 5 mas clip [0,1]
+        self.assertEqual(_resolve_effective_params(specs, "LCK", "14.1")["x"], 1.0)
+
+    def test_sem_limites_nao_clipa(self):
+        specs = {"x": (5.0, {}, {}, None, None)}
+        self.assertEqual(_resolve_effective_params(specs, "LCK", "14.1")["x"], 5.0)
+
+    def test_resolve_multiplos_de_uma_vez(self):
+        specs = {
+            "a": (1.0, {"LCK": 2.0}, {}, None, None),
+            "b": (0.5, {}, {"14.1": 0.9}, 0.0, 1.0),
+        }
+        out = _resolve_effective_params(specs, "LCK", "14.1")
+        self.assertEqual(out["a"], 2.0)
+        self.assertAlmostEqual(out["b"], 0.65 * 0.5 + 0.35 * 0.9, places=9)
 
 
 def _games_df(rows: list[tuple[str, str, str, str, int, str, str]]) -> pd.DataFrame:
