@@ -515,6 +515,32 @@ def _resolve_scoped_param(
     return float(out_v)
 
 
+def _glicko_lite_p_blue(*, mu_b: float, mu_r: float, sigma_b: float, sigma_r: float) -> Tuple[float, float, float, float]:
+    """Fatores Glicko-lite do jogo: retorna (g_b, g_r, denom, p_blue).
+
+    Extraído do loop de build_team_state_artifact (20/07, refactor supervisionado
+    guiado por equivalence_check). É o CORE de cada jogo — a probabilidade que
+    vira o erro que atualiza o estado. g_b/g_r encolhem a sensibilidade conforme
+    o adversário é incerto e ALIMENTAM a atualização de precisão/mu depois (por
+    isso são devolvidos, não só p_blue); denom normaliza pela variância conjunta."""
+    g_r = float(1.0 / math.sqrt(1.0 + (3.0 * (float(sigma_r) ** 2) / (math.pi ** 2))))
+    g_b = float(1.0 / math.sqrt(1.0 + (3.0 * (float(sigma_b) ** 2) / (math.pi ** 2))))
+    denom = float(max(1e-6, math.sqrt(1.0 + (float(sigma_b) ** 2) + (float(sigma_r) ** 2))))
+    p_blue = float(_sigmoid(((float(mu_b) - float(mu_r)) / denom) * ((g_b + g_r) * 0.5)))
+    return g_b, g_r, denom, p_blue
+
+
+def _effective_k(*, base_k: float, league: str, sigma_b: float, sigma_r: float, base_sigma: float) -> float:
+    """Taxa de aprendizado efetiva do jogo (quanto o resultado move o estado).
+
+    Extraído do loop. Ligas mais fortes movem mais (league_k_multiplier); alta
+    incerteza combinada também permite passos maiores (unc_mul). Limitado a
+    [0.04, 0.55]. Puro; equivalence_check prova 856 times idênticos."""
+    lm = float(_league_k_multiplier(league))
+    unc_mul = float(0.85 + 0.35 * min(1.0, (float(sigma_b) + float(sigma_r)) / max(1e-6, (2.0 * float(base_sigma)))))
+    return float(max(0.04, min(0.55, float(base_k) * lm * unc_mul)))
+
+
 def _resolve_effective_params(
     specs: Dict[str, Tuple[float, Dict[str, float], Dict[str, float], Optional[float], Optional[float]]],
     league: str,
@@ -1024,16 +1050,11 @@ def build_team_state_artifact(
                         roster_mu_recenter_events += 1
 
         # Glicko-lite: opponent uncertainty modulates sensitivity.
-        g_r = float(1.0 / math.sqrt(1.0 + (3.0 * (float(sr.sigma) ** 2) / (math.pi ** 2))))
-        g_b = float(1.0 / math.sqrt(1.0 + (3.0 * (float(sb.sigma) ** 2) / (math.pi ** 2))))
-        denom = float(max(1e-6, math.sqrt(1.0 + (float(sb.sigma) ** 2) + (float(sr.sigma) ** 2))))
-        p_blue = float(_sigmoid(((float(sb.mu) - float(sr.mu)) / denom) * ((g_b + g_r) * 0.5)))
+        g_b, g_r, denom, p_blue = _glicko_lite_p_blue(mu_b=float(sb.mu), mu_r=float(sr.mu), sigma_b=float(sb.sigma), sigma_r=float(sr.sigma))
         err = float(y - p_blue)
 
         # Stronger leagues move state a bit more; high uncertainty also allows larger moves.
-        lm = float(_league_k_multiplier(league))
-        unc_mul = float(0.85 + 0.35 * min(1.0, (float(sb.sigma) + float(sr.sigma)) / max(1e-6, (2.0 * float(base_sigma)))))
-        k_eff = float(max(0.04, min(0.55, float(base_k) * lm * unc_mul)))
+        k_eff = _effective_k(base_k=float(base_k), league=league, sigma_b=float(sb.sigma), sigma_r=float(sr.sigma), base_sigma=float(base_sigma))
         surprise = float(abs(err))
         q_blue, q_tempo_term, q_conversion_term, q_terms = _game_quality_blue(
             r,

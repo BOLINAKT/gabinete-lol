@@ -7,9 +7,13 @@ from unittest.mock import patch
 
 import pandas as pd
 
+import math
+
 from mlcore.state_team_artifact import (
     _days_between_iso,
+    _effective_k,
     _file_sig_info,
+    _glicko_lite_p_blue,
     _resolve_effective_params,
     _resolve_scoped_param,
     _safe_iso_date,
@@ -19,6 +23,59 @@ from mlcore.state_team_artifact import (
     load_team_state_artifact,
     save_team_state_artifact,
 )
+
+
+class GlickoLitePBlueTests(unittest.TestCase):
+    """CORE de cada jogo (extraído do loop, 20/07, provado por equivalence_check):
+    P(blue) via diferença de mu atenuada pela incerteza. Retorna (g_b,g_r,denom,p)."""
+
+    def test_forcas_iguais_da_meio(self):
+        _, _, _, p = _glicko_lite_p_blue(mu_b=0.0, mu_r=0.0, sigma_b=0.5, sigma_r=0.5)
+        self.assertAlmostEqual(p, 0.5, places=9)
+
+    def test_mu_maior_favorece_blue(self):
+        _, _, _, p = _glicko_lite_p_blue(mu_b=1.0, mu_r=-1.0, sigma_b=0.5, sigma_r=0.5)
+        self.assertGreater(p, 0.5)
+
+    def test_simetria_troca_de_lado(self):
+        _, _, _, p_ab = _glicko_lite_p_blue(mu_b=0.6, mu_r=0.2, sigma_b=0.4, sigma_r=0.7)
+        _, _, _, p_ba = _glicko_lite_p_blue(mu_b=0.2, mu_r=0.6, sigma_b=0.7, sigma_r=0.4)
+        self.assertAlmostEqual(p_ab + p_ba, 1.0, places=9)
+
+    def test_g_factor_encolhe_com_sigma(self):
+        # adversário mais incerto (sigma alto) -> g menor -> favorito puxa menos
+        _, _, _, p_certo = _glicko_lite_p_blue(mu_b=1.0, mu_r=0.0, sigma_b=0.3, sigma_r=0.3)
+        _, _, _, p_incerto = _glicko_lite_p_blue(mu_b=1.0, mu_r=0.0, sigma_b=0.3, sigma_r=2.0)
+        self.assertLess(p_incerto, p_certo)
+
+    def test_valores_intermediarios_finitos(self):
+        g_b, g_r, denom, p = _glicko_lite_p_blue(mu_b=0.3, mu_r=-0.1, sigma_b=0.8, sigma_r=1.2)
+        for v in (g_b, g_r, denom, p):
+            self.assertTrue(math.isfinite(v))
+        self.assertGreater(denom, 1.0)  # sqrt(1 + sigmas^2)
+
+
+class EffectiveKTests(unittest.TestCase):
+    """Taxa de aprendizado por jogo (extraída do loop)."""
+
+    def test_dentro_dos_limites(self):
+        k = _effective_k(base_k=0.22, league="LCK", sigma_b=1.0, sigma_r=1.0, base_sigma=1.0)
+        self.assertGreaterEqual(k, 0.04)
+        self.assertLessEqual(k, 0.55)
+
+    def test_mais_incerteza_move_mais(self):
+        k_baixo = _effective_k(base_k=0.22, league="LCK", sigma_b=0.3, sigma_r=0.3, base_sigma=1.0)
+        k_alto = _effective_k(base_k=0.22, league="LCK", sigma_b=2.0, sigma_r=2.0, base_sigma=1.0)
+        self.assertGreater(k_alto, k_baixo)
+
+    def test_clip_no_teto(self):
+        # base_k absurdo é limitado a 0.55
+        k = _effective_k(base_k=99.0, league="LCK", sigma_b=1.0, sigma_r=1.0, base_sigma=1.0)
+        self.assertEqual(k, 0.55)
+
+    def test_clip_no_piso(self):
+        k = _effective_k(base_k=0.0, league="LCK", sigma_b=0.1, sigma_r=0.1, base_sigma=1.0)
+        self.assertEqual(k, 0.04)
 
 
 class ResolveScopedParamTests(unittest.TestCase):
