@@ -10,6 +10,10 @@ import pandas as pd
 import math
 
 from mlcore.state_team_artifact import (
+    TeamState,
+    _apply_league_switch_recenter,
+    _apply_patch_switch_recenter,
+    _apply_roster_recenter,
     _days_between_iso,
     _effective_k,
     _file_sig_info,
@@ -23,6 +27,79 @@ from mlcore.state_team_artifact import (
     load_team_state_artifact,
     save_team_state_artifact,
 )
+
+
+class ApplyPatchSwitchRecenterTests(unittest.TestCase):
+    """Regra stateful extraída do loop (20/07, provada por equivalence_check):
+    ao trocar de patch, o mu é puxado para o prior da liga."""
+
+    def test_sem_troca_nao_faz_nada(self):
+        st = TeamState(team="A", key="a", mu=1.0)
+        sw, rec = _apply_patch_switch_recenter(st, patch_switched=False, patch_mu_recenter=0.11, patch_sigma_mult=1.0, league_prior_mu=0.0)
+        self.assertEqual((sw, rec), (0, 0))
+        self.assertEqual(st.mu, 1.0)
+
+    def test_troca_recentra_mu_para_o_prior(self):
+        st = TeamState(team="A", key="a", mu=1.0)
+        sw, rec = _apply_patch_switch_recenter(st, patch_switched=True, patch_mu_recenter=0.11, patch_sigma_mult=1.0, league_prior_mu=0.0)
+        self.assertEqual((sw, rec), (1, 1))
+        self.assertLess(st.mu, 1.0)  # puxou pra baixo (prior=0)
+        self.assertGreater(st.mu, 0.0)
+
+    def test_shrink_zero_conta_switch_mas_nao_recentra(self):
+        st = TeamState(team="A", key="a", mu=1.0)
+        sw, rec = _apply_patch_switch_recenter(st, patch_switched=True, patch_mu_recenter=0.0, patch_sigma_mult=1.0, league_prior_mu=0.0)
+        self.assertEqual((sw, rec), (1, 0))
+        self.assertEqual(st.mu, 1.0)
+
+
+class ApplyLeagueSwitchRecenterTests(unittest.TestCase):
+    def test_mesma_liga_nao_recentra(self):
+        st = TeamState(team="A", key="a", mu=1.0, last_league="LCK")
+        inc = _apply_league_switch_recenter(st, league="LCK", league_switch_mu_recenter=0.12, league_prior_mu=0.0)
+        self.assertEqual(inc, 0)
+        self.assertEqual(st.mu, 1.0)
+
+    def test_troca_de_liga_recentra(self):
+        st = TeamState(team="A", key="a", mu=1.0, last_league="LPL")
+        inc = _apply_league_switch_recenter(st, league="LCK", league_switch_mu_recenter=0.12, league_prior_mu=0.0)
+        self.assertEqual(inc, 1)
+        self.assertLess(st.mu, 1.0)
+
+    def test_sem_last_league_nao_recentra(self):
+        st = TeamState(team="A", key="a", mu=1.0, last_league="")
+        inc = _apply_league_switch_recenter(st, league="LCK", league_switch_mu_recenter=0.12, league_prior_mu=0.0)
+        self.assertEqual(inc, 0)
+
+
+class ApplyRosterRecenterTests(unittest.TestCase):
+    _KW = dict(roster_mu_recenter=0.28, roster_cont_hard_reset=0.25,
+               roster_hard_reset_extra_sigma=0.18, max_sigma=2.25, league_prior_mu=0.0)
+
+    def test_cc_none_nao_conta(self):
+        st = TeamState(team="A", key="a", mu=1.0)
+        self.assertEqual(_apply_roster_recenter(st, None, **self._KW), (0, 0, 0, 0))
+
+    def test_roster_igual_conta_evento_sem_mudanca(self):
+        st = TeamState(team="A", key="a", mu=1.0)
+        ev, ewc, hard, mu = _apply_roster_recenter(st, 1.0, **self._KW)
+        self.assertEqual((ev, ewc, hard, mu), (1, 0, 0, 0))
+        self.assertEqual(st.mu, 1.0)
+
+    def test_mudanca_parcial_recentra(self):
+        st = TeamState(team="A", key="a", mu=1.0, gp=40)
+        ev, ewc, hard, mu = _apply_roster_recenter(st, 0.6, **self._KW)
+        self.assertEqual((ev, ewc, hard), (1, 1, 0))
+        self.assertEqual(mu, 1)
+        self.assertLess(st.mu, 1.0)
+
+    def test_troca_total_e_hard_reset(self):
+        # cc <= roster_cont_hard_reset (0.25) -> hard reset + infla sigma
+        st = TeamState(team="A", key="a", mu=1.0, sigma=1.0, gp=40)
+        sigma0 = st.sigma
+        ev, ewc, hard, mu = _apply_roster_recenter(st, 0.10, **self._KW)
+        self.assertEqual((ev, ewc, hard, mu), (1, 1, 1, 1))
+        self.assertGreater(st.sigma, sigma0)  # sigma inflado no hard reset
 
 
 class GlickoLitePBlueTests(unittest.TestCase):

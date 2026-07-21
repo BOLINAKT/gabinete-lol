@@ -561,6 +561,79 @@ def _resolve_effective_params(
     return out
 
 
+def _apply_patch_switch_recenter(
+    st: "TeamState",
+    *,
+    patch_switched: bool,
+    patch_mu_recenter: float,
+    patch_sigma_mult: float,
+    league_prior_mu: float,
+) -> Tuple[int, int]:
+    """Recentra o mu do time ao trocar de patch. Retorna (switches, recenters).
+
+    Extraído do loop de build (20/07, blocos stateful; equivalence_check prova
+    856 times). Muta `st` via _recenter_mu — a ramificação sai do build."""
+    if not bool(patch_switched):
+        return 0, 0
+    sh = float(_clip(float(patch_mu_recenter) * float(patch_sigma_mult), 0.0, 0.65))
+    if sh > 0.0:
+        _recenter_mu(st, prior_mu=float(league_prior_mu), shrink=sh)
+        return 1, 1
+    return 1, 0
+
+
+def _apply_league_switch_recenter(
+    st: "TeamState",
+    *,
+    league: str,
+    league_switch_mu_recenter: float,
+    league_prior_mu: float,
+) -> int:
+    """Recentra o mu ao time mudar de liga. Retorna o incremento do contador."""
+    if not (st.last_league and league and str(st.last_league).strip().upper() != str(league).strip().upper()):
+        return 0
+    sh = float(_clip(float(league_switch_mu_recenter), 0.0, 0.55))
+    if sh > 0.0:
+        _recenter_mu(st, prior_mu=float(league_prior_mu), shrink=sh)
+        return 1
+    return 0
+
+
+def _apply_roster_recenter(
+    st: "TeamState",
+    cc: Optional[float],
+    *,
+    roster_mu_recenter: float,
+    roster_cont_hard_reset: float,
+    roster_hard_reset_extra_sigma: float,
+    max_sigma: float,
+    league_prior_mu: float,
+) -> Tuple[int, int, int, int]:
+    """Recentra mu / infla sigma conforme a mudança de roster (continuidade cc).
+
+    Retorna (events, events_with_change, hard_reset, mu_recenter). cc é a
+    continuidade do lineup (1.0 = igual). Muta `st`."""
+    if cc is None:
+        return 0, 0, 0, 0
+    if float(cc) >= 0.999:
+        return 1, 0, 0, 0
+    hard = 0
+    murec = 0
+    _miss = float(max(0.0, 1.0 - float(cc)))
+    _gp_mul = float(1.0 + min(0.35, float(max(0.0, _f(st.gp, 0.0))) / 80.0))
+    _ro_sh = float(_clip(float(roster_mu_recenter) * _miss * _gp_mul, 0.0, 0.80))
+    if float(cc) <= float(roster_cont_hard_reset):
+        _ro_sh = float(max(_ro_sh, _clip(float(roster_mu_recenter) + 0.20, 0.0, 0.85)))
+        _extra = float(max(0.0, float(roster_hard_reset_extra_sigma)))
+        if _extra > 0.0:
+            st.sigma = float(min(float(max_sigma), math.sqrt(float(st.sigma) ** 2 + _extra * _extra)))
+        hard = 1
+    if _ro_sh > 0.0:
+        _recenter_mu(st, prior_mu=float(league_prior_mu), shrink=_ro_sh)
+        murec = 1
+    return 1, 1, hard, murec
+
+
 def build_team_state_artifact(
     csv_paths: Iterable[str],
     *,
@@ -1004,50 +1077,41 @@ def build_team_state_artifact(
             patch_sigma_mult=float(patch_sigma_mult),
             max_sigma=float(max_sigma),
         )
-        if bool((reg_b or {}).get("patch_switched", False)):
-            patch_switches += 1
-            _patch_sh = float(_clip(float(patch_mu_recenter) * float(patch_sigma_mult), 0.0, 0.65))
-            if _patch_sh > 0.0:
-                _recenter_mu(sb, prior_mu=float(league_prior_mu), shrink=_patch_sh)
-                patch_mu_recenter_events += 1
-        if bool((reg_r or {}).get("patch_switched", False)):
-            patch_switches += 1
-            _patch_sh = float(_clip(float(patch_mu_recenter) * float(patch_sigma_mult), 0.0, 0.65))
-            if _patch_sh > 0.0:
-                _recenter_mu(sr, prior_mu=float(league_prior_mu), shrink=_patch_sh)
-                patch_mu_recenter_events += 1
+        for _st, _reg in ((sb, reg_b), (sr, reg_r)):
+            _ps, _pr = _apply_patch_switch_recenter(
+                _st,
+                patch_switched=bool((_reg or {}).get("patch_switched", False)),
+                patch_mu_recenter=float(patch_mu_recenter),
+                patch_sigma_mult=float(patch_sigma_mult),
+                league_prior_mu=float(league_prior_mu),
+            )
+            patch_switches += _ps
+            patch_mu_recenter_events += _pr
 
-        if sb.last_league and league and str(sb.last_league).strip().upper() != str(league).strip().upper():
-            _ls_sh = float(_clip(float(league_switch_mu_recenter), 0.0, 0.55))
-            if _ls_sh > 0.0:
-                _recenter_mu(sb, prior_mu=float(league_prior_mu), shrink=_ls_sh)
-                league_switch_recenter_events += 1
-        if sr.last_league and league and str(sr.last_league).strip().upper() != str(league).strip().upper():
-            _ls_sh = float(_clip(float(league_switch_mu_recenter), 0.0, 0.55))
-            if _ls_sh > 0.0:
-                _recenter_mu(sr, prior_mu=float(league_prior_mu), shrink=_ls_sh)
-                league_switch_recenter_events += 1
+        for _st in (sb, sr):
+            league_switch_recenter_events += _apply_league_switch_recenter(
+                _st,
+                league=league,
+                league_switch_mu_recenter=float(league_switch_mu_recenter),
+                league_prior_mu=float(league_prior_mu),
+            )
 
         blue_lineup, red_lineup = lineup_by_game.get(gid, ({}, {}))
         ctb = _inflate_sigma_for_roster(sb, cur_lineup=blue_lineup, roster_sigma_bump=float(roster_sigma_bump), max_sigma=float(max_sigma))
         ctr = _inflate_sigma_for_roster(sr, cur_lineup=red_lineup, roster_sigma_bump=float(roster_sigma_bump), max_sigma=float(max_sigma))
         for _st, cc in ((sb, ctb), (sr, ctr)):
-            if cc is not None:
-                roster_events += 1
-                if float(cc) < 0.999:
-                    roster_events_with_change += 1
-                    _miss = float(max(0.0, 1.0 - float(cc)))
-                    _gp_mul = float(1.0 + min(0.35, float(max(0.0, _f(_st.gp, 0.0))) / 80.0))
-                    _ro_sh = float(_clip(float(roster_mu_recenter) * _miss * _gp_mul, 0.0, 0.80))
-                    if float(cc) <= float(roster_cont_hard_reset):
-                        _ro_sh = float(max(_ro_sh, _clip(float(roster_mu_recenter) + 0.20, 0.0, 0.85)))
-                        _extra = float(max(0.0, float(roster_hard_reset_extra_sigma)))
-                        if _extra > 0.0:
-                            _st.sigma = float(min(float(max_sigma), math.sqrt(float(_st.sigma) ** 2 + _extra * _extra)))
-                        roster_hard_reset_events += 1
-                    if _ro_sh > 0.0:
-                        _recenter_mu(_st, prior_mu=float(league_prior_mu), shrink=_ro_sh)
-                        roster_mu_recenter_events += 1
+            _re, _rewc, _rhard, _rmu = _apply_roster_recenter(
+                _st, cc,
+                roster_mu_recenter=float(roster_mu_recenter),
+                roster_cont_hard_reset=float(roster_cont_hard_reset),
+                roster_hard_reset_extra_sigma=float(roster_hard_reset_extra_sigma),
+                max_sigma=float(max_sigma),
+                league_prior_mu=float(league_prior_mu),
+            )
+            roster_events += _re
+            roster_events_with_change += _rewc
+            roster_hard_reset_events += _rhard
+            roster_mu_recenter_events += _rmu
 
         # Glicko-lite: opponent uncertainty modulates sensitivity.
         g_b, g_r, denom, p_blue = _glicko_lite_p_blue(mu_b=float(sb.mu), mu_r=float(sr.mu), sigma_b=float(sb.sigma), sigma_r=float(sr.sigma))
