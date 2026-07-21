@@ -19,7 +19,11 @@ from typing import Any, Mapping, Optional
 
 import pandas as pd
 
-from app_core.champion_knowledge_core import load_champion_knowledge_registry
+from app_core.champions_shared_core import (  # noqa: F401  (re-export p/ uso interno)
+    _champ_icon_uri,
+    _get_draft_rows,
+    _get_registry,
+)
 from app_core.comp_archetype_core import build_comp_profile, compare_comp_profiles
 from app_core.live_between_maps_core import resolve_p_base
 from app_core.radar_confronto_core import (
@@ -54,14 +58,6 @@ def _norm_key(value: Any) -> str:
 # ----------------------------------------------------------------------------
 # Registro de campeões / opções por rota
 # ----------------------------------------------------------------------------
-
-def _get_registry(session_state: Any) -> Mapping[str, Any]:
-    reg = session_state.get("_radar_champ_registry")
-    if not isinstance(reg, dict) or not reg.get("champions"):
-        reg = load_champion_knowledge_registry()
-        session_state["_radar_champ_registry"] = reg
-    return reg
-
 
 def _role_champion_options(registry: Mapping[str, Any]) -> dict[str, list[str]]:
     """Por rota: campeões ordenados por presença observada na rota (mais comuns
@@ -216,32 +212,6 @@ def _signal_chip_html(sig: RadarSignal) -> str:
         f"<span style='color:{cor};font-weight:700;'>{sig.pct:.0f}%</span>"
         "</div>"
     )
-
-
-_ICON_DIR = None
-
-
-def _champ_icon_uri(champ_id: str) -> Optional[str]:
-    """Data-URI do ícone do campeão (champ_icons/<id>.png, cache em módulo)."""
-    global _ICON_DIR
-    if _ICON_DIR is None:
-        from pathlib import Path
-        _ICON_DIR = Path(__file__).resolve().parents[1] / "champ_icons"
-    cache = getattr(_champ_icon_uri, "_cache", None)
-    if cache is None:
-        cache = {}
-        _champ_icon_uri._cache = cache
-    cid = str(champ_id or "").strip()
-    if not cid:
-        return None
-    if cid not in cache:
-        p = _ICON_DIR / f"{cid}.png"
-        if p.exists():
-            import base64
-            cache[cid] = "data:image/png;base64," + base64.b64encode(p.read_bytes()).decode("ascii")
-        else:
-            cache[cid] = None
-    return cache[cid]
 
 
 def _short_name(name: str) -> str:
@@ -719,7 +689,6 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
             if not (isinstance(meta_lu, tuple) and len(meta_lu) == 2 and meta_lu[0] == str(csv_sig)):
                 try:
                     from app_core.meta_patch_core import meta_lookup_for_radar
-                    from app_core.meta_tab_core import _get_draft_rows
                     meta_lu = (str(csv_sig), meta_lookup_for_radar(
                         _get_draft_rows(session_state, csv_sig), registry=registry))
                 except Exception:
