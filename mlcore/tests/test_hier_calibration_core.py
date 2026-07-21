@@ -2,12 +2,36 @@ import math
 import unittest
 
 from app_core.hier_calibration_core import (
+    _node_base_stats,
     _node_n,
     _node_se,
     _node_stats,
     _sh,
     apply_hier_calibration_live,
 )
+
+
+class NodeBaseStatsTests(unittest.TestCase):
+    """Base comum extraída (21/07): _node_stats e _pair_stats duplicavam este
+    cálculo; agora os dois derivam daqui. Golden provou saída idêntica."""
+
+    _KW = dict(sigma0=4.0, fdr_q_alpha=0.10)
+
+    def test_campos_base_presentes(self):
+        base = _node_base_stats({"score_bias": 1.0, "wf_n": 100}, **self._KW)
+        self.assertEqual(set(base), {"bias", "n", "se", "var", "z", "p", "q", "fdr_reject"})
+
+    def test_node_stats_contem_a_base(self):
+        node = {"score_bias": 2.0, "wf_n": 200, "score_z": 2.5}
+        base = _node_base_stats(node, **self._KW)
+        full = _node_stats(node, k_shrink=120.0, z_gate=1.96, **self._KW)
+        for k, v in base.items():
+            self.assertEqual(full[k], v, f"{k}: _node_stats diverge da base")
+
+    def test_no_vazio_nao_quebra(self):
+        base = _node_base_stats({}, **self._KW)
+        self.assertEqual(base["bias"], 0.0)
+        self.assertEqual(base["n"], 0.0)
 
 
 class HierHelperTests(unittest.TestCase):

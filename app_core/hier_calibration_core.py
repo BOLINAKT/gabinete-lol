@@ -159,20 +159,12 @@ def _sh(n: float, k: float) -> float:
     return float(nn / (nn + max(1.0, float(k))))
 
 
-def _node_stats(
-    node: Dict[str, Any],
-    *,
-    k_shrink: float,
-    sigma0: float,
-    z_gate: float,
-    fdr_q_alpha: float,
-) -> Dict[str, float]:
-    """Estatísticas de um nó: viés ajustado por significância (z/q gates) e peso
-    por inverso-da-variância × shrink. O CORE do peso hierárquico.
+def _node_base_stats(node: Dict[str, Any], *, sigma0: float, fdr_q_alpha: float) -> Dict[str, float]:
+    """Estatísticas-base de um nó: viés, amostra, erro-padrão, z/p/q e rejeição
+    FDR. É a parte comum entre o nó hierárquico (_node_stats) e o par
+    interregional (_pair_stats), que antes duplicavam este cálculo.
 
-    Extraído de apply_hier_calibration_live (era nested, fechava sobre os
-    thresholds same_*; agora recebe sigma0/z_gate/fdr_q_alpha como args). Puro;
-    hiercal_golden prova a saída idêntica."""
+    Consolidado 21/07 (passo 1 do mapa, tirar duplicação). Puro."""
     _bias = _f(node.get("score_bias"), 0.0) if isinstance(node, dict) else 0.0
     _n = _node_n(node)
     _se = _node_se(node, sigma0)
@@ -184,6 +176,34 @@ def _node_stats(
     _q_in = _f(node.get("score_q")) if isinstance(node, dict) else float("nan")
     _q = float(_q_in if math.isfinite(_q_in) else _p)
     _fdr_reject = bool(node.get("fdr_reject", _q <= fdr_q_alpha)) if isinstance(node, dict) else bool(_q <= fdr_q_alpha)
+    return {
+        "bias": float(_bias),
+        "n": float(max(0.0, _n)),
+        "se": float(max(1e-6, _se)),
+        "var": float(max(1e-9, _var)),
+        "z": float(_z),
+        "p": float(max(0.0, min(1.0, _p))),
+        "q": float(max(0.0, min(1.0, _q))),
+        "fdr_reject": bool(_fdr_reject),
+    }
+
+
+def _node_stats(
+    node: Dict[str, Any],
+    *,
+    k_shrink: float,
+    sigma0: float,
+    z_gate: float,
+    fdr_q_alpha: float,
+) -> Dict[str, float]:
+    """Estatísticas de um nó: viés ajustado por significância (z/q gates) e peso
+    por inverso-da-variância × shrink. O CORE do peso hierárquico.
+
+    Base comum em _node_base_stats; aqui adiciona os multiplicadores de
+    significância e o peso. Puro; hiercal_golden prova a saída idêntica."""
+    base = _node_base_stats(node, sigma0=sigma0, fdr_q_alpha=fdr_q_alpha)
+    _bias, _n, _var = base["bias"], base["n"], base["var"]
+    _z, _q, _fdr_reject = base["z"], base["q"], base["fdr_reject"]
     _z_mult = float(max(0.0, min(1.0, abs(_z) / max(1e-9, z_gate))))
     _q_mult = 1.0
     if _q > fdr_q_alpha:
@@ -195,15 +215,8 @@ def _node_stats(
     _ev = float(_sh(_n, k_shrink))
     _w = float((1.0 / max(1e-9, _var)) * _ev * max(0.05, _sig_mult))
     return {
-        "bias": float(_bias),
+        **base,
         "bias_adj": float(_bias_adj),
-        "n": float(max(0.0, _n)),
-        "se": float(max(1e-6, _se)),
-        "var": float(max(1e-9, _var)),
-        "z": float(_z),
-        "p": float(max(0.0, min(1.0, _p))),
-        "q": float(max(0.0, min(1.0, _q))),
-        "fdr_reject": bool(_fdr_reject),
         "z_mult": float(_z_mult),
         "q_mult": float(_q_mult),
         "sig_mult": float(_sig_mult),
@@ -506,27 +519,8 @@ def apply_hier_calibration_live(
         fdr_q_alpha = max(0.01, min(0.30, _f(th.get("inter_fdr_q_alpha"), 0.10)))
 
         def _pair_stats(node: Dict[str, Any]) -> Dict[str, Any]:
-            _bias = _f(node.get("score_bias"), 0.0) if isinstance(node, dict) else 0.0
-            _n = _node_n(node)
-            _se = _node_se(node, inter_sigma0)
-            _var = float(max(1e-9, _se * _se))
-            _z_in = _f(node.get("score_z")) if isinstance(node, dict) else float("nan")
-            _z = float(_z_in if math.isfinite(_z_in) else (_bias / max(1e-9, _se)))
-            _p_in = _f(node.get("score_p")) if isinstance(node, dict) else float("nan")
-            _p = float(_p_in if math.isfinite(_p_in) else math.erfc(abs(_z) / math.sqrt(2.0)))
-            _q_in = _f(node.get("score_q")) if isinstance(node, dict) else float("nan")
-            _q = float(_q_in if math.isfinite(_q_in) else _p)
-            _fdr_reject = bool(node.get("fdr_reject", _q <= fdr_q_alpha)) if isinstance(node, dict) else bool(_q <= fdr_q_alpha)
-            return {
-                "bias": float(_bias),
-                "n": float(max(0.0, _n)),
-                "se": float(max(1e-6, _se)),
-                "var": float(max(1e-9, _var)),
-                "z": float(_z),
-                "p": float(max(0.0, min(1.0, _p))),
-                "q": float(max(0.0, min(1.0, _q))),
-                "fdr_reject": bool(_fdr_reject),
-            }
+            # mesma base do nó hierárquico, com o sigma0 interregional.
+            return _node_base_stats(node, sigma0=inter_sigma0, fdr_q_alpha=fdr_q_alpha)
 
         pair_node_lg, pair_scope_lg = _pick_pair_node(lg_pair_keys)
         pair_node_tier, pair_scope_tier = _pick_pair_node(tier_pair_keys)
