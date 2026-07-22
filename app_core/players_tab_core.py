@@ -300,12 +300,28 @@ def _render_roster_lab(
             st.info("Sem jogadores suficientes no recorte para simular.")
             return
 
-        tr_a_sim, _ = _team_rating(by_player=by_player, players=sel_a, format_num_fn=format_num_fn)
-        tr_b_sim, _ = _team_rating(by_player=by_player, players=sel_b, format_num_fn=format_num_fn)
+        tr_a_sim, df_sa = _team_rating(by_player=by_player, players=sel_a, format_num_fn=format_num_fn)
+        tr_b_sim, df_sb = _team_rating(by_player=by_player, players=sel_b, format_num_fn=format_num_fn)
         p_players_sim = _sigmoid(tr_a_sim - tr_b_sim)
+
+        # BUG CORRIGIDO (report dele 22/07: "troquei 3 jogadores e deu +0.0 pp").
+        # Eu usava o n_players_eff da escalação REAL. Quando ela está vazia
+        # ("nenhum player reconhecido"), esse peso é ZERO — e com peso zero a
+        # fusão ignora a camada de players, então trocar jogador não movia nada.
+        # A simulação agora calcula o PRÓPRIO peso, dos jogadores escolhidos.
+        def _games(dfx: pd.DataFrame) -> int:
+            if dfx is None or dfx.empty or "Games" not in dfx.columns:
+                return 0
+            return int(pd.to_numeric(dfx["Games"], errors="coerce").fillna(0).sum())
+
+        n_players_sim = float(min(_games(df_sa), _games(df_sb)))
+        if not (n_players_sim > 0.0):
+            n_players_sim = float(n_players_eff)
+        _kw_sim = dict(fuse_kwargs)
+        _kw_sim["coverage"] = float(max(0.0, min(1.0, n_players_sim / max(1.0, float(n_team_eff) + n_players_sim))))
         fused_sim = fuse_probs_by_precision_fn(
             p_team=p_team_ref, p_players=p_players_sim,
-            n_team=n_team_eff, n_players=n_players_eff, **fuse_kwargs,
+            n_team=n_team_eff, n_players=n_players_sim, **_kw_sim,
         )
         p_sim = float(max(0.02, min(0.98, float(fused_sim.get("p_fused", p_team_ref)))))
         dpp = 100.0 * (p_sim - float(p_real))
