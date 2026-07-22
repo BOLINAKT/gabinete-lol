@@ -422,6 +422,158 @@ def _render_roster_lab(
             )
 
 
+_PROP_STATS = (("kills", "Kills"), ("deaths", "Deaths"), ("assists", "Assists"))
+
+
+def _lineup_do_lab(st: Any, team: str, dfb: pd.DataFrame, norm_pos_fn: Any) -> list[tuple[str, str]]:
+    """[(rota, jogador)] lida do laboratório — trocou lá, muda aqui (pedido dele).
+
+    Cai na escalação habitual do recorte quando o lab ainda não foi tocado."""
+    from app_core.lineup_runtime_core import build_lineup_name_choices
+    ops, _ = build_lineup_name_choices(df_pr=dfb, team_ui=team, pos_canon=_LAB_POS,
+                                       norm_pos_fn=norm_pos_fn, include_all_teams=True)
+    out: list[tuple[str, str]] = []
+    for pos in _LAB_POS:
+        escolhido = str(st.session_state.get(f"lab_{team}_{pos}", "") or "")
+        if not escolhido:
+            lista = list(ops.get(pos) or [])
+            escolhido = lista[0] if lista else ""
+        if escolhido:
+            out.append((pos, escolhido))
+    return out
+
+
+def _taxas_kda(dfb: pd.DataFrame, nomes: list[str]) -> dict[str, dict[str, float]]:
+    """{jogador: {kills/deaths/assists: média por jogo}} no recorte."""
+    cols = [c for c, _ in _PROP_STATS]
+    if dfb is None or dfb.empty or "player" not in dfb.columns:
+        return {}
+    faltando = [c for c in cols if c not in dfb.columns]
+    if faltando:
+        return {}
+    sub = dfb[dfb["player"].astype(str).isin([str(n) for n in nomes])]
+    if sub.empty:
+        return {}
+    g = sub.groupby("player")[cols].mean()
+    return {str(k): {c: float(v[c]) for c in cols} for k, v in g.iterrows()}
+
+
+def _render_props_table(
+    *,
+    st: Any,
+    team_a: str,
+    team_b: str,
+    dfb: pd.DataFrame,
+    norm_pos_fn: Any,
+    mu_gap: float,
+    format_num_fn: Any,
+) -> None:
+    """Tabela de props dos 10 jogadores + resumo com filtro de atropelo.
+
+    Desenho escolhido por ele (22/07): TABELA ÚNICA de 10 linhas (Time A do TOP
+    ao SUP, depois Time B), colunas Kills/Deaths/Assists onde ele digita a linha
+    da casa; e um RESUMO que ESCONDE por padrão as linhas movidas pelo atropelo,
+    com botão para revelar.
+
+    O filtro não é opinião: o motor projeta em componentes separados, então
+    "quanto da projeção veio do massacre" (stomp_share) é um número.
+    """
+    from app_core.player_props_core import build_prop_row, separar_por_atropelo
+
+    cyan_section_header(st, "Props dos jogadores — linhas da casa vs modelo")
+    st.caption(
+        "Espelha a escalação do laboratório acima: trocou lá, muda aqui. Digite a "
+        "linha da casa em cada célula; a projeção, a probabilidade e a odd justa "
+        "aparecem do lado. O resumo no fim esconde as linhas que só batem por atropelo."
+    )
+
+    lineup = [(team_a, pos, pl) for pos, pl in _lineup_do_lab(st, team_a, dfb, norm_pos_fn)]
+    lineup += [(team_b, pos, pl) for pos, pl in _lineup_do_lab(st, team_b, dfb, norm_pos_fn)]
+    if not lineup:
+        st.info("Sem escalação identificada neste recorte.")
+        return
+    taxas = _taxas_kda(dfb, [pl for _, _, pl in lineup])
+    if not taxas:
+        st.info("Sem K/D/A por jogador neste recorte (o CSV precisa das colunas kills/deaths/assists).")
+        return
+
+    linhas_calc: list[dict] = []
+    cab = st.columns([1.5, 0.7, 1.3, 1.3, 1.3])
+    for c, t in zip(cab, ("Jogador", "Rota", "Kills", "Deaths", "Assists")):
+        c.markdown(f"<div style='font-size:0.78em;opacity:0.65;text-transform:uppercase;"
+                   f"letter-spacing:0.05em;'>{t}</div>", unsafe_allow_html=True)
+
+    for tm, pos, pl in lineup:
+        tx = taxas.get(str(pl)) or {}
+        # o gap entra com sinal: positivo p/ o time A, negativo p/ o B
+        gap_do_time = float(mu_gap) if tm == team_a else -float(mu_gap)
+        cols = st.columns([1.5, 0.7, 1.3, 1.3, 1.3])
+        cols[0].markdown(f"**{pl}**<br><span style='opacity:0.55;font-size:0.8em;'>{tm}</span>",
+                         unsafe_allow_html=True)
+        cols[1].markdown(f"<div style='padding-top:6px;'>{pos}</div>", unsafe_allow_html=True)
+        for i, (stat, rot) in enumerate(_PROP_STATS):
+            with cols[2 + i]:
+                key = f"prop_{tm}_{pos}_{stat}"
+                txt = st.text_input(rot, key=key, placeholder="linha", label_visibility="collapsed")
+                base = tx.get(stat)
+                if base is None:
+                    continue
+                try:
+                    line = float(str(txt).replace(",", ".").strip()) if str(txt).strip() else None
+                except ValueError:
+                    line = None
+                r = build_prop_row(player=pl, role=pos, team=tm, stat=stat,
+                                   line=(line if line is not None else base),
+                                   base_rate=base, mu_gap=gap_do_time)
+                if not r.get("ok"):
+                    continue
+                if line is not None:
+                    r["linha_informada"] = True
+                    linhas_calc.append(r)
+                    cor = "#22c55e" if r["p_over"] >= 0.55 else "#facc15" if r["p_over"] >= 0.45 else "#ef4444"
+                    selo = " ⚠" if r["movido_por_atropelo"] else ""
+                    st.markdown(
+                        f"<div style='font-size:0.82em;margin-top:-6px;'>"
+                        f"proj <b>{format_num_fn(r['proj'], 1)}</b> · "
+                        f"<span style='color:{cor};font-weight:700;'>{100*r['p_over']:.0f}%</span> · "
+                        f"odd {format_num_fn(r['odd_justa_over'], 2)}{selo}</div>",
+                        unsafe_allow_html=True)
+                else:
+                    st.markdown(f"<div style='font-size:0.78em;opacity:0.5;margin-top:-6px;'>"
+                                f"média {format_num_fn(base, 1)}</div>", unsafe_allow_html=True)
+
+    if not linhas_calc:
+        st.caption("Digite ao menos uma linha para o resumo aparecer.")
+        return
+
+    limpas, atropelo = separar_por_atropelo(linhas_calc)
+    limpas.sort(key=lambda r: -float(r.get("p_over") or 0.0))
+    cyan_section_header(st, "Resumo — melhores oportunidades")
+
+    def _tabela(rows: list[dict]) -> pd.DataFrame:
+        return pd.DataFrame([{
+            "Jogador": r["player"], "Rota": r["role"], "Time": r["team"],
+            "Mercado": r["stat"].capitalize(), "Linha": format_num_fn(r["line"], 1),
+            "Projeção": format_num_fn(r["proj"], 1),
+            "P(Over)": f"{100*r['p_over']:.0f}%",
+            "Odd justa": format_num_fn(r["odd_justa_over"], 2),
+        } for r in rows])
+
+    if limpas:
+        st.dataframe(_tabela(limpas), width="stretch", hide_index=True)
+    else:
+        st.info("Nenhuma linha limpa — todas foram marcadas como movidas pelo atropelo.")
+
+    if atropelo:
+        st.warning(
+            f"**{len(atropelo)} linha(s) ocultada(s)** — nelas, a maior parte da projeção "
+            "vem do desequilíbrio do confronto, não do jogador. É o caso Gen.G × Pain: "
+            "batem (ou não) por causa do atropelo, e a casa já sabe disso."
+        )
+        if st.checkbox("Mostrar as linhas movidas pelo atropelo", key="props_show_stomp"):
+            st.dataframe(_tabela(atropelo), width="stretch", hide_index=True)
+
+
 def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     session_state = st.session_state
     render_tab_hero(st, title="Players", subtitle="Quem joga hoje vale quanto — e o ML por lineup com fusão Team + Players.")
@@ -684,6 +836,29 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         st.warning(
             f"Laboratório de escalação indisponível neste recorte "
             f"({type(_lab_exc).__name__}: {_lab_exc}). O resto da aba segue normal."
+        )
+
+    try:
+        # gap de força entre os times, na mesma fonte do laboratório (rating
+        # individual quando disponível). É ele que dirige o filtro de atropelo.
+        _r_ind = _ratings_individuais(
+            ctx.get("players_artifact_fn"), dfb,
+            [p for _, p in _lineup_do_lab(st, team_a, dfb, norm_pos_fn)]
+            + [p for _, p in _lineup_do_lab(st, team_b, dfb, norm_pos_fn)],
+        )
+        _ra = [v for k, v in _r_ind.items()
+               if k in {p for _, p in _lineup_do_lab(st, team_a, dfb, norm_pos_fn)}]
+        _rb = [v for k, v in _r_ind.items()
+               if k in {p for _, p in _lineup_do_lab(st, team_b, dfb, norm_pos_fn)}]
+        _gap = (sum(_ra) / len(_ra) - sum(_rb) / len(_rb)) if (_ra and _rb) else 0.0
+        _render_props_table(
+            st=st, team_a=team_a, team_b=team_b, dfb=dfb,
+            norm_pos_fn=norm_pos_fn, mu_gap=float(_gap), format_num_fn=format_num_fn,
+        )
+    except (KeyError, TypeError, ValueError, AttributeError, ImportError) as _props_exc:
+        st.warning(
+            f"Tabela de props indisponível neste recorte "
+            f"({type(_props_exc).__name__}: {_props_exc}). O resto da aba segue normal."
         )
 
     with st.expander("Detalhe por jogador (ratings)", expanded=False):
