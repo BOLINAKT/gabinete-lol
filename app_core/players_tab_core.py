@@ -228,6 +228,53 @@ def _render_lineup_value_block(
 _LAB_POS = ["Top", "Jungle", "Mid", "Bot", "Support"]
 
 
+def _ratings_individuais(art_players_fn: Any, dfb: pd.DataFrame, nomes: list[str]) -> dict[str, float]:
+    """{nome do jogador -> rating INDIVIDUAL do players_artifact}.
+
+    Por que existe (achado 22/07): o rating desta aba é logit(vitórias/jogos), ou
+    seja, a taxa de vitória do TIME colada em cada jogador — todos do Gen.G davam
+    +1.070. Para simular troca de roster isso mente. O artefato de players tem o
+    rating individual de verdade (é o que o pipeline do ML usa); ele é indexado
+    por `playerid|||Posição`, então mapeamos nome -> playerid pelo CSV.
+
+    Devolve {} se o artefato não estiver disponível — quem chama cai no proxy e
+    avisa na tela (nunca fingimos precisão que não temos).
+    """
+    if not callable(art_players_fn) or dfb is None or getattr(dfb, "empty", True):
+        return {}
+    cols = getattr(dfb, "columns", [])
+    if "player" not in cols or "playerid" not in cols:
+        return {}
+    try:
+        art = art_players_fn()
+        players = getattr(art, "players", None) or {}
+        if not players:
+            return {}
+    except Exception:
+        return {}
+    alvo = {str(n).strip() for n in (nomes or []) if str(n).strip()}
+    if not alvo:
+        return {}
+    try:
+        sub = dfb[dfb["player"].astype(str).isin(alvo)]
+        pid_de = sub.dropna(subset=["playerid"]).groupby("player")["playerid"].last().to_dict()
+    except (KeyError, ValueError, TypeError):
+        return {}
+    # índice playerid -> r (a posição vem depois do '|||' na chave)
+    r_por_pid: dict[str, float] = {}
+    for chave, estado in players.items():
+        pid = str(chave).split("|||")[0]
+        r = getattr(estado, "r", None)
+        if pid and isinstance(r, (int, float)) and pid not in r_por_pid:
+            r_por_pid[pid] = float(r)
+    out: dict[str, float] = {}
+    for nome, pid in pid_de.items():
+        r = r_por_pid.get(str(pid))
+        if r is not None and math.isfinite(r):
+            out[str(nome)] = float(r)
+    return out
+
+
 def _render_roster_lab(
     *,
     st: Any,
@@ -244,6 +291,7 @@ def _render_roster_lab(
     fuse_probs_by_precision_fn: Any,
     format_num_fn: Any,
     odd_from_prob_fn: Any,
+    art_players_fn: Any = None,
 ) -> None:
     """Laboratório de escalação — "e se trocar alguém?" (pedido dele 22/07).
 
@@ -302,6 +350,23 @@ def _render_roster_lab(
 
         tr_a_sim, df_sa = _team_rating(by_player=by_player, players=sel_a, format_num_fn=format_num_fn)
         tr_b_sim, df_sb = _team_rating(by_player=by_player, players=sel_b, format_num_fn=format_num_fn)
+
+        # FONTE DE VERDADE do rating (achado 22/07): o rating desta aba é
+        # logit(vitórias/jogos) = a taxa de vitória do TIME colada em cada
+        # jogador — todos do Gen.G davam +1.070, zero informação individual.
+        # Para simular troca de roster isso MENTE. Quando o artefato de players
+        # está disponível, usamos o rating INDIVIDUAL (o que o pipeline do ML
+        # usa de fato); só caímos no proxy se ele faltar, e avisamos na tela.
+        fonte_rating = "proxy (taxa de vitória do time)"
+        r_ind = _ratings_individuais(art_players_fn, dfb, sel_a + sel_b)
+        if r_ind:
+            ra = [r_ind[n] for n in sel_a if n in r_ind]
+            rb = [r_ind[n] for n in sel_b if n in r_ind]
+            if ra and rb:
+                tr_a_sim = float(sum(ra) / len(ra))
+                tr_b_sim = float(sum(rb) / len(rb))
+                fonte_rating = f"rating individual do modelo ({len(ra)+len(rb)}/10 jogadores)"
+
         p_players_sim = _sigmoid(tr_a_sim - tr_b_sim)
 
         # BUG CORRIGIDO (report dele 22/07: "troquei 3 jogadores e deu +0.0 pp").
@@ -330,6 +395,17 @@ def _render_roster_lab(
         m1.metric(f"ML real · {team_a}", f"{100.0*float(p_real):.1f}%")
         m2.metric(f"ML simulado · {team_a}", f"{100.0*p_sim:.1f}%", f"{dpp:+.1f} pp")
         m3.metric("Odd justa simulada", f"{odd_from_prob_fn(p_sim):.2f}")
+        # Transparência da fonte: sem isso, o número parece igual nos dois casos
+        # — e o proxy (taxa de vitória do time) NÃO distingue jogador.
+        if fonte_rating.startswith("rating individual"):
+            st.caption(f"Fonte do rating: **{fonte_rating}** — mede o jogador, não o time.")
+        else:
+            st.warning(
+                f"Fonte do rating: **{fonte_rating}**. Esse proxy dá o MESMO valor "
+                "para todos os jogadores de um time, então ele **não distingue** quem "
+                "entrou ou saiu. Trate a simulação como indicativa até o artefato de "
+                "players ficar disponível neste recorte."
+            )
 
         if trocas <= 0:
             st.caption("Escalação igual à titular — nada trocado ainda.")
@@ -600,6 +676,7 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             fuse_kwargs=_fuse_kwargs,
             fuse_probs_by_precision_fn=fuse_probs_by_precision_fn,
             format_num_fn=format_num_fn, odd_from_prob_fn=odd_from_prob_fn,
+            art_players_fn=ctx.get("players_artifact_fn"),
         )
     except (KeyError, TypeError, ValueError, AttributeError, ImportError) as _lab_exc:
         # NUNCA derruba a aba — mas também NUNCA some calado (lição 22/07: erro

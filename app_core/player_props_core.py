@@ -147,6 +147,44 @@ def fair_odd(p: Any) -> float:
     return float(1.0 / pp)
 
 
+def remover_vig(odd_over: Any, odd_under: Any) -> Dict[str, float]:
+    """Tira a margem da casa e devolve a probabilidade que ELA está precificando.
+
+    Pesquisa (regra dele, 22/07): o padrão do mercado é o *no-vig* — as duas
+    probabilidades implícitas de um mercado somam MAIS que 1.00 (o excesso é a
+    comissão); normalizando para somar 1.00 sobra a estimativa "verdadeira" da
+    casa. Comparar a NOSSA probabilidade com essa (e não com a odd bruta) é o
+    que diz se estamos DISCORDANDO do mercado, em vez de só medir a comissão.
+
+    Devolve {} se faltar um dos lados — sem os dois não dá para tirar o vig.
+    """
+    a, b = _f(odd_over), _f(odd_under)
+    if not (math.isfinite(a) and math.isfinite(b)) or a <= 1.0 or b <= 1.0:
+        return {}
+    ia, ib = 1.0 / a, 1.0 / b
+    soma = ia + ib
+    if soma <= 0.0:
+        return {}
+    return {
+        "p_casa_over": float(ia / soma),
+        "p_casa_under": float(ib / soma),
+        "vig_pct": float(100.0 * (soma - 1.0)),
+        "odd_justa_casa_over": float(soma / ia),
+        "odd_justa_casa_under": float(soma / ib),
+    }
+
+
+def divergencia_do_mercado(p_modelo: Any, p_casa_sem_vig: Any) -> float:
+    """Quantos pontos percentuais o modelo discorda da casa (já sem vig).
+
+    Positivo = o modelo acha MAIS provável que a casa. É o sinal de valor
+    limpo — o edge contra a odd bruta ainda embute a comissão."""
+    pm, pc = _f(p_modelo), _f(p_casa_sem_vig)
+    if not (math.isfinite(pm) and math.isfinite(pc)):
+        return float("nan")
+    return float(100.0 * (pm - pc))
+
+
 def build_prop_row(
     *,
     player: str,

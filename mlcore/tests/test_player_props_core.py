@@ -15,12 +15,49 @@ from app_core.player_props_core import (
     GAP_SENSITIVITY,
     STOMP_SHARE_LIMIAR,
     build_prop_row,
+    divergencia_do_mercado,
     edge_vs_odd,
     fair_odd,
     prob_over,
     project_player_stat,
+    remover_vig,
     separar_por_atropelo,
 )
+
+
+class NoVigTests(unittest.TestCase):
+    """Tirar a margem da casa (padrão do mercado — pesquisa 22/07)."""
+
+    def test_mercado_equilibrado_com_margem(self):
+        # 1.90/1.90: implícitas somam 1.0526 -> vig ~5.26%, justa 50/50
+        r = remover_vig(1.90, 1.90)
+        self.assertAlmostEqual(r["p_casa_over"], 0.5, places=9)
+        self.assertAlmostEqual(r["p_casa_under"], 0.5, places=9)
+        self.assertAlmostEqual(r["vig_pct"], 5.263, places=2)
+
+    def test_probabilidades_sem_vig_somam_um(self):
+        r = remover_vig(1.50, 2.40)
+        self.assertAlmostEqual(r["p_casa_over"] + r["p_casa_under"], 1.0, places=9)
+
+    def test_favorito_tem_probabilidade_maior(self):
+        r = remover_vig(1.40, 3.00)
+        self.assertGreater(r["p_casa_over"], r["p_casa_under"])
+
+    def test_sem_os_dois_lados_nao_da_p_tirar_vig(self):
+        self.assertEqual(remover_vig(1.90, None), {})
+        self.assertEqual(remover_vig(1.0, 1.90), {})
+        self.assertEqual(remover_vig("x", "y"), {})
+
+
+class DivergenciaTests(unittest.TestCase):
+    def test_modelo_mais_otimista_da_positivo(self):
+        self.assertAlmostEqual(divergencia_do_mercado(0.60, 0.50), 10.0, places=9)
+
+    def test_modelo_mais_pessimista_da_negativo(self):
+        self.assertLess(divergencia_do_mercado(0.45, 0.50), 0.0)
+
+    def test_entrada_invalida_vira_nan(self):
+        self.assertTrue(math.isnan(divergencia_do_mercado(None, 0.5)))
 
 
 class ProjecaoTests(unittest.TestCase):

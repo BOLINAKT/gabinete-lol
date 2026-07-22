@@ -2803,6 +2803,16 @@ _secondary_tab_renderers = {
             "teamA": teamA,
             "teamB": teamB,
             "load_player_rows_fn": _load_player_rows,
+            # Rating INDIVIDUAL de jogador (o mesmo que o pipeline do ML usa).
+            # A aba calculava rating como logit(vitorias/jogos) = taxa de vitoria
+            # do TIME colada em cada jogador (todos do Gen.G davam +1.070) — sem
+            # nenhuma informacao individual. O laboratorio de escalacao precisa
+            # da fonte de verdade p/ nao mentir na troca de roster (achado 22/07).
+            "players_artifact_fn": (
+                lambda: _load_players_artifact_cached(
+                    _file_sig(str(_players_artifact_output_path(artifact_path)))
+                )
+            ),
             "apply_filters_players_fn": core_apply_filters_players,
             "latest_lineup_names_fn": core_latest_lineup_names,
             "norm_pos_fn": _norm_pos,
