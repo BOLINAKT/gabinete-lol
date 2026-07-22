@@ -14,7 +14,46 @@ from app_core.first_x_gap_core import (
     FIRST_X_GAP_CALIB,
     adjust_first_x_prob,
     first_x_gap_supported,
+    mu_gap_from_trace,
 )
+
+
+def _trace(blue_team, blue_mu, red_team, red_mu):
+    return {"shadow_state_areal": {"state": {
+        "blue": {"team": blue_team, "mu": blue_mu},
+        "red": {"team": red_team, "mu": red_mu}}}}
+
+
+class MuGapFromTraceTests(unittest.TestCase):
+    """Extrai o gap do trace que o pipeline já grava. Nunca inventa número."""
+
+    def test_time_no_lado_blue(self):
+        g = mu_gap_from_trace(_trace("Gen.G", 1.5, "T1", 0.5), team="Gen.G", opponent="T1")
+        self.assertAlmostEqual(g, 1.0)
+
+    def test_time_no_lado_red_inverte(self):
+        g = mu_gap_from_trace(_trace("T1", 0.5, "Gen.G", 1.5), team="Gen.G", opponent="T1")
+        self.assertAlmostEqual(g, 1.0)
+
+    def test_trace_de_OUTRO_confronto_devolve_none(self):
+        """Guarda crítica: não pode usar o mu de um confronto diferente."""
+        t = _trace("HLE", 1.2, "DK", 0.9)
+        self.assertIsNone(mu_gap_from_trace(t, team="Gen.G", opponent="T1"))
+
+    def test_trace_ausente_ou_vazio(self):
+        for t in (None, {}, {"shadow_state_areal": {}}, "lixo", 42):
+            self.assertIsNone(mu_gap_from_trace(t, team="A", opponent="B"))
+
+    def test_mu_invalido_devolve_none(self):
+        self.assertIsNone(mu_gap_from_trace(_trace("A", None, "B", 1.0), team="A", opponent="B"))
+        self.assertIsNone(mu_gap_from_trace(_trace("A", "x", "B", 1.0), team="A", opponent="B"))
+
+    def test_nome_tolera_caixa_acento_espaco(self):
+        g = mu_gap_from_trace(_trace(" gen.g ", 1.0, "T1", 0.0), team="Gen.G", opponent="t1")
+        self.assertAlmostEqual(g, 1.0)
+
+    def test_time_vazio_devolve_none(self):
+        self.assertIsNone(mu_gap_from_trace(_trace("A", 1.0, "B", 0.0), team="", opponent="B"))
 
 
 class SuporteDeEventoTests(unittest.TestCase):

@@ -36,6 +36,49 @@ FIRST_X_GAP_CALIB: Dict[str, Dict[str, float]] = {
 }
 
 
+def _norm_name(v: Any) -> str:
+    s = str(v or "").strip().lower()
+    try:
+        s = s.encode("ascii", "ignore").decode("ascii")
+    except (UnicodeDecodeError, UnicodeEncodeError):
+        pass
+    return "".join(ch for ch in s if ch.isalnum())
+
+
+def mu_gap_from_trace(trace: Any, *, team: Any, opponent: Any) -> Any:
+    """mu(time) - mu(oponente) a partir do trace do ML, ou None se indisponível.
+
+    Lê `shadow_state_areal.state.{blue,red}` do trace que o pipeline já grava em
+    session_state["_ml_trace_last"]. Casa pelo NOME do time (o trace guarda
+    blue/red, a aba pensa em time/oponente). Devolve None — nunca um número
+    inventado — quando o trace não existe, a camada está desligada, ou os nomes
+    não casam; nesse caso o First X fica exatamente como é hoje.
+    """
+    try:
+        state = ((trace or {}).get("shadow_state_areal") or {}).get("state") or {}
+        blue = state.get("blue") or {}
+        red = state.get("red") or {}
+    except (AttributeError, TypeError):
+        return None
+    if not isinstance(blue, dict) or not isinstance(red, dict):
+        return None
+    t, o = _norm_name(team), _norm_name(opponent)
+    if not t or not o:
+        return None
+    nb, nr = _norm_name(blue.get("team")), _norm_name(red.get("team"))
+    if t == nb and o == nr:
+        mu_t, mu_o = blue.get("mu"), red.get("mu")
+    elif t == nr and o == nb:
+        mu_t, mu_o = red.get("mu"), blue.get("mu")
+    else:
+        return None  # trace é de outro confronto
+    try:
+        gap = float(mu_t) - float(mu_o)
+    except (TypeError, ValueError):
+        return None
+    return gap if math.isfinite(gap) else None
+
+
 def _clip01(p: float) -> float:
     return float(max(1e-6, min(1.0 - 1e-6, float(p))))
 
