@@ -154,6 +154,58 @@ def _pos_order_by_relevance(sub: pd.DataFrame) -> list[str]:
         return sorted(sub["player_key"].astype(str).unique().tolist())
 
 
+def build_lineup_name_choices(
+    *,
+    df_pr: pd.DataFrame | None,
+    team_ui: str,
+    pos_canon: list[str],
+    norm_pos_fn: Callable[[str], str],
+    include_all_teams: bool = False,
+) -> tuple[dict[str, list[str]], dict[str, str]]:
+    """Opções de escalação por posição, em NOME de jogador.
+
+    Irmã de build_ml_lineup_choices (que trabalha por player_key/id). A aba
+    Players casa jogador por NOME, então precisa desta forma. Mesma regra: os do
+    próprio time primeiro; com include_all_teams, o pool inteiro depois, e o
+    segundo retorno traz {nome -> time atual} para rotular quem veio de fora.
+    """
+    out: dict[str, list[str]] = {pos: [] for pos in pos_canon}
+    team_of: dict[str, str] = {}
+    if df_pr is None or df_pr.empty:
+        return out, team_of
+    d = df_pr.copy()
+    if "pos_ml" not in d.columns:
+        d["pos_ml"] = d.get("pos", "").apply(norm_pos_fn)
+    d["player_key"] = d.get("player", "").astype(str).str.strip()
+    d = d[d["player_key"] != ""]
+    if d.empty:
+        return out, team_of
+
+    do_time = d[d["team"].astype(str) == str(team_ui)]
+    for pos in pos_canon:
+        sub = do_time[do_time["pos_ml"].astype(str) == str(pos)]
+        out[pos] = _pos_order_by_relevance(sub) if len(sub) else []
+
+    if not bool(include_all_teams):
+        return out, team_of
+
+    fora = d[d["team"].astype(str) != str(team_ui)]
+    if fora.empty:
+        return out, team_of
+    try:
+        team_of = {str(k): str(v) for k, v in
+                   fora.sort_values("date").groupby("player_key")["team"].last().items()}
+    except (KeyError, ValueError, TypeError):
+        team_of = {}
+    for pos in pos_canon:
+        sub_f = fora[fora["pos_ml"].astype(str) == str(pos)]
+        if sub_f.empty:
+            continue
+        ja = set(out.get(pos) or [])
+        out[pos].extend([n for n in _pos_order_by_relevance(sub_f) if n not in ja])
+    return out, team_of
+
+
 def build_ml_lineup_choices(
     *,
     df_pr: pd.DataFrame | None,

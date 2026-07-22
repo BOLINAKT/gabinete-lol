@@ -225,6 +225,111 @@ def _render_lineup_value_block(
         return
 
 
+_LAB_POS = ["Top", "Jungle", "Mid", "Bot", "Support"]
+
+
+def _render_roster_lab(
+    *,
+    st: Any,
+    team_a: str,
+    team_b: str,
+    dfb: pd.DataFrame,
+    by_player: pd.DataFrame,
+    norm_pos_fn: Any,
+    p_team_ref: float,
+    p_real: float,
+    n_team_eff: float,
+    n_players_eff: float,
+    fuse_kwargs: dict[str, Any],
+    fuse_probs_by_precision_fn: Any,
+    format_num_fn: Any,
+    odd_from_prob_fn: Any,
+) -> None:
+    """Laboratório de escalação — "e se trocar alguém?" (pedido dele 22/07).
+
+    Desenho guiado por pesquisa (FanGraphs Lab / WhatIfSports / Versus Sports):
+    (a) pré-preenche com a escalação real e deixa editar; (b) a saída é
+    PROBABILIDADE DE VITÓRIA, não um delta solto; (c) mostra o fator
+    ENTROSAMENTO — a literatura de esports é enfática que troca recente é
+    amortecida no curto prazo (o time ainda não acertou a comunicação).
+    """
+    from app_core.lineup_runtime_core import build_lineup_name_choices
+
+    with st.expander("🧪 Laboratório de escalação — e se trocar alguém?", expanded=False):
+        st.caption(
+            "Monte uma escalação hipotética e veja o ML recalculado. Serve para "
+            "testar troca de roster de split ('e se o Zeus fosse para a HLE?') "
+            "antes de o time jogar com ela."
+        )
+        libera = st.checkbox(
+            "Permitir jogador de outro time (simular transferência)",
+            key="lab_pool_all",
+            help="Ligado, cada posição lista o pool inteiro da liga; os do próprio time vêm primeiro.",
+        )
+        cols = st.columns(2)
+        escolhas: dict[str, list[str]] = {}
+        trocas = 0
+        for col, tm in zip(cols, (team_a, team_b)):
+            with col:
+                st.markdown(f"**{tm}**")
+                ops, time_de = build_lineup_name_choices(
+                    df_pr=dfb, team_ui=tm, pos_canon=_LAB_POS,
+                    norm_pos_fn=norm_pos_fn, include_all_teams=bool(libera),
+                )
+                sel: list[str] = []
+                for pos in _LAB_POS:
+                    lista = list(ops.get(pos) or [])
+                    if not lista:
+                        continue
+                    key = f"lab_{tm}_{pos}"
+                    if st.session_state.get(key) not in lista:
+                        st.session_state[key] = lista[0]  # pré-preenche com o titular
+                    escolhido = st.selectbox(
+                        pos, lista, key=key,
+                        format_func=lambda n, _t=time_de: (
+                            f"{n} · {_t[n]}" if n in _t else str(n)
+                        ),
+                    )
+                    sel.append(escolhido)
+                    if escolhido != lista[0]:
+                        trocas += 1
+                escolhas[tm] = sel
+
+        sel_a, sel_b = escolhas.get(team_a) or [], escolhas.get(team_b) or []
+        if not sel_a or not sel_b:
+            st.info("Sem jogadores suficientes no recorte para simular.")
+            return
+
+        tr_a_sim, _ = _team_rating(by_player=by_player, players=sel_a, format_num_fn=format_num_fn)
+        tr_b_sim, _ = _team_rating(by_player=by_player, players=sel_b, format_num_fn=format_num_fn)
+        p_players_sim = _sigmoid(tr_a_sim - tr_b_sim)
+        fused_sim = fuse_probs_by_precision_fn(
+            p_team=p_team_ref, p_players=p_players_sim,
+            n_team=n_team_eff, n_players=n_players_eff, **fuse_kwargs,
+        )
+        p_sim = float(max(0.02, min(0.98, float(fused_sim.get("p_fused", p_team_ref)))))
+        dpp = 100.0 * (p_sim - float(p_real))
+
+        m1, m2, m3 = st.columns(3)
+        m1.metric(f"ML real · {team_a}", f"{100.0*float(p_real):.1f}%")
+        m2.metric(f"ML simulado · {team_a}", f"{100.0*p_sim:.1f}%", f"{dpp:+.1f} pp")
+        m3.metric("Odd justa simulada", f"{odd_from_prob_fn(p_sim):.2f}")
+
+        if trocas <= 0:
+            st.caption("Escalação igual à titular — nada trocado ainda.")
+        else:
+            # Entrosamento: a literatura (e o próprio modelo, via continuidade de
+            # roster) diz que time recém-montado rende ABAIXO do papel no curto
+            # prazo. Avisamos em vez de vender o número como certeza.
+            st.warning(
+                f"**{trocas} troca(s)** em relação à escalação titular. "
+                "Na prática, elenco recém-montado costuma render **abaixo do papel** "
+                "no começo (entrosamento/comunicação) — o modelo trata isso inflando "
+                "a incerteza quando o roster muda de verdade. Leia este número como "
+                "**teto otimista** da escalação nova, não como previsão pronta."
+            )
+
+
 def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     session_state = st.session_state
     render_tab_hero(st, title="Players", subtitle="Quem joga hoje vale quanto — e o ML por lineup com fusão Team + Players.")
@@ -438,11 +543,9 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     games_b = int(pd.to_numeric(df_b.get("Games"), errors="coerce").fillna(0).sum()) if not df_b.empty else 0
     n_players_eff = float(min(games_a, games_b))
     n_team_eff = state_get_float_fn(session_state, "_ml_team_games_min", float("nan"))
-    fused = fuse_probs_by_precision_fn(
-        p_team=p_team_ref,
-        p_players=p_players_raw,
-        n_team=n_team_eff,
-        n_players=n_players_eff,
+    # Mesmos parâmetros de fusão usados no card real E no laboratório abaixo —
+    # se divergirem, a comparação "real vs simulado" vira mentira.
+    _fuse_kwargs = dict(
         team_scale=state_get_float_fn(session_state, "_fit_team_scale_used", state_get_float_fn(session_state, "_fit_team_scale", 1.0)),
         players_scale=state_get_float_fn(
             st.session_state,
@@ -452,6 +555,13 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         coverage=float(max(0.0, min(1.0, n_players_eff / max(1.0, n_team_eff + n_players_eff)))),
         transfer_signal=0.0,
         season_phase=("playoffs" if str(playoffs_opt).lower() in {"playoffs", "true", "1"} else "auto"),
+    )
+    fused = fuse_probs_by_precision_fn(
+        p_team=p_team_ref,
+        p_players=p_players_raw,
+        n_team=n_team_eff,
+        n_players=n_players_eff,
+        **_fuse_kwargs,
     )
     p_team_a = float(max(0.02, min(0.98, float(fused.get("p_fused", p_team_ref)))))
     w_players = float(fused.get("w_players", float("nan")))
@@ -464,6 +574,19 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         n_team_eff=n_team_eff, n_players_eff=n_players_eff,
         format_num_fn=format_num_fn, format_pct_fn=format_pct_fn,
     )
+
+    try:
+        _render_roster_lab(
+            st=st, team_a=team_a, team_b=team_b,
+            dfb=dfb, by_player=by_player, norm_pos_fn=norm_pos_fn,
+            p_team_ref=p_team_ref, p_real=p_team_a,
+            n_team_eff=n_team_eff, n_players_eff=n_players_eff,
+            fuse_kwargs=_fuse_kwargs,
+            fuse_probs_by_precision_fn=fuse_probs_by_precision_fn,
+            format_num_fn=format_num_fn, odd_from_prob_fn=odd_from_prob_fn,
+        )
+    except (KeyError, TypeError, ValueError, AttributeError, ImportError):
+        pass  # laboratório NUNCA derruba a aba
 
     with st.expander("Detalhe por jogador (ratings)", expanded=False):
         cta, ctb = st.columns(2)
