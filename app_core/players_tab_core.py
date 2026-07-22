@@ -585,8 +585,13 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             fuse_probs_by_precision_fn=fuse_probs_by_precision_fn,
             format_num_fn=format_num_fn, odd_from_prob_fn=odd_from_prob_fn,
         )
-    except (KeyError, TypeError, ValueError, AttributeError, ImportError):
-        pass  # laboratório NUNCA derruba a aba
+    except (KeyError, TypeError, ValueError, AttributeError, ImportError) as _lab_exc:
+        # NUNCA derruba a aba — mas também NUNCA some calado (lição 22/07: erro
+        # engolido vira mistério). Mostra o motivo para dar p/ consertar.
+        st.warning(
+            f"Laboratório de escalação indisponível neste recorte "
+            f"({type(_lab_exc).__name__}: {_lab_exc}). O resto da aba segue normal."
+        )
 
     with st.expander("Detalhe por jogador (ratings)", expanded=False):
         cta, ctb = st.columns(2)
