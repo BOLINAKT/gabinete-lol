@@ -1299,7 +1299,12 @@ def _latest_lineup_for_team(
 
 
 def _calibrate_p_from_artifact(artifact_path: str, p_raw: float) -> float:
-    return _calibrate_p_from_artifact_core(artifact_path, p_raw, ctx=globals())
+    # Contrato explícito (força-tarefa 23/07): calibrate_p_from_artifact lê só
+    # estas 2 chaves e não repassa ctx. NameError alto se um import sumir.
+    return _calibrate_p_from_artifact_core(
+        artifact_path, p_raw,
+        ctx={"_file_sig": _file_sig, "_load_artifact_cached": _load_artifact_cached},
+    )
 
 
 
@@ -1505,18 +1510,36 @@ def _apply_fused_post_calibration(
 
 
 def _series_gamma_for_league(league_hint: str, bo: int) -> tuple:
-    return _series_gamma_for_league_core(league_hint, bo, st=st, ctx=globals())
+    # series_gamma_for_league lê tudo de st.session_state e IGNORA o ctx
+    # (confirmado no core) — nada a vazar aqui.
+    return _series_gamma_for_league_core(league_hint, bo, st=st, ctx={})
+
+
+def _confidence_runtime_ctx() -> Dict[str, Any]:
+    """Contrato EXPLÍCITO das funções de confidence-runtime (ex-`ctx=globals()`).
+
+    Força-tarefa 23/07: em vez de vazar o namespace inteiro, declaramos as 4
+    chaves que a árvore de chamada de fato usa (o governor/coherence repassam o
+    ctx para load_confidence_baseline_runtime — por isso as 3 do baseline entram
+    junto). Se algum destes imports/globais sumir, isto estoura NameError AQUI e
+    AGORA, em vez de virar None calado lá dentro."""
+    return {
+        "_ML_CONFIDENCE_BASELINE_PATH": _ML_CONFIDENCE_BASELINE_PATH,
+        "_load_ml_confidence_baseline_cached": _load_ml_confidence_baseline_cached,
+        "_file_sig": _file_sig,
+        "_fit_cfg": _fit_cfg,
+    }
 
 
 def _load_confidence_baseline_runtime() -> Dict[str, Any]:
-    return _load_confidence_baseline_runtime_core(ctx=globals())
+    return _load_confidence_baseline_runtime_core(ctx=_confidence_runtime_ctx())
 
 
 def _runtime_confidence_governor_budget_for_league(
     league_hint: str,
     confidence_baseline: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    return _runtime_confidence_governor_budget_for_league_core(league_hint, confidence_baseline, st=st, ctx=globals())
+    return _runtime_confidence_governor_budget_for_league_core(league_hint, confidence_baseline, st=st, ctx=_confidence_runtime_ctx())
 
 
 def _runtime_series_coherence_post_cap_for_league(
@@ -1525,7 +1548,7 @@ def _runtime_series_coherence_post_cap_for_league(
     bo: int,
     confidence_baseline: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    return _runtime_series_coherence_post_cap_for_league_core(league_hint=league_hint, bo=bo, confidence_baseline=confidence_baseline, st=st, ctx=globals())
+    return _runtime_series_coherence_post_cap_for_league_core(league_hint=league_hint, bo=bo, confidence_baseline=confidence_baseline, st=st, ctx=_confidence_runtime_ctx())
 
 
 def _boot_select_csvs(root: Path) -> None:
@@ -1619,7 +1642,11 @@ def _append_feature_trace(
 
 
 def _resolve_runtime_players_artifact_path(artifact_path: str) -> str:
-    return _resolve_runtime_players_artifact_path_core(artifact_path, ctx=globals())
+    # Contrato explícito (força-tarefa 23/07): 3 chaves, sem repasse de ctx.
+    return _resolve_runtime_players_artifact_path_core(
+        artifact_path,
+        ctx={"APP_ROOT": APP_ROOT, "_file_sig": _file_sig, "_load_artifact_cached": _load_artifact_cached},
+    )
 
 
 def _players_artifact_output_path(artifact_path: str) -> Path:
