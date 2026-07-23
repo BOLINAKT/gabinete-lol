@@ -26,6 +26,15 @@ import sys
 import time
 from pathlib import Path
 
+# Windows: o console é cp1252 e os emojis do veredito (✅/❌) estouravam com
+# UnicodeEncodeError JUSTO na hora de reportar DIFERENÇAS — a rede de segurança
+# quebrava calada quando mais importava. Forçar UTF-8 na saída resolve todos.
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, ValueError):
+    pass
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
