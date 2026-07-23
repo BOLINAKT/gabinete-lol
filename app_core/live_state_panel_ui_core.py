@@ -649,18 +649,34 @@ def _render_freshness_banner(*, st: Any, session_state: MutableMapping[str, Any]
         except Exception:
             pass  # auto-retreino é conveniência; nunca derruba o painel
 
+    _fresh = str(state) == "fresh"
     cols = st.columns([2, 1, 1])
     with cols[0]:
         if auto_disparado:
-            st.info("Modelos ao vivo desatualizados — **retreino iniciado automaticamente** "
-                    "em background. Os números aparecem quando terminar (atualize a página em alguns minutos).")
-        elif running:
-            st.info("Modelo em retreino em background. Atualize a página em alguns minutos.")
+            st.warning(
+                "⏳ **Modelo ao vivo desatualizado — atualizando agora, favor não fechar o app.** "
+                "Leva alguns minutos; pode usar o resto normalmente e dar F5 de vez em quando — "
+                "os números aparecem quando terminar. Se fechar, **nada estraga**: ele continua "
+                "em background ou recomeça sozinho na próxima abertura (o modelo só é salvo quando "
+                "o treino termina inteiro)."
+            )
+        elif running and not _fresh:
+            st.info("Modelo em retreino em background (favor não fechar até terminar). "
+                    "Atualize a página em alguns minutos.")
+        elif running and _fresh:
+            # Já fresco + um processo rodando = retreino redundante finalizando.
+            # Não contradizer o 'atualizados' verde acima (report dele 22/07).
+            st.caption("Um retreino extra ainda finaliza em background — inofensivo; "
+                       "os números acima já estão atualizados, pode usar normal.")
         elif state in ("stale", "very_stale", "no_manifest", "no_models"):
             st.caption("Clique em 'Retreinar agora' para regenerar os modelos com os dados mais recentes.")
 
     with cols[1]:
-        if not running and st.button("Retreinar agora", key=f"lb_live_retrain_btn{key_suffix}", help="Roda tools/run_phase6_live_gate.py em background"):
+        # Botão só quando faz sentido: nada rodando E os modelos NÃO estão frescos.
+        # Antes, o botão aparecia mesmo com modelo fresco e um clique disparava um
+        # retreino redundante (foi o que ele pegou: F5 pós-treino -> clicou -> 2º).
+        if not running and not _fresh and st.button(
+            "Retreinar agora", key=f"lb_live_retrain_btn{key_suffix}", help="Roda tools/run_phase6_live_gate.py em background"):
             try:
                 cutoff = session_state.get("_live_models_val_cutoff", "2026-03-31")
                 info = launch_retrain_background(
