@@ -1636,7 +1636,8 @@ def _append_feature_trace(
     return _append_feature_trace_core(
         feature=feature, event=event, enabled=enabled, payload=payload,
         dedupe_signature=dedupe_signature, max_items=max_items,
-        persist_files=persist_files, st=st, ctx=globals(),
+        persist_files=persist_files, st=st,
+        ctx={"APP_ROOT": APP_ROOT, "_persist_combined_trace_file": _persist_combined_trace_file},
     )
 
 

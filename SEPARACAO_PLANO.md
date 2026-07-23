@@ -95,6 +95,26 @@ caso; o alvo é domain NÃO conhecer Streamlit.
 
 ---
 
+## Espinha `globals→ctx` — progresso (23/07)
+
+**11 de 19 `ctx=globals()` convertidos para contrato EXPLÍCITO** (dict nomeado com
+as chaves que a árvore usa, ou `build_render_ctx` auto-derivado quando o renderer
+não repassa ctx). Cada um auditado (chaves + repasse) e verificado por E2E.
+Commits 60a264a, ddabc44, (feature_trace). Feitos: confidence trio, series_gamma,
+calibrate_p, resolve_players_artifact, patch_meta_guard, ach_layer,
+generate_and_persist_team_state, render_calibracoes (Técnico), append_feature_trace.
+
+**Os 8 restantes precisam de VOCÊ — 3 motivos (todos reais):**
+1. **Valores de runtime na chave** (NameError-vs-None): `series_totals`
+   (bo/n_sims/p_map_cal/totals_mode) e `csv_bootstrap_gate` (fp_key/owner_token/
+   run_id). Um dict explícito estoura NameError num caminho onde `globals().get`
+   dava None de boa — mudança de comportamento. Decidir caso a caso com você.
+2. **Repasse de ctx pra baixo** (auto-derive incompleto): `rank_table_v2`,
+   `collect_maintenance_status` (15 chaves), `run_auto_maintenance_now` (15).
+3. **Não coberto pelo E2E** (prova visual sua): `render_params_tab` (73 chaves +
+   repasse) — precisa você clicar a aba Params. Um dict de 73 chaves seria PIOR
+   que globals(); ali o certo é `build_render_ctx`, mas só com sua validação visual.
+
 ## Ordem recomendada (revisada pelo risco do ctx)
 1. **Espinha explícita primeiro (supervisionado):** converter os `ctx=globals()`
    restantes do `plays_app` para `build_render_ctx(...)`. Destrava as reorgs com
