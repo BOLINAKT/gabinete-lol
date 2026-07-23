@@ -40,7 +40,14 @@ CSV_HISTORICO/*.json
 backups/
 evidence/
 tmp/
-live_models/
+# live_models/ é VERSIONADO (23/07): o app roda na Streamlit Cloud, que só puxa
+# do git e NÃO consegue treinar (1GB de RAM). Sem os modelos no repo, o painel
+# "Durante o mapa" + mercados ficavam N/A pra sempre na nuvem. São só ~10MB.
+# O robô do GitHub Actions retreina e commita; a nuvem só carrega, nunca treina.
+# Só o lixo de runtime fica de fora:
+live_models/*.pid
+live_models/*.log
+live_models/last_auto_retrain.txt
 .ruff_cache/
 
 # Backups locais (nunca versionar)

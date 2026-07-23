@@ -432,6 +432,33 @@ def _remove_stale_pid(pid_file: Path) -> None:
         pass
 
 
+def is_streamlit_cloud() -> bool:
+    """True se estamos rodando na Streamlit Community Cloud.
+
+    A Cloud roda como usuário 'appuser' (HOME=/home/appuser) e monta o repo em
+    /mount/src/<repo>. Qualquer um dos dois sinais basta. No Windows nunca é."""
+    if os.name == "nt":
+        return False
+    try:
+        if os.environ.get("HOME", "") == "/home/appuser":
+            return True
+        if "/mount/src" in os.getcwd():
+            return True
+    except OSError:
+        pass
+    return False
+
+
+def is_training_capable_env() -> bool:
+    """Onde DÁ pra treinar os modelos ao vivo (LightGBM em ~26k jogos = pesado).
+
+    A Streamlit Cloud tem ~1GB de RAM: o treino lá trava ou é morto (era o
+    'em retreino em background' que nunca terminava). Quem treina é o robô do
+    GitHub Actions ou o PC local; a nuvem só CARREGA os modelos versionados no
+    git. Por isso o auto-retreino e o botão 'Retreinar agora' são escondidos lá."""
+    return not is_streamlit_cloud()
+
+
 def retrain_status(models_dir: str | Path = "live_models") -> Dict[str, Any]:
     """Return a human-readable status dict for the retrain process."""
     md = Path(str(models_dir))

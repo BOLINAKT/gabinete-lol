@@ -1,6 +1,7 @@
 """Tests for app_core/live_models_status_core.py."""
 import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
 
 from app_core.live_models_status_core import (
@@ -176,6 +177,39 @@ class TestPidFantasmaSeAutoCura(unittest.TestCase):
             # o proprio processo de teste esta vivo
             self.assertTrue(is_retrain_running(tmp))
             self.assertTrue(pid_file.exists(), "pid vivo NAO deve ser apagado")
+
+
+class TestAmbienteNuvem(unittest.TestCase):
+    """A nuvem (Streamlit Cloud, 1GB de RAM) nao pode treinar -> is_training_capable_env
+    False la, e o painel esconde retreino. Detecta por HOME=/home/appuser ou /mount/src."""
+
+    def test_windows_nunca_e_nuvem(self):
+        import app_core.live_models_status_core as m
+        with unittest.mock.patch.object(m.os, "name", "nt"):
+            self.assertFalse(m.is_streamlit_cloud())
+            self.assertTrue(m.is_training_capable_env())
+
+    def test_linux_home_appuser_e_nuvem(self):
+        import app_core.live_models_status_core as m
+        with unittest.mock.patch.object(m.os, "name", "posix"), \
+             unittest.mock.patch.dict(m.os.environ, {"HOME": "/home/appuser"}, clear=False):
+            self.assertTrue(m.is_streamlit_cloud())
+            self.assertFalse(m.is_training_capable_env())
+
+    def test_linux_mount_src_e_nuvem(self):
+        import app_core.live_models_status_core as m
+        with unittest.mock.patch.object(m.os, "name", "posix"), \
+             unittest.mock.patch.dict(m.os.environ, {"HOME": "/root"}, clear=False), \
+             unittest.mock.patch.object(m.os, "getcwd", return_value="/mount/src/gabinete-lol"):
+            self.assertTrue(m.is_streamlit_cloud())
+
+    def test_linux_comum_nao_e_nuvem(self):
+        import app_core.live_models_status_core as m
+        with unittest.mock.patch.object(m.os, "name", "posix"), \
+             unittest.mock.patch.dict(m.os.environ, {"HOME": "/home/bruno"}, clear=False), \
+             unittest.mock.patch.object(m.os, "getcwd", return_value="/home/bruno/proj"):
+            self.assertFalse(m.is_streamlit_cloud())
+            self.assertTrue(m.is_training_capable_env())
 
 
 class TestPidAliveMatchExato(unittest.TestCase):
