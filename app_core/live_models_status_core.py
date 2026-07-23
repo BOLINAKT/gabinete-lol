@@ -19,6 +19,8 @@ State persisted in `live_models/manifest.json`:
 """
 from __future__ import annotations
 
+import csv
+import io
 import json
 import os
 import subprocess
@@ -376,29 +378,58 @@ def should_auto_retrain(
     return h >= float(min_cooldown_hours)
 
 
+def _pid_alive(pid: int) -> bool:
+    """True se o PID está vivo AGORA. Match EXATO — nada de substring.
+
+    Bug achado com ele (23/07): a versão antiga fazia `str(pid) in stdout`, então
+    um processo `18440` ou a coluna de memória `"1,844 K"` faziam o 1844 morto
+    parecer vivo -> "em retreino" fantasma. Aqui o tasklist sai em CSV e a coluna
+    PID (índice 1) é comparada exatamente."""
+    try:
+        if os.name == "nt":
+            r = subprocess.run(
+                ["tasklist", "/FI", f"PID eq {int(pid)}", "/FO", "CSV", "/NH"],
+                capture_output=True, text=True, timeout=10,
+            )
+            out = (r.stdout or "").strip()
+            if not out or out.upper().startswith("INFO:"):
+                return False
+            for row in csv.reader(io.StringIO(out)):
+                if len(row) >= 2 and row[1].strip() == str(int(pid)):
+                    return True
+            return False
+        os.kill(int(pid), 0)
+        return True
+    except (OSError, subprocess.SubprocessError, ValueError):
+        return False
+
+
 def is_retrain_running(models_dir: str | Path = "live_models") -> bool:
-    """Return True if a retrain process is currently running (best-effort PID check)."""
+    """True se um retreino está rodando de verdade (checa liveness do PID).
+
+    Auto-cura: se o pid_file existe mas o processo está MORTO (ou o arquivo está
+    ilegível), o arquivo é APAGADO aqui mesmo. O processo de retreino é detached
+    e não limpa o próprio pid ao morrer, então sem isto o fantasma ficava pra
+    sempre e o app dizia "em retreino" eternamente. Nunca mais limpar na mão."""
     pid_file = Path(str(models_dir)) / "retrain.pid"
     if not pid_file.exists():
         return False
     try:
         pid = int(pid_file.read_text(encoding="utf-8").strip())
     except (OSError, ValueError):
+        _remove_stale_pid(pid_file)
         return False
-    # Platform-specific PID liveness check
+    if _pid_alive(pid):
+        return True
+    _remove_stale_pid(pid_file)
+    return False
+
+
+def _remove_stale_pid(pid_file: Path) -> None:
     try:
-        if os.name == "nt":
-            # On Windows, use tasklist
-            r = subprocess.run(
-                ["tasklist", "/FI", f"PID eq {pid}"],
-                capture_output=True, text=True, timeout=10,
-            )
-            return str(pid) in (r.stdout or "")
-        else:
-            os.kill(pid, 0)
-            return True
-    except (OSError, subprocess.SubprocessError):
-        return False
+        pid_file.unlink()
+    except OSError:
+        pass
 
 
 def retrain_status(models_dir: str | Path = "live_models") -> Dict[str, Any]:
