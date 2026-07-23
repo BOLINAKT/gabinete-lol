@@ -626,9 +626,35 @@ def _render_freshness_banner(*, st: Any, session_state: MutableMapping[str, Any]
     except Exception:
         running = False
 
+    # AUTO-RETREINO (22/07): se os modelos ao vivo estão velhos e ninguém está
+    # treinando, o app dispara SOZINHO em background (trava de 6h evita relançar
+    # a cada F5). É o que faz ele "não precisar mais saber do ao vivo".
+    auto_disparado = False
+    if not running:
+        try:
+            from app_core.live_models_status_core import (
+                hours_since_auto_retrain, mark_auto_retrain_attempt, should_auto_retrain,
+            )
+            if should_auto_retrain(
+                state=str(state), running=running,
+                hours_since_attempt=hours_since_auto_retrain(models_dir),
+                min_cooldown_hours=6.0,
+            ):
+                cutoff = session_state.get("_live_models_val_cutoff", "2026-03-31")
+                info = launch_retrain_background(val_cutoff=str(cutoff), save_models_dir=str(models_dir))
+                if info.get("ok"):
+                    mark_auto_retrain_attempt(models_dir)
+                    running = True
+                    auto_disparado = True
+        except Exception:
+            pass  # auto-retreino é conveniência; nunca derruba o painel
+
     cols = st.columns([2, 1, 1])
     with cols[0]:
-        if running:
+        if auto_disparado:
+            st.info("Modelos ao vivo desatualizados — **retreino iniciado automaticamente** "
+                    "em background. Os números aparecem quando terminar (atualize a página em alguns minutos).")
+        elif running:
             st.info("Modelo em retreino em background. Atualize a página em alguns minutos.")
         elif state in ("stale", "very_stale", "no_manifest", "no_models"):
             st.caption("Clique em 'Retreinar agora' para regenerar os modelos com os dados mais recentes.")

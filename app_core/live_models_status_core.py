@@ -315,6 +315,67 @@ def launch_retrain_background(
         return {"ok": False, "error": f"{type(exc).__name__}: {exc}", "command": cmd}
 
 
+# ---------------------------------------------------------------------------
+# AUTO-RETREINO (22/07, pedido dele "não quero mais saber do ao vivo"): os
+# modelos ao vivo não estavam na cadência do robô e ficavam velhos calados
+# (manifesto 05/07). Agora o app dispara o retreino SOZINHO quando detecta que
+# estão desatualizados — com trava de tempo para não relançar a cada F5.
+# ---------------------------------------------------------------------------
+
+# Estados de frescor que justificam um retreino automático.
+_STALE_STATES = ("stale", "very_stale", "no_manifest", "no_models")
+
+
+def _auto_retrain_marker(models_dir: str | Path) -> Path:
+    return Path(str(models_dir)) / "last_auto_retrain.txt"
+
+
+def hours_since_auto_retrain(models_dir: str | Path = "live_models") -> float:
+    """Horas desde a última tentativa AUTOMÁTICA (inf se nunca / ilegível)."""
+    p = _auto_retrain_marker(models_dir)
+    try:
+        if not p.exists():
+            return float("inf")
+        ts = datetime.fromisoformat(p.read_text(encoding="utf-8").strip())
+        return float((datetime.now(ts.tzinfo) - ts).total_seconds() / 3600.0)
+    except (OSError, ValueError, TypeError):
+        return float("inf")
+
+
+def mark_auto_retrain_attempt(models_dir: str | Path = "live_models") -> None:
+    """Carimba agora — a trava de cooldown olha este arquivo."""
+    try:
+        p = _auto_retrain_marker(models_dir)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(datetime.now().astimezone().isoformat(), encoding="utf-8")
+    except (OSError, TypeError, ValueError):
+        pass
+
+
+def should_auto_retrain(
+    *,
+    state: str,
+    running: bool,
+    hours_since_attempt: float,
+    min_cooldown_hours: float = 6.0,
+) -> bool:
+    """Decide (puro) se o app deve disparar o retreino automático.
+
+    Só dispara quando: os modelos estão desatualizados E não há retreino rodando
+    E a última tentativa automática foi há tempo suficiente (a trava que evita
+    relançar a cada abertura da página / a cada F5, ou repetir um retreino que
+    falha rápido)."""
+    if bool(running):
+        return False
+    if str(state) not in _STALE_STATES:
+        return False
+    try:
+        h = float(hours_since_attempt)
+    except (TypeError, ValueError):
+        h = float("inf")
+    return h >= float(min_cooldown_hours)
+
+
 def is_retrain_running(models_dir: str | Path = "live_models") -> bool:
     """Return True if a retrain process is currently running (best-effort PID check)."""
     pid_file = Path(str(models_dir)) / "retrain.pid"
