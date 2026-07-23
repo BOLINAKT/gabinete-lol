@@ -888,14 +888,14 @@ def _patch_meta_guard_payload(
     csv_sig: Tuple[str, int, int],
     fit_sig: Tuple[str, int, int],
 ) -> Dict[str, Any]:
-    return _patch_meta_guard_payload_core(csv_sig, fit_sig, ctx=globals())
+    return _patch_meta_guard_payload_core(csv_sig, fit_sig, ctx={"_load_fitted_params_cached": _load_fitted_params_cached})
 
 
 
 
 
 def _ach_layer_for_artifact(art: MLArtifact, artifact_path: str, ach_override_path: Optional[str] = None) -> Dict[str, Any]:
-    return _ach_layer_for_artifact_core(art, artifact_path, ach_override_path, ctx=globals())
+    return _ach_layer_for_artifact_core(art, artifact_path, ach_override_path, ctx={"_file_sig": _file_sig, "_load_achievements_cached": _load_achievements_cached})
 
 
 # Helpers movidos p/ ml_adjust_helpers_core (fatiamento 18/07); re-importados
@@ -1723,7 +1723,7 @@ def _generate_and_persist_team_state_artifact(
     csv_paths: List[str],
     keep_playoffs: Optional[bool] = None,
 ) -> Dict[str, Any]:
-    return _generate_and_persist_team_state_artifact_core(root=root, csv_paths=csv_paths, keep_playoffs=keep_playoffs, ctx=globals())
+    return _generate_and_persist_team_state_artifact_core(root=root, csv_paths=csv_paths, keep_playoffs=keep_playoffs, ctx={"_file_sig": _file_sig, "_load_fitted_params_cached": _load_fitted_params_cached})
 
 
 def _run_daily_pipeline(
@@ -1768,7 +1768,12 @@ def _run_daily_pipeline(
 
 # Página Técnico (só aqui tem drift/retreino/update)
 if nav_page == "Tecnico":
-    _render_calibracoes(APP_ROOT, st=st, ctx=globals())
+    # ctx explícito auto-derivado da fonte do renderer (força-tarefa 23/07):
+    # sem repasse de ctx no core, então as chaves extraídas são completas.
+    _render_calibracoes(APP_ROOT, st=st, ctx=_build_render_ctx(
+        globals(), renderer_source=_inspect.getsource(_render_calibracoes),
+        renderer_name="render_calibracoes", validate=False,
+    ))
     st.stop()
 
 # -----------------------------
