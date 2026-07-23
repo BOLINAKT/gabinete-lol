@@ -1,0 +1,90 @@
+# Robô de RETREINO AO VIVO (fase 2 do "não quero mais saber do ao vivo", 23/07):
+# os modelos ao vivo (fases 6/7/8/10: estado→vitória, mercados por minuto,
+# First X, player props) NÃO estavam na cadência de nenhum robô — só eram
+# treinados no PC dele e ficavam gitignored, então a Streamlit Cloud NUNCA os
+# tinha (painel "Durante o mapa" + mercados em N/A pra sempre). Agora live_models/
+# é versionado e a nuvem só CARREGA (1GB de RAM não treina). Este robô treina no
+# Actions (CPU/RAM de sobra) uma vez por semana e commita os modelos frescos.
+#
+# Semanal basta: o estado→vitória e os totais são estáveis; a memória ótima é
+# ~180d (medido). O gate de cada fase NÃO salva modelo que piora, e a guarda
+# abaixo carrega+prevê os modelos antes de commitar — modelo quebrado nunca sobe.
+name: Retreino ao vivo (modelos ao vivo semanais)
+
+on:
+  schedule:
+    - cron: "30 6 * * 1"  # segunda de manhã (antes da nota_semanal 08:11)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: retreino-ao-vivo
+  cancel-in-progress: false
+
+jobs:
+  retreino_ao_vivo:
+    runs-on: ubuntu-latest
+    # medido no PC dele: run completo (4 fases, config real) = 51 min. O runner
+    # ubuntu (2 cores) pode ser ~1.5-2x mais lento -> 150 dá margem folgada e fica
+    # bem abaixo do teto de 6h do Actions. Semanal: ~51-100 min/run cabe tranquilo
+    # nos 2000 min/mês do repo privado, junto com os robôs diários.
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependências
+        run: pip install --quiet -r requirements.txt
+
+      - name: Retreinar todos os modelos ao vivo (fases 6/7/8/10)
+        run: |
+          python tools/retrain_live_models_all.py \
+            --val-cutoff 2026-03-31 \
+            --models-root live_models \
+            --n-bootstrap 500 \
+            --phases 6,7,8,10
+
+      - name: Guarda — carregar e prever cada modelo (nunca commitar quebrado)
+        run: |
+          python - <<'PY'
+          import sys
+          from app_core.live_markets_runtime_core import predict_market, ACTIVE_MARKETS
+          from app_core.live_first_markets_runtime_core import predict_first_market, ACTIVE_FIRST_MARKETS
+          ss = {"ml_live_state_model_enabled": True, "ml_live_state_models_dir": "live_models"}
+          falhas = []
+          for mk in ACTIVE_MARKETS:
+              r = predict_market(session_state=ss, market=mk, minute=10, line=20.0, p_map_pre=0.5, league="LPL")
+              if r.get("mean") is None:
+                  falhas.append(f"mercado {mk}: {r.get('reason')}")
+          for mk in ACTIVE_FIRST_MARKETS:
+              r = predict_first_market(session_state=ss, market=mk, p_map_pre=0.5, league="LPL")
+              if r.get("p_team_a") is None:
+                  falhas.append(f"first {mk}: {r.get('reason')}")
+          if falhas:
+              print("GUARDA FALHOU — modelos não previram:", *falhas, sep="\n  ")
+              sys.exit(1)
+          print("guarda ok: todos os modelos ao vivo carregam e preveem")
+          PY
+
+      - name: Commitar modelos ao vivo atualizados
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add live_models/ FASE6_LIVE.json FASE7_MARKETS.json FASE8_FIRST_MARKETS.json FASE10_PLAYER_PROPS.json
+          if git diff --cached --quiet; then
+            echo "modelos ao vivo não mudaram — nada a commitar"
+          else
+            git commit -m "Robô: modelos ao vivo atualizados (retreino semanal)"
+            # push com retry: o robô de dados/retreino pode commitar ao mesmo tempo
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado (concorrência) — rebase e retry $i/3"
+              git pull --rebase || exit 1
+            done
+            git push
+          fi
