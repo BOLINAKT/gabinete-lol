@@ -95,7 +95,16 @@ caso; o alvo é domain NÃO conhecer Streamlit.
 
 ---
 
-## Espinha `globals→ctx` — progresso (23/07)
+## Espinha `globals→ctx` — COMPLETA (23/07)
+
+**✅ 18/18 `ctx=globals()` reais eliminados do plays_app.** Cada renderer/wrapper
+recebe agora só as chaves que a árvore (incl. transitiva cross-módulo) de fato
+usa. Ferramentas: dict nomeado direto (imports, falha alta), `_pick_ctx(*chaves)`
+(runtime, globals().get preserva None-se-ausente), `_pick_ctx_from_modules(...)`
+(fecho cross-módulo auto-derivado das fontes, à prova de drift). Tudo E2E-verde;
+aba Parâmetros e gate de boot testados. Reorg de pastas agora está DESTRAVADA.
+
+_(histórico abaixo)_
 
 **11 de 19 `ctx=globals()` convertidos para contrato EXPLÍCITO** (dict nomeado com
 as chaves que a árvore usa, ou `build_render_ctx` auto-derivado quando o renderer
