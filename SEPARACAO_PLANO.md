@@ -1,5 +1,19 @@
 # Plano de separação — a "força-tarefa final" (arquivo-a-arquivo)
 
+> **DECISÃO 23/07 (com ele): NÃO fazer o reorg de PASTAS.** Descoberto ao pilotar
+> o `config/`: o `app_core` é uma **biblioteca compartilhada** — o app do **Dota é
+> um clone auto-gerado** (`build_clone.py`) que reusa o `app_core` deste repo de
+> propósito (via `dota_paths.ensure_lol_on_path`). Mover módulos quebra o clone
+> (o E2E do Dota pegou: `cannot import name 'stats_config' from 'app_core'`), e só
+> sairia com ~235 shims OU regenerando o clone — caro/arriscado para benefício
+> **cosmético**. As dores CONCRETAS já estão resolvidas sem pastas: mercados =
+> fonte única (1 lugar) e o `ctx` da espinha ficou EXPLÍCITO (18/18). A
+> organização segue por CONVENÇÃO DE NOME (tab_core/ui_core/runtime_core/...). Se
+> um dia valer, o caminho é regenerar o clone junto, não shims. O resto deste
+> documento fica como MAPA de referência (classificação por camada), não como TODO.
+
+
+
 > Complementa [ARQUITETURA_ALVO.md](ARQUITETURA_ALVO.md). Aquele diz o **destino**
 > (5 camadas). Este diz **onde cada um dos 235 módulos de `app_core/` mora** e
 > **como mover sem quebrar o app no ar**. Começado na força-tarefa de 23/07.
