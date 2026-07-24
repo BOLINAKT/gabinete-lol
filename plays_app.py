@@ -33,6 +33,23 @@ def _pick_ctx(*names):
     g = globals()
     return {n: g.get(n) for n in names}
 
+
+def _pick_ctx_from_modules(*module_names):
+    """ctx EXPLÍCITO auto-derivado das fontes de VÁRIOS módulos do fecho.
+
+    Para os casos em que a função repassa ctx pra baixo CRUZANDO módulos (ex.:
+    csv_bootstrap_gate -> ensure_csv_runtime_ready + collect_maintenance_status;
+    params_tab -> params_sections_core), extrai TODAS as chaves ctx.get/_ctx do
+    fecho inteiro via build_render_ctx — completo e à prova de drift (re-deriva
+    a cada run, nada de lista de 31/90 nomes na mão que apodrece). Só listar
+    aqui os módulos do fecho (verificado que nenhum vai mais fundo)."""
+    import importlib
+    src = "\n".join(
+        _inspect.getsource(importlib.import_module(n)) for n in module_names
+    )
+    return _build_render_ctx(globals(), renderer_source=src,
+                             renderer_name="+".join(module_names), validate=False)
+
 import pandas as pd
 import numpy as np
 import streamlit as st
@@ -767,12 +784,13 @@ def _csv_bootstrap_gate(
     artifact_path: str = "",
 ) -> None:
     """Tela separada de preparo do CSV + manuten\u00e7\u00e3o autom\u00e1tica quando o CSV muda."""
-    # DEFERIDO (força-tarefa 23/07): fecho cross-módulo grande e FRÁGIL — o gate
-    # repassa ctx para ensure_csv_runtime_ready E collect_maintenance_status
-    # (união de 31 chaves em 3 módulos). Um dict na mão apodrece (add chave num
-    # dos 3 e esquece aqui) e isto é crítico no boot. Fica ctx=globals() até um
-    # redesign de contexto TIPADO (com ele). Ver SEPARACAO_PLANO.md.
-    return _csv_bootstrap_gate_flow(csv_path=csv_path, hist_csvs=hist_csvs, artifact_path=artifact_path, st=st, ctx=globals())
+    # Fecho cross-módulo (força-tarefa 23/07): o gate repassa ctx para
+    # ensure_csv_runtime_ready E collect_maintenance_status. Auto-derivado das
+    # fontes dos 3 módulos do fecho (nenhum vai mais fundo) — completo e sem
+    # lista de 31 nomes na mão.
+    return _csv_bootstrap_gate_flow(csv_path=csv_path, hist_csvs=hist_csvs, artifact_path=artifact_path, st=st, ctx=_pick_ctx_from_modules(
+        "app_core.csv_bootstrap_flow_core", "app_core.csv_runtime_ready_core",
+        "app_core.csv_maintenance_runner_core"))
 
 
 
@@ -2695,11 +2713,11 @@ tab_refs = {n: t for n, t in zip(_active_tabs, st.tabs(_active_tabs))}
 
 if _TAB_PARAMS in tab_refs:
  with tab_refs[_TAB_PARAMS]:
-    # DEFERIDO (força-tarefa 23/07): params_tab repassa ctx para _render_manutencao_ml
-    # e _render_governanca_ml (fecho de local incerto) e a aba NÃO é coberta pelo
-    # E2E — não dá pra provar o contrato sozinho. Fica ctx=globals() até fazermos
-    # com ele clicando a aba. Ver SEPARACAO_PLANO.md.
-    _render_params_tab(st=st, ctx=globals())
+    # Fecho cross-módulo (força-tarefa 23/07): params_tab repassa ctx para
+    # _render_manutencao_ml/_render_governanca_ml, que vivem em params_sections_core.
+    # Auto-derivado das fontes dos 2 módulos (nenhum vai mais fundo).
+    _render_params_tab(st=st, ctx=_pick_ctx_from_modules(
+        "app_core.params_tab_core", "app_core.params_sections_core"))
 
 
 if _TAB_VISAO in tab_refs:
