@@ -378,6 +378,53 @@ def team_style_history(
     return out
 
 
+def team_vs_style_history(
+    *,
+    players_df: pd.DataFrame,
+    team: str,
+    registry: Mapping[str, Any] | None,
+    year: Optional[int] = None,
+) -> dict[str, dict[str, int]]:
+    """Espelho de team_style_history: como o time se saiu CONTRA cada estilo —
+    classifica a comp do OPONENTE em cada jogo e conta a vitória do TIME.
+    {arquétipo: {"wins": w, "n": n}}. Também sempre com o n na cara."""
+    from app_core.comp_archetype_core import build_comp_profile
+
+    out: dict[str, dict[str, int]] = {a: {"wins": 0, "n": 0} for a in ARCHETYPES}
+    if players_df is None or players_df.empty:
+        return out
+    df = players_df
+    if not {"teamname", "champion", "gameid"}.issubset(df.columns):
+        return out
+    if year is not None and "year" in df.columns:
+        df = df[pd.to_numeric(df["year"], errors="coerce") == int(year)]
+    gids = set(df[df["teamname"].astype(str) == str(team)]["gameid"])
+    df = df[df["gameid"].isin(gids)]
+    for _gid, grp in df.groupby("gameid"):
+        team_rows = grp[grp["teamname"].astype(str) == str(team)]
+        opp_rows = grp[grp["teamname"].astype(str) != str(team)]
+        if team_rows.empty or opp_rows.empty:
+            continue
+        pos_map: dict[str, str] = {}
+        for row in opp_rows.itertuples(index=False):
+            pos = norm_position(getattr(row, "position", ""))
+            champ = str(getattr(row, "champion", "") or "").strip()
+            if pos and champ and pos not in pos_map:
+                pos_map[pos] = champ
+        if len(pos_map) < 5:
+            continue
+        picks = [pos_map[r] for r in ROLE_ORDER]
+        label, _ = classify_comp_archetype(
+            build_comp_profile(registry=registry, picks=picks, role_order=list(ROLE_ORDER)))
+        try:
+            win = int(pd.to_numeric(team_rows["result"], errors="coerce").fillna(0).max())
+        except (KeyError, TypeError, ValueError):
+            win = 0
+        out[label]["n"] += 1
+        out[label]["wins"] += 1 if win == 1 else 0
+    return out
+
+
 def player_champion_familiarity(
     *,
     players_df: pd.DataFrame,

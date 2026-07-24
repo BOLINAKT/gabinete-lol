@@ -39,6 +39,7 @@ from app_core.radar_confronto_core import (
     map_pattern_signals,
     player_champion_familiarity,
     team_style_history,
+    team_vs_style_history,
     towers_draft_delta,
     towers_draft_signal,
 )
@@ -990,41 +991,62 @@ def _render_draft_reading(
         except Exception:
             pass
 
-    # ------------------------- Fit time×estilo -------------------------
+    # ------------------------- Fit time × estilo (suporte) -------------------------
+    from html import escape as _esc
     with st.container(border=True):
-        render_tab_section(st, title="Fit time × estilo",
-                           subtitle="Como cada time joga com o tipo de comp que draftou hoje (season atual).")
+        render_tab_section(
+            st, title="Fit time × estilo",
+            subtitle="Como cada time se sai COM o estilo que draftou hoje, e o adversário CONTRA ele. "
+                     "Amostra pequena — é suporte pra sua leitura, não veredito.",
+        )
+
+        def _style_hist(fn, tm):
+            ck = f"_radar_{fn.__name__}_{tm}_{year}_{str(csv_sig)}"
+            h = session_state.get(ck)
+            if not isinstance(h, dict):
+                h = fn(players_df=players_df, team=tm, registry=registry, year=year) \
+                    if players_df is not None else {a: {"wins": 0, "n": 0} for a in ARCHETYPES}
+                session_state[ck] = h
+            return h
+
+        def _rec_txt(rec):
+            w, n = int(rec.get("wins", 0)), int(rec.get("n", 0))
+            if n == 0:
+                return "sem jogos", float("nan"), 0
+            return f"<b>{w}-{n - w}</b> ({100.0 * w / n:.0f}%, n={n})", 100.0 * w / n, n
+
         fit_cols = st.columns(2)
-        for col, team, arch, color in ((fit_cols[0], team_a, arch_a, _COR_A),
-                                       (fit_cols[1], team_b, arch_b, _COR_B)):
+        for col, team, opp, arch, color in (
+            (fit_cols[0], team_a, team_b, arch_a, _COR_A),
+            (fit_cols[1], team_b, team_a, arch_b, _COR_B),
+        ):
             with col:
                 st.markdown(_team_header_html(team, color), unsafe_allow_html=True)
-                cache_key = f"_radar_fit_{team}_{year}_{str(csv_sig)}"
-                hist = session_state.get(cache_key)
-                if not isinstance(hist, dict):
-                    hist = team_style_history(players_df=players_df, team=team,
-                                              registry=registry, year=year) \
-                        if players_df is not None else {a: {"wins": 0, "n": 0} for a in ARCHETYPES}
-                    session_state[cache_key] = hist
-                for label in ARCHETYPES:
-                    rec = hist.get(label) or {"wins": 0, "n": 0}
-                    wins, n = int(rec.get("wins", 0)), int(rec.get("n", 0))
-                    is_today = (label == arch)
-                    pct = (100.0 * wins / n) if n else float("nan")
-                    strong = n >= 5 and pd.notna(pct) and (pct >= 70.0 or pct <= 30.0)
-                    mark = "🎯 " if is_today else ""
-                    if n == 0:
-                        line = f"{mark}{label}: sem jogos"
+                st.markdown(
+                    "<div style='font-size:.75em;opacity:.6;text-transform:uppercase;letter-spacing:.04em;'>draftou</div>"
+                    f"<div style='font-size:1.4em;font-weight:800;color:{color};line-height:1.05'>{_esc(str(arch))}</div>",
+                    unsafe_allow_html=True,
+                )
+                wtxt, wpct, wn = _rec_txt(_style_hist(team_style_history, team).get(arch, {"wins": 0, "n": 0}))
+                vtxt, vpct, vn = _rec_txt(_style_hist(team_vs_style_history, opp).get(arch, {"wins": 0, "n": 0}))
+                st.markdown(
+                    f"<div style='margin-top:8px;font-size:.9em;'>{_esc(_short_name(team))} <span style='opacity:.6'>com {_esc(str(arch).lower())}:</span> {wtxt}</div>"
+                    f"<div style='font-size:.9em;'>{_esc(_short_name(opp))} <span style='opacity:.6'>contra {_esc(str(arch).lower())}:</span> {vtxt}</div>",
+                    unsafe_allow_html=True,
+                )
+                if wn >= 5 and vn >= 5:
+                    edge = (wpct - 50.0) + (50.0 - vpct)  # bom COM + adversário fraco CONTRA
+                    if edge >= 15:
+                        vtag, vcor = f"leitura de estilo favorece {_short_name(team)}", "#22c55e"
+                    elif edge <= -15:
+                        vtag, vcor = f"leitura de estilo favorece {_short_name(opp)}", "#ef4444"
                     else:
-                        line = f"{mark}{label}: <b>{wins}-{n - wins}</b> ({pct:.0f}%, n={n})"
-                    style = ""
-                    if is_today:
-                        style = f"border-left:3px solid {color};padding-left:8px;"
-                    if strong and is_today:
-                        cor = "#22c55e" if pct >= 70.0 else "#ef4444"
-                        line += f" <span style='color:{cor};font-weight:800;'>← sinal</span>"
-                    elif is_today and 0 < n < 5:
-                        line += " <span style='opacity:0.55;'>(amostra curta)</span>"
-                    st.markdown(f"<div style='{style}margin:3px 0;'>{line}</div>", unsafe_allow_html=True)
+                        vtag, vcor = "estilo equilibrado", "#9ca3af"
+                    st.markdown(
+                        f"<div style='margin-top:6px;font-weight:700;font-size:.9em;color:{vcor}'>→ {_esc(vtag)}</div>",
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.caption("→ amostra pequena — sem leitura de vantagem confiável.")
 
     return compare
