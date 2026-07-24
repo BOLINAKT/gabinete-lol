@@ -446,9 +446,14 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
             st, title="Veredito por mercado",
             subtitle="A resposta no golpe de vista — odd justa (sem juice). Compare com a casa pra achar valor.",
         )
+        # Vencedor: SÓ o número do pré (análise principal). Nunca o fallback cru
+        # do artefato (modelo de time só, sem players/achievements/camadas) — era
+        # o que fazia o Radar discordar do pré (achado por ele 24/07). Se os times
+        # não batem com a análise principal, avisa em vez de inventar.
         p_base_v, _fonte_v = resolve_p_base(
             session_state=session_state, team_a=team_a, team_b=team_b, artifact_path=artifact_path,
         )
+        _v_do_pre = p_base_v is not None and str(_fonte_v or "").startswith("análise principal")
         _tot: dict = {}
         _pov = None
         try:
@@ -465,7 +470,7 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
 
         vcards = st.columns(5)
         with vcards[0]:
-            if p_base_v is not None:
+            if _v_do_pre:
                 st.markdown(
                     "<div style='opacity:.55;font-size:.72em;text-transform:uppercase;letter-spacing:.04em;'>Vencedor</div>"
                     f"<div style='font-weight:700;font-size:.95em'>{_esc(_short_name(team_a))} "
@@ -476,7 +481,13 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
                     unsafe_allow_html=True,
                 )
             else:
-                st.caption("Vencedor: sem artefato.")
+                st.markdown(
+                    "<div style='opacity:.55;font-size:.72em;text-transform:uppercase;letter-spacing:.04em;'>Vencedor</div>"
+                    "<div style='opacity:.75;font-size:.8em;line-height:1.25'>Analise estes times na aba "
+                    "<b>Plays</b> pro número completo — o pré aplica players + camadas que não recalculo aqui "
+                    "(pra não te mostrar um número mais pobre e divergente).</div>",
+                    unsafe_allow_html=True,
+                )
         _tot_mkts = [m for m in RADAR_MARKETS if m["key"] in ("kills", "towers", "dragons", "time")]
         for _i, _mk in enumerate(_tot_mkts, start=1):
             _k = str(_mk["key"])
