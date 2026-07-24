@@ -482,52 +482,17 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
     roster_a = latest_roster(players_df=players_df, team=team_a) if players_df is not None else {}
     roster_b = latest_roster(players_df=players_df, team=team_b) if players_df is not None else {}
 
-    store = _series_store(session_state, team_a, team_b)
-
     with st.container(border=True):
         render_tab_section(
-            st, title="Draft do mapa",
-            subtitle="Clique nos bonecos na ordem do draft, ou cole os 10 nomes. Mapas salvos riscam o pool fearless.",
+            st, title="Draft",
+            subtitle="Clique nos bonecos na ordem do draft, ou cole os 10 nomes — refina o veredito acima.",
         )
-        cf1, cf2, cf3 = st.columns([1.2, 1, 2.2])
-        with cf1:
-            fearless = st.checkbox("Fearless", value=True, key=f"radar{_S}_fearless",
-                                   help="Campeões usados nos mapas anteriores da série ficam fora do pool.")
-        with cf2:
-            map_no = int(st.number_input("Mapa", 1, 5, step=1, key=f"radar{_S}_map_no"))
-        used = _fearless_used(store, map_no) if fearless else set()
-        with cf3:
-            saved_maps = sorted(int(k) for k in (store.get("maps") or {}) if str(k).isdigit())
-            if saved_maps:
-                st.caption(f"Série salva: mapa(s) {', '.join(str(m) for m in saved_maps)} · "
-                           f"{len(used)} campeões fora do pool deste mapa" if used else
-                           f"Série salva: mapa(s) {', '.join(str(m) for m in saved_maps)}")
-            if used:
-                st.caption("Fora (fearless): " + ", ".join(sorted(used)))
-
-        # Padrões por número do mapa (medidos; gate ACCEPT 2026-07-04 —
-        # dragões mapa-2 foi REJECT e por isso não aparece).
-        for pat in map_pattern_signals(map_no):
-            st.markdown(
-                "<div style='border-left:3px solid #f59e0b;background:rgba(245,158,11,0.08);"
-                "padding:5px 10px;border-radius:6px;margin:3px 0;font-size:0.88em;'>"
-                f"📐 {pat}</div>",
-                unsafe_allow_html=True,
-            )
-
-        pick_key = lambda side, role: f"radar_pick_{side}_{role}_m{map_no}"  # noqa: E731
-
-        # Chegou com a série andando? Pode selecionar o mapa 1, colar/salvar,
-        # depois o 2, ... — o pool fearless reconstrói igual. Os slots de um
-        # mapa JÁ SALVO pré-carregam do que foi salvo (pode editar e re-salvar).
-        saved_this_map = (store.get("maps") or {}).get(str(map_no)) or {}
-        for side in ("A", "B"):
-            saved_picks = list(saved_this_map.get(side) or [])
-            for i, role in enumerate(ROLE_ORDER):
-                key = pick_key(side, role)
-                if not str(session_state.get(key) or "") and i < len(saved_picks) and str(saved_picks[i]).strip():
-                    session_state[key] = str(saved_picks[i])
-        st.caption("Série já em andamento? Selecione o mapa 1, cole o draft e salve; repita até o mapa atual — o fearless reconstrói sozinho.")
+        # Fearless/série CORTADO (23/07, com ele): draft de um mapa só. O _S
+        # isola o draft por jogo (multi-jogo preservado); map_no fixo mantém as
+        # chaves de widget estáveis sem o apparato de série.
+        map_no = 1
+        used: set = set()
+        pick_key = lambda side, role: f"radar{_S}_pick_{side}_{role}"  # noqa: E731
 
         # Colagem única no esquema do usuário: 10 campeões (tab/espaço), os 5
         # PRIMEIROS são do time BLUE SIDE, na ordem TOP JNG MID ADC SUP.
@@ -718,39 +683,6 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
             s: [str(session_state.get(pick_key(s, r)) or "") for r in ROLE_ORDER]
             for s in ("A", "B")
         }
-
-        bc1, bc2 = st.columns([1.4, 1])
-        with bc1:
-            if st.button(f"💾 Salvar mapa {map_no} na série (libera o fearless do próximo)",
-                         key=f"radar{_S}_save_map_{map_no}"):
-                store.setdefault("maps", {})[str(map_no)] = {"A": list(picks["A"]), "B": list(picks["B"])}
-                session_state["radar_series"] = store
-                _series_persist(store)
-                st.rerun()
-        with bc2:
-            if st.button("♻ Resetar série", key=f"radar{_S}_reset_series"):
-                fresh = {"matchup": f"{team_a}|{team_b}", "maps": {}}
-                session_state["radar_series"] = fresh
-                _series_persist(fresh)
-                st.rerun()
-
-        saved_map_nos = sorted(int(k) for k in (store.get("maps") or {}) if str(k).isdigit())
-        if saved_map_nos:
-            with st.expander(f"Mapas salvos da série ({len(saved_map_nos)})", expanded=False):
-                for m in saved_map_nos:
-                    drafts = (store.get("maps") or {}).get(str(m)) or {}
-                    da_txt = ", ".join(c for c in (drafts.get("A") or []) if str(c).strip()) or "—"
-                    db_txt = ", ".join(c for c in (drafts.get("B") or []) if str(c).strip()) or "—"
-                    mc1, mc2 = st.columns([5, 1])
-                    with mc1:
-                        st.markdown(f"**Mapa {m}** · {team_a}: {da_txt}  \n"
-                                    f"{'&nbsp;' * 14} {team_b}: {db_txt}", unsafe_allow_html=True)
-                    with mc2:
-                        if st.button("Remover", key=f"radar{_S}_rm_map_{m}"):
-                            (store.get("maps") or {}).pop(str(m), None)
-                            session_state["radar_series"] = store
-                            _series_persist(store)
-                            st.rerun()
 
     complete_a = all(str(c).strip() for c in picks["A"])
     complete_b = all(str(c).strip() for c in picks["B"])
