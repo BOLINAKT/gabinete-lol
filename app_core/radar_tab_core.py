@@ -896,6 +896,45 @@ def _render_draft_reading(
     else:
         lean_team, lean_label, lean_color = "", "DRAFT EQUILIBRADO", "#9ca3af"
 
+    # ---- RESUMO do draft: 3 bandeiras honestas num lugar só (pedido dele 24/07) ----
+    # estilo · fora-do-meta · baixa-familiaridade. Suporte, não veredito — o peso
+    # de player/força já está no Vencedor; aqui é o que é NOTÁVEL no draft.
+    from html import escape as _esc2
+
+    def _draft_flags(picks, fam):
+        off = [(c, str((meta_map.get(c) or {}).get("tier") or ""))
+               for c in picks if str((meta_map.get(c) or {}).get("tier") or "") in ("C", "D")]
+        low = [(p, ch, g) for (p, ch, g) in fam if g < _FAMILIARITY_OK]
+        return off, low
+
+    with st.container(border=True):
+        render_tab_section(st, title="Resumo do draft",
+                           subtitle="O que esse draft tem de notável — suporte pra sua leitura, você decide.")
+        _rc = st.columns(2)
+        for _col, _team, _arch, _picks, _fam, _color in (
+            (_rc[0], team_a, arch_a, picks_a, fam_a, _COR_A),
+            (_rc[1], team_b, arch_b, picks_b, fam_b, _COR_B),
+        ):
+            with _col:
+                st.markdown(
+                    f"<b style='color:{_color}'>{_esc2(_short_name(_team))}</b> · "
+                    f"<b>{_esc2(str(_arch))}</b>", unsafe_allow_html=True)
+                _off, _low = _draft_flags(_picks, _fam)
+                if _off:
+                    st.markdown("<div style='font-size:.85em;margin:2px 0'>📉 <b>Fora do meta:</b> "
+                                + ", ".join(f"{_esc2(str(c))} ({t})" for c, t in _off) + "</div>",
+                                unsafe_allow_html=True)
+                else:
+                    st.markdown("<div style='font-size:.85em;opacity:.6;margin:2px 0'>✓ picks no meta</div>",
+                                unsafe_allow_html=True)
+                if _low:
+                    st.markdown("<div style='font-size:.85em;margin:2px 0'>⚠ <b>Baixa familiaridade:</b> "
+                                + ", ".join(f"{_esc2(str(p))} ({_esc2(str(ch))}, {g}j)" for p, ch, g in _low) + "</div>",
+                                unsafe_allow_html=True)
+                else:
+                    st.markdown("<div style='font-size:.85em;opacity:.6;margin:2px 0'>✓ times confortáveis nos picks</div>",
+                                unsafe_allow_html=True)
+
     with st.container(border=True):
         render_tab_section(st, title="Leitura do draft",
                            subtitle="Comps, veredito e o que esse draft costuma fazer com os mercados.")
