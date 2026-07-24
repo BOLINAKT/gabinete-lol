@@ -436,6 +436,67 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
                     key=f"radar{_S}_line_{mk['key']}",
                 ))
 
+    # ------------------------- Veredito por mercado -------------------------
+    # Decisão primeiro (polimento 23/07): a resposta no topo, no golpe de vista.
+    # ML = força do time (confiável). Totais = motor de linhas de produção.
+    # Draft entra como ajuste PEQUENO (medido ~neutro no vencedor; só torres se move).
+    from html import escape as _esc
+    with st.container(border=True):
+        render_tab_section(
+            st, title="Veredito por mercado",
+            subtitle="A resposta no golpe de vista — odd justa (sem juice). Compare com a casa pra achar valor.",
+        )
+        p_base_v, _fonte_v = resolve_p_base(
+            session_state=session_state, team_a=team_a, team_b=team_b, artifact_path=artifact_path,
+        )
+        _tot: dict = {}
+        _pov = None
+        try:
+            from mlcore.lines_engine import (
+                build_profile as _bp, matchup_expected_totals as _met,
+                prob_over_from_total as _pov,
+            )
+            from mlcore.stats_teams import Filters as _Flt
+            _pA = _bp(team_games, team=team_a, filters=_Flt(), half_life_days=180.0)
+            _pB = _bp(team_games, team=team_b, filters=_Flt(), half_life_days=180.0)
+            _tot = _met(_pA, _pB)
+        except Exception:
+            _tot = {}
+
+        vcards = st.columns(5)
+        with vcards[0]:
+            if p_base_v is not None:
+                st.markdown(
+                    "<div style='opacity:.55;font-size:.72em;text-transform:uppercase;letter-spacing:.04em;'>Vencedor</div>"
+                    f"<div style='font-weight:700;font-size:.95em'>{_esc(_short_name(team_a))} "
+                    f"<span style='color:{_COR_A}'>{format_num_fn(1.0 / p_base_v, 2)}</span></div>"
+                    f"<div style='font-weight:700;font-size:.95em'>{_esc(_short_name(team_b))} "
+                    f"<span style='color:{_COR_B}'>{format_num_fn(1.0 / (1.0 - p_base_v), 2)}</span></div>"
+                    f"<div style='opacity:.5;font-size:.72em'>{100 * p_base_v:.0f}% / {100 * (1 - p_base_v):.0f}%</div>",
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.caption("Vencedor: sem artefato.")
+        _tot_mkts = [m for m in RADAR_MARKETS if m["key"] in ("kills", "towers", "dragons", "time")]
+        for _i, _mk in enumerate(_tot_mkts, start=1):
+            _k = str(_mk["key"])
+            _ln = float(lines.get(_k, _mk["line"]))
+            with vcards[_i]:
+                _t = _tot.get(_k)
+                if _t is not None and _pov is not None and math.isfinite(float(_t.mean)):
+                    _po = float(_pov(_t, _ln))
+                    _lado = "Over" if _po >= 0.5 else "Under"
+                    _pl = _po if _po >= 0.5 else 1.0 - _po
+                    st.markdown(
+                        f"<div style='opacity:.55;font-size:.72em;text-transform:uppercase;letter-spacing:.04em;'>{_esc(str(_mk['label']))}</div>"
+                        f"<div style='font-size:1.35em;font-weight:700;line-height:1.1'>{float(_t.mean):.1f}</div>"
+                        f"<div style='opacity:.72;font-size:.8em'>{_lado} {_ln:g}: justa "
+                        f"<b>{format_num_fn(1.0 / max(1e-6, _pl), 2)}</b> ({100 * _pl:.0f}%)</div>",
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.caption(f"{_mk['label']}: —")
+
     # ------------------------- Sinais (radar) -------------------------
     with st.container(border=True):
         render_tab_section(
@@ -457,18 +518,11 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
                 for sig in sigs:
                     st.markdown(_signal_chip_html(sig), unsafe_allow_html=True)
 
-        # Odd justa do ML (mesma fonte do entre-mapas: análise principal → artefato)
+        # p_base (força do time) só COMPUTADO aqui — a odd já aparece no Veredito
+        # acima; os blocos ao vivo (abaixo) reusam este p_base.
         p_base, fonte = resolve_p_base(
             session_state=session_state, team_a=team_a, team_b=team_b, artifact_path=artifact_path,
         )
-        if p_base is not None:
-            st.markdown(
-                f"**Odd justa (mapa)** · {team_a}: **{format_num_fn(1.0 / p_base, 2)}** "
-                f"({100.0 * p_base:.1f}%) · {team_b}: **{format_num_fn(1.0 / (1.0 - p_base), 2)}** "
-                f"({100.0 * (1.0 - p_base):.1f}%)  \n"
-                f"<span style='opacity:0.6;font-size:0.85em;'>fonte: {fonte}</span>",
-                unsafe_allow_html=True,
-            )
 
     # ------------------------- Draft -------------------------
     registry = _get_registry(session_state)
@@ -704,37 +758,45 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
     else:
         st.info("Complete os 10 picks pra abrir a leitura do draft.")
 
-    # ---------------- Ao vivo (ex-Live-Bet, fundido aqui a pedido) ----------------
-    with st.container(border=True):
-        render_tab_section(
-            st, title="Entre mapas (série ao vivo)",
-            subtitle="Placar da série → odd justa do próximo mapa e de fechar a série.",
-        )
-        try:
-            from app_core.live_between_maps_core import render_between_maps_block
-            render_between_maps_block(
-                st=st, session_state=session_state, team_a=team_a, team_b=team_b,
-                artifact_path=artifact_path, format_num_fn=format_num_fn,
+    # ---------------- Ao vivo (entre-mapas + durante o mapa) ----------------
+    # Toggle (polimento 23/07): o ao vivo é OUTRO momento — escondido por padrão
+    # pra não alongar o pré-jogo; liga quando a série/mapa começa.
+    _show_live = st.toggle(
+        "Ao vivo — entre mapas · durante o mapa", value=False,
+        key=f"radar{_S}_show_live",
+        help="Placar da série e estado do mapa em andamento. Abre só quando o jogo começa.",
+    )
+    if _show_live:
+        with st.container(border=True):
+            render_tab_section(
+                st, title="Entre mapas (série ao vivo)",
+                subtitle="Placar da série → odd justa do próximo mapa e de fechar a série.",
             )
-        except Exception as _exc_lbm:
-            _notify(st, _exc_lbm, "Falha no bloco entre-mapas")
+            try:
+                from app_core.live_between_maps_core import render_between_maps_block
+                render_between_maps_block(
+                    st=st, session_state=session_state, team_a=team_a, team_b=team_b,
+                    artifact_path=artifact_path, format_num_fn=format_num_fn,
+                )
+            except Exception as _exc_lbm:
+                _notify(st, _exc_lbm, "Falha no bloco entre-mapas")
 
-    with st.container(border=True):
-        render_tab_section(
-            st, title="Durante o mapa (estado → vitória)",
-            subtitle="Ouro/torres/objetivos/tempo do mapa em andamento → P(vitória) calibrada.",
-        )
-        try:
-            from app_core.live_state_panel_ui_core import render_live_state_panel
-            render_live_state_panel(
-                st=st, session_state=session_state,
-                team_a=team_a, team_b=team_b,
-                p_map_pre=p_base, league=league_a,
-                comp_compare=compare,
-                format_num_fn=format_num_fn,
+        with st.container(border=True):
+            render_tab_section(
+                st, title="Durante o mapa (estado → vitória)",
+                subtitle="Ouro/torres/objetivos/tempo do mapa em andamento → P(vitória) calibrada.",
             )
-        except Exception as _exc_lsp:
-            _notify(st, _exc_lsp, "Falha na predição calibrada (durante o mapa)")
+            try:
+                from app_core.live_state_panel_ui_core import render_live_state_panel
+                render_live_state_panel(
+                    st=st, session_state=session_state,
+                    team_a=team_a, team_b=team_b,
+                    p_map_pre=p_base, league=league_a,
+                    comp_compare=compare,
+                    format_num_fn=format_num_fn,
+                )
+            except Exception as _exc_lsp:
+                _notify(st, _exc_lsp, "Falha na predição calibrada (durante o mapa)")
 
 
 def _notify(st: Any, exc: Exception, context: str) -> None:
