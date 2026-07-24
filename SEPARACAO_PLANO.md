@@ -104,7 +104,24 @@ Commits 60a264a, ddabc44, (feature_trace). Feitos: confidence trio, series_gamma
 calibrate_p, resolve_players_artifact, patch_meta_guard, ach_layer,
 generate_and_persist_team_state, render_calibracoes (Técnico), append_feature_trace.
 
-**Os 8 restantes precisam de VOCÊ — 3 motivos (todos reais):**
+**ATUALIZAÇÃO 23/07 (2ª passada, supervisionada):** +5 convertidos (elo,
+series_totals, rank_table, 2 de manutenção) → **16/18**. Sobram 2 DEFERIDOS.
+
+**LIÇÃO (peguei quebrando o E2E):** a transitividade do ctx **cruza MÓDULOS**.
+`rank_table_v2` repassa ctx a `ach_layer_for_artifact` de OUTRO módulo
+(achievements), que lê `_load_achievements_cached` — grep só do módulo direto
+PERDE isso → `'NoneType' object is not callable` no boot. Regra: para converter
+um que repassa ctx, rastrear o fecho CROSS-módulo inteiro (todos os `ctx=ctx`,
+recursivo) e conferir que cada alvo lê só `ctx.get("literal")`.
+
+**2 DEFERIDOS (ctx=globals() de propósito, com nota no código):**
+- `csv_bootstrap_gate`: fecho de **31 chaves em 3 módulos** (repassa a
+  ensure_csv_runtime_ready E collect_maintenance_status). Um dict na mão apodrece
+  e é crítico no boot → só com **redesign de contexto TIPADO** (com você).
+- `render_params_tab`: repassa a `_render_manutencao_ml`/`_render_governanca_ml`
+  (fecho incerto) e a aba **não é coberta pelo E2E** → fazer clicando a aba Params.
+
+**A converter no futuro (antigo texto, alguns já feitos):**
 1. **Valores de runtime na chave** (NameError-vs-None): `series_totals`
    (bo/n_sims/p_map_cal/totals_mode) e `csv_bootstrap_gate` (fp_key/owner_token/
    run_id). Um dict explícito estoura NameError num caminho onde `globals().get`

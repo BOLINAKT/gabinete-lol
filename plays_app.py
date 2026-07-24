@@ -20,6 +20,19 @@ import re
 
 from app_core.render_ctx_core import build_render_ctx as _build_render_ctx
 
+
+def _pick_ctx(*names):
+    """ctx EXPLÍCITO por lista de chaves (força-tarefa 23/07).
+
+    Nomeia exatamente o que a função chamada lê (incluindo as chaves que ela
+    repassa pra baixo), em vez de vazar o namespace inteiro via ctx=globals().
+    Usa globals().get para PRESERVAR o comportamento das chaves de runtime que
+    podem legitimamente não existir num certo caminho (None, não NameError).
+    Os contratos só-de-import já foram convertidos com referência direta (falha
+    alta); aqui, casos com valores de runtime/repasse usam este helper seguro."""
+    g = globals()
+    return {n: g.get(n) for n in names}
+
 import pandas as pd
 import numpy as np
 import streamlit as st
@@ -754,6 +767,11 @@ def _csv_bootstrap_gate(
     artifact_path: str = "",
 ) -> None:
     """Tela separada de preparo do CSV + manuten\u00e7\u00e3o autom\u00e1tica quando o CSV muda."""
+    # DEFERIDO (força-tarefa 23/07): fecho cross-módulo grande e FRÁGIL — o gate
+    # repassa ctx para ensure_csv_runtime_ready E collect_maintenance_status
+    # (união de 31 chaves em 3 módulos). Um dict na mão apodrece (add chave num
+    # dos 3 e esquece aqui) e isto é crítico no boot. Fica ctx=globals() até um
+    # redesign de contexto TIPADO (com ele). Ver SEPARACAO_PLANO.md.
     return _csv_bootstrap_gate_flow(csv_path=csv_path, hist_csvs=hist_csvs, artifact_path=artifact_path, st=st, ctx=globals())
 
 
@@ -1202,14 +1220,18 @@ def _elo_season_players_p_map(
         w_players=w_players,
         base_rating=base_rating,
         scale=scale,
-        ctx=globals(),
+        ctx=_pick_ctx("_file_sig", "_compute_player_elo_global_cached", "core_discover_player_csv_paths"),
         st=st,
     )
 
 
 
 def _mlcore_rank_table_v2(artifact_path: str, as_of: date, top_n: int = 200) -> pd.DataFrame:
-    return _mlcore_rank_table_v2_core(artifact_path, as_of, top_n, ctx=globals())
+    # rank_table_v2 repassa ctx para ach_layer_for_artifact (achievements_resolve_
+    # core), que lê _load_achievements_cached — por isso a 3ª chave entra (fecho
+    # cross-módulo; achievements não repassa adiante).
+    return _mlcore_rank_table_v2_core(artifact_path, as_of, top_n, ctx=_pick_ctx(
+        "_file_sig", "_load_artifact_cached", "_load_achievements_cached"))
 
 
 
@@ -1375,7 +1397,8 @@ def _display_ml_totals_table(df: pd.DataFrame, team_label: Optional[str] = None)
 # _totals_table imported from app_core.display_tables_core
 
 def _series_totals_table(tot_avg) -> pd.DataFrame:
-    return _series_totals_table_core(tot_avg, st=st, ctx=globals())
+    return _series_totals_table_core(tot_avg, st=st, ctx=_pick_ctx(
+        "_series_sims_cached", "bo", "n_sims", "p_map_cal", "totals_mode"))
 
 
 # -----------------------------
@@ -1663,8 +1686,23 @@ def _players_artifact_output_path(artifact_path: str) -> Path:
     return APP_ROOT / "players_artifact.json"
 
 
+def _maintenance_ctx() -> Dict[str, Any]:
+    """Contrato explícito dos fluxos de manutenção (união das chaves do
+    csv_maintenance_runner_core; ambos os fluxos leem deste conjunto)."""
+    return _pick_ctx(
+        "APP_ROOT", "_LV_LAST_REPORT_PATH", "_WF_LAST_REPORT_PATH",
+        "_backup_file_if_exists", "_file_sig",
+        "_generate_and_persist_ml_confidence_baseline",
+        "_generate_and_persist_team_state_artifact", "_load_fitted_params_cached",
+        "_load_team_state_artifact_cached", "_patch_meta_guard_payload",
+        "_paths_for_ml", "_players_artifact_output_path",
+        "_resolve_runtime_players_artifact_path", "_run_layer_validation_cached",
+        "_run_walkforward_cached",
+    )
+
+
 def _collect_maintenance_status(csv_path_s: str, artifact_path_s: str) -> Dict[str, Any]:
-    return _collect_maintenance_status_flow(csv_path_s, artifact_path_s, st=st, ctx=globals())
+    return _collect_maintenance_status_flow(csv_path_s, artifact_path_s, st=st, ctx=_maintenance_ctx())
 
 
 def _run_auto_maintenance_now(
@@ -1675,7 +1713,7 @@ def _run_auto_maintenance_now(
     force_full: bool = False,
     progress_cb=None,
 ) -> Dict[str, Any]:
-    return _run_auto_maintenance_now_flow(csv_path_s, artifact_path_s, status, force_full=force_full, progress_cb=progress_cb, st=st, ctx=globals())
+    return _run_auto_maintenance_now_flow(csv_path_s, artifact_path_s, status, force_full=force_full, progress_cb=progress_cb, st=st, ctx=_maintenance_ctx())
 
 
 # Helpers movidos p/ diagnostics_helpers_core (fatiamento 18/07); re-importados
@@ -2657,6 +2695,10 @@ tab_refs = {n: t for n, t in zip(_active_tabs, st.tabs(_active_tabs))}
 
 if _TAB_PARAMS in tab_refs:
  with tab_refs[_TAB_PARAMS]:
+    # DEFERIDO (força-tarefa 23/07): params_tab repassa ctx para _render_manutencao_ml
+    # e _render_governanca_ml (fecho de local incerto) e a aba NÃO é coberta pelo
+    # E2E — não dá pra provar o contrato sozinho. Fica ctx=globals() até fazermos
+    # com ele clicando a aba. Ver SEPARACAO_PLANO.md.
     _render_params_tab(st=st, ctx=globals())
 
 
