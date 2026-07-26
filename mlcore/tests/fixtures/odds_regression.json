@@ -3002,10 +3002,74 @@
           "odd_bo5_b": 1.411216842495907
         }
       ]
+    },
+    "1b53ce83579c36b0ee70aeac19e63ac0bc100aab13216c37df3ba2e1417bac5f": {
+      "artifact_file": "ml_artifact.json",
+      "artifact_sha256": "1b53ce83579c36b0ee70aeac19e63ac0bc100aab13216c37df3ba2e1417bac5f",
+      "generated_at": "2026-07-26T07:46:26",
+      "method": "avg_forward_reverse_calibrated",
+      "matchups": [
+        {
+          "team_a": "Team WE",
+          "team_b": "Top Esports",
+          "p_raw": 0.2856102587112527,
+          "p_map": 0.34105032368335003,
+          "odd_map_a": 2.932118607013712,
+          "odd_map_b": 1.5175665698627077,
+          "p_bo3": 0.26960721254251685,
+          "odd_bo3_a": 3.7090995844271073,
+          "odd_bo3_b": 1.3691263347233025,
+          "p_bo5": 0.22143990971033004,
+          "odd_bo5_a": 4.515897795063771,
+          "odd_bo5_b": 1.2844223746788015
+        },
+        {
+          "team_a": "T1",
+          "team_b": "Gen.G",
+          "p_raw": 0.5153731205685745,
+          "p_map": 0.5110447747480247,
+          "odd_map_a": 1.9567757061855475,
+          "odd_map_b": 2.045177039440914,
+          "p_bo3": 0.516564467483075,
+          "odd_bo3_a": 1.9358667948502757,
+          "odd_bo3_b": 2.068528134027861,
+          "p_bo5": 0.5207022170412745,
+          "odd_bo5_a": 1.9204834688090697,
+          "odd_bo5_b": 2.086385615695858
+        },
+        {
+          "team_a": "G2 Esports",
+          "team_b": "Fnatic",
+          "p_raw": 0.8463000251903013,
+          "p_map": 0.7730571204123557,
+          "odd_map_a": 1.2935654734886741,
+          "odd_map_b": 4.40639513262986,
+          "p_bo3": 0.8688672985105156,
+          "odd_bo3_a": 1.150923739119061,
+          "odd_bo3_b": 7.625862875098249,
+          "p_bo5": 0.9192940565456398,
+          "odd_bo5_a": 1.0877912164010095,
+          "odd_bo5_b": 12.390661173120504
+        },
+        {
+          "team_a": "ThunderTalk Gaming",
+          "team_b": "LNG Esports",
+          "p_raw": 0.3421692839157019,
+          "p_map": 0.3847222484326566,
+          "odd_map_a": 2.5992778012552193,
+          "odd_map_b": 1.625282236278859,
+          "p_bo3": 0.33014721550940224,
+          "odd_bo3_a": 3.0289517918757705,
+          "odd_bo3_b": 1.4928653327319807,
+          "p_bo5": 0.29139167710656044,
+          "odd_bo5_a": 3.4318070094853983,
+          "odd_bo5_b": 1.411216842495907
+        }
+      ]
     }
   },
   "fixture_schema": "artifact_snapshot_v1",
-  "latest_artifact_sha256": "a7c4553c71d2ac04fd58416be2abb0d69b1452ada9d60129be3f0a3ba98df017",
-  "artifact_sha256": "a7c4553c71d2ac04fd58416be2abb0d69b1452ada9d60129be3f0a3ba98df017",
-  "generated_at": "2026-07-25T23:29:58"
+  "latest_artifact_sha256": "1b53ce83579c36b0ee70aeac19e63ac0bc100aab13216c37df3ba2e1417bac5f",
+  "artifact_sha256": "1b53ce83579c36b0ee70aeac19e63ac0bc100aab13216c37df3ba2e1417bac5f",
+  "generated_at": "2026-07-26T07:46:26"
 }
