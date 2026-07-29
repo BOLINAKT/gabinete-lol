@@ -17,6 +17,62 @@ from mlcore.team_artifact_normalize import _norm_team_key
 from mlcore.utils import sigmoid as _sigmoid
 
 
+def player_lines_opp_split(dfb: pd.DataFrame, players: list[str], team: str,
+                           opp_today: str) -> list[dict]:
+    """Por player do TIME: média de K/D/A no bucket de força do adversário
+    (forte/médio/fraco por win-rate no recorte), + o bucket do adversário de HOJE.
+    Resolve a dor: 'a linha bate mas só vs times fracos'. Puro/testável."""
+    cols = {"player", "team", "gameid", "kills", "deaths", "assists", "result"}
+    if dfb is None or dfb.empty or not cols.issubset(dfb.columns) or not players:
+        return []
+    # win-rate por time (1 linha por jogo)
+    g = dfb.drop_duplicates(subset=["gameid", "team"])
+    wr = g.groupby("team")["result"].apply(
+        lambda s: float(pd.to_numeric(s, errors="coerce").fillna(0).mean())).to_dict()
+    vals = sorted(wr.values())
+    lo = vals[len(vals) // 3] if vals else 0.4
+    hi = vals[2 * len(vals) // 3] if vals else 0.6
+
+    def bucket(w):
+        return "forte" if w >= hi else ("fraco" if w <= lo else "médio")
+
+    # adversário de cada (gameid, team)
+    opp = {}
+    for gid, grp in dfb.groupby("gameid"):
+        teams = list(dict.fromkeys(grp["team"].astype(str)))
+        if len(teams) == 2:
+            opp[(gid, teams[0])] = teams[1]
+            opp[(gid, teams[1])] = teams[0]
+    today_bucket = bucket(wr.get(str(opp_today), 0.5))
+
+    out = []
+    for p in players:
+        rows = dfb[dfb["player"].astype(str) == str(p)]
+        if rows.empty:
+            continue
+        acc = {"forte": [], "médio": [], "fraco": [], "geral": []}
+        for r in rows.itertuples(index=False):
+            o = opp.get((str(r.gameid), str(r.team)))
+            if o is None:
+                continue
+            b = bucket(wr.get(o, 0.5))
+            kda = (float(r.kills), float(r.deaths), float(r.assists))
+            acc[b].append(kda)
+            acc["geral"].append(kda)
+
+        def avg(lst, i):
+            return sum(x[i] for x in lst) / len(lst) if lst else float("nan")
+
+        out.append({
+            "player": str(p), "today_bucket": today_bucket,
+            "geral": {"k": avg(acc["geral"], 0), "d": avg(acc["geral"], 1),
+                      "a": avg(acc["geral"], 2), "n": len(acc["geral"])},
+            "hoje": {"k": avg(acc[today_bucket], 0), "d": avg(acc[today_bucket], 1),
+                     "a": avg(acc[today_bucket], 2), "n": len(acc[today_bucket])},
+        })
+    return out
+
+
 def _team_rows(dfb: pd.DataFrame, team: str) -> pd.DataFrame:
     """Linhas do time com match exato e fallback normalizado (grafias divergem
     entre o CSV de team-games e o de players)."""
@@ -875,3 +931,45 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
                 st.info("Nenhum player reconhecido na base.")
             else:
                 st.dataframe(df_b, width="stretch", hide_index=True)
+
+    # ---- Linhas de player · ajuste por força do adversário (pedido dele 24/07) ----
+    # Dor: "a linha bate mas só vs times fracos (stomp)". Mostra a média K/D/A
+    # contra times do NÍVEL do adversário de hoje vs a média geral (inflada).
+    from html import escape as _escp
+    st.divider()
+    render_tab_section(
+        st, title="Linhas de player · ajuste por adversário",
+        subtitle="Média K/D/A contra times do NÍVEL de hoje vs a média geral — pega linha inflada por stomp.",
+    )
+    st.caption("Números: **nível de hoje / geral**. Vermelho = geral inflada (cai contra o nível de hoje); verde = sobe.")
+    _pc = st.columns(2)
+    for _c, _team, _opp, _players in ((_pc[0], team_a, team_b, resolved_a_view),
+                                      (_pc[1], team_b, team_a, resolved_b_view)):
+        with _c:
+            _rows = player_lines_opp_split(dfb, list(_players), _team, _opp)
+            _lvl = _rows[0]["today_bucket"] if _rows else "?"
+            st.markdown(f"**{_escp(str(_team))}** · adv de hoje: nível **{_escp(_lvl)}**")
+            if not _rows:
+                st.caption("Sem players/jogos no recorte.")
+            for _r in _rows:
+                _h, _g = _r["hoje"], _r["geral"]
+
+                def _fmt(k, h=_h, g=_g):
+                    hv, gv = h[k], g[k]
+                    hs = f"{hv:.1f}" if hv == hv else "-"
+                    gs = f"{gv:.1f}" if gv == gv else "-"
+                    cor = ""
+                    if h["n"] and g["n"] and hv == hv and gv == gv:
+                        if hv < gv * 0.85:
+                            cor = "#ef4444"
+                        elif hv > gv * 1.15:
+                            cor = "#22c55e"
+                    hb = f"<b style='color:{cor}'>{hs}</b>" if cor else f"<b>{hs}</b>"
+                    return f"{hb}<span style='opacity:.5'>/{gs}</span>"
+
+                st.markdown(
+                    f"<div style='font-size:.88em;margin:3px 0'><b>{_escp(str(_r['player']))}</b> "
+                    f"<span style='opacity:.5'>(n{_h['n']}/{_g['n']})</span><br>"
+                    f"K {_fmt('k')} · D {_fmt('d')} · A {_fmt('a')}</div>",
+                    unsafe_allow_html=True,
+                )
