@@ -440,62 +440,6 @@ def render_statscamps_tab(
     df_tab = pd.DataFrame(agg_rows)
     df_tab_raw = df_tab.copy()
 
-    # Comparar N times (2-3+) — pedido dele 24/07. Default = os 2 do confronto.
-    _sc_ta = str(session_state.get("teamA", "") or "").strip()
-    _sc_tb = str(session_state.get("teamB", "") or "").strip()
-    _all_teams = sorted(df_tab_raw["Team"].astype(str).unique())
-    _default = [t for t in (_sc_ta, _sc_tb) if t in _all_teams]
-    render_tab_section(st, title="Comparação", subtitle="Escolha 2-3+ times: cada um num card, e as suas linhas (%) lado a lado.")
-    _sel = st.multiselect("Comparar times", _all_teams, default=_default, key="sc_compare_sel")
-    if len(_sel) < 2:
-        st.caption("Selecione ao menos 2 times.")
-    else:
-        _card_metrics = ["Win Rate", "Game Time", "Kills", "Deaths", "Towers",
-                         "C. Kills", "C. Towers", "C. Dragons", "C. Nashors",
-                         "FB%", "FRH%", "FT%", "FD%", "FNASH%"]
-
-        def _cell(m, v):
-            if v is None or not math.isfinite(float(v)):
-                return "-"
-            if m == "Game Time":
-                return min_to_mmss_fn(v)
-            if m == "Win Rate" or str(m).endswith("%"):
-                return f"{float(v):.0f}%"
-            return format_num_fn(v, 1)
-
-        def _row_of(tm):
-            r = df_tab_raw[df_tab_raw["Team"].astype(str) == str(tm)]
-            return r.iloc[0] if not r.empty else None
-
-        # cada time um card separado, lado a lado (sem Gold/C.Gold)
-        for _co, _tm in zip(st.columns(len(_sel)), _sel):
-            _r = _row_of(_tm)
-            if _r is None:
-                continue
-            with _co, st.container(border=True):
-                st.markdown(f"**{_tm}** · {int(_r.get('# Games') or 0)} jogos")
-                for _m in _card_metrics:
-                    if _m in _r:
-                        st.markdown(
-                            f"<div style='font-size:.85em;display:flex;justify-content:space-between'>"
-                            f"<span style='opacity:.6'>{_m}</span><b>{_cell(_m, _r.get(_m))}</b></div>",
-                            unsafe_allow_html=True)
-
-        # comparativo SÓ das % das suas linhas digitadas
-        _line_cols = [c for c in df_tab_raw.columns if str(c).startswith("% ")]
-        if _line_cols:
-            render_tab_section(st, title="Comparativo das linhas (%)",
-                               subtitle="Só as linhas que você digitou, pros times selecionados.")
-            _lrows = []
-            for _lc in _line_cols:
-                _row = {"Linha": str(_lc).replace("% ", "")}
-                for _tm in _sel:
-                    _r = _row_of(_tm)
-                    _v = _r.get(_lc) if _r is not None else None
-                    _row[_tm] = f"{float(_v):.0f}%" if _v is not None and math.isfinite(float(_v)) else "-"
-                _lrows.append(_row)
-            st.dataframe(pd.DataFrame(_lrows), width="stretch", hide_index=True)
-
     if not df_tab.empty:
         df_tab = df_tab.sort_values(["Win Rate", "# Games"], ascending=[False, False])
         if "Game Time" in df_tab.columns:
@@ -530,12 +474,53 @@ def render_statscamps_tab(
 
     tab_cmp, tab_delta = st.tabs(["Tabela", "Delta (comparacao)"])
     with tab_cmp:
-        df_cmp = df_tab[df_tab["Team"].isin(selected)].copy()
-        st.dataframe(
-            df_contract_view_fn(df_cmp, ["Team", "# Games", "Win Rate", "Game Time"], context="Series > Scout comparar", fill_value="-"),
-            width="stretch",
-            hide_index=True,
-        )
+        # Cards SEPARADOS por time (sem Gold/C.Gold) + so as % das linhas digitadas.
+        _card_metrics = ["Win Rate", "Game Time", "Kills", "Deaths", "Towers",
+                         "C. Kills", "C. Towers", "C. Dragons", "C. Nashors",
+                         "FB%", "FRH%", "FT%", "FD%", "FNASH%"]
+
+        def _cell(m: str, v: Any) -> str:
+            try:
+                fv = float(v)
+                if not math.isfinite(fv):
+                    return "-"
+            except (TypeError, ValueError):
+                return "-"
+            if m == "Game Time":
+                return min_to_mmss_fn(fv)
+            if m == "Win Rate" or str(m).endswith("%"):
+                return f"{fv:.0f}%"
+            return format_num_fn(fv, 1)
+
+        def _row_of(tm: str):
+            r = df_tab_raw[df_tab_raw["Team"].astype(str) == str(tm)]
+            return r.iloc[0] if not r.empty else None
+
+        for _co, _tm in zip(st.columns(len(selected)), selected):
+            _r = _row_of(_tm)
+            if _r is None:
+                continue
+            with _co, st.container(border=True):
+                st.markdown(f"**{_tm}** · {int(_r.get('# Games') or 0)} jogos")
+                for _m in _card_metrics:
+                    if _m in _r:
+                        st.markdown(
+                            f"<div style='font-size:.85em;display:flex;justify-content:space-between'>"
+                            f"<span style='opacity:.6'>{_m}</span><b>{_cell(_m, _r.get(_m))}</b></div>",
+                            unsafe_allow_html=True)
+
+        _line_cols = [c for c in df_tab_raw.columns if str(c).startswith("% ")]
+        if _line_cols:
+            st.markdown("##### Comparativo das linhas (%)")
+            _lrows = []
+            for _lc in _line_cols:
+                _lrow = {"Linha": str(_lc).replace("% ", "")}
+                for _tm in selected:
+                    _r = _row_of(_tm)
+                    _v = _r.get(_lc) if _r is not None else None
+                    _lrow[_tm] = _cell("%", _v)
+                _lrows.append(_lrow)
+            st.dataframe(pd.DataFrame(_lrows), width="stretch", hide_index=True)
 
     with tab_delta:
         c_a, c_b = st.columns(2)
