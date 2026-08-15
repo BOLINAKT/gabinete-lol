@@ -65,8 +65,8 @@
       "SK Gaming": 455.5867927575101,
       "Karmine Corp": 830.9957556972636,
       "Fnatic": 464.20961541567414,
-      "Team Vitality": 605.2416694160934,
-      "GiantX": 588.963014351776,
+      "Team Vitality": 616.0327010975435,
+      "GiantX": 577.4556031550736,
       "MAD Lions KOI": 496.4357156030487,
       "Team Heretics": 347.33818433962205,
       "DRX Challengers": 1099.9029401009764,
@@ -945,8 +945,8 @@
       "SK Gaming": 139,
       "Karmine Corp": 253,
       "Fnatic": 243,
-      "Team Vitality": 165,
-      "GiantX": 171,
+      "Team Vitality": 168,
+      "GiantX": 174,
       "MAD Lions KOI": 85,
       "Team Heretics": 148,
       "DRX Challengers": 228,
@@ -1959,7 +1959,7 @@
       "ZeroZone Gaming": 0.5038077860834417,
       "White Dragons": 0.4544984810259269,
       "Role Swappers": 0.47215155732867237,
-      "Team Vitality": 0.30851025082881955,
+      "Team Vitality": 0.35250633308453083,
       "MVK Esports": 0.44238285995622095,
       "Ground Zero Gaming": 0.3967572759551203,
       "Team Secret Whales": 0.25595783458422783,
@@ -2011,7 +2011,7 @@
       "NRG": 0.2544602448094573,
       "Team Heretics": 0.28320246426334655,
       "Shifters": 0.3861806254421519,
-      "GiantX": 0.41200517009684223,
+      "GiantX": 0.43309658477950885,
       "SK Gaming": 0.3673099322997856,
       "Natus Vincere": 0.3134072541818435,
       "Fnatic": 0.3524214502636625,
@@ -2108,7 +2108,7 @@
       "IC": -0.0007618267276666668,
       "DCUP": -0.0007618267276666668,
       "EWC": 5.926527122380265,
-      "KESPA CUP": 6.324104349120006e-19
+      "KESPA CUP": 6.532851462622281e-19
     },
     "tier_strength": {
       "T1": 3.422748080138152,
@@ -5691,11 +5691,11 @@
     "b": 0.08871497576277003
   },
   "meta": {
-    "trained_at": "2026-08-14T22:46:23+00:00",
+    "trained_at": "2026-08-15T01:42:32+00:00",
     "data_min_date": "2026-01-08",
     "data_max_date": "2026-08-14",
     "cutoff_date": "2026-06-13",
-    "n_games_total": 7494,
+    "n_games_total": 7497,
     "n_games_train": 26079,
     "n_games_holdout": 332,
     "n_teams": 853,
@@ -9442,11 +9442,8 @@
     },
     "tail": {
       "n": 500,
-      "fingerprint": "5808d9ca0c2ee1f94590307da80cda658fb79b69b81d2cbd397d93abfe6f177e",
+      "fingerprint": "ca647d8c7feab2e5f0c4d34657f3c7b0da5746f7d8382c8daba199241ace9f13",
       "gameids": [
-        "LOLTMNT01_436937",
-        "LOLTMNT01_435917",
-        "LOLTMNT01_435933",
         "LOLTMNT01_436949",
         "LOLTMNT01_437002",
         "LOLTMNT01_435970",
@@ -9943,12 +9940,15 @@
         "13413-13413_game_2",
         "LOLTMNT01_444612",
         "LOLTMNT05_218045",
-        "LOLTMNT05_217037"
+        "LOLTMNT05_217037",
+        "LOLTMNT05_218052",
+        "LOLTMNT05_218053",
+        "LOLTMNT05_218055"
       ]
     },
     "incremental": {
-      "last_run_at": "2026-08-14T22:46:23+00:00",
-      "added_games": 58,
+      "last_run_at": "2026-08-15T01:42:32+00:00",
+      "added_games": 3,
       "csv_used": [
         "CSV_DIARIO/2026_LoL_esports_match_data_from_OraclesElixir.csv"
       ],
@@ -9959,9 +9959,9 @@
     "players_layer_update": {
       "enabled": true,
       "players_artifact": "players_artifact.json",
-      "new_games": 58,
-      "games_used": 58,
-      "updated_at": "2026-08-14T22:46:23Z"
+      "new_games": 3,
+      "games_used": 3,
+      "updated_at": "2026-08-15T01:42:32Z"
     }
   }
 }
