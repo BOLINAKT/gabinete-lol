@@ -505,31 +505,82 @@ def render_statscamps_tab(
             r = df_tab_raw[df_tab_raw["Team"].astype(str) == str(tm)]
             return r.iloc[0] if not r.empty else None
 
-        for _co, _tm in zip(st.columns(len(selected)), selected):
+        # Paleta categórica por time — validada (CVD ΔE 14+, banda de luminância
+        # e contraste no fundo escuro): scripts/validate_palette.js do skill dataviz.
+        _PAL = ["#2695ad", "#8b5cf6", "#c2760a", "#4d9e4d", "#c05a8a", "#7a8fb8"]
+
+        def _num_of(tm: str, m: str):
+            _r = _row_of(tm)
+            try:
+                v = float(_r.get(m)) if _r is not None else float("nan")
+                return v if math.isfinite(v) else None
+            except (TypeError, ValueError):
+                return None
+
+        # "melhor" por métrica (Deaths e Game Time: menor é melhor) — destaque
+        # sem depender só de cor (o valor vencedor fica em negrito + ponto).
+        _lower_better = {"Deaths", "Game Time"}
+
+        for _i, (_co, _tm) in enumerate(zip(st.columns(len(selected)), selected)):
             _r = _row_of(_tm)
             if _r is None:
                 continue
+            _cor = _PAL[_i % len(_PAL)]
             with _co, st.container(border=True):
-                st.markdown(f"**{_tm}** · {int(_r.get('# Games') or 0)} jogos")
+                st.markdown(
+                    f"<div style='border-left:3px solid {_cor};padding-left:8px;margin-bottom:6px'>"
+                    f"<div style='font-weight:700;font-size:1.05em;line-height:1.2'>{_tm}</div>"
+                    f"<div style='opacity:.55;font-size:.78em'>{int(_r.get('# Games') or 0)} jogos</div></div>",
+                    unsafe_allow_html=True)
                 for _m in _card_metrics:
-                    if _m in _r:
-                        st.markdown(
-                            f"<div style='font-size:.85em;display:flex;justify-content:space-between'>"
-                            f"<span style='opacity:.6'>{_m}</span><b>{_cell(_m, _r.get(_m))}</b></div>",
-                            unsafe_allow_html=True)
+                    if _m not in _r:
+                        continue
+                    _vals = [v for v in (_num_of(t, _m) for t in selected) if v is not None]
+                    _mine = _num_of(_tm, _m)
+                    _best = (_mine is not None and len(_vals) > 1 and
+                             (_mine == (min(_vals) if _m in _lower_better else max(_vals))))
+                    _mark = f"<span style='color:{_cor}'>●</span> " if _best else ""
+                    _w = "700" if _best else "500"
+                    st.markdown(
+                        f"<div style='font-size:.85em;display:flex;justify-content:space-between;"
+                        f"padding:2px 0;border-top:1px solid rgba(255,255,255,.04)'>"
+                        f"<span style='opacity:.55'>{_m}</span>"
+                        f"<span style='font-weight:{_w}'>{_mark}{_cell(_m, _r.get(_m))}</span></div>",
+                        unsafe_allow_html=True)
 
         _line_cols = [c for c in df_tab_raw.columns if str(c).startswith("% ")]
         if _line_cols:
-            st.markdown("##### Comparativo das linhas (%)")
-            _lrows = []
+            st.markdown("##### Comparativo das linhas")
+            # Barras (magnitude entre entidades) em vez de tabela de texto: dá pra
+            # ler quem bate mais a linha de relance. Legenda direta + valor ao lado
+            # da barra (identidade nunca só por cor).
+            _leg = " · ".join(
+                f"<span style='color:{_PAL[i % len(_PAL)]}'>●</span> "
+                f"<span style='opacity:.75'>{_esc(str(t))}</span>"
+                for i, t in enumerate(selected))
+            st.markdown(f"<div style='font-size:.82em;margin-bottom:6px'>{_leg}</div>",
+                        unsafe_allow_html=True)
+            _html = ["<div style='display:flex;flex-direction:column;gap:7px'>"]
             for _lc in _line_cols:
-                _lrow = {"Linha": str(_lc).replace("% ", "")}
-                for _tm in selected:
-                    _r = _row_of(_tm)
-                    _v = _r.get(_lc) if _r is not None else None
-                    _lrow[_tm] = _cell("%", _v)
-                _lrows.append(_lrow)
-            st.dataframe(pd.DataFrame(_lrows), width="stretch", hide_index=True)
+                _label = str(_lc).replace("% ", "")
+                _html.append(
+                    "<div style='display:flex;align-items:center;gap:10px'>"
+                    f"<div style='width:120px;font-size:.82em;opacity:.7;text-align:right'>{_esc(_label)}</div>"
+                    "<div style='flex:1;display:flex;flex-direction:column;gap:2px'>")
+                for _i, _tm in enumerate(selected):
+                    _v = _num_of(_tm, _lc)
+                    _cor = _PAL[_i % len(_PAL)]
+                    _pct = max(0.0, min(100.0, float(_v))) if _v is not None else 0.0
+                    _txt = f"{_pct:.0f}%" if _v is not None else "-"
+                    _html.append(
+                        "<div style='display:flex;align-items:center;gap:8px' "
+                        f"title='{_esc(str(_tm))} · {_esc(_label)}: {_txt}'>"
+                        "<div style='flex:1;height:9px;background:rgba(255,255,255,.05);border-radius:4px'>"
+                        f"<div style='width:{_pct:.1f}%;height:100%;background:{_cor};border-radius:4px'></div></div>"
+                        f"<div style='width:38px;font-size:.8em;font-weight:600'>{_txt}</div></div>")
+                _html.append("</div></div>")
+            _html.append("</div>")
+            st.markdown("".join(_html), unsafe_allow_html=True)
 
     with tab_delta:
         c_a, c_b = st.columns(2)
