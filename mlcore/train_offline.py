@@ -271,6 +271,7 @@ def _maybe_reset_on_promotion(
     new_tier: str,
     *,
     last_tier: Dict[str, str],
+    league: str = "",
 ) -> None:
     """Reset residual rating when a team moves to a *stronger* tier.
 
@@ -289,6 +290,18 @@ def _maybe_reset_on_promotion(
     t = str(team)
     nt = str(new_tier or "OTHER")
     ot = str(last_tier.get(t) or "")
+
+    # Torneio INTERNACIONAL (MSI/Worlds/EWC...) nao e promocao: um time da LCS
+    # (T2) que vai ao MSI (T1) continua sendo o mesmo time. Sem isto, todo time
+    # que joga internacional perdia o historico (medido 24/07: 61 times, FlyQuest
+    # e Team Liquid com 8 resets cada). Nao mexe no last_tier tambem — senao a
+    # VOLTA pra liga domestica pareceria rebaixamento/promocao no proximo evento.
+    try:
+        if league and is_international_league(str(league)):
+            return
+    except (TypeError, ValueError):
+        pass
+
     if not ot:
         last_tier[t] = nt
         return
@@ -599,8 +612,8 @@ def main() -> None:
             bt = str(r.blue_tier)
             rt = str(r.red_tier)
 
-            _maybe_reset_on_promotion(model, blue, bt, last_tier=last_tier)
-            _maybe_reset_on_promotion(model, red, rt, last_tier=last_tier)
+            _maybe_reset_on_promotion(model, blue, bt, last_tier=last_tier, league=bl)
+            _maybe_reset_on_promotion(model, red, rt, last_tier=last_tier, league=rl)
 
             # MOV (diff de kills do blue) — só tem efeito com --mov-lambda > 0.
             _mov_val = None

@@ -423,6 +423,12 @@ INTERNATIONAL_LEAGUE_KEYS: set[str] = {
     "WORLDS",
     "WORLDCHAMPIONSHIP",
     "WCS",
+    # "WLDs" e como o Oracle's Elixir escreve o Worlds no CSV — sem isto o
+    # Worlds NAO era reconhecido como internacional (achado 24/07, junto do bug
+    # do reset de tier). "MSC" = Mid-Season Cup (LPL/LCK).
+    "WLDS",
+    "MSC",
+    "MIDSEASONCUP",
     "MSI",
     "MIDSEASONINVITATIONAL",
     "FST",
