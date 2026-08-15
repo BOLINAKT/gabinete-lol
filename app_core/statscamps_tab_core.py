@@ -440,13 +440,25 @@ def render_statscamps_tab(
     df_tab = pd.DataFrame(agg_rows)
     df_tab_raw = df_tab.copy()
 
-    # v3: comparativo dos dois times do confronto em destaque, ANTES da tabela.
+    # Comparar N times (2-3+) — pedido dele 24/07. Default = os 2 do confronto.
     _sc_ta = str(session_state.get("teamA", "") or "").strip()
     _sc_tb = str(session_state.get("teamB", "") or "").strip()
-    render_statscamps_compare_cards(
-        st=st, df_tab_raw=df_tab_raw, team_a=_sc_ta, team_b=_sc_tb,
-        min_to_mmss_fn=min_to_mmss_fn, format_num_fn=format_num_fn,
-    )
+    _all_teams = sorted(df_tab_raw["Team"].astype(str).unique())
+    _default = [t for t in (_sc_ta, _sc_tb) if t in _all_teams]
+    render_tab_section(st, title="Comparação", subtitle="Escolha 2-3+ times pra ver lado a lado (mesmas colunas da tabela).")
+    _sel = st.multiselect("Comparar times", _all_teams, default=_default, key="sc_compare_sel")
+    if len(_sel) >= 2:
+        _cmp = df_tab_raw[df_tab_raw["Team"].astype(str).isin(_sel)].copy()
+        if "Game Time" in _cmp.columns:
+            _cmp["Game Time"] = _cmp["Game Time"].apply(min_to_mmss_fn)
+        for _col in _cmp.columns:
+            if _col in ["Team", "Game Time", "# Games"]:
+                continue
+            _cmp[_col] = _cmp[_col].apply(
+                lambda x: format_num_fn(x, 1) if x is not None and math.isfinite(float(x)) else "-")
+        st.dataframe(_cmp, width="stretch", hide_index=True)
+    else:
+        st.caption("Selecione ao menos 2 times.")
 
     if not df_tab.empty:
         df_tab = df_tab.sort_values(["Win Rate", "# Games"], ascending=[False, False])
