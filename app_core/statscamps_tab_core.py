@@ -452,15 +452,16 @@ def render_statscamps_tab(
             )
 
     render_tab_section(
-        st, title="Tabela completa da liga",
-        subtitle="Todos os times do recorte, ordenados por Win Rate. Os dois times do confronto estão no comparativo acima.",
+        st, title="Betting stats do campeonato",
+        subtitle="Todas as colunas (estilo gol.gg) — as % usam as SUAS linhas dos campos acima. Role pro lado pra ver tudo.",
     )
-    st.dataframe(
-        df_contract_view_fn(df_tab, ["Team", "# Games", "Win Rate", "Game Time"], context="Series > Scout tabela", fill_value="-"),
-        width="stretch",
-        height=600,
-        hide_index=True,
-    )
+    # Ordem gol.gg; as colunas "% ..." (linhas dele) vao no fim, na ordem gerada.
+    _order = [c for c in ("Team", "# Games", "Win Rate", "Game Time", "FB%", "FRH%", "FT%",
+                          "FD%", "FNASH%", "Gold", "Kills", "Deaths", "Towers", "C. Gold",
+                          "C. Kills", "C. Towers", "C. Dragons", "C. Nashors", "C. Inhib")
+              if c in df_tab.columns]
+    _order += [c for c in df_tab.columns if str(c).startswith("% ") and c not in _order]
+    st.dataframe(df_tab[_order], width="stretch", height=600, hide_index=True)
 
     render_tab_section(
         st,
