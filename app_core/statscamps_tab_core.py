@@ -394,11 +394,19 @@ def render_statscamps_tab(
         except Exception:
             return float("nan")
 
-    th_k = parse_lines_fn(th_kills)
-    th_t = parse_lines_fn(th_towers)
-    th_d = parse_lines_fn(th_dragons)
-    th_b = parse_lines_fn(th_barons)
-    th_i = parse_lines_fn(th_inhib)
+    # A linha digitada SOMA aos padroes (pedido dele 24/07): digitar 33.5 nao pode
+    # apagar as colunas 23.5/25.5/... — so adiciona a nova.
+    from app_core.stats_config import STATS_MARKET_CONFIG as _SMC
+
+    def _th(txt: Any, market: str) -> list:
+        base = parse_lines_fn(str(_SMC[market]["default_thresholds"]))
+        return sorted(set(list(base) + list(parse_lines_fn(txt))))
+
+    th_k = _th(th_kills, "Kills")
+    th_t = _th(th_towers, "Torres")
+    th_d = _th(th_dragons, "Dragões")
+    th_b = _th(th_barons, "Nashors")
+    th_i = _th(th_inhib, "Inibidores")
     agg_rows = []
     for team_name, group in df_sc.groupby("team"):
         group = group.copy()
