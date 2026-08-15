@@ -585,7 +585,7 @@ def render_statscamps_tab(
 
         rows = []
         for col in df_tab_raw.columns:
-            if col == "Team":
+            if col in ("Team", "Gold", "C. Gold"):  # gold nao ajuda a decidir linha (pedido dele)
                 continue
             a_val = row_a.get(col)
             b_val = row_b.get(col)
