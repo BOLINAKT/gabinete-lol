@@ -85,6 +85,55 @@ def subprocesso_ignorado(tree: ast.AST) -> int:
     return n
 
 
+def excecao_engolida(tree: ast.AST) -> list[tuple[int, str]]:
+    """`except ...: pass` — o erro acontece e ninguem fica sabendo.
+
+    Nem todo caso e bug: as vezes engolir e a decisao certa (limpeza best-effort,
+    bloco de UI que nao pode derrubar a aba). Por isso a ferramenta REPORTA com
+    linha e tipo, para julgar caso a caso — o problema e engolir sem querer.
+    """
+    achados = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.ExceptHandler):
+            continue
+        corpo = [n for n in node.body if not isinstance(n, ast.Pass)]
+        if corpo:
+            continue   # faz alguma coisa (loga, devolve, re-levanta)
+        tipo = "except:"
+        if node.type is not None:
+            try:
+                tipo = f"except {ast.unparse(node.type)}:"
+            except (AttributeError, ValueError):
+                tipo = "except <?>:"
+        achados.append((node.lineno, tipo))
+    return achados
+
+
+def coerce_com_fillna(tree: ast.AST) -> list[int]:
+    """to_numeric(errors="coerce").fillna(N) — dado ruim vira NUMERO DE VERDADE.
+
+    O coerce transforma o que nao da pra ler em NaN; o fillna troca esse NaN por
+    um valor plausivel. Junto, isso converte "coluna mudou de formato" em "todo
+    mundo com 0", que o modelo consome como se fosse medicao real. Perde-se ate
+    a chance de perceber pelo NaN.
+    """
+    linhas = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        f = node.func
+        if not (isinstance(f, ast.Attribute) and f.attr == "fillna"):
+            continue
+        # o alvo do fillna e um to_numeric(..., errors="coerce")?
+        alvo = f.value
+        if isinstance(alvo, ast.Call) and isinstance(alvo.func, ast.Attribute) \
+                and alvo.func.attr == "to_numeric":
+            if any(k.arg == "errors" and isinstance(k.value, ast.Constant)
+                   and k.value.value == "coerce" for k in alvo.keywords):
+                linhas.append(node.lineno)
+    return linhas
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--fix-encoding", action="store_true",
@@ -93,6 +142,8 @@ def main() -> int:
 
     risco_enc: list[tuple[Path, str]] = []
     risco_sub: list[tuple[Path, int]] = []
+    risco_exc: list[tuple[Path, list]] = []
+    risco_coerce: list[tuple[Path, list]] = []
     for pasta in ALVOS:
         for p in sorted((ROOT / pasta).rglob("*.py")):
             if "tests" in p.parts or "__pycache__" in p.parts:
@@ -109,6 +160,12 @@ def main() -> int:
             n = subprocesso_ignorado(tree)
             if n:
                 risco_sub.append((p, n))
+            eng = excecao_engolida(tree)
+            if eng:
+                risco_exc.append((p, eng))
+            co = coerce_com_fillna(tree)
+            if co:
+                risco_coerce.append((p, co))
 
     print(f"=== 1) IMPRIME NÃO-ASCII SEM AJUSTAR O ENCODING: {len(risco_enc)} arquivo(s) ===")
     for p, ch in risco_enc:
@@ -116,6 +173,29 @@ def main() -> int:
     print(f"\n=== 2) SUBPROCESSO COM SAÍDA CAPTURADA E RESULTADO IGNORADO: {len(risco_sub)} ===")
     for p, n in risco_sub:
         print(f"  {p.relative_to(ROOT)}   ({n} chamada(s))")
+
+    # O CAMINHO DO MODELO pesa mais: ali o silencio vira probabilidade errada,
+    # nao tela feia. Por isso mlcore vem separado e primeiro.
+    def _nucleo(t):
+        return str(t[0].relative_to(ROOT)).startswith("mlcore")
+
+    tot_exc = sum(len(v) for _, v in risco_exc)
+    print(f"\n=== 3) EXCEÇÃO ENGOLIDA (`except: pass`): {tot_exc} em {len(risco_exc)} arquivo(s) ===")
+    print("    (nem todo caso é bug — julgar. O que importa é engolir SEM QUERER.)")
+    for grupo, rot in ((sorted(filter(_nucleo, risco_exc), key=lambda t: -len(t[1])), "NÚCLEO DO MODELO"),
+                       (sorted([t for t in risco_exc if not _nucleo(t)], key=lambda t: -len(t[1])), "resto")):
+        if not grupo:
+            continue
+        print(f"  -- {rot} --")
+        for p, v in grupo[:10]:
+            linhas = ", ".join(str(l) for l, _ in v[:6])
+            print(f"    {str(p.relative_to(ROOT)):<46} {len(v):>3}x  linhas {linhas}")
+
+    tot_co = sum(len(v) for _, v in risco_coerce)
+    print(f"\n=== 4) coerce + fillna — DADO RUIM VIRA NÚMERO REAL: {tot_co} em {len(risco_coerce)} ===")
+    for p, v in sorted(risco_coerce, key=lambda t: -len(t[1]))[:12]:
+        print(f"  {str(p.relative_to(ROOT)):<46} {len(v):>3}x  linhas "
+              + ", ".join(str(l) for l in v[:6]))
 
     if args.fix_encoding and risco_enc:
         n_ok = 0
