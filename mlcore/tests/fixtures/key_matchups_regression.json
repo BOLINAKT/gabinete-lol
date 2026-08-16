@@ -1,5 +1,5 @@
 {
-  "artifact_sha256": "be84f782c2cb645ac61f41a2590a41d31d076b2a40c06876a1df58eb8b3085df",
+  "artifact_sha256": "9c5e22b61ab2bdcaac05d01f43018c05520f699abc6fe68cdd6eca5befec0314",
   "matchups": [
     {
       "team_a": "Team WE",
@@ -45,7 +45,7 @@
     }
   ],
   "artifact_file": "ml_artifact.json",
-  "generated_at": "2026-08-15T19:57:29",
+  "generated_at": "2026-08-16T16:26:08",
   "method": "avg_forward_reverse_calibrated",
   "snapshots": {
     "36d24831cfb57a9bb768e9c5c85afb2b3bcef61b30e71ea6f6481048903b98ff": {
@@ -3497,8 +3497,58 @@
           "odd_bo5_b": 2.427265436577473
         }
       ]
+    },
+    "9c5e22b61ab2bdcaac05d01f43018c05520f699abc6fe68cdd6eca5befec0314": {
+      "artifact_file": "ml_artifact.json",
+      "artifact_sha256": "9c5e22b61ab2bdcaac05d01f43018c05520f699abc6fe68cdd6eca5befec0314",
+      "generated_at": "2026-08-16T16:26:08",
+      "method": "avg_forward_reverse_calibrated",
+      "matchups": [
+        {
+          "team_a": "Team WE",
+          "team_b": "Top Esports",
+          "p_raw": 0.39119601052219055,
+          "p_map": 0.42027804864082263,
+          "odd_map_a": 2.379377184304523,
+          "odd_map_b": 1.724964869202325,
+          "p_bo3": 0.3814304329597363,
+          "odd_bo3_a": 2.6217100513989657,
+          "odd_bo3_b": 1.616633040621134,
+          "p_bo5": 0.35303541969721297,
+          "odd_bo5_a": 2.8325769716185065,
+          "odd_bo5_b": 1.5456796715702554
+        },
+        {
+          "team_a": "LNG Esports",
+          "team_b": "ThunderTalk Gaming",
+          "p_raw": 0.657099278096613,
+          "p_map": 0.616088293941299,
+          "odd_map_a": 1.6231439711387863,
+          "odd_map_b": 2.6047655859889245,
+          "p_bo3": 0.6710035149850364,
+          "odd_bo3_a": 1.4903051588668657,
+          "odd_bo3_b": 3.039546151851797,
+          "p_bo5": 0.7099697371582313,
+          "odd_bo5_a": 1.4085107401938872,
+          "odd_bo5_b": 3.4479160560757354
+        },
+        {
+          "team_a": "Gen.G",
+          "team_b": "T1",
+          "p_raw": 0.5647638643816227,
+          "p_map": 0.54722069180779,
+          "odd_map_a": 1.8274162782412615,
+          "odd_map_b": 2.2085814919251754,
+          "p_bo3": 0.5706204529061926,
+          "odd_bo3_a": 1.752478367901046,
+          "odd_bo3_b": 2.328941857543876,
+          "p_bo5": 0.5880137438079149,
+          "odd_bo5_a": 1.7006405216383305,
+          "odd_bo5_b": 2.427265436577473
+        }
+      ]
     }
   },
   "fixture_schema": "artifact_snapshot_v1",
-  "latest_artifact_sha256": "be84f782c2cb645ac61f41a2590a41d31d076b2a40c06876a1df58eb8b3085df"
+  "latest_artifact_sha256": "9c5e22b61ab2bdcaac05d01f43018c05520f699abc6fe68cdd6eca5befec0314"
 }
