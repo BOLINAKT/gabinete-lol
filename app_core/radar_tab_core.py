@@ -437,6 +437,18 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
                     key=f"radar{_S}_line_{mk['key']}",
                 ))
 
+    # Torneio de exibição (KeSPA/Demacia): medido 24/07 — o modelo acerta ~39%
+    # nesses jogos (vs ~67% na LCK). Avisar ANTES do veredito, não fingir confiança.
+    try:
+        from app_core.exhibition_league_core import exhibition_warning
+        for _lg_ex in {str(league_a or ""), str(league_b or "")}:
+            _w = exhibition_warning(_lg_ex)
+            if _w:
+                st.warning(_w)
+                break
+    except Exception:
+        pass
+
     # ------------------------- Veredito por mercado -------------------------
     # Decisão primeiro (polimento 23/07): a resposta no topo, no golpe de vista.
     # ML = força do time (confiável). Totais = motor de linhas de produção.
