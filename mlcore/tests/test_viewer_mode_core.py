@@ -39,7 +39,9 @@ class TestDispatchWorkflow(unittest.TestCase):
 
         ok, msg = dispatch_data_workflow(token="tok123", repo="X/y", post_fn=fake_post)
         self.assertTrue(ok, msg)
-        self.assertIn("/repos/X/y/actions/workflows/dados_diarios.yml/dispatches", seen["url"])
+        # aponta pro RETREINO desde 24/07 (o robô de dados foi removido: a quota
+        # do Google Drive do Oracle's Elixir impedia o download automático).
+        self.assertIn("/repos/X/y/actions/workflows/retreino.yml/dispatches", seen["url"])
         self.assertEqual(seen["auth"], "Bearer tok123")
 
     def test_non_204_is_explained_failure(self):

@@ -92,7 +92,12 @@ def render_viewer_badge(st: Any, csv_path: str) -> None:
 # --- Botão "Atualizar agora" (acorda o robô do GitHub Actions) -------------
 
 _DISPATCH_COOLDOWN_S = 180
-_WORKFLOW_FILE = "dados_diarios.yml"
+# Aponta para o RETREINO (24/07): o robô de dados (dados_diarios.yml) foi
+# removido — o Oracle's Elixir só publica no Google Drive e a quota do arquivo
+# vive estourada, então o download automático não funcionava. O CSV entra por
+# UPLOAD MANUAL aqui no app; este botão agora força o retreino sobre o CSV que
+# já está no repo (útil quando o push-trigger não pegou).
+_WORKFLOW_FILE = "retreino.yml"
 
 
 def _gh_dispatch_config() -> tuple[str, str]:
@@ -154,7 +159,7 @@ def render_update_now_button(st: Any) -> None:
         # que a narração mais importa. O watch expira sozinho (12 min).
         _render_publish_watch(st)
         return
-    if st.button("🔄 Atualizar dados agora", key="upd_now_btn",
+    if st.button("🔄 Retreinar com o CSV do repo", key="upd_now_btn",
                  help="Acorda o robô no GitHub: baixa o CSV novo do Oracle's Elixir e publica."):
         ok, msg = dispatch_data_workflow(token=tok, repo=repo)
         if ok:
@@ -321,8 +326,10 @@ def check_publish_progress(
             return "rodando"
 
         out["retrain"] = _run_state("retreino.yml")
+        # data_run (robô de dados) não existe mais — o CSV vem do upload manual.
+        # Mantido "ok" para não travar o acompanhamento que espera esse passo.
         if include_data_run:
-            out["data_run"] = _run_state("dados_diarios.yml")
+            out["data_run"] = "ok"
     except Exception:
         pass
     return out

@@ -38,7 +38,14 @@ PIPELINE_TESTS = [
     "mlcore.tests.test_daily_pipeline_runtime_core",
     "mlcore.tests.test_bootstrap_maintenance_state_core",
 ]
-WORKFLOWS = ("dados_diarios.yml", "retreino.yml", "nota_semanal.yml")
+# dados_diarios.yml REMOVIDO (24/07, decisão dele): o Oracle's Elixir só publica
+# no Google Drive e a quota do arquivo vive estourada ("Too many users have
+# viewed or downloaded this file recently") — bloqueou 3x seguidas até de IP
+# residencial. Sem fonte automatizável (o bucket S3 antigo do OE nao existe mais;
+# a API de terceiro exige auth; o site bloqueia bot). O CSV entra por UPLOAD
+# MANUAL pelo app, e o retreino.yml continua disparando no push do CSV.
+# tools/oe_download.py fica para uso à mão quando a quota abrir.
+WORKFLOWS = ("retreino.yml", "nota_semanal.yml", "retreino_ao_vivo.yml")
 
 
 def _run_tests(mods: list[str]) -> tuple[int, int, str]:
