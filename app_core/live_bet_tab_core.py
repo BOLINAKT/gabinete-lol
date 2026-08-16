@@ -430,6 +430,34 @@ def _render_comp_summary(
 
 
 
+def _liga_compartilhada(team_games: Any, team_a: str, team_b: str) -> str:
+    """A liga DO CONFRONTO, ou "" quando os dois times não são da mesma.
+
+    Mesmo critério do resolve_shared_league_hint (Visão Geral): num jogo entre
+    ligas diferentes não existe "a liga da partida", e vazio é a resposta certa —
+    é o que faz o painel ao vivo cair no comportamento neutro em vez de assumir a
+    liga de um dos lados. Cada time entra com a liga em que MAIS jogou no recorte.
+    """
+    try:
+        if team_games is None or getattr(team_games, "empty", True):
+            return ""
+        cols = set(getattr(team_games, "columns", []))
+        if not {"teamname", "league"} <= cols:
+            return ""
+        ligas = []
+        for t in (team_a, team_b):
+            sub = team_games[team_games["teamname"].astype(str) == str(t)]
+            if sub.empty:
+                return ""
+            modo = sub["league"].astype(str).str.strip().replace("", None).dropna()
+            if modo.empty:
+                return ""
+            ligas.append(modo.value_counts().idxmax())
+        return str(ligas[0]) if ligas[0] == ligas[1] else ""
+    except (KeyError, TypeError, ValueError, AttributeError):
+        return ""
+
+
 def render_live_bet_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     render_tab_hero(
         st,
@@ -1171,10 +1199,16 @@ def render_live_bet_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         except Exception:
             p_map_pre_val = None
         # League / BO / playoffs context (best-effort, with safe defaults)
-        try:
-            scope_league = str(scope_meta.get("league", "") or "") if "scope_meta" in locals() else ""  # noqa: F821  (guarded by locals())
-        except Exception:
-            scope_league = ""
+        # BUG SILENCIOSO (achado 16/08/2026 pela varredura de pyflakes): aqui
+        # havia `scope_meta.get(...) if "scope_meta" in locals() else ""`, e
+        # `scope_meta` NUNCA existiu neste modulo — ela vive em market_stats_ui e
+        # opponent_profile_ui. O guarda por locals() era sempre falso, entao o
+        # painel de estado ao vivo recebia liga VAZIA desde sempre. Nao quebrava,
+        # nao avisava: so nao fazia. Agora a liga sai do team_games, que ja esta
+        # no ctx, e vale so quando os DOIS times sao dela — mesmo criterio do
+        # resolve_shared_league_hint usado na Visao Geral (num confronto entre
+        # ligas diferentes, "a liga do jogo" nao existe e vazio e a resposta certa).
+        scope_league = _liga_compartilhada(team_games, str(team_a), str(team_b))
         try:
             bo_val = int(ctx.get("bo", 1) or 1) if isinstance(ctx, Mapping) else 1
         except Exception:
