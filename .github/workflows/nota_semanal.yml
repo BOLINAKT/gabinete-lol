@@ -31,6 +31,33 @@ jobs:
         run: |
           python tools/ml_fusion_scorecard.py 2>&1 | tee scorecard_out.txt
 
+      # Ate 16/08/2026 o vigia media SO a fase Vencedor. As outras sete so eram
+      # medidas quando ele rodava a mao no PC — resultado: a nota do produto
+      # estava sendo anunciada com fases de 26-29 dias, uma foto de julho, e o
+      # aviso de "regua velha" nem disparava porque o limite era 30 dias.
+      - name: Re-medir as demais fases (totais + as baratas) e consolidar
+        continue-on-error: true
+        timeout-minutes: 50
+        run: |
+          python tools/totals_scorecard.py || echo "totals falhou — segue"
+          python tools/product_scorecard.py --run --strict 2>&1 | tee produto_out.txt
+
+      - name: Publicar a nota do produto (a nuvem e o PC dele so leem do git)
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add -f evidence/product_scorecard.json
+          if git diff --cached --quiet; then
+            echo "nota do produto sem mudanca — sem commit"
+          else
+            git commit -m "Robô: nota do produto re-medida (vigia semanal)"
+            for i in 1 2 3; do
+              if git push; then break; fi
+              echo "push recusado — rebase e retry $i/3"
+              git pull --rebase || exit 1
+            done
+          fi
+
       - name: Avaliar piso e alertar se cair
         env:
           GH_TOKEN: ${{ github.token }}
@@ -44,6 +71,10 @@ jobs:
           elif [ "$(echo "$nota < $PISO" | bc -l)" = "1" ]; then
             titulo="🚨 Vigia da nota: caiu para $nota (piso $PISO)"
             corpo="A nota oficial (fusion scorecard, replay cego na temporada) caiu para **$nota**. Últimas suspeitas de praxe: retreino com CSV truncado, calibrador achatado, artifact incompleto. Rodar tools/ml_quality_diagnose.py no PC."
+          elif grep -q "régua(s) velha(s)" produto_out.txt 2>/dev/null; then
+            velhas=$(grep -oE "réguas VELHAS.*" produto_out.txt | head -1)
+            titulo="⚠️ Vigia da nota: régua(s) do produto envelhecendo"
+            corpo="A nota do vencedor está ok (**$nota**), mas alguma fase não foi re-medida a tempo: $velhas. A nota do produto está sendo calculada com número velho — ver logs do run para saber qual régua falhou."
           else
             echo "nota $nota >= piso $PISO — tudo certo"; exit 0
           fi

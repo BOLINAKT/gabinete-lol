@@ -43,6 +43,10 @@ evidence/*
 # (badge no confronto + tabela na aba Rankings). Sem versionar, a Streamlit
 # Cloud fica sem — ela só puxa do git.
 !evidence/nota_por_liga.json
+# A nota do produto tambem e versionada: o vigia semanal re-mede as 8 fases na
+# nuvem, e sem commitar o resultado a medicao morria no runner — era por isso que
+# as fases apareciam com 26-29 dias por aqui.
+!evidence/product_scorecard.json
 tmp/
 # live_models/ é VERSIONADO (23/07): o app roda na Streamlit Cloud, que só puxa
 # do git e NÃO consegue treinar (1GB de RAM). Sem os modelos no repo, o painel

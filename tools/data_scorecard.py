@@ -28,6 +28,16 @@ import sys
 import time
 from pathlib import Path
 
+# Console cp1252 no Windows: sem isto a regua estourava UnicodeEncodeError na
+# seta "→" do proprio texto dela. Ela vinha falhando CALADA (o --run do
+# product_scorecard engolia o erro), e por isso a fase de Dados aparecia com 29
+# dias enquanto as outras eram re-medidas. Achado 16/08/2026.
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, OSError, ValueError):
+    pass
+
 ROOT = Path(__file__).resolve().parents[1]
 W_FALHA, W_FRESCOR, W_AUTO = 0.45, 0.30, 0.25
 

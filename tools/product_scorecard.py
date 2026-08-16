@@ -24,9 +24,23 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+# O console do Windows e cp1252 e a saida tem acento e o simbolo de aviso. Sem
+# isto, o UnicodeEncodeError derruba a regua JUSTAMENTE quando ha algo a avisar —
+# o pior momento possivel para o relatorio sumir (visto 16/08/2026, mesma familia
+# do que estourava no train_offline com nome de time em chines).
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, OSError, ValueError):
+    pass
+
 ROOT = Path(__file__).resolve().parents[1]
 EV = ROOT / "evidence"
-STALE_DAYS = 30
+# 10 dias: o vigia semanal re-mede tudo toda segunda, entao uma regua com mais de
+# ~1,5 semana significa que alguma rodada FALHOU. O limite antigo (30) era frouxo
+# demais — em 16/08/2026 sete das oito fases estavam com 26-29 dias e o scorecard
+# nao avisou nada, porque 29 < 30. A nota do produto virou uma foto de julho.
+STALE_DAYS = 10
 
 # fase -> (peso, arquivo de evidence, chave da nota, teto real declarado, régua p/ --run)
 PHASES = [
@@ -54,6 +68,9 @@ def _age_days(iso: str) -> float | None:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Nota do produto (consolida réguas de fase).")
     ap.add_argument("--run", action="store_true", help="Roda as réguas baratas antes de consolidar (não roda fusion/totals, caras).")
+    ap.add_argument("--strict", action="store_true",
+                    help="Sai com erro se alguma régua estiver velha (> STALE_DAYS). "
+                         "Para o vigia semanal falhar em vez de anunciar foto antiga.")
     args = ap.parse_args()
 
     if args.run:
@@ -61,8 +78,23 @@ def main() -> int:
             if "fusion" in tool or "totals" in tool:
                 continue  # caras: usar evidence existente
             print(f"  rodando {tool}...", flush=True)
-            subprocess.run([sys.executable, tool], cwd=str(ROOT), timeout=1800,
-                           capture_output=True, text=True)
+            # LOUD: antes isto engolia a falha (capture_output sem checar o
+            # returncode) e a fase simplesmente continuava velha, sem explicacao.
+            # Foi assim que a regua de Dados passou 29 dias quebrada por um
+            # UnicodeEncodeError — o sintoma aparecia como "nota velha", que nao
+            # aponta para a causa. Regua que falha tem que GRITAR.
+            try:
+                r = subprocess.run([sys.executable, tool], cwd=str(ROOT), timeout=1800,
+                                   capture_output=True, text=True, encoding="utf-8",
+                                   errors="replace")
+            except subprocess.TimeoutExpired:
+                print(f"  ✗ {tool} ESTOUROU O TEMPO (1800s) — fase segue com nota velha")
+                continue
+            if r.returncode != 0:
+                cauda = (r.stderr or r.stdout or "").strip().splitlines()[-3:]
+                print(f"  ✗ {tool} FALHOU (exit {r.returncode}) — fase segue com nota velha")
+                for l in cauda:
+                    print(f"      {l}")
 
     print(f"\n=== SCORECARD DO PRODUTO — {time.strftime('%Y-%m-%d')} ===")
     print(f"{'fase':18} {'peso':>4} {'nota':>6} {'teto':>5} {'idade':>7}  fonte")
@@ -111,6 +143,12 @@ def main() -> int:
     EV.mkdir(exist_ok=True)
     (EV / "product_scorecard.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"\n[product_scorecard] salvo: evidence/product_scorecard.json")
+    # Sai != 0 quando ha regua velha, para o vigia semanal poder FALHAR e abrir
+    # issue em vez de anunciar uma nota que e foto antiga. --strict porque o uso
+    # interativo (ele rodando no PC) nao deve quebrar por causa de idade.
+    if stale and bool(getattr(args, "strict", False)):
+        print(f"  [strict] saindo com erro: {len(stale)} régua(s) velha(s)")
+        return 2
     return 0
 
 
