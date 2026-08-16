@@ -25,3 +25,21 @@ class ExhibitionLeagueTests(unittest.TestCase):
     def test_aviso_so_para_exibicao(self):
         self.assertIn("exibição", exhibition_warning("KeSPA Cup"))
         self.assertEqual(exhibition_warning("LCK"), "")
+
+
+class SiglasInternacionaisTests(unittest.TestCase):
+    """Varredura 24/07: o registro so conhecia nomes por extenso; as SIGLAS do
+    Oracle's Elixir caiam fora (mesma familia do 'WLDs'). Cada uma verificada
+    nos dados: junta times de 4-19 ligas domesticas."""
+
+    def test_siglas_de_torneio_sao_internacionais(self):
+        from mlcore.tiers import is_international_league
+        for lg in ("EM", "AC", "IC", "Asia Master", "EPL", "CD", "WLDs", "MSC"):
+            self.assertTrue(is_international_league(lg), lg)
+
+    def test_ligas_domesticas_nao_viram_internacionais(self):
+        from mlcore.tiers import is_international_league
+        for lg in ("LCK", "LPL", "LEC", "LCS", "LFL", "PRM", "LCKC", "NACL",
+                   "CBLOL", "LLA", "PCS", "VCS", "LJL", "TCL", "LIT", "EBL",
+                   "HLL", "LTA N", "LTA S", "LDL", "EM Masters BR"):
+            self.assertFalse(is_international_league(lg), lg)

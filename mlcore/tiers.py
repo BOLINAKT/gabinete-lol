@@ -435,6 +435,16 @@ INTERNATIONAL_LEAGUE_KEYS: set[str] = {
     "FIRSTSTAND",
     "FIRSTSTANDTOURNAMENT",
     # Multi-region events / circuits
+    # SIGLAS do Oracle's Elixir (varredura 24/07, mesma familia do "WLDs"): o
+    # registro so conhecia os nomes por extenso, entao a sigla do CSV caia fora.
+    # Verificado nos dados: cada uma junta times de 4-19 ligas domesticas.
+    "EM",            # EMEA Masters (PRM/LFL/LPLOL/LIT/TCL) — 2246 linhas
+    "AC",            # Americas Cup (NACL/LCS/CBLOL/LRS)
+    "IC",            # Iberian Cup (NEXO/LVP SL/CT)
+    "ASIAMASTER",    # Asian Masters (LCKC/LDL/LJL/PCS/VCS)
+    "ASIAMASTERS",
+    "EPL",           # European Premier League (HM/RL/HLL/PRM/EBL)
+    "CD",            # Copa LATAM (CBLOLA/IGNIS/LLA/CBLOL)
     "AMERICAS",
     "AMERICASCUP",
     "CROSSCONFERENCE",
