@@ -72,7 +72,12 @@ def mlcore_rank_table_v2(
     if df.empty:
         return pd.DataFrame(columns=cols)
 
-    df = df.sort_values("total_strength", ascending=False).reset_index(drop=True)
+    # O cap por tier faz MUITOS times baterem no teto (medido 24/07: 16 times
+    # empatados em 610) — sem desempate a ordem entre eles era arbitraria. Ordena
+    # depois pelo residual (forca real medida) e pelos jogos: mesma forca exibida,
+    # ordem que faz sentido.
+    _tie = [c for c in ("residual_elo",) if c in df.columns]
+    df = df.sort_values(["total_strength", *_tie], ascending=False).reset_index(drop=True)
     df.insert(0, "rank", np.arange(1, len(df) + 1))
 
     if top_n is not None and int(top_n) > 0:
