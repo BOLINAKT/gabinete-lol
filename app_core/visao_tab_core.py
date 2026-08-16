@@ -261,6 +261,17 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         league_a=locals().get("_lgA", ""),
         league_b=locals().get("_lgB", ""),
     )
+    # Como o modelo se sai NESTA liga (previsibilidade + honestidade do %).
+    try:
+        from pathlib import Path as _P
+
+        from app_core.nota_liga_core import render_nota_liga_badge as _nl_badge
+
+        _nl_badge(st=st, root=_P(__file__).resolve().parents[1],
+                  league=str(_lg_hint or ""), box=_box_contexto)
+    except (ImportError, OSError, TypeError, ValueError):
+        pass
+
     _conf_baseline = {}
     try:
         if _ML_CONFIDENCE_BASELINE_PATH.exists():

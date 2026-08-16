@@ -38,7 +38,11 @@ ops/
 CSV_DIARIO/*.json
 CSV_HISTORICO/*.json
 backups/
-evidence/
+evidence/*
+# Exceção: a nota por liga NÃO é evidência, é dado que o app LÊ na tela
+# (badge no confronto + tabela na aba Rankings). Sem versionar, a Streamlit
+# Cloud fica sem — ela só puxa do git.
+!evidence/nota_por_liga.json
 tmp/
 # live_models/ é VERSIONADO (23/07): o app roda na Streamlit Cloud, que só puxa
 # do git e NÃO consegue treinar (1GB de RAM). Sem os modelos no repo, o painel
