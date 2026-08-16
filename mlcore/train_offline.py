@@ -9,6 +9,14 @@ import math
 import os
 import sys
 
+# Console cp1252 no Windows derruba qualquer print com acento/emoji — e o estouro
+# vem no fim, depois do trabalho todo feito. Ver tools/find_silent_failures.py.
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, OSError, ValueError):
+    pass
+
 if __package__ is None or __package__ == "":
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     __package__ = "mlcore"
@@ -790,6 +798,20 @@ def main() -> None:
         "data_min_date": data_min_dt.date().isoformat() if pd.notna(data_min_dt) else None,
         "data_max_date": data_max_dt.date().isoformat() if pd.notna(data_max_dt) else None,
         "cutoff_date": cutoff_dt.date().isoformat() if cutoff_dt is not None and pd.notna(cutoff_dt) else None,
+        # ATE ONDE OS RATINGS FORAM DE VERDADE (16/08/2026, portado do Dota).
+        # data_max_date grava o fim de TODOS os dados, mas o fit so ve ate o corte
+        # do holdout — os dois nao sao a mesma coisa, e a distancia entre eles E a
+        # defasagem do modelo. Aqui isso e PREVENTIVO: o robo diario roda
+        # update_incremental, entao o LoL esta em dia. Mas o incidente holdout-180
+        # (junho/2026) foi exatamente isto — a "Manutencao completa" chamou o
+        # train_offline sem holdout explicito, o default de 180 entrou, os ratings
+        # congelaram em dezembro e o app rodou degradado 4 DIAS sem ninguem notar
+        # (nota 4.97). Com este carimbo, aquilo teria ficado visivel na hora.
+        "ratings_max_date": (
+            cutoff_dt.date().isoformat()
+            if cutoff_dt is not None and pd.notna(cutoff_dt)
+            else (data_max_dt.date().isoformat() if pd.notna(data_max_dt) else None)
+        ),
         "n_games_total": len(games),
         "n_games_train": len(train_df),
         "n_games_holdout": len(test_df),

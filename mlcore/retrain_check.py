@@ -172,7 +172,15 @@ def check_retrain_needed(
         art_mtime = datetime.now(timezone.utc)
     # Use whichever is more recent: meta timestamp or file modification time.
     trained_at = art_mtime if trained_at_meta is None else max(trained_at_meta, art_mtime)
-    data_max = _parse_iso_dt(str((art.meta or {}).get("data_max_date") or ""))
+    # "Jogos novos" tem que ser contado a partir do que os RATINGS viram, nao do
+    # fim dos dados: quando o artifact vem de um train_offline, o holdout ficou de
+    # fora do fit e esses jogos SAO novos para o modelo. Usar data_max_date aqui
+    # subestimava a defasagem — foi assim que o incidente holdout-180 (junho/2026)
+    # passou 4 dias despercebido, com os ratings congelados em dezembro.
+    # Artifact sem a chave nova cai em data_max_date, comportamento de antes.
+    _m = art.meta or {}
+    data_max = (_parse_iso_dt(str(_m.get("ratings_max_date") or ""))
+                or _parse_iso_dt(str(_m.get("data_max_date") or "")))
 
     now = datetime.now(timezone.utc)
     days_since = int((now - trained_at).total_seconds() / 86400)

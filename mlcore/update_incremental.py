@@ -21,6 +21,14 @@ import os
 import shutil
 import sys
 
+# Console cp1252 no Windows derruba qualquer print com acento/emoji — e o estouro
+# vem no fim, depois do trabalho todo feito. Ver tools/find_silent_failures.py.
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, OSError, ValueError):
+    pass
+
 # Allow running as a script from repo root
 if __package__ is None or __package__ == "":
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -258,9 +266,17 @@ def main() -> None:
 
     art = MLArtifact.load_json(str(art_path))
 
-    # Determine last processed date (prefer data_max_date)
-    data_max = _parse_dt((art.meta or {}).get("data_max_date"))
-    trained_at = _parse_dt((art.meta or {}).get("trained_at"))
+    # Ate onde os RATINGS realmente foram. ratings_max_date vem primeiro porque
+    # data_max_date grava o fim de TODOS os dados, incluindo o holdout que o
+    # train_offline NAO aplicou aos ratings. Se o artifact vier de um
+    # train_offline (e nao deste incremental), a diferenca entre os dois e o
+    # buraco que este script precisa fechar — sem isso ele responderia
+    # "0 jogos novos" com o modelo defasado (16/08/2026, portado do Dota, onde o
+    # sintoma era um time do TI com 16 jogos e games_played=0).
+    # Artifact antigo nao tem a chave: cai em data_max_date, igual a antes.
+    _meta = art.meta or {}
+    data_max = _parse_dt(_meta.get("ratings_max_date")) or _parse_dt(_meta.get("data_max_date"))
+    trained_at = _parse_dt(_meta.get("trained_at"))
     if data_max is None:
         data_max = trained_at or datetime.fromtimestamp(art_path.stat().st_mtime, tz=timezone.utc)
     if data_max.tzinfo is None:
@@ -474,6 +490,9 @@ def main() -> None:
     meta["trained_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     meta["data_min_date"] = pd.to_datetime(games["date"]).min().date().isoformat()
     meta["data_max_date"] = pd.to_datetime(games["date"]).max().date().isoformat()
+    # O incremental aplica TODO jogo novo direto nos ratings — nao tem holdout —
+    # entao aqui os dois carimbos coincidem: o modelo esta mesmo em dia.
+    meta["ratings_max_date"] = meta["data_max_date"]
     meta["n_games_total"] = len(games)
     # Persist updated team_meta (league/tier) back to the artifact meta.
     # If the artifact didn't have meta.team_meta (older artifacts), fall back to model.team_meta.
