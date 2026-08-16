@@ -664,18 +664,46 @@ def render_statscamps_tab(
             st.warning("Não consegui montar Delta para esse par (dados faltando).")
             return
 
-        rows = []
+        # Layout A | métrica | B com o vencedor destacado (mesma linguagem visual
+        # dos cards): identidade por cor E por negrito, delta ao lado. Cores da
+        # paleta validada (validate_palette.js: contraste + CVD no fundo escuro).
+        _CA, _CB = "#2695ad", "#8b5cf6"
+        # métricas onde MENOR é melhor
+        _LOWER = {"Deaths", "Game Time"}
+        # neutras: não faz sentido "vencer" (amostra/contexto)
+        _NEUTRAL = {"# Games"}
+
+        st.markdown(
+            "<div style='display:flex;align-items:center;padding:6px 10px;margin-top:4px;"
+            "border-radius:8px 8px 0 0;background:rgba(255,255,255,.04);font-size:.8em;"
+            "text-transform:uppercase;letter-spacing:.05em;opacity:.75'>"
+            f"<div style='flex:1;text-align:right;color:{_CA};font-weight:700'>{_esc(str(team_a))}</div>"
+            "<div style='flex:1.1;text-align:center'>métrica</div>"
+            f"<div style='flex:1;text-align:left;color:{_CB};font-weight:700'>{_esc(str(team_b))}</div>"
+            "<div style='width:88px;text-align:right'>delta</div></div>",
+            unsafe_allow_html=True,
+        )
+
+        _html = []
         for col in df_tab_raw.columns:
             if col in ("Team", "Gold", "C. Gold"):  # gold nao ajuda a decidir linha (pedido dele)
                 continue
-            a_val = row_a.get(col)
-            b_val = row_b.get(col)
+            a_val, b_val = row_a.get(col), row_b.get(col)
             d_val = _fmt_delta_time(a_val, b_val) if col == "Game Time" else _fmt_delta_num(col, a_val, b_val)
-            rows.append({"Metrica": col, team_a: _fmt_val(col, a_val), team_b: _fmt_val(col, b_val), "Delta (A - B)": d_val})
 
-        df_delta = pd.DataFrame(rows)
-        st.dataframe(
-            df_contract_view_fn(df_delta, ["Metrica", team_a, team_b, "Delta (A - B)"], context="Series > Scout delta", fill_value="-"),
-            width="stretch",
-            hide_index=True,
-        )
+            _wa = _wb = False
+            if col not in _NEUTRAL and _is_num(a_val) and _is_num(b_val) and float(a_val) != float(b_val):
+                _a_wins = (float(a_val) < float(b_val)) if col in _LOWER else (float(a_val) > float(b_val))
+                _wa, _wb = _a_wins, not _a_wins
+            _sa = f"color:{_CA};font-weight:700" if _wa else "opacity:.75"
+            _sb = f"color:{_CB};font-weight:700" if _wb else "opacity:.75"
+            _dc = "#9ca3af" if col in _NEUTRAL or not (_wa or _wb) else (_CA if _wa else _CB)
+            _html.append(
+                "<div style='display:flex;align-items:center;padding:5px 10px;"
+                "border-top:1px solid rgba(255,255,255,.05);font-size:.9em'>"
+                f"<div style='flex:1;text-align:right;{_sa}'>{_esc(_fmt_val(col, a_val))}</div>"
+                f"<div style='flex:1.1;text-align:center;opacity:.5;font-size:.86em'>{_esc(str(col))}</div>"
+                f"<div style='flex:1;text-align:left;{_sb}'>{_esc(_fmt_val(col, b_val))}</div>"
+                f"<div style='width:88px;text-align:right;color:{_dc};font-size:.85em'>{_esc(str(d_val))}</div></div>"
+            )
+        st.markdown("".join(_html), unsafe_allow_html=True)
