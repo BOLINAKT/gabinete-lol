@@ -400,10 +400,24 @@ def _render_v3_vencedor_subpanel(
         st.info(f"Sem jogos pra {map_choice} no recorte.")
         return
 
-    # Season-wide view: per-team (cross-league safe — uses each team's own rows)
+    # Season-wide view: MESMO ano/liga, SEM o filtro de split.
+    # BUG achado com ele (24/07): o try e o except faziam a mesma coisa
+    # (df_a.copy(), que ja vem filtrado por split) — o card "Season inteira"
+    # mostrava numeros IDENTICOS ao "Split atual" (ex.: Gen.G 10 jogos nos dois,
+    # tendo 118 no ano). Mesmo padrao do bloco que ja funciona (df_a_context_season).
     try:
-        df_a_season = df_a.copy()
-        df_b_season = df_b.copy()
+        _season_filters = Filters(year=int(v3_year), league=v3_league, split=None, playoffs=None)
+        _df_season_scope = apply_filters_fn(team_games, _season_filters).copy()
+        _df_season_scope = _augment_with_total_columns(_df_season_scope)
+        _df_season_scope = _filter_by_map(_df_season_scope)
+        df_a_season = _df_season_scope[_df_season_scope["team"].astype(str) == str(team_a)].copy()
+        df_b_season = _df_season_scope[_df_season_scope["team"].astype(str) == str(team_b)].copy()
+        # cross-league: o scope de UMA liga so tem um dos times — reconstroi cada
+        # um na liga dele (mesmo fix do outro bloco).
+        if df_a_season.empty:
+            df_a_season = df_a.copy()
+        if df_b_season.empty:
+            df_b_season = df_b.copy()
     except (TypeError, ValueError, KeyError):
         df_a_season = df_a.copy()
         df_b_season = df_b.copy()
