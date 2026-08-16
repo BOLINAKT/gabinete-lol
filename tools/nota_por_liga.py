@@ -52,13 +52,18 @@ def main() -> int:
     ap.add_argument("--min-n", type=int, default=80, help="amostra mínima por liga")
     ap.add_argument("--season", type=int, default=None)
     ap.add_argument("--artifact", default="ml_artifact.json")
+    ap.add_argument("--csv", action="append", default=None,
+                    help="CSV no schema OracleElixir-like (repetível). Sem isso, usa os do LoL. "
+                         "Serve para medir OUTRO modelo — ex.: o do Dota, que é clone do mesmo mlcore.")
+    ap.add_argument("--out", default=None, help="caminho do JSON de saída")
     args = ap.parse_args()
 
-    art = MLArtifact.load_json(str(ROOT / args.artifact))
+    art_path = Path(args.artifact)
+    art = MLArtifact.load_json(str(art_path if art_path.is_absolute() else ROOT / art_path))
     model = art.model
 
     frames = []
-    for c in default_csvs():
+    for c in (args.csv or default_csvs()):
         try:
             d = load_oracle_elixir_games(str(c), keep_playoffs=None)
             if not d.empty:
@@ -111,13 +116,13 @@ def main() -> int:
     print("\nleitura: nota usa a formula oficial (aleatorio=5.0, elite=9.5).")
     print("         ece = erro de calibracao; <0.06 e bom, >0.10 e desconfiar.")
 
-    ev = ROOT / "evidence"
-    ev.mkdir(exist_ok=True)
-    (ev / "nota_por_liga.json").write_text(
+    out_path = Path(args.out) if args.out else (ROOT / "evidence" / "nota_por_liga.json")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(
         json.dumps({"season": season, "nota_geral": round(float(_grade_from_logloss(geral_ll)), 2),
                     "min_n": int(args.min_n), "ligas": out}, ensure_ascii=False, indent=1),
         encoding="utf-8")
-    print(f"\n[salvo] evidence/nota_por_liga.json")
+    print(f"\n[salvo] {out_path}")
     return 0
 
 

@@ -123,7 +123,15 @@ def _render_players_result_card(
             "</div>"
         )
 
-    cyan_section_header(st, "Resultado — ML por players")
+    cyan_section_header(st, "E se os players pesassem? (simulação — NÃO é a odd do modelo)")
+    st.caption(
+        "⚠️ Esta odd **não sai do modelo que você aposta**. Ela mistura a probabilidade "
+        "do time com um rating de player que é `logit(vitórias/jogos)` — ou seja, a taxa "
+        "de vitória do TIME colada em cada jogador (todo mundo do Gen.G dá o mesmo número). "
+        "Medido na season inteira, o peso ótimo da camada de players é **0,00**: o modelo "
+        "já absorveu esse sinal pelo time. Use os blocos abaixo como leitura descritiva "
+        "(quem joga, em que nível) — a odd de apostar é a da Visão Geral."
+    )
     st.markdown(
         "<div style='display:flex;gap:12px;margin:8px 0 6px;'>"
         + _odd_card(str(team_a), odd_a, pa, col_a)
@@ -632,7 +640,13 @@ def _render_props_table(
 
 def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     session_state = st.session_state
-    render_tab_hero(st, title="Players", subtitle="Quem joga hoje vale quanto — e o ML por lineup com fusão Team + Players.")
+    render_tab_hero(
+        st, title="Players",
+        subtitle=(
+            "Quem joga hoje e em que nível — leitura DESCRITIVA. A odd de apostar sai da "
+            "Visão Geral: medido na season inteira, o peso ótimo dos players no modelo é 0,00."
+        ),
+    )
     _render_lineup_value_block(
         st=st,
         team_a=ctx["teamA"],
