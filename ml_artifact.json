@@ -60,7 +60,7 @@
       "Ascendance": -726.3922953382714,
       "IMU Beyond": -479.07535033860137,
       "Team BDS": 359.3646642056666,
-      "G2 Esports": 824.4898179363162,
+      "G2 Esports": 829.1155838967617,
       "Rogue": 258.21209073605365,
       "SK Gaming": 429.202240051558,
       "Karmine Corp": 830.9957556972636,
@@ -163,12 +163,12 @@
       "Vivo Keyd Stars": 352.1493779780115,
       "Los Grandes": 138.9478602104928,
       "Fluxo": 132.65092539531065,
-      "FURIA": 487.4093327739531,
+      "FURIA": 486.1052228212132,
       "Liberty": 44.168883433838396,
       "INTZ": 257.54606732912754,
       "Team Liquid": 576.5171972073719,
       "100 Thieves": 503.36946442177816,
-      "RED Canids": 356.0076252016505,
+      "RED Canids": 356.80578618289263,
       "paiN Gaming": 197.6918081096711,
       "Cloud9": 452.7324293461118,
       "NRG": 245.73889073490875,
@@ -764,7 +764,7 @@
       "La BOMBAS": -169.96686617616228,
       "Arctic Pandas": 169.57337330899196,
       "MVK Esports": 329.7568383996887,
-      "Shifters": 421.85918219711374,
+      "Shifters": 416.7349264905749,
       "LØS": 501.60309108742916,
       "PCIFIC Esports": 322.78726482549337,
       "SU Esports": 284.9252884983134,
@@ -940,7 +940,7 @@
       "Ascendance": 3,
       "IMU Beyond": 3,
       "Team BDS": 131,
-      "G2 Esports": 326,
+      "G2 Esports": 328,
       "Rogue": 58,
       "SK Gaming": 141,
       "Karmine Corp": 253,
@@ -1043,12 +1043,12 @@
       "Vivo Keyd Stars": 200,
       "Los Grandes": 89,
       "Fluxo": 45,
-      "FURIA": 189,
+      "FURIA": 192,
       "Liberty": 36,
       "INTZ": 64,
       "Team Liquid": 220,
       "100 Thieves": 141,
-      "RED Canids": 195,
+      "RED Canids": 198,
       "paiN Gaming": 189,
       "Cloud9": 193,
       "NRG": 82,
@@ -1644,7 +1644,7 @@
       "La BOMBAS": 9,
       "Arctic Pandas": 44,
       "MVK Esports": 69,
-      "Shifters": 50,
+      "Shifters": 52,
       "LØS": 81,
       "PCIFIC Esports": 55,
       "SU Esports": 51,
@@ -1829,8 +1829,8 @@
       "Movistar KOI": 0.4241092710680221,
       "Dplus Kia": 0.4938977893806561,
       "AG.AL": 0.35507005434861344,
-      "FURIA": 0.3608126934331846,
-      "G2 Esports": 0.27742490028536715,
+      "FURIA": 0.3820464267724116,
+      "G2 Esports": 0.24840149852391227,
       "JD Gaming": 0.36652222157685604,
       "LYON": 0.3049513052108597,
       "LØS": 0.2979828986377906,
@@ -1974,7 +1974,7 @@
       "Leviatan": 0.3606241516060589,
       "Fluxo W7M": 0.3245079372409939,
       "Vivo Keyd Stars": 0.4321544703806791,
-      "RED Canids": 0.4271430988438568,
+      "RED Canids": 0.4336971175008371,
       "Team Liquid": 0.3321516086412599,
       "Cloud9": 0.35617175220968517,
       "Shopify Rebellion": 0.37142125810591015,
@@ -2010,7 +2010,7 @@
       "SU Esports": 0.30644910453157215,
       "NRG": 0.2544602448094573,
       "Team Heretics": 0.28320246426334655,
-      "Shifters": 0.3861806254421519,
+      "Shifters": 0.3404523442966149,
       "GiantX": 0.43309658477950885,
       "SK Gaming": 0.3826571245290666,
       "Natus Vincere": 0.3134072541818435,
@@ -2108,7 +2108,7 @@
       "IC": -0.0007618267276666668,
       "DCUP": -0.0007618267276666668,
       "EWC": 5.926527122380265,
-      "KESPA CUP": 6.737999487960752e-19
+      "KESPA CUP": 6.939610478379607e-19
     },
     "tier_strength": {
       "T1": 3.422748080138152,
@@ -5632,7 +5632,7 @@
       }
     },
     "rank_caps_by_tier": {
-      "T1": 815.5581292706509,
+      "T1": 816.8302149097734,
       "ERL": 541.4376115897892,
       "MINOR": 541.4376115897892,
       "T2": 541.4376115897892
@@ -5691,11 +5691,11 @@
     "b": 0.08871497576277003
   },
   "meta": {
-    "trained_at": "2026-08-15T20:34:46+00:00",
+    "trained_at": "2026-08-16T01:23:04+00:00",
     "data_min_date": "2026-01-08",
     "data_max_date": "2026-08-15",
     "cutoff_date": "2026-06-13",
-    "n_games_total": 7515,
+    "n_games_total": 7520,
     "n_games_train": 26079,
     "n_games_holdout": 332,
     "n_teams": 853,
@@ -9442,13 +9442,8 @@
     },
     "tail": {
       "n": 500,
-      "fingerprint": "77b81076866d275e975f404e942a265cbfda7b3057a6e95b84b69e8b8b065979",
+      "fingerprint": "5f657c4561db767f9e2de901d29d049c7816f71f2d403ee1197fa48253f78cda",
       "gameids": [
-        "13393-13393_game_1",
-        "LOLTMNT01_437220",
-        "LOLTMNT01_438177",
-        "13393-13393_game_2",
-        "LOLTMNT01_438211",
         "LOLTMNT04_181338",
         "LOLTMNT04_182327",
         "LOLTMNT01_437270",
@@ -9943,12 +9938,17 @@
         "13416-13416_game_1",
         "LOLTMNT04_181996",
         "LOLTMNT05_218159",
-        "LOLTMNT05_218180"
+        "LOLTMNT05_218180",
+        "LOLTMNT02_450511",
+        "LOLTMNT05_217160",
+        "LOLTMNT02_449441",
+        "LOLTMNT02_450539",
+        "LOLTMNT05_217166"
       ]
     },
     "incremental": {
-      "last_run_at": "2026-08-15T20:34:46+00:00",
-      "added_games": 18,
+      "last_run_at": "2026-08-16T01:23:04+00:00",
+      "added_games": 5,
       "csv_used": [
         "CSV_DIARIO/2026_LoL_esports_match_data_from_OraclesElixir.csv"
       ],
@@ -9959,9 +9959,9 @@
     "players_layer_update": {
       "enabled": true,
       "players_artifact": "players_artifact.json",
-      "new_games": 18,
-      "games_used": 18,
-      "updated_at": "2026-08-15T20:34:46Z"
+      "new_games": 5,
+      "games_used": 5,
+      "updated_at": "2026-08-16T01:23:04Z"
     }
   }
 }
