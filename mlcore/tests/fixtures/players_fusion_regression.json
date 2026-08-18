@@ -1,8 +1,8 @@
 {
-  "artifact_sha256": "5727d24df643f4618a503f0820394103ad0202dc850d446b1dd2fe9b2c982703",
-  "players_artifact_sha256": "0046212176b84f536fae18d88cf4edcfda542cb67fcc64aece69fce670fa645b",
-  "csv_sha256": "3d9e2bdeb37fa60909b30e2b5547e812ae05d6f7d2034da20a699f01c41cb047",
-  "generated_at": "2026-08-18T16:32:34",
+  "artifact_sha256": "cc37b2e876c24864f3d2ee6a7e109f17ad5298b41cbe7a67796dba2ca117891a",
+  "players_artifact_sha256": "f41cfe7afd9acb5f03bb8da1225c387fdd826c5ae4facb890b98df5066b19d68",
+  "csv_sha256": "890ed9932cb54ceb635b5ff6b98385fa5c258ed235a656684d3ab8e0126fd2b8",
+  "generated_at": "2026-08-18T19:55:52",
   "method": "team_vs_players_fused_current_settings",
   "matchups": [
     {
@@ -9765,8 +9765,140 @@
           }
         }
       ]
+    },
+    "a=cc37b2e876c24864f3d2ee6a7e109f17ad5298b41cbe7a67796dba2ca117891a|p=f41cfe7afd9acb5f03bb8da1225c387fdd826c5ae4facb890b98df5066b19d68|c=890ed9932cb54ceb635b5ff6b98385fa5c258ed235a656684d3ab8e0126fd2b8": {
+      "artifact_sha256": "cc37b2e876c24864f3d2ee6a7e109f17ad5298b41cbe7a67796dba2ca117891a",
+      "players_artifact_sha256": "f41cfe7afd9acb5f03bb8da1225c387fdd826c5ae4facb890b98df5066b19d68",
+      "csv_sha256": "890ed9932cb54ceb635b5ff6b98385fa5c258ed235a656684d3ab8e0126fd2b8",
+      "generated_at": "2026-08-18T19:55:52",
+      "method": "team_vs_players_fused_current_settings",
+      "matchups": [
+        {
+          "team_a": "Team WE",
+          "team_b": "Top Esports",
+          "league": "LPL",
+          "team_only": {
+            "p_map": 0.4041618946987825,
+            "odd_map_a": 2.4742560174934085,
+            "odd_map_b": 1.6783082369236257,
+            "p_bo3": 0.358003377007322,
+            "odd_bo3_a": 2.793269740524117,
+            "odd_bo3_b": 1.557640592155272,
+            "p_bo5": 0.32465637872136255,
+            "odd_bo5_a": 3.0801797393860952,
+            "odd_bo5_b": 1.4807276895674029
+          },
+          "players_fused": {
+            "p_map": 0.3777827122500102,
+            "odd_map_a": 2.647024248526801,
+            "odd_map_b": 1.6071556025325435,
+            "p_bo3": 0.3203252036213818,
+            "odd_bo3_a": 3.121827407567906,
+            "odd_bo3_b": 1.4712918668282382,
+            "p_bo5": 0.27980681184653416,
+            "odd_bo5_a": 3.5738944073615717,
+            "odd_bo5_b": 1.3885163265205867
+          },
+          "debug": {
+            "p_raw": 0.3696406050995955,
+            "p_map_players": 0.2861299913410409,
+            "delta_raw": -1.335977597079436,
+            "delta_eff": -1.133802206003796,
+            "w_lineup": 0.75,
+            "coverage_ratio": 1.0,
+            "freshness": 1.0,
+            "n_team": 106.0,
+            "n_players_eff": 221.0,
+            "team_scale": 0.25,
+            "players_scale": 0.75,
+            "lane_fit_source": "league:LPL"
+          }
+        },
+        {
+          "team_a": "LNG Esports",
+          "team_b": "ThunderTalk Gaming",
+          "league": "LPL",
+          "team_only": {
+            "p_map": 0.616088293941299,
+            "odd_map_a": 1.6231439711387863,
+            "odd_map_b": 2.6047655859889245,
+            "p_bo3": 0.6710035149850364,
+            "odd_bo3_a": 1.4903051588668657,
+            "odd_bo3_b": 3.039546151851797,
+            "p_bo5": 0.7099697371582313,
+            "odd_bo5_a": 1.4085107401938872,
+            "odd_bo5_b": 3.4479160560757354
+          },
+          "players_fused": {
+            "p_map": 0.6276176760195609,
+            "odd_map_a": 1.5933266990536976,
+            "odd_map_b": 2.68541210364359,
+            "p_bo3": 0.6872696818578755,
+            "odd_bo3_a": 1.4550329025088522,
+            "odd_bo3_b": 3.1976432791704466,
+            "p_bo5": 0.7290941599966512,
+            "odd_bo5_a": 1.3715649567191612,
+            "odd_bo5_b": 3.691319463573168
+          },
+          "debug": {
+            "p_raw": 0.657099278096613,
+            "p_map_players": 0.657721637226185,
+            "delta_raw": 0.09732179395700727,
+            "delta_eff": 0.15484672696794746,
+            "w_lineup": 0.75,
+            "coverage_ratio": 1.0,
+            "freshness": 1.0,
+            "n_team": 49.0,
+            "n_players_eff": 113.4,
+            "team_scale": 0.25,
+            "players_scale": 0.75,
+            "lane_fit_source": "league:LPL"
+          }
+        },
+        {
+          "team_a": "Gen.G",
+          "team_b": "T1",
+          "league": "LCK",
+          "team_only": {
+            "p_map": 0.6665504449212717,
+            "odd_map_a": 1.5002615445228802,
+            "odd_map_b": 2.9989543688666713,
+            "p_bo3": 0.7405857649091931,
+            "odd_bo3_a": 1.3502825025574383,
+            "odd_bo3_b": 3.854838573719573,
+            "p_bo5": 0.7899512464151556,
+            "odd_bo5_a": 1.2659009078573618,
+            "odd_bo5_b": 4.760799495037578
+          },
+          "players_fused": {
+            "p_map": 0.7010799867209961,
+            "odd_map_a": 1.426370769299913,
+            "odd_map_b": 3.345376540802663,
+            "p_bo3": 0.7853593811035431,
+            "odd_bo3_a": 1.273302419326622,
+            "odd_bo3_b": 4.658950412747375,
+            "p_bo5": 0.8383458799091985,
+            "odd_bo5_a": 1.1928250904129334,
+            "odd_bo5_b": 6.186047095108357
+          },
+          "debug": {
+            "p_raw": 0.7215953176552814,
+            "p_map_players": 0.8091573368253441,
+            "delta_raw": 5.319596175582517,
+            "delta_eff": 1.199998342370113,
+            "w_lineup": 0.75,
+            "coverage_ratio": 1.0,
+            "freshness": 1.0,
+            "n_team": 116.0,
+            "n_players_eff": 256.0,
+            "team_scale": 0.25,
+            "players_scale": 0.75,
+            "lane_fit_source": "league:LCK"
+          }
+        }
+      ]
     }
   },
   "fixture_schema": "artifact_players_csv_snapshot_v1",
-  "latest_snapshot_key": "a=5727d24df643f4618a503f0820394103ad0202dc850d446b1dd2fe9b2c982703|p=0046212176b84f536fae18d88cf4edcfda542cb67fcc64aece69fce670fa645b|c=3d9e2bdeb37fa60909b30e2b5547e812ae05d6f7d2034da20a699f01c41cb047"
+  "latest_snapshot_key": "a=cc37b2e876c24864f3d2ee6a7e109f17ad5298b41cbe7a67796dba2ca117891a|p=f41cfe7afd9acb5f03bb8da1225c387fdd826c5ae4facb890b98df5066b19d68|c=890ed9932cb54ceb635b5ff6b98385fa5c258ed235a656684d3ab8e0126fd2b8"
 }
