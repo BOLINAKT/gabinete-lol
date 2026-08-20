@@ -45,7 +45,7 @@
     }
   ],
   "artifact_file": "ml_artifact.json",
-  "generated_at": "2026-08-19T23:18:24",
+  "generated_at": "2026-08-20T10:21:51",
   "method": "avg_forward_reverse_calibrated",
   "snapshots": {
     "36d24831cfb57a9bb768e9c5c85afb2b3bcef61b30e71ea6f6481048903b98ff": {
@@ -3701,7 +3701,7 @@
     "dcfba2f8cdbf5bbe740e99075dfb857faa82dc1fb9f4da710535c2b11215d7fe": {
       "artifact_file": "ml_artifact.json",
       "artifact_sha256": "dcfba2f8cdbf5bbe740e99075dfb857faa82dc1fb9f4da710535c2b11215d7fe",
-      "generated_at": "2026-08-19T23:18:24",
+      "generated_at": "2026-08-20T10:21:51",
       "method": "avg_forward_reverse_calibrated",
       "matchups": [
         {
