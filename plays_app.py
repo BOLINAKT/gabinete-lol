@@ -951,219 +951,24 @@ from app_core.ml_adjust_helpers_core import (  # noqa: E402,F401 - re-export
 # -----------------------------
 # Helpers: infer league/tier for ML core v2 (to avoid artifact mislabeling)
 # -----------------------------
-_MAJOR_LEAGUES = {
-    *CORE_ML_MAJOR_LEAGUES,
-}
+# Bloco movido p/ ml_league_pricing_runtime_core (fatiamento 16/08/2026).
+# RE-IMPORTADO aqui porque o padrao globals()->ctx exige os nomes visiveis
+# neste namespace: sem isso as abas recebem None e quebram longe daqui.
+from app_core.ml_league_pricing_runtime_core import (  # noqa: F401 - ctx
+    _MAJOR_LEAGUES,
+    _load_identity_registry_cached,
+    _identity_registry_sig,
+    _identity_team_name_candidates,
+    _identity_team_league_candidates,
+    _league_inference_csv_sigs,
+    _infer_team_league_from_csv,
+    _infer_match_league_from_csv,
+    _mlcore_p_map_v2,
+    _build_ml_microseg_table,
+    _apply_ml_microseg_calibration,
+    configurar_runtime as _configurar_ml_league_runtime,
+)
 
-
-@st.cache_data(show_spinner=False)
-def _load_identity_registry_cached(_sig: Tuple[str, int, int]) -> Dict[str, Any]:
-    path = APP_ROOT / "identity_registry.json"
-    return dict(core_load_identity_registry(path))
-
-
-def _identity_registry_sig() -> Tuple[str, int, int]:
-    path = APP_ROOT / "identity_registry.json"
-    if not path.exists():
-        return ("", 0, 0)
-    return _file_sig(str(path))
-
-
-def _identity_team_name_candidates(team: str) -> list[str]:
-    registry = _load_identity_registry_cached(_identity_registry_sig())
-    return list(core_team_identity_candidates(registry, team))
-
-
-def _identity_team_league_candidates(team: str) -> list[str]:
-    registry = _load_identity_registry_cached(_identity_registry_sig())
-    out: list[str] = []
-    for value in list(core_team_identity_league_candidates(registry, team)):
-        text = str(value or "").strip()
-        if not text:
-            continue
-        canon = str(core_norm_league_key(text) or text).strip()
-        if canon and canon not in out:
-            out.append(canon)
-    return out
-
-
-@st.cache_data(show_spinner=False)
-def _league_inference_csv_sigs(
-    _primary_sig: Tuple[str, int, int],
-    year: Optional[int],
-) -> list[Tuple[str, int, int]]:
-    out: list[Tuple[str, int, int]] = []
-    seen: set[str] = set()
-
-    def _push(path: Path) -> None:
-        if not path.exists():
-            return
-        key = str(path.resolve())
-        if key in seen:
-            return
-        seen.add(key)
-        out.append(_file_sig(str(path)))
-
-    primary_raw = str((_primary_sig or ("", 0, 0))[0] or "").strip()
-    if primary_raw:
-        _push(Path(primary_raw))
-
-    candidates: list[Path] = []
-    for base in [APP_ROOT / "CSV_DIARIO", APP_ROOT / "CSV_HISTORICO"]:
-        if not base.exists():
-            continue
-        candidates.extend(base.glob("*_LoL_esports_match_data_from_OraclesElixir.csv"))
-
-    def _year_score(path: Path) -> int:
-        _prefix = str(path.name).split("_", 1)[0].strip()
-        return int(_prefix) if _prefix.isdigit() else 0
-
-    try:
-        target_year = int(year) if year is not None else 0
-    except (TypeError, ValueError):
-        target_year = 0
-    candidates = sorted(
-        candidates,
-        key=lambda path: (abs(_year_score(path) - target_year) if target_year else 0, -_year_score(path), path.name),
-    )
-    for path in candidates:
-        _push(path)
-    return out
-
-
-@st.cache_data(show_spinner=False)
-def _infer_team_league_from_csv(_csv_sig: Tuple[str, int, int], team: str, year: Optional[int]) -> str:
-    aliases = _identity_team_name_candidates(team)
-    for _sig in _league_inference_csv_sigs(_csv_sig, year):
-        out = core_infer_team_league_from_csv(
-            _sig,
-            team,
-            year,
-            norm_league_key_fn=core_norm_league_key,
-            major_leagues=_MAJOR_LEAGUES,
-            team_aliases=aliases,
-            fallback_any_year=True,
-        )
-        if str(out or "").strip():
-            return str(out)
-    for league in _identity_team_league_candidates(team):
-        if str(league or "").strip():
-            return str(league)
-    return ""
-
-
-@st.cache_data(show_spinner=False)
-def _infer_match_league_from_csv(_csv_sig: Tuple[str, int, int], teamA: str, teamB: str, year: Optional[int]) -> str:
-    aliases_a = _identity_team_name_candidates(teamA)
-    aliases_b = _identity_team_name_candidates(teamB)
-    for _sig in _league_inference_csv_sigs(_csv_sig, year):
-        out = core_infer_match_league_from_csv(
-            _sig,
-            teamA,
-            teamB,
-            year,
-            norm_league_key_fn=core_norm_league_key,
-            major_leagues=_MAJOR_LEAGUES,
-            load_team_games_fn=_load_team_games,
-            infer_team_league_fn=lambda sig, team, y: core_infer_team_league_from_csv(
-                sig,
-                team,
-                y,
-                norm_league_key_fn=core_norm_league_key,
-                major_leagues=_MAJOR_LEAGUES,
-                team_aliases=_identity_team_name_candidates(team),
-                fallback_any_year=True,
-            ),
-            team_aliases_a=aliases_a,
-            team_aliases_b=aliases_b,
-            fallback_any_year=True,
-        )
-        if str(out or "").strip():
-            return str(out)
-    return ""
-
-
-
-
-
-def _mlcore_p_map_v2(
-    artifact_path: str,
-    team_blue: str,
-    team_red: str,
-    as_of: date,
-    ach_override_path: Optional[str] = None,
-    league_hint_blue: Optional[str] = None,
-    league_hint_red: Optional[str] = None,
-    tier_hint_blue: Optional[str] = None,
-    tier_hint_red: Optional[str] = None,
-) -> Optional[Dict[str, Any]]:
-    return core_mlcore_p_map_v2(
-        artifact_path=artifact_path,
-        team_blue=team_blue,
-        team_red=team_red,
-        as_of=as_of,
-        ach_override_path=ach_override_path,
-        league_hint_blue=league_hint_blue,
-        league_hint_red=league_hint_red,
-        tier_hint_blue=tier_hint_blue,
-        tier_hint_red=tier_hint_red,
-        clip_prob_fn=clip_prob,
-        artifact_sig_fn=_artifact_sig,
-        load_artifact_cached_fn=_load_artifact_cached,
-        team_meta_from_artifact_fn=_team_meta_from_artifact,
-        ach_layer_for_artifact_fn=_ach_layer_for_artifact,
-        strength_breakdown_fn=_strength_breakdown,
-        p_from_diff_points_fn=_p_from_diff_points,
-    )
-
-
-
-
-@st.cache_data(show_spinner=False)
-def _build_ml_microseg_table(
-    csv_sig: Tuple[str, int, int],
-    art_sig: Tuple[str, int, int],
-    lookback_games: int = 1200,
-    shrink_k: float = 90.0,
-) -> Dict[str, Dict[str, float]]:
-    return _build_ml_microseg_table_core(
-        _load_team_games(csv_sig),
-        _load_artifact_cached(art_sig),
-        lookback_games=lookback_games,
-        shrink_k=shrink_k,
-    )
-
-
-def _apply_ml_microseg_calibration(
-    p_map_cal: float,
-    *,
-    league: str,
-    split: str,
-    side: str,
-    bo: str,
-    phase: str,
-    table,
-    min_n: int,
-    strength: float,
-    cap_pp: float,
-    hierarchical: bool = True,
-    hierarchy_decay: float = 0.80,
-):
-    return _apply_ml_microseg_calibration_core(
-        p_map_cal,
-        clip_prob_fn=clip_prob,
-        league=league,
-        split=split,
-        side=side,
-        bo=bo,
-        phase=phase,
-        table=table,
-        min_n=min_n,
-        strength=strength,
-        cap_pp=cap_pp,
-        hierarchical=hierarchical,
-        hierarchy_decay=hierarchy_decay,
-    )
 
 
 
@@ -1443,6 +1248,15 @@ st.markdown(
 st.caption("Fluxo: escolher Season/Times -> preencher linhas -> ver resultados (modelo + histórico).")
 
 APP_ROOT = Path(__file__).resolve().parent
+
+# Configura o modulo fatiado em 16/08/2026. TEM que vir depois do APP_ROOT:
+# o bloco original ficava ANTES dele e so o usava em tempo de execucao, dentro
+# das funcoes — ao virar chamada de topo, a ordem passou a importar.
+_configurar_ml_league_runtime(
+    app_root=APP_ROOT,
+    load_team_games=_load_team_games,
+    ach_layer_for_artifact=_ach_layer_for_artifact,
+)
 _FIT_PARAMS_PATH = APP_ROOT / "params_fitted.json"
 _ODDS_ANCHOR_BASELINE_PATH = APP_ROOT / "odds_anchor_baseline.json"
 _TEAM_STATE_ARTIFACT_PATH = APP_ROOT / "team_state_artifact.json"
