@@ -31,6 +31,30 @@ jobs:
         run: |
           python tools/ml_fusion_scorecard.py 2>&1 | tee scorecard_out.txt
 
+      # Campeao novo nao pode faltar CALADO: ele foi montar um draft em
+      # 16/08/2026 e o Locke nao estava la — o registro estava 10 patches atras
+      # e nada avisava (nada quebra, nenhum teste falha, so a tela fica sem o
+      # boneco e o Radar le a composicao errado). --fix roda o gerador sozinho:
+      # o dado vem do Riot e dos CSVs, entao nao ha o que revisar a mao.
+      - name: Registro de campeoes em dia? (conserta sozinho se faltar)
+        continue-on-error: true
+        run: python tools/check_champion_registry.py --fix 2>&1 | tee campeoes_out.txt
+
+      - name: Publicar registro de campeoes se mudou
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add champion_knowledge_registry.json
+          if git diff --cached --quiet; then
+            echo "registro de campeoes sem mudanca"
+          else
+            git commit -m "Robô: registro de campeões atualizado (campeão novo no Data Dragon)"
+            for i in 1 2 3; do
+              if git push; then break; fi
+              git pull --rebase || exit 1
+            done
+          fi
+
       # Ate 16/08/2026 o vigia media SO a fase Vencedor. As outras sete so eram
       # medidas quando ele rodava a mao no PC — resultado: a nota do produto
       # estava sendo anunciada com fases de 26-29 dias, uma foto de julho, e o
