@@ -108,7 +108,7 @@ def main() -> int:
     (ROOT / "evidence").mkdir(exist_ok=True)
     (ROOT / "evidence" / "players_scorecard.json").write_text(
         json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"\n[players_scorecard] salvo: evidence/players_scorecard.json")
+    print("\n[players_scorecard] salvo: evidence/players_scorecard.json")
     return 0
 
 

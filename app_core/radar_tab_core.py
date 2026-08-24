@@ -36,7 +36,6 @@ from app_core.radar_confronto_core import (
     champion_meta_presence,
     classify_comp_archetype,
     latest_roster,
-    map_pattern_signals,
     player_champion_familiarity,
     team_style_history,
     team_vs_style_history,

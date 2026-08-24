@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import math
 from typing import Any, Mapping
 
@@ -670,32 +669,14 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     parse_players_text_fn = ctx["parse_players_text_fn"]
     resolve_players_fn = ctx["resolve_players_fn"]
     fuzzy_match_one_fn = ctx["fuzzy_match_one_fn"]
-    build_lane_rows_fn = ctx["build_lane_rows_fn"]
     ensure_players_filter_state_fn = ctx["ensure_players_filter_state_fn"]
     ensure_players_text_state_fn = ctx["ensure_players_text_state_fn"]
     apply_players_autofill_state_fn = ctx["apply_players_autofill_state_fn"]
-    ensure_player_line_input_state_fn = ctx["ensure_player_line_input_state_fn"]
-    apply_players_submission_state_fn = ctx["apply_players_submission_state_fn"]
-    build_per_player_lines_by_idx_fn = ctx["build_per_player_lines_by_idx_fn"]
-    build_player_means_rows_fn = ctx["build_player_means_rows_fn"]
-    build_recent_player_stats_rows_fn = ctx["build_recent_player_stats_rows_fn"]
-    build_player_market_rows_fn = ctx["build_player_market_rows_fn"]
-    append_players_recent_stats_panel_trace_fn = ctx["append_players_recent_stats_panel_trace_fn"]
-    append_players_fair_panel_trace_fn = ctx["append_players_fair_panel_trace_fn"]
-    append_players_markets_panel_trace_fn = ctx["append_players_markets_panel_trace_fn"]
-    append_players_panels_bundle_trace_fn = ctx["append_players_panels_bundle_trace_fn"]
-    append_feature_trace_fn = ctx["append_feature_trace_fn"]
-    feature_flag_enabled_fn = ctx["feature_flag_enabled_fn"]
-    df_contract_view_fn = ctx["df_contract_view_fn"]
     format_num_fn = ctx["format_num_fn"]
     format_pct_fn = ctx["format_pct_fn"]
-    format_pct1_fn = ctx["format_pct1_fn"]
     odd_from_prob_fn = ctx["odd_from_prob_fn"]
     state_get_float_fn = ctx["state_get_float_fn"]
-    state_get_int_fn = ctx["state_get_int_fn"]
-    parse_lines_fn = ctx["parse_lines_fn"]
     fuse_probs_by_precision_fn = ctx["fuse_probs_by_precision_fn"]
-    persist_combined_trace_file_fn = ctx["persist_combined_trace_file_fn"]
     playoffs_opt = ctx["playoffs_opt"]
 
     years, splits, leagues = collect_year_split_league_options(team_games)

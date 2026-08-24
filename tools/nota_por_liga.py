@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import sys
 
 # Console cp1252 no Windows derruba qualquer print com acento/emoji — e o estouro

@@ -119,7 +119,7 @@ def main() -> int:
             stale.append(f"{name} ({age:.0f}d)")
         age_s = f"{age:.0f}d" if age is not None else "?"
         flag = " ⚠" if (age is not None and age > STALE_DAYS) else ""
-        print(f"{name:18} {peso:>4} {nota:>6.2f} {teto:>5.1f} {age_s:>7}{flag}")
+        print(f"{name:18} {peso:>4} {nota:>6.2f} {teto:>5.1f} {age_s:>7}{flag}  {src}")
         rows.append((name, peso, float(nota), teto))
         wsum += peso
         psum += peso * float(nota)
@@ -142,7 +142,7 @@ def main() -> int:
            "stale": stale}
     EV.mkdir(exist_ok=True)
     (EV / "product_scorecard.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"\n[product_scorecard] salvo: evidence/product_scorecard.json")
+    print("\n[product_scorecard] salvo: evidence/product_scorecard.json")
     # Sai != 0 quando ha regua velha, para o vigia semanal poder FALHAR e abrir
     # issue em vez de anunciar uma nota que e foto antiga. --strict porque o uso
     # interativo (ele rodando no PC) nao deve quebrar por causa de idade.

@@ -141,7 +141,6 @@ print("RESULT|" + json.dumps({"falhas": falhas, "feitos": feitos}))
 
 def _times_reais() -> list[tuple[str, str]]:
     """(time, liga) do CSV vivo — para montar confrontos same/cross-liga."""
-    import pandas as pd
     from mlcore.stats_teams import build_team_games, load_team_rows
     from tools.ml_quality_scorecard import default_csvs
     csvs = default_csvs()
