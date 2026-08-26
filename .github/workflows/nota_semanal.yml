@@ -16,7 +16,10 @@ permissions:
 jobs:
   scorecard:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    # 60 -> 90: o passo das demais fases sozinho ja pode levar 50 min, e agora
+    # ha mais um de 25. Estourar o teto do JOB mataria junto o passo que abre
+    # a issue quando a nota cai — que e o motivo deste workflow existir.
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 
@@ -66,11 +69,21 @@ jobs:
           python tools/totals_scorecard.py || echo "totals falhou — segue"
           python tools/product_scorecard.py --run --strict 2>&1 | tee produto_out.txt
 
+      # A nota POR LIGA e o aviso que aparece no confronto ("calibracao 0.19,
+      # DESCONFIE"). So era gerada quando eu rodava a mao — o aviso da tela
+      # congelava e virava mentira com cara de medicao. Passo SEPARADO de
+      # proposito: junto com totals+produto ele estouraria o teto de 50 min
+      # do passo anterior e morreria calado.
+      - name: Re-medir a nota por liga (o aviso do confronto)
+        continue-on-error: true
+        timeout-minutes: 25
+        run: python tools/nota_por_liga.py
+
       - name: Publicar a nota do produto (a nuvem e o PC dele so leem do git)
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add -f evidence/product_scorecard.json
+          git add -f evidence/product_scorecard.json evidence/nota_por_liga.json evidence/totals_scorecard.json
           if git diff --cached --quiet; then
             echo "nota do produto sem mudanca — sem commit"
           else

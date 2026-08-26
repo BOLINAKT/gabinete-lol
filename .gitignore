@@ -47,6 +47,10 @@ evidence/*
 # nuvem, e sem commitar o resultado a medicao morria no runner — era por isso que
 # as fases apareciam com 26-29 dias por aqui.
 !evidence/product_scorecard.json
+# A regua dos totais tambem: a aba Analise de Linha agora LE dela para dizer
+# em que mercado o numero presta (ganho sobre a taxa-base). Sem versionar, a
+# nuvem nao tem o arquivo e o aviso some calado — o mesmo bug do live_models.
+!evidence/totals_scorecard.json
 tmp/
 # live_models/ é VERSIONADO (23/07): o app roda na Streamlit Cloud, que só puxa
 # do git e NÃO consegue treinar (1GB de RAM). Sem os modelos no repo, o painel

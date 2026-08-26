@@ -647,6 +647,19 @@ def render_line_analysis_tab(
         eyebrow="Scout",
     )
 
+    # Em que mercado o numero desta aba presta. A regua dos totais media
+    # cada mercado desde 07/2026, mas so a NOTA aparecia — e nota alta pode
+    # ser linha torta. O que vale e o ganho sobre a taxa-base, e ele agora
+    # chega aqui.
+    try:
+        from pathlib import Path as _P
+
+        from app_core.nota_mercados_core import render_confianca_mercados as _conf_mkt
+
+        _conf_mkt(st=st, root=_P(__file__).resolve().parents[1])
+    except (ImportError, OSError, TypeError, ValueError):
+        pass
+
     # v3 is the only supported view now. v2/Clássica foram aposentados.
     _render_v3_view(
         st=st, team_games=team_games, Filters=Filters,

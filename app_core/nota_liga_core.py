@@ -75,7 +75,12 @@ def render_nota_liga_table(*, st: Any, root: Path, pd: Any) -> None:
     df = pd.DataFrame(ligas)
     df["calibração"] = df["ece"].apply(lambda e: f"{float(e):.3f} ({_calib_label(float(e))})")
     df["acerto"] = df["acuracia"].apply(lambda a: f"{100.0 * float(a):.0f}%")
-    df = df[["liga", "tier", "n", "nota", "acerto", "calibração"]].sort_values("nota", ascending=False)
+    # tier so entra se existir: no Dota "liga" e um torneio e nao ha tier de
+    # liga pra mostrar — coluna vazia na tela dele e sujeira, nao informacao.
+    cols = ["liga", "tier", "n", "nota", "acerto", "calibração"]
+    if "tier" not in df.columns or not df["tier"].astype(str).str.strip().any():
+        cols.remove("tier")
+    df = df[cols].sort_values("nota", ascending=False)
     st.markdown(
         f"#### Nota do modelo por liga — season {data.get('season', '')} "
         f"(geral: **{data.get('nota_geral', '?')}**)"
