@@ -70,7 +70,14 @@ def _metrics(rows: list[tuple[float, int]]) -> dict:
         bins.setdefault(min(9, int(p * 10)), []).append((p, y))
     ece = sum((len(v) / n) * abs(sum(pp for pp, _ in v) / len(v) - sum(yy for _, yy in v) / len(v)) for v in bins.values())
     sharp = sum(abs(p - 0.5) for p, _ in rows) / n
-    return {"n": n, "brier": brier, "logloss": ll, "ece": ece, "sharp": sharp}
+    # CONTROLE DE TAXA-BASE (26/08/2026): brier de quem so chuta a frequencia
+    # historica do over, sem olhar os times = p*(1-p). Faltava nas DUAS reguas
+    # (esta e a do Dota) e sem ele uma linha TORTA parece talento: se o over so
+    # bate 32% das vezes, prever 32% fixo ja da brier 0.218 sabendo NADA.
+    base_p = sum(y for _, y in rows) / n
+    brier_base = base_p * (1.0 - base_p)
+    return {"n": n, "brier": brier, "logloss": ll, "ece": ece, "sharp": sharp,
+            "brier_base": brier_base, "ganho_base": brier_base - brier}
 
 
 def _v1_prob_over(metric: str, tot: MatchupTotals, pA, pB, line: float) -> float:
@@ -201,7 +208,9 @@ def main() -> int:
         for tag in ("v0", "v1", "v2", "prod"):
             m = _metrics(results[metric][tag])
             label = f"{metric} O{line:g}" if tag == "v0" else ""
-            print(f"{label:12} {tag:>4} {m['n']:>5} {m['brier']:>8.4f} {m['logloss']:>9.4f} {m['ece']:>7.4f} {m['sharp']:>7.3f}")
+            _gb = m.get("ganho_base", float("nan"))
+            print(f"{label:12} {tag:>4} {m['n']:>5} {m['brier']:>8.4f} {m['logloss']:>9.4f} "
+                  f"{m['ece']:>7.4f} {m['sharp']:>7.3f} {_gb:>+9.4f}")
         m0 = _metrics(results[metric]["v0"])
         for tag in ("v1", "v2", "prod"):
             mx = _metrics(results[metric][tag])
@@ -222,6 +231,7 @@ def main() -> int:
     nota_totais = sum(per_market.values()) / len(per_market) if per_market else float("nan")
     print(f"\nNOTA DOS TOTAIS (prod, régua 8.0-68*(brier-0.2067)): {nota_totais:.2f}")
     print("  por mercado: " + ", ".join(f"{k}={v}" for k, v in per_market.items()))
+    print("  ATENCAO: nota alta com 'vs base' ~0 significa LINHA TORTA, nao modelo bom.")
     try:
         import json as _json
         import time as _time
@@ -232,6 +242,8 @@ def main() -> int:
             "generated_at": _time.strftime("%Y-%m-%dT%H:%M:%S"),
             "nota_totais": round(float(nota_totais), 2) if math.isfinite(nota_totais) else None,
             "por_mercado": per_market, "season": int(season),
+            "ganho_vs_base": {m: round(float(_metrics(results[m]["prod"]).get("ganho_base", float("nan"))), 4)
+                              for m, _l, _a, _b in MARKETS if _metrics(results[m]["prod"])["n"]},
         }, ensure_ascii=False, indent=1), encoding="utf-8")
     except Exception:
         pass
