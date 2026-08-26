@@ -34,7 +34,10 @@ except (AttributeError, OSError, ValueError):
     pass
 
 ROOT = Path(__file__).resolve().parents[1]
-ALVOS = ["tools", "mlcore", "app_core"]
+# --root permite varrer OUTRO repositorio (o do Dota nasceu como clone deste e
+# nunca passou pela varredura). Pastas inexistentes sao ignoradas: o Dota nao
+# tem tools/, e tem modulos soltos na raiz que o LoL nao tem.
+ALVOS = ["tools", "mlcore", "app_core", "."]
 RECONFIG = re.compile(r"stdout\.reconfigure|PYTHONIOENCODING|codecs\.getwriter")
 
 AJUSTE = '''
@@ -137,15 +140,26 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--fix-encoding", action="store_true",
                     help="insere o ajuste de stdout nos arquivos que precisam")
+    ap.add_argument("--root", default=None,
+                    help="varre outro repositorio (ex.: ../GabineteDOTA)")
     args = ap.parse_args()
+    global ROOT
+    if args.root:
+        ROOT = Path(args.root).resolve()
+        print(f"[raiz] {ROOT}")
 
     risco_enc: list[tuple[Path, str]] = []
     risco_sub: list[tuple[Path, int]] = []
     risco_exc: list[tuple[Path, list]] = []
     risco_coerce: list[tuple[Path, list]] = []
     for pasta in ALVOS:
-        for p in sorted((ROOT / pasta).rglob("*.py")):
-            if "tests" in p.parts or "__pycache__" in p.parts:
+        base = ROOT / pasta
+        if not base.exists():
+            continue
+        arquivos = sorted(base.glob("*.py")) if pasta == "." else sorted(base.rglob("*.py"))
+        for p in arquivos:
+            if ("tests" in p.parts or "__pycache__" in p.parts
+                    or "backups" in p.parts or "_recovered" in p.parts):
                 continue
             try:
                 src = p.read_text(encoding="utf-8")
