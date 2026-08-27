@@ -42,6 +42,14 @@ Este gate escolhe COMO consertar sem trapacear na escolha.
 ║    de pontuação própria, sem binning e sem viés de estimação. ECE binado é  ║
 ║    estimador enviesado e sensível ao número de caixas.                      ║
 ║                                                                             ║
+║ 7. POR QUE A VALIDAÇÃO CRUZADA É REPETIDA:                                  ║
+║    a curva de VC saiu PLANA (diferenças na 5ª casa entre valores de L2), e  ║
+║    escolher o mínimo de curva plana é escolher ruído — o que se via na      ║
+║    replicação: os cortes que escolheram L2 baixo generalizaram pior.        ║
+║    Literatura de estabilidade: "modelos com baixo erro de VC que são        ║
+║    ESTÁVEIS generalizam melhor que os instáveis", e "aumentar K melhora a   ║
+║    estabilidade por promediar mais modelos".                                ║
+║                                                                             ║
 ║ 6. POR QUE HÁ BOOTSTRAP PAREADO E A BARRA É CONJUNÇÃO:                      ║
 ║    critério da casa, já usado em tools/run_phase8_first_markets_gate.py:    ║
 ║    accept = (ganho > 0.002) E (p < 0.05) E (ci_lo > 0).                     ║
@@ -143,6 +151,8 @@ def _ajusta(amostras, ps, chave, niveis, l2_grupo):
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--folds", type=int, default=5)
+    ap.add_argument("--repeticoes", type=int, default=5,
+                    help="repeticoes da validacao cruzada (reduz a variancia da escolha)")
     ap.add_argument("--out", default="evidence/gate_calibrador_final.json")
     args = ap.parse_args()
 
@@ -169,9 +179,19 @@ def main() -> int:
           f"calibracao — o teste e tocado uma vez so (fonte 3)\n")
 
     # ---- escolha interna, sem tocar no teste -------------------------------
+    # VALIDACAO CRUZADA REPETIDA. A curva de VC saiu PLANA (diferencas na 5a
+    # casa decimal entre valores de L2), e escolher o minimo de curva plana e
+    # escolher ruido. Repetir com semeaduras diferentes reduz a variancia da
+    # estimativa — "aumentar K melhora a estabilidade por promediar mais
+    # modelos" (fonte 7). Sem isso, a escolha de L2 oscilava entre 0.1 e 3
+    # conforme o corte de tempo, e os cortes que escolheram 0.1 generalizaram
+    # pior.
     idx = list(range(len(va)))
-    random.Random(0).shuffle(idx)
-    dobras = [idx[i::args.folds] for i in range(args.folds)]
+    conjuntos = []
+    for r in range(int(args.repeticoes)):
+        ordem = idx[:]
+        random.Random(r).shuffle(ordem)
+        conjuntos.append([ordem[i::args.folds] for i in range(args.folds)])
 
     print(f"{'agrupamento':<22}{'L2':>7}{'logloss VC':>12}")
     melhor = (float("inf"), None, None)
@@ -180,7 +200,8 @@ def main() -> int:
         niveis = sorted({chave(a) for a in va})[1:]
         for l2 in (L2_CANDIDATOS if niveis else (1.0,)):
             perdas_vc = []
-            for f in dobras:
+            for dobras in conjuntos:
+              for f in dobras:
                 fora = set(f)
                 dentro = [i for i in idx if i not in fora]
                 am_tr = [va[i] for i in dentro]
