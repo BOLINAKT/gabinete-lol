@@ -1,0 +1,208 @@
+{
+ "gerado_em": "2026-08-27T10:31:08",
+ "nota": 2.5,
+ "por_area": {
+  "dados": 4.0,
+  "modelo": 6.0,
+  "infra": 4.5,
+  "monitor": 2.5
+ },
+ "itens": [
+  {
+   "area": "dados",
+   "n": 1,
+   "item": "expectativas das features num esquema",
+   "nota": 0.5,
+   "evidencia": "VERIFICADO 27/08: tools/run_phase1_data_contract.py existe e o app le o relatorio (params_sections_core), mas nao roda em esteira"
+  },
+  {
+   "area": "dados",
+   "n": 2,
+   "item": "todas as features sao beneficas",
+   "nota": 1.0,
+   "evidencia": "toda camada passa por gate OOS antes de entrar; ha REJECTs registrados (draft, players no Dota, circuitos)"
+  },
+  {
+   "area": "dados",
+   "n": 3,
+   "item": "nenhuma feature custa demais",
+   "nota": 0.0,
+   "evidencia": "custo por feature nunca foi medido"
+  },
+  {
+   "area": "dados",
+   "n": 4,
+   "item": "features atendem requisitos de nivel superior",
+   "nota": 0.5,
+   "evidencia": "regras existem (so tier pro no Dota, ano/liga no LoL) mas nao sao verificadas por programa"
+  },
+  {
+   "area": "dados",
+   "n": 5,
+   "item": "controles de privacidade no pipeline",
+   "nota": 1.0,
+   "evidencia": "dado publico de partida; sem dado pessoal — requisito nao se aplica e isso esta declarado"
+  },
+  {
+   "area": "dados",
+   "n": 6,
+   "item": "feature nova entra rapido",
+   "nota": 0.5,
+   "evidencia": "entra, mas o caminho e manual e nao cronometrado"
+  },
+  {
+   "area": "dados",
+   "n": 7,
+   "item": "codigo de feature testado",
+   "nota": 0.5,
+   "evidencia": "test_league_transfer_features_core.py existe, mas so roda a mao"
+  },
+  {
+   "area": "modelo",
+   "n": 1,
+   "item": "especificacao revisada e versionada",
+   "nota": 1.0,
+   "evidencia": "tudo em git com o porque no texto do commit; nenhuma mudanca de modelo sem gate"
+  },
+  {
+   "area": "modelo",
+   "n": 2,
+   "item": "metricas offline e online se correlacionam",
+   "nota": 0.0,
+   "evidencia": "NAO medido: exigiria CLV, que esta fora do plano por decisao dele"
+  },
+  {
+   "area": "modelo",
+   "n": 3,
+   "item": "hiperparametros ajustados",
+   "nota": 1.0,
+   "evidencia": "gates com validacao cruzada; L2 e agrupamento do calibrador escolhidos por VC repetida DENTRO da calibracao"
+  },
+  {
+   "area": "modelo",
+   "n": 4,
+   "item": "impacto do envelhecimento conhecido",
+   "nota": 1.0,
+   "evidencia": "medido em 27/08: calibrador ajustado em temporada velha custa +0.023 de logloss"
+  },
+  {
+   "area": "modelo",
+   "n": 5,
+   "item": "modelo simples nao e melhor",
+   "nota": 1.0,
+   "evidencia": "toda camada e medida contra a base; ha casos em que o simples ganhou e foi mantido"
+  },
+  {
+   "area": "modelo",
+   "n": 6,
+   "item": "qualidade suficiente em cada FATIA",
+   "nota": 1.0,
+   "evidencia": "nota_por_liga.py roda em nota_semanal.yml"
+  },
+  {
+   "area": "modelo",
+   "n": 7,
+   "item": "testado quanto a inclusao",
+   "nota": 1.0,
+   "evidencia": "nao se aplica: nao ha pessoa como sujeito da previsao, e isso esta declarado"
+  },
+  {
+   "area": "infra",
+   "n": 1,
+   "item": "treino reproduzivel",
+   "nota": 0.0,
+   "evidencia": "VERIFICADO 27/08: NAO ha semente aleatoria no treino — os 'seed' em fit_ml_params sao checkpoints de estagio — nem teste que rode duas vezes e compare"
+  },
+  {
+   "area": "infra",
+   "n": 2,
+   "item": "especificacao com teste unitario",
+   "nota": 0.5,
+   "evidencia": "test_artifact.py existe, mas so roda a mao"
+  },
+  {
+   "area": "infra",
+   "n": 3,
+   "item": "pipeline com teste de integracao",
+   "nota": 1.0,
+   "evidencia": "a suite roda na esteira de retreino (retreino.yml)"
+  },
+  {
+   "area": "infra",
+   "n": 4,
+   "item": "qualidade validada ANTES de servir",
+   "nota": 1.0,
+   "evidencia": "guarda que barra modelo quebrado antes de publicar (retreino.yml)"
+  },
+  {
+   "area": "infra",
+   "n": 5,
+   "item": "modelo depuravel",
+   "nota": 1.0,
+   "evidencia": "VERIFICADO 27/08: session_state[_ml_trace_last] guarda o caminho da previsao (first_x_gap_core, flow_runtime_core) e a aba de explicabilidade o exibe"
+  },
+  {
+   "area": "infra",
+   "n": 6,
+   "item": "canario antes de servir",
+   "nota": 0.5,
+   "evidencia": "o calibrador com grupo entrou desligado ate os coeficientes existirem, mas nao ha canario sistematico"
+  },
+  {
+   "area": "infra",
+   "n": 7,
+   "item": "da para reverter",
+   "nota": 0.5,
+   "evidencia": "rollback_baseline.py existe, mas so roda a mao"
+  },
+  {
+   "area": "monitor",
+   "n": 1,
+   "item": "mudanca de dependencia notifica",
+   "nota": 0.0,
+   "evidencia": "nao existe"
+  },
+  {
+   "area": "monitor",
+   "n": 2,
+   "item": "invariantes valem na entrada",
+   "nota": 0.5,
+   "evidencia": "VERIFICADO 27/08: retreino.yml tem 'Guardas pos-retreino' e retreino_ao_vivo tem GUARDA FALHOU; mas schema/volume/distribuicao nao sao vigiados"
+  },
+  {
+   "area": "monitor",
+   "n": 3,
+   "item": "treino e servico NAO divergem",
+   "nota": 0.0,
+   "evidencia": "divergencia ENCONTRADA duas vezes em 26/08 (scope_meta) e a nota oficial mede caminho diferente do servido; nao ha vigia"
+  },
+  {
+   "area": "monitor",
+   "n": 4,
+   "item": "modelo nao esta velho demais",
+   "nota": 1.0,
+   "evidencia": "frescor.py roda em nota_semanal.yml"
+  },
+  {
+   "area": "monitor",
+   "n": 5,
+   "item": "numericamente estavel",
+   "nota": 0.0,
+   "evidencia": "VERIFICADO 27/08: train_offline tem UM isfinite, numa conta especifica — nao ha vigia de NaN/infinito"
+  },
+  {
+   "area": "monitor",
+   "n": 6,
+   "item": "desempenho computacional nao regrediu",
+   "nota": 0.0,
+   "evidencia": "tempo de treino e de resposta nao sao medidos"
+  },
+  {
+   "area": "monitor",
+   "n": 7,
+   "item": "qualidade de previsao nao regrediu",
+   "nota": 1.0,
+   "evidencia": "ml_fusion_scorecard.py roda em nota_semanal.yml"
+  }
+ ]
+}

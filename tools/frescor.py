@@ -46,23 +46,35 @@ try:
 except (AttributeError, OSError, ValueError):
     pass
 
-# Cadencia DECLARADA de cada regua, em dias. Prazo = 2x (atrasado) e 3x (velho),
-# pela fonte 3. O que nao esta aqui aparece como "frequencia nao declarada".
+# Cadencia de cada regua, em dias. Prazo = 2x (atrasada) e 3x (velha), fonte 3.
+#
+# VERIFICADO em 27/08/2026 contra as esteiras, nao inferido — a primeira versao
+# destes numeros era chute meu, e 5 dos 14 estavam errados:
+#   .github/workflows/nota_semanal.yml roda toda SEGUNDA e produz diretamente
+#     ml_fusion_scorecard, product_scorecard, totals_scorecard, nota_por_liga,
+#     livro_caixa e frescor;
+#   product_scorecard.py --run (chamado ali) regenera as "reguas baratas":
+#     data, live, reliability, code, players, portability — ou seja, TAMBEM
+#     semanais, e nao mensais como eu tinha suposto;
+#   a esteira do Dota roda 2x por dia e produz dota_scorecard.
+# O que NAO tem produtor automatico fica FORA desta tabela de proposito: sem
+# cadencia declarada nao existe prazo, e isso e o proprio achado (fonte 4).
+# O emulador de estresse e o caso: 34,8 dias e nenhuma esteira o regenera.
 CADENCIA = {
     "fusion_scorecard.json": ("nota oficial (vigia semanal)", 7),
     "product_scorecard.json": ("nota do produto (vigia semanal)", 7),
     "totals_scorecard.json": ("regua dos totais (vigia semanal)", 7),
     "nota_por_liga.json": ("nota por liga — APARECE NA TELA", 7),
     "livro_caixa.json": ("livro-caixa do silencio", 7),
-    "dota_scorecard.json": ("regua do Dota (esteira diaria)", 1),
+    "frescor.json": ("esta propria varredura", 7),
+    "data_scorecard.json": ("regua de dados (product --run)", 7),
+    "live_scorecard.json": ("regua da live (product --run)", 7),
+    "reliability_scorecard.json": ("regua de confiabilidade (product --run)", 7),
+    "code_scorecard.json": ("regua de codigo (product --run)", 7),
+    "players_scorecard.json": ("regua de jogadores (product --run)", 7),
+    "portability_scorecard.json": ("regua de portabilidade (product --run)", 7),
+    "dota_scorecard.json": ("regua do Dota (esteira 2x ao dia)", 1),
     "dota_totals_scorecard.json": ("totais do Dota", 7),
-    "live_scorecard.json": ("regua da live", 7),
-    "code_scorecard.json": ("regua de codigo", 30),
-    "data_scorecard.json": ("regua de dados", 7),
-    "players_scorecard.json": ("regua de jogadores", 30),
-    "portability_scorecard.json": ("regua de portabilidade", 30),
-    "reliability_scorecard.json": ("regua de confiabilidade", 30),
-    "stress_emulator.json": ("emulador de estresse", 30),
 }
 CAMPOS_CARIMBO = ("gerado_em", "generated_at", "ajustado_em", "timestamp", "data")
 

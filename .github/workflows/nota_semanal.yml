@@ -102,6 +102,14 @@ jobs:
       # FRESCOR: a nota e um programa que so roda quando alguem roda. Velha,
       # ela repete o numero antigo com toda a confianca. Aqui o vigia e
       # EXTERNO a quem executa, que e o ponto do dead man's switch.
+      # REGUA DAS 28 (ML Test Score do Google). Nota = MINIMO das quatro
+      # areas, para a nossa forca em modelo nao esconder que monitoramento
+      # esta baixo. Roda aqui porque regua que so roda a mao vale METADE,
+      # pelo criterio do proprio artigo.
+      - name: Regua das 28
+        continue-on-error: true
+        run: python tools/regua_28.py
+
       - name: Frescor das reguas
         continue-on-error: true
         run: python tools/frescor.py 2>&1 | tee frescor_out.txt
