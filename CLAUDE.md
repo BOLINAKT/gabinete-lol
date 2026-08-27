@@ -35,14 +35,22 @@ Ele já teve que repetir estas várias vezes. Não são preferências.
    inclusive para consertar bug: aquele jeito é mesmo o mais eficiente?
 4. **A fonte fica ESCRITA no arquivo**, em bloco FONTES. Pesquisa que não ficou
    escrita conta como pesquisa que não aconteceu, porque ninguém pode conferir.
-5. **Tudo testado. Só passa o que for medidamente melhor, sem exceção.** Teste
+5. **A regra vale para o código que JÁ EXISTE, não só para o novo.** Toda peça
+   que a frente tocar é auditada contra pesquisa: aquilo é mesmo o estado da
+   arte? já se sabe que é ruim? existe jeito melhor conhecido? A resposta, com
+   a fonte, entra no arquivo — inclusive quando a conclusão for "está certo,
+   mantém". Peça sem fonte é peça não auditada, mesmo que funcione.
+   Hoje **15 arquivos construídos desde 26/08/2026 não têm bloco FONTES** e a
+   lista está em `RETOMAR.md`, dívida D2. Cada um sai junto com a frente que
+   tocar nele — não em mutirão separado.
+6. **Tudo testado. Só passa o que for medidamente melhor, sem exceção.** Teste
    cego separado do de calibração, intervalo de confiança, e a barra da casa:
    **ganho > 0,002 de logloss, p < 0,05, e limite inferior do intervalo acima de
    zero — as três juntas.** Nunca medir no conjunto usado para calibrar.
-6. **Nota nunca sai da cabeça.** Toda nota é um programa reproduzível, com
+7. **Nota nunca sai da cabeça.** Toda nota é um programa reproduzível, com
    carimbo de quando foi medida. Em mercado binário, mostrar o ganho **sobre a
    taxa-base** (`p*(1-p)`), porque o Brier premia linha torta.
-7. Não tem problema o modelo ficar quebrado por um tempo. Tem problema ele ficar
+8. Não tem problema o modelo ficar quebrado por um tempo. Tem problema ele ficar
    bom por sorte.
 
 ## Fora do plano: CLV
