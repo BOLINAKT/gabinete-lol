@@ -95,6 +95,27 @@ jobs:
             done
           fi
 
+      # LIVRO-CAIXA DO SILENCIO. Severidade em camadas: reporta sempre, e
+      # escala (issue -> e-mail) so quando um item passa de 30 dias tolerado.
+      # Nao bloqueia nada — aviso que ninguem e obrigado a resolver vira ruido
+      # ignorado, entao a forca vem da idade, nao de derrubar a esteira.
+      - name: Livro-caixa do silencio
+        continue-on-error: true
+        run: python tools/livro_caixa.py 2>&1 | tee livro_out.txt
+
+      - name: Publicar o livro-caixa
+        continue-on-error: true
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add -f evidence/livro_caixa.json
+          if git diff --cached --quiet; then
+            echo "livro-caixa sem mudanca"
+          else
+            git commit -m "Robô: livro-caixa do silêncio atualizado"
+            for i in 1 2 3; do git push && break; git pull --rebase || exit 1; done
+          fi
+
       - name: Avaliar piso e alertar se cair
         env:
           GH_TOKEN: ${{ github.token }}
@@ -112,6 +133,10 @@ jobs:
             velhas=$(grep -oE "réguas VELHAS.*" produto_out.txt | head -1)
             titulo="⚠️ Vigia da nota: régua(s) do produto envelhecendo"
             corpo="A nota do vencedor está ok (**$nota**), mas alguma fase não foi re-medida a tempo: $velhas. A nota do produto está sendo calculada com número velho — ver logs do run para saber qual régua falhou."
+          elif grep -q "item(ns) com 30 dias ou mais" livro_out.txt 2>/dev/null; then
+            velhos=$(grep -oE "[0-9]+ item\(ns\) com 30 dias ou mais" livro_out.txt | head -1)
+            titulo="⚠️ Livro-caixa: $velhos sem decisão"
+            corpo="A nota está ok (**$nota**), mas o livro-caixa do silêncio tem item tolerado há 30 dias ou mais sem decisão. O que machuca não é quebrar, é ficar semanas quebrado sem ninguém ver — a aba StatsCamps do Dota ficou morta 6 semanas assim. Ver evidence/livro_caixa.json, ordenado por idade."
           else
             echo "nota $nota >= piso $PISO — tudo certo"; exit 0
           fi
