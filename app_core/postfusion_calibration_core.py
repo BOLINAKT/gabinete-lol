@@ -6,8 +6,24 @@ that calibrating both BEFORE and AFTER fusion yields:
   - +0.97pp logloss vs calibrating only before fusion (current default behavior)
   - ECE reduced by 48% (0.085 -> 0.044 on 1313-sample holdout)
 
-Feature-flagged via session_state["ml_postfusion_cal_enabled"] (default False).
-Enable in production after validating in your specific deployment context.
+Bandeira: session_state["ml_postfusion_cal_enabled"]. O texto antigo aqui dizia
+"default False", o que estava VENCIDO e quase me levou a conclusao errada em
+27/08/2026: o default de runtime e True (app_core/ml_settings_runtime_core.py,
+com teste garantindo). A etapa ESTA ativa em producao.
+
+CALIBRADOR COM GRUPO (27/08/2026) — desligado ate os coeficientes existirem
+em params_fitted.json["postfusion_group_calibration"]. Sem o bloco, o
+comportamento e exatamente o de antes; remover o bloco desfaz.
+
+Medido em teste cego de 5.525 jogos: o numero servido e SUBCONFIANTE (dizia
+68.8% onde acontecia 75.7%), porque o calibrador final e ajustado em
+temporadas ANTIGAS e a distorcao a corrigir e da atual. Ajustar em dado
+recente e dar ao calibrador o GRUPO (formato de serie + fase) como entrada:
+  logloss 0.58577 -> 0.56209   ganho +0.02368  IC 95% [+0.01847, +0.02866]
+  Z de Spiegelhalter -8.97 -> -2.94
+O grupo entra como FEATURE de um calibrador so (nao um calibrador por grupo):
+assim os grupos compartilham a inclinacao global e o grupo pequeno encolhe
+sozinho, sem corte arbitrario de "minimo N jogos".
 """
 from __future__ import annotations
 
@@ -15,6 +31,34 @@ import math
 from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 
 from app_core.prob_math_core import safe_float as _f
+
+
+def _calibrador_com_grupo(coef, bo: str, phase: str):
+    """Devolve a funcao de calibracao, ou None quando nao ha coeficientes.
+
+    Formato do bloco em params_fitted.json:
+      {"niveis": ["3|regular", ...], "w": [w_z, w_1, w_z_g1, w_1_g1, ...]}
+    A ordem das features e [logit(p), 1] seguida de [ind*logit(p), ind] para
+    cada nivel — o primeiro nivel do ajuste e a REFERENCIA e nao aparece."""
+    if not coef:
+        return None
+    niveis = list(coef.get("niveis") or [])
+    w = [float(x) for x in (coef.get("w") or [])]
+    if len(w) != 2 + 2 * len(niveis):
+        return None
+    chave = f"{bo}|{phase}"
+
+    def aplicar(p: float) -> float:
+        pc = min(max(float(p), 1e-12), 1.0 - 1e-12)
+        z = math.log(pc / (1.0 - pc))
+        s = w[0] * z + w[1]
+        for i, nv in enumerate(niveis):
+            if chave == nv:
+                s += w[2 + 2 * i] * z + w[3 + 2 * i]
+                break
+        return 1.0 / (1.0 + math.exp(-s)) if s > -700 else 0.0
+
+    return aplicar
 
 
 def apply_postfusion_calibration(
@@ -35,6 +79,7 @@ def apply_postfusion_calibration(
     apply_microseg_fn: Optional[Callable[..., Tuple[float, Dict[str, Any]]]] = None,
     apply_fused_postcal_fn: Optional[Callable[..., Tuple[float, Dict[str, Any]]]] = None,
     use_fitted_postcal: bool = True,
+    grupo_coef: Optional[Mapping[str, Any]] = None,
 ) -> Tuple[float, Dict[str, Any]]:
     """Apply Microseg + Platt to a fused probability and return (p_out, trace_info).
 
@@ -86,6 +131,24 @@ def apply_postfusion_calibration(
                 p_out = float(p_after_ms)
         except Exception as exc:
             info["microseg"]["error"] = f"{type(exc).__name__}: {exc}"
+
+    # Step 2b: calibrador COM GRUPO. Roda no lugar do Platt simples quando os
+    # coeficientes existem; sem eles, cai no caminho de sempre.
+    grupo_cal = _calibrador_com_grupo(grupo_coef, bo_hint, str(phase_hint or "regular"))
+    if grupo_cal is not None:
+        try:
+            p_novo = grupo_cal(float(p_out))
+            if math.isfinite(p_novo) and 0.0 < p_novo < 1.0:
+                info["postcal"] = {"applied": True, "modo": "grupo",
+                                   "grupo": f"{bo_hint}|{phase_hint or 'regular'}",
+                                   "p_in": float(p_out), "p_out": float(p_novo)}
+                p_out = float(p_novo)
+                info["p_out"] = float(p_out)
+                info["applied"] = bool(abs(float(p_out) - p_in) > 1e-9)
+                info["diff_pp"] = float(100.0 * (p_out - p_in))
+                return float(p_out), info
+        except (TypeError, ValueError, KeyError) as exc:
+            info["postcal"]["error_grupo"] = f"{type(exc).__name__}: {exc}"
 
     # Step 2: Fused post-calibration (Platt) on p_fused (or microseg'd p_fused)
     if callable(apply_fused_postcal_fn):
