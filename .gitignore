@@ -56,6 +56,7 @@ evidence/*
 # ledger nunca envelhece — que e a funcao inteira dele.
 !evidence/livro_caixa.json
 !evidence/gate_calibradores_lol.json
+!evidence/auditoria_pre_jogo.json
 tmp/
 # live_models/ é VERSIONADO (23/07): o app roda na Streamlit Cloud, que só puxa
 # do git e NÃO consegue treinar (1GB de RAM). Sem os modelos no repo, o painel

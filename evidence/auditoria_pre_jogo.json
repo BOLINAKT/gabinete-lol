@@ -1,0 +1,584 @@
+{
+ "n_teste": 5525,
+ "divergencia_media": 0.03688,
+ "logloss_regua": 0.58753,
+ "logloss_servido": 0.58577,
+ "ablacao": [
+  {
+   "variante": "caminho completo (SERVIDO)",
+   "logloss": 0.58577,
+   "refinamento": 0.57815
+  },
+  {
+   "variante": "sem microssegmento no time",
+   "logloss": 0.58461,
+   "refinamento": 0.57699
+  },
+  {
+   "variante": "sem microssegmento na fusao",
+   "logloss": 0.58505,
+   "refinamento": 0.57705
+  },
+  {
+   "variante": "sem NENHUM microssegmento",
+   "logloss": 0.58587,
+   "refinamento": 0.57737
+  },
+  {
+   "variante": "sem Platt do time",
+   "logloss": 0.58781,
+   "refinamento": 0.58036
+  },
+  {
+   "variante": "sem Platt da fusao",
+   "logloss": 0.58142,
+   "refinamento": 0.57816
+  },
+  {
+   "variante": "sem a camada de jogadores",
+   "logloss": 0.59221,
+   "refinamento": 0.58316
+  }
+ ],
+ "grupos": [
+  {
+   "grupo": "formato: BO1",
+   "n": 2783,
+   "z": -14.44,
+   "p_valor": 0.0,
+   "previsto": 0.5415,
+   "aconteceu": 0.5994,
+   "ic_lo": 0.581,
+   "ic_hi": 0.6174,
+   "mente": true
+  },
+  {
+   "grupo": "fase: regular",
+   "n": 4448,
+   "z": -7.66,
+   "p_valor": 0.0,
+   "previsto": 0.5419,
+   "aconteceu": 0.5517,
+   "ic_lo": 0.5371,
+   "ic_hi": 0.5663,
+   "mente": true
+  },
+  {
+   "grupo": "mes: 2026-04",
+   "n": 1463,
+   "z": -6.67,
+   "p_valor": 0.0,
+   "previsto": 0.5406,
+   "aconteceu": 0.5441,
+   "ic_lo": 0.5185,
+   "ic_hi": 0.5695,
+   "mente": true
+  },
+  {
+   "grupo": "faixa: favorito 60-80%",
+   "n": 1691,
+   "z": -6.59,
+   "p_valor": 0.0,
+   "previsto": 0.6878,
+   "aconteceu": 0.7569,
+   "ic_lo": 0.7359,
+   "ic_hi": 0.7768,
+   "mente": true
+  },
+  {
+   "grupo": "mes: 2026-05",
+   "n": 1511,
+   "z": -6.46,
+   "p_valor": 0.0,
+   "previsto": 0.5399,
+   "aconteceu": 0.5195,
+   "ic_lo": 0.4943,
+   "ic_hi": 0.5446,
+   "mente": true
+  },
+  {
+   "grupo": "mes: 2026-06",
+   "n": 559,
+   "z": -5.3,
+   "p_valor": 0.0,
+   "previsto": 0.5519,
+   "aconteceu": 0.5725,
+   "ic_lo": 0.5311,
+   "ic_hi": 0.6128,
+   "mente": true
+  },
+  {
+   "grupo": "faixa: azarao 20-40%",
+   "n": 994,
+   "z": -4.89,
+   "p_valor": 0.0,
+   "previsto": 0.3186,
+   "aconteceu": 0.2485,
+   "ic_lo": 0.2226,
+   "ic_hi": 0.2763,
+   "mente": true
+  },
+  {
+   "grupo": "fase: playoffs",
+   "n": 1077,
+   "z": -4.87,
+   "p_valor": 0.0,
+   "previsto": 0.5382,
+   "aconteceu": 0.5339,
+   "ic_lo": 0.504,
+   "ic_hi": 0.5635,
+   "mente": true
+  },
+  {
+   "grupo": "liga: KeSPA Cup",
+   "n": 61,
+   "z": 3.84,
+   "p_valor": 0.0001,
+   "previsto": 0.4961,
+   "aconteceu": 0.6066,
+   "ic_lo": 0.4812,
+   "ic_hi": 0.7193,
+   "mente": true
+  },
+  {
+   "grupo": "formato: BO5",
+   "n": 348,
+   "z": 3.67,
+   "p_valor": 0.0002,
+   "previsto": 0.5256,
+   "aconteceu": 0.4943,
+   "ic_lo": 0.4421,
+   "ic_hi": 0.5466,
+   "mente": true
+  },
+  {
+   "grupo": "liga: LES",
+   "n": 155,
+   "z": -3.32,
+   "p_valor": 0.0009,
+   "previsto": 0.4954,
+   "aconteceu": 0.5097,
+   "ic_lo": 0.4317,
+   "ic_hi": 0.5872,
+   "mente": true
+  },
+  {
+   "grupo": "liga: AL",
+   "n": 200,
+   "z": -3.28,
+   "p_valor": 0.001,
+   "previsto": 0.5538,
+   "aconteceu": 0.52,
+   "ic_lo": 0.451,
+   "ic_hi": 0.5882,
+   "mente": true
+  },
+  {
+   "grupo": "liga: LJL",
+   "n": 187,
+   "z": -3.13,
+   "p_valor": 0.0018,
+   "previsto": 0.5219,
+   "aconteceu": 0.5187,
+   "ic_lo": 0.4474,
+   "ic_hi": 0.5892,
+   "mente": true
+  },
+  {
+   "grupo": "liga: LAS",
+   "n": 170,
+   "z": -2.99,
+   "p_valor": 0.0028,
+   "previsto": 0.5418,
+   "aconteceu": 0.5765,
+   "ic_lo": 0.5013,
+   "ic_hi": 0.6483,
+   "mente": true
+  },
+  {
+   "grupo": "liga: HM",
+   "n": 118,
+   "z": -2.94,
+   "p_valor": 0.0033,
+   "previsto": 0.5419,
+   "aconteceu": 0.5763,
+   "ic_lo": 0.4861,
+   "ic_hi": 0.6616,
+   "mente": true
+  },
+  {
+   "grupo": "formato: BO3",
+   "n": 2394,
+   "z": 2.9,
+   "p_valor": 0.0037,
+   "previsto": 0.543,
+   "aconteceu": 0.4967,
+   "ic_lo": 0.4767,
+   "ic_hi": 0.5167,
+   "mente": true
+  },
+  {
+   "grupo": "faixa: azarao pesado <20%",
+   "n": 160,
+   "z": -2.85,
+   "p_valor": 0.0044,
+   "previsto": 0.1476,
+   "aconteceu": 0.0625,
+   "ic_lo": 0.0343,
+   "ic_hi": 0.1112,
+   "mente": true
+  },
+  {
+   "grupo": "liga: EM",
+   "n": 126,
+   "z": -2.78,
+   "p_valor": 0.0054,
+   "previsto": 0.5656,
+   "aconteceu": 0.627,
+   "ic_lo": 0.54,
+   "ic_hi": 0.7065,
+   "mente": true
+  },
+  {
+   "grupo": "liga: PCS",
+   "n": 73,
+   "z": -2.74,
+   "p_valor": 0.0061,
+   "previsto": 0.4973,
+   "aconteceu": 0.5479,
+   "ic_lo": 0.4342,
+   "ic_hi": 0.6569,
+   "mente": true
+  },
+  {
+   "grupo": "liga: HC",
+   "n": 99,
+   "z": -2.69,
+   "p_valor": 0.0072,
+   "previsto": 0.539,
+   "aconteceu": 0.5253,
+   "ic_lo": 0.4278,
+   "ic_hi": 0.6208,
+   "mente": true
+  },
+  {
+   "grupo": "liga: TCL",
+   "n": 132,
+   "z": -2.69,
+   "p_valor": 0.0072,
+   "previsto": 0.5773,
+   "aconteceu": 0.5985,
+   "ic_lo": 0.5132,
+   "ic_hi": 0.6782,
+   "mente": true
+  },
+  {
+   "grupo": "liga: LIT",
+   "n": 128,
+   "z": -2.66,
+   "p_valor": 0.0077,
+   "previsto": 0.5212,
+   "aconteceu": 0.5,
+   "ic_lo": 0.4147,
+   "ic_hi": 0.5853,
+   "mente": true
+  },
+  {
+   "grupo": "liga: ROL",
+   "n": 153,
+   "z": -2.63,
+   "p_valor": 0.0086,
+   "previsto": 0.5542,
+   "aconteceu": 0.5686,
+   "ic_lo": 0.4894,
+   "ic_hi": 0.6445,
+   "mente": true
+  },
+  {
+   "grupo": "liga: LRN",
+   "n": 123,
+   "z": -2.58,
+   "p_valor": 0.0099,
+   "previsto": 0.5434,
+   "aconteceu": 0.5041,
+   "ic_lo": 0.4169,
+   "ic_hi": 0.591,
+   "mente": true
+  },
+  {
+   "grupo": "liga: LRS",
+   "n": 134,
+   "z": -2.55,
+   "p_valor": 0.0107,
+   "previsto": 0.5056,
+   "aconteceu": 0.4701,
+   "ic_lo": 0.3877,
+   "ic_hi": 0.5543,
+   "mente": true
+  },
+  {
+   "grupo": "liga: EWC",
+   "n": 232,
+   "z": -2.37,
+   "p_valor": 0.0179,
+   "previsto": 0.5276,
+   "aconteceu": 0.5216,
+   "ic_lo": 0.4574,
+   "ic_hi": 0.585,
+   "mente": true
+  },
+  {
+   "grupo": "liga: LEC",
+   "n": 211,
+   "z": -2.35,
+   "p_valor": 0.019,
+   "previsto": 0.5691,
+   "aconteceu": 0.6066,
+   "ic_lo": 0.5394,
+   "ic_hi": 0.6701,
+   "mente": true
+  },
+  {
+   "grupo": "faixa: favorito pesado >=80%",
+   "n": 372,
+   "z": -2.2,
+   "p_valor": 0.0279,
+   "previsto": 0.861,
+   "aconteceu": 0.9032,
+   "ic_lo": 0.8689,
+   "ic_hi": 0.9293,
+   "mente": true
+  },
+  {
+   "grupo": "liga: HLL",
+   "n": 137,
+   "z": -2.12,
+   "p_valor": 0.0338,
+   "previsto": 0.5597,
+   "aconteceu": 0.5547,
+   "ic_lo": 0.4712,
+   "ic_hi": 0.6353,
+   "mente": false
+  },
+  {
+   "grupo": "liga: PRM",
+   "n": 226,
+   "z": -2.01,
+   "p_valor": 0.0444,
+   "previsto": 0.5697,
+   "aconteceu": 0.5885,
+   "ic_lo": 0.5234,
+   "ic_hi": 0.6507,
+   "mente": false
+  },
+  {
+   "grupo": "liga: NLC",
+   "n": 127,
+   "z": -1.95,
+   "p_valor": 0.0518,
+   "previsto": 0.5495,
+   "aconteceu": 0.5906,
+   "ic_lo": 0.5036,
+   "ic_hi": 0.6722,
+   "mente": false
+  },
+  {
+   "grupo": "faixa: parelho 40-60%",
+   "n": 2308,
+   "z": -1.92,
+   "p_valor": 0.0545,
+   "previsto": 0.5053,
+   "aconteceu": 0.5009,
+   "ic_lo": 0.4805,
+   "ic_hi": 0.5212,
+   "mente": false
+  },
+  {
+   "grupo": "liga: LPLOL",
+   "n": 93,
+   "z": 1.82,
+   "p_valor": 0.0688,
+   "previsto": 0.5295,
+   "aconteceu": 0.5484,
+   "ic_lo": 0.4473,
+   "ic_hi": 0.6456,
+   "mente": false
+  },
+  {
+   "grupo": "liga: CD",
+   "n": 207,
+   "z": -1.8,
+   "p_valor": 0.0713,
+   "previsto": 0.5084,
+   "aconteceu": 0.5024,
+   "ic_lo": 0.4349,
+   "ic_hi": 0.5699,
+   "mente": false
+  },
+  {
+   "grupo": "liga: Asia Master",
+   "n": 63,
+   "z": -1.62,
+   "p_valor": 0.1061,
+   "previsto": 0.5695,
+   "aconteceu": 0.5714,
+   "ic_lo": 0.4486,
+   "ic_hi": 0.686,
+   "mente": false
+  },
+  {
+   "grupo": "liga: CBLOL",
+   "n": 146,
+   "z": -1.41,
+   "p_valor": 0.1579,
+   "previsto": 0.5537,
+   "aconteceu": 0.6575,
+   "ic_lo": 0.5774,
+   "ic_hi": 0.7296,
+   "mente": false
+  },
+  {
+   "grupo": "liga: MSI",
+   "n": 71,
+   "z": -1.39,
+   "p_valor": 0.1639,
+   "previsto": 0.6152,
+   "aconteceu": 0.662,
+   "ic_lo": 0.5462,
+   "ic_hi": 0.7612,
+   "mente": false
+  },
+  {
+   "grupo": "liga: LCP",
+   "n": 174,
+   "z": -1.28,
+   "p_valor": 0.1991,
+   "previsto": 0.5697,
+   "aconteceu": 0.569,
+   "ic_lo": 0.4947,
+   "ic_hi": 0.6403,
+   "mente": false
+  },
+  {
+   "grupo": "liga: LCS",
+   "n": 144,
+   "z": -1.28,
+   "p_valor": 0.1994,
+   "previsto": 0.5261,
+   "aconteceu": 0.5347,
+   "ic_lo": 0.4534,
+   "ic_hi": 0.6142,
+   "mente": false
+  },
+  {
+   "grupo": "liga: LPL",
+   "n": 399,
+   "z": 1.0,
+   "p_valor": 0.3181,
+   "previsto": 0.5399,
+   "aconteceu": 0.5363,
+   "ic_lo": 0.4873,
+   "ic_hi": 0.5847,
+   "mente": false
+  },
+  {
+   "grupo": "liga: LCK",
+   "n": 327,
+   "z": -0.99,
+   "p_valor": 0.3224,
+   "previsto": 0.5541,
+   "aconteceu": 0.5749,
+   "ic_lo": 0.5208,
+   "ic_hi": 0.6273,
+   "mente": false
+  },
+  {
+   "grupo": "liga: RL",
+   "n": 118,
+   "z": -0.9,
+   "p_valor": 0.3672,
+   "previsto": 0.5334,
+   "aconteceu": 0.5593,
+   "ic_lo": 0.4693,
+   "ic_hi": 0.6456,
+   "mente": false
+  },
+  {
+   "grupo": "liga: EBL",
+   "n": 122,
+   "z": 0.84,
+   "p_valor": 0.4006,
+   "previsto": 0.4909,
+   "aconteceu": 0.4508,
+   "ic_lo": 0.3654,
+   "ic_hi": 0.5393,
+   "mente": false
+  },
+  {
+   "grupo": "liga: LFL",
+   "n": 144,
+   "z": -0.74,
+   "p_valor": 0.4588,
+   "previsto": 0.5283,
+   "aconteceu": 0.4722,
+   "ic_lo": 0.3925,
+   "ic_hi": 0.5534,
+   "mente": false
+  },
+  {
+   "grupo": "mes: 2026-08",
+   "n": 1130,
+   "z": -0.67,
+   "p_valor": 0.5019,
+   "previsto": 0.5399,
+   "aconteceu": 0.5832,
+   "ic_lo": 0.5542,
+   "ic_hi": 0.6116,
+   "mente": false
+  },
+  {
+   "grupo": "liga: NL",
+   "n": 116,
+   "z": -0.44,
+   "p_valor": 0.659,
+   "previsto": 0.5318,
+   "aconteceu": 0.5431,
+   "ic_lo": 0.4525,
+   "ic_hi": 0.6309,
+   "mente": false
+  },
+  {
+   "grupo": "mes: 2026-07",
+   "n": 862,
+   "z": -0.4,
+   "p_valor": 0.6906,
+   "previsto": 0.5392,
+   "aconteceu": 0.5441,
+   "ic_lo": 0.5107,
+   "ic_hi": 0.5771,
+   "mente": false
+  },
+  {
+   "grupo": "liga: LCKC",
+   "n": 322,
+   "z": -0.17,
+   "p_valor": 0.8689,
+   "previsto": 0.5321,
+   "aconteceu": 0.4938,
+   "ic_lo": 0.4396,
+   "ic_hi": 0.5481,
+   "mente": false
+  },
+  {
+   "grupo": "liga: NACL",
+   "n": 229,
+   "z": 0.13,
+   "p_valor": 0.8962,
+   "previsto": 0.557,
+   "aconteceu": 0.5764,
+   "ic_lo": 0.5117,
+   "ic_hi": 0.6386,
+   "mente": false
+  }
+ ]
+}
