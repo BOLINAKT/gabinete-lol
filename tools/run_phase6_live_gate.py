@@ -134,6 +134,18 @@ def main():
                     help="If set, save trained models to this directory (one subdir per minute)")
     args = ap.parse_args()
 
+    # RODADA DE MEDICAO NAO ESCREVE ARQUIVO DE PRODUCAO (26/08/2026).
+    # Com --gate-calibradores eu sobrescrevi o FASE6_LIVE.json com uma rodada
+    # de --n-bootstrap 1: todos os intervalos de confianca colapsaram
+    # (ci_low == ci_high) num arquivo que a regua da live LE. Medir e promover
+    # sao coisas diferentes e nao podem compartilhar o mesmo destino.
+    if getattr(args, "gate_calibradores", False):
+        if args.output == ap.get_default("output"):
+            args.output = "evidence/FASE6_LIVE.medicao.json"
+            print(f"[gate-calibradores] saida desviada para {args.output} "
+                  f"(medicao nao sobrescreve producao)")
+        args.save_models_dir = None
+
     csv_paths = _gather_csvs([args.csv_train, args.csv_current])
     train_years = (2024, 2025)
     val_year = 2026
