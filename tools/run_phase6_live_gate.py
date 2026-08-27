@@ -127,6 +127,8 @@ def main():
     ap.add_argument("--params", default="params_fitted.json")
     ap.add_argument("--val-cutoff", default="2026-03-31")
     ap.add_argument("--n-bootstrap", type=int, default=1000)
+    ap.add_argument("--gate-calibradores", action="store_true",
+                    help="compara criterios de parada x calibradores (nao altera producao)")
     ap.add_argument("--output", default="FASE6_LIVE.json")
     ap.add_argument("--save-models-dir", default=None,
                     help="If set, save trained models to this directory (one subdir per minute)")
@@ -193,6 +195,7 @@ def main():
     # ---- For each snapshot minute, build features + train + gate ----
     print(f"[3/4] Training one model per snapshot minute: {SNAPSHOT_MINUTES}\n")
     snapshot_results = []
+    _gate_calib: list = []
 
     for minute in SNAPSHOT_MINUTES:
         print(f"  === Snapshot @ {minute} min ===")
@@ -236,6 +239,86 @@ def main():
         # Train model
         model = StateToWinModel(minute=minute)
         model.fit(train_snaps, val_snaps)
+
+        # GATE DOS CALIBRADORES (26/08/2026, --gate-calibradores). Desligado por
+        # padrao: so roda quando pedido, e nao altera o caminho de producao.
+        # A pergunta: no Dota, calibrar o modelo ao vivo PIOROU em 15 de 15
+        # combinacoes (por minuto, juntando minutos, e varrendo L2). Isso e
+        # porque LightGBM treinado com logloss ja sai calibrado — e entao vale
+        # para os dois — ou e efeito de amostra pequena (~900 pontos la)? Aqui
+        # ha muito mais dado; se calibrar tambem nao ajudar, e estrutural.
+        if getattr(args, "gate_calibradores", False):
+            import math as _m
+
+            # NAO reimportar fit_platt_from_raw_probs aqui: ele ja vem do
+            # topo do modulo, e um import local do MESMO nome torna a variavel
+            # local em main() inteira — a linha 162, que roda antes, quebraria
+            # com UnboundLocalError. (Aconteceu.)
+            from mlcore.calibration import (
+                fit_beta_from_raw_probs, fit_platt_corrigido,
+                fit_temperature_from_raw_probs,
+            )
+
+            def _ll1(ps, ys):
+                return sum(-(_m.log(min(max(float(p), 1e-12), 1 - 1e-12)) if int(y) == 1
+                             else _m.log(1 - min(max(float(p), 1e-12), 1 - 1e-12)))
+                           for p, y in zip(ps, ys)) / max(1, len(ys))
+
+            _mod = StateToWinModel(minute=minute)
+            _mod.config.num_boost_round = 1200
+            _mod.config.early_stopping_rounds = 1200   # nunca para sozinho
+            _mod.fit(train_snaps, val_snaps)
+            _bo = _mod.lgb_model
+            _Xv, _yv = _mod._stack(val_snaps)
+            _Xt, _yt = _mod._stack(test_snaps)
+            _yv, _yt = [int(v) for v in _yv], [int(v) for v in _yt]
+            _tot = int(_bo.current_iteration())
+
+            _melhor_cru, _melhor_ref = (float("inf"), 10), (float("inf"), 10)
+            for _k in range(10, _tot + 1, 10):
+                _p = _bo.predict(_Xv, num_iteration=_k)
+                _c = _ll1(_p, _yv)
+                _t = fit_temperature_from_raw_probs(_yv, _p)
+                _r = _ll1([_t.predict_proba(float(x)) for x in _p], _yv)
+                if _c < _melhor_cru[0]:
+                    _melhor_cru = (_c, _k)
+                if _r < _melhor_ref[0]:
+                    _melhor_ref = (_r, _k)
+
+            print(f"      [calib] arvores: crua={_melhor_cru[1]} refinamento={_melhor_ref[1]} "
+                  f"(teto {_tot}) | val={len(_yv)} teste={len(_yt)}")
+            print(f"      [calib] {'parada':<10}{'calibrador':<14}{'logloss':>10}{'vs cru':>10}")
+            _cels = []
+            for _rot, _k in (("crua", _melhor_cru[1]), ("refinam.", _melhor_ref[1])):
+                _pv = _bo.predict(_Xv, num_iteration=_k)
+                _pt = _bo.predict(_Xt, num_iteration=_k)
+                _base = _ll1(_pt, _yt)
+                for _nome, _aj in (("cru", None),
+                                   ("temperature", fit_temperature_from_raw_probs),
+                                   ("platt_atual", fit_platt_from_raw_probs),
+                                   ("platt_corrig", fit_platt_corrigido),
+                                   ("beta", fit_beta_from_raw_probs)):
+                    # O ajuste sai FORA da compreensao: aqui dentro ele
+                    # reajustava o calibrador uma vez por elemento do teste
+                    # (10.874 ajustes por celula, horas de CPU para produzir o
+                    # que leva 0,1s). Custou uma rodada inteira em 26/08.
+                    _cal = None if _aj is None else _aj(_yv, _pv)
+                    _q = list(_pt) if _cal is None else [
+                        _cal.predict_proba(float(x)) for x in _pt]
+                    _l = _ll1(_q, _yt)
+                    print(f"      [calib] {_rot:<10}{_nome:<14}{_l:>10.5f}{_base - _l:>+10.5f}")
+                    _cels.append({"parada": _rot, "calibrador": _nome,
+                                  "logloss": round(_l, 5), "vs_cru": round(_base - _l, 5)})
+            _gate_calib.append({"minuto": minute, "arvores_cru": _melhor_cru[1],
+                                "arvores_refinamento": _melhor_ref[1],
+                                "n_val": len(_yv), "n_teste": len(_yt), "celulas": _cels})
+            # Grava A CADA MINUTO: rodada de ~40 min que so imprime na tela
+            # perde tudo se estourar no ultimo minuto. Resultado parcial vale.
+            _ev = Path("evidence")
+            _ev.mkdir(exist_ok=True)
+            (_ev / "gate_calibradores_lol.json").write_text(
+                json.dumps({"minutos": _gate_calib}, ensure_ascii=False, indent=1),
+                encoding="utf-8")
 
         # Save model if requested (PER-MINUTE subdirectory)
         if args.save_models_dir:

@@ -51,6 +51,11 @@ evidence/*
 # em que mercado o numero presta (ganho sobre a taxa-base). Sem versionar, a
 # nuvem nao tem o arquivo e o aviso some calado — o mesmo bug do live_models.
 !evidence/totals_scorecard.json
+# O livro-caixa PRECISA ser versionado: e nele que mora o carimbo de
+# 'visto pela primeira vez'. Ignorado, a idade zera a cada rodada e o
+# ledger nunca envelhece — que e a funcao inteira dele.
+!evidence/livro_caixa.json
+!evidence/gate_calibradores_lol.json
 tmp/
 # live_models/ é VERSIONADO (23/07): o app roda na Streamlit Cloud, que só puxa
 # do git e NÃO consegue treinar (1GB de RAM). Sem os modelos no repo, o painel

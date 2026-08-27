@@ -90,7 +90,14 @@ def collect_python_files(raw_paths: Sequence[str] | None = None) -> list[Path]:
                 resolved.add(path.resolve())
             continue
         for sub in path.rglob("*.py"):
-            rel = sub.resolve().relative_to(ROOT)
+            # --path pode apontar para OUTRO repositorio (o do Dota nasceu clone
+            # deste e nunca foi varrido). Fora da ROOT nao ha caminho relativo:
+            # usa o absoluto, como _display_path ja fazia. Sem isto o scan de
+            # fora morria com ValueError na primeira pasta.
+            try:
+                rel = sub.resolve().relative_to(ROOT)
+            except ValueError:
+                rel = sub.resolve()
             if _looks_ignored(rel):
                 continue
             resolved.add(sub.resolve())

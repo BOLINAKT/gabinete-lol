@@ -1,0 +1,280 @@
+{
+ "minutos": [
+  {
+   "minuto": 10,
+   "arvores_cru": 170,
+   "arvores_refinamento": 170,
+   "n_val": 4644,
+   "n_teste": 10874,
+   "celulas": [
+    {
+     "parada": "crua",
+     "calibrador": "cru",
+     "logloss": 0.512,
+     "vs_cru": 0.0
+    },
+    {
+     "parada": "crua",
+     "calibrador": "temperature",
+     "logloss": 0.51223,
+     "vs_cru": -0.00022
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_atual",
+     "logloss": 0.51221,
+     "vs_cru": -0.00021
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_corrig",
+     "logloss": 0.51223,
+     "vs_cru": -0.00022
+    },
+    {
+     "parada": "crua",
+     "calibrador": "beta",
+     "logloss": 0.51222,
+     "vs_cru": -0.00022
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "cru",
+     "logloss": 0.512,
+     "vs_cru": 0.0
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "temperature",
+     "logloss": 0.51223,
+     "vs_cru": -0.00022
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_atual",
+     "logloss": 0.51221,
+     "vs_cru": -0.00021
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_corrig",
+     "logloss": 0.51223,
+     "vs_cru": -0.00022
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "beta",
+     "logloss": 0.51222,
+     "vs_cru": -0.00022
+    }
+   ]
+  },
+  {
+   "minuto": 15,
+   "arvores_cru": 110,
+   "arvores_refinamento": 120,
+   "n_val": 4644,
+   "n_teste": 10874,
+   "celulas": [
+    {
+     "parada": "crua",
+     "calibrador": "cru",
+     "logloss": 0.46301,
+     "vs_cru": 0.0
+    },
+    {
+     "parada": "crua",
+     "calibrador": "temperature",
+     "logloss": 0.46393,
+     "vs_cru": -0.00091
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_atual",
+     "logloss": 0.46388,
+     "vs_cru": -0.00087
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_corrig",
+     "logloss": 0.46393,
+     "vs_cru": -0.00091
+    },
+    {
+     "parada": "crua",
+     "calibrador": "beta",
+     "logloss": 0.46393,
+     "vs_cru": -0.00092
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "cru",
+     "logloss": 0.46264,
+     "vs_cru": 0.0
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "temperature",
+     "logloss": 0.46395,
+     "vs_cru": -0.00131
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_atual",
+     "logloss": 0.4639,
+     "vs_cru": -0.00126
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_corrig",
+     "logloss": 0.46395,
+     "vs_cru": -0.00131
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "beta",
+     "logloss": 0.46395,
+     "vs_cru": -0.00131
+    }
+   ]
+  },
+  {
+   "minuto": 20,
+   "arvores_cru": 120,
+   "arvores_refinamento": 120,
+   "n_val": 4632,
+   "n_teste": 10858,
+   "celulas": [
+    {
+     "parada": "crua",
+     "calibrador": "cru",
+     "logloss": 0.40457,
+     "vs_cru": 0.0
+    },
+    {
+     "parada": "crua",
+     "calibrador": "temperature",
+     "logloss": 0.40545,
+     "vs_cru": -0.00088
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_atual",
+     "logloss": 0.40541,
+     "vs_cru": -0.00084
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_corrig",
+     "logloss": 0.40545,
+     "vs_cru": -0.00088
+    },
+    {
+     "parada": "crua",
+     "calibrador": "beta",
+     "logloss": 0.40545,
+     "vs_cru": -0.00088
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "cru",
+     "logloss": 0.40457,
+     "vs_cru": 0.0
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "temperature",
+     "logloss": 0.40545,
+     "vs_cru": -0.00088
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_atual",
+     "logloss": 0.40541,
+     "vs_cru": -0.00084
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_corrig",
+     "logloss": 0.40545,
+     "vs_cru": -0.00088
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "beta",
+     "logloss": 0.40545,
+     "vs_cru": -0.00088
+    }
+   ]
+  },
+  {
+   "minuto": 25,
+   "arvores_cru": 130,
+   "arvores_refinamento": 130,
+   "n_val": 4368,
+   "n_teste": 10174,
+   "celulas": [
+    {
+     "parada": "crua",
+     "calibrador": "cru",
+     "logloss": 0.33656,
+     "vs_cru": 0.0
+    },
+    {
+     "parada": "crua",
+     "calibrador": "temperature",
+     "logloss": 0.33727,
+     "vs_cru": -0.0007
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_atual",
+     "logloss": 0.33721,
+     "vs_cru": -0.00064
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_corrig",
+     "logloss": 0.33726,
+     "vs_cru": -0.0007
+    },
+    {
+     "parada": "crua",
+     "calibrador": "beta",
+     "logloss": 0.33727,
+     "vs_cru": -0.0007
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "cru",
+     "logloss": 0.33656,
+     "vs_cru": 0.0
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "temperature",
+     "logloss": 0.33727,
+     "vs_cru": -0.0007
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_atual",
+     "logloss": 0.33721,
+     "vs_cru": -0.00064
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_corrig",
+     "logloss": 0.33726,
+     "vs_cru": -0.0007
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "beta",
+     "logloss": 0.33727,
+     "vs_cru": -0.0007
+    }
+   ]
+  }
+ ]
+}
