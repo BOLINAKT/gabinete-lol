@@ -93,7 +93,8 @@ def cadeia(amostras: list[Amostra], *, tabela: dict, platt_time=None,
 
 
 def variante(treino: list[Amostra], alvo: list[Amostra], *, tabela: dict,
-             **chaves) -> list[float]:
+             treino_final: list[Amostra] | None = None,
+             familia_final: str = "platt", **chaves) -> list[float]:
     """Uma variante do caminho, com os calibradores REAJUSTADOS para ela.
 
     E o que torna a ablacao justa: cada versao do pipeline e avaliada com os
@@ -107,13 +108,22 @@ def variante(treino: list[Amostra], alvo: list[Amostra], *, tabela: dict,
         pt = fit_platt_from_raw_probs(y_tr, base)
     pf = None
     if chaves.get("usar_platt_fusao", True):
-        base = cadeia(treino, tabela=tabela, platt_time=pt,
+        # O calibrador FINAL pode ser ajustado noutro conjunto: a distorcao que
+        # ele corrige e da temporada, e o treino sao temporadas ANTIGAS. Ajustar
+        # no val (recente) testa se o problema e defasagem em vez de metodo.
+        fonte = treino_final if treino_final else treino
+        base = cadeia(fonte, tabela=tabela, platt_time=pt,
                       usar_ms1=chaves.get("usar_ms1", True),
                       usar_platt_time=chaves.get("usar_platt_time", True),
                       usar_fusao=chaves.get("usar_fusao", True),
                       usar_ms2=chaves.get("usar_ms2", True),
                       usar_platt_fusao=False)
-        pf = fit_platt_from_raw_probs(y_tr, base)
+        y_fin = [a.y for a in (treino_final if treino_final else treino)]
+        if familia_final == "beta":
+            from .calibration import fit_beta_from_raw_probs
+            pf = fit_beta_from_raw_probs(y_fin, base)
+        else:
+            pf = fit_platt_from_raw_probs(y_fin, base)
     return cadeia(alvo, tabela=tabela, platt_time=pt, platt_fusao=pf, **chaves)
 
 
