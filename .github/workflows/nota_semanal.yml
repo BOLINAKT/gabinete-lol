@@ -99,6 +99,13 @@ jobs:
       # escala (issue -> e-mail) so quando um item passa de 30 dias tolerado.
       # Nao bloqueia nada — aviso que ninguem e obrigado a resolver vira ruido
       # ignorado, entao a forca vem da idade, nao de derrubar a esteira.
+      # FRESCOR: a nota e um programa que so roda quando alguem roda. Velha,
+      # ela repete o numero antigo com toda a confianca. Aqui o vigia e
+      # EXTERNO a quem executa, que e o ponto do dead man's switch.
+      - name: Frescor das reguas
+        continue-on-error: true
+        run: python tools/frescor.py 2>&1 | tee frescor_out.txt
+
       - name: Livro-caixa do silencio
         continue-on-error: true
         run: python tools/livro_caixa.py 2>&1 | tee livro_out.txt
@@ -133,6 +140,9 @@ jobs:
             velhas=$(grep -oE "réguas VELHAS.*" produto_out.txt | head -1)
             titulo="⚠️ Vigia da nota: régua(s) do produto envelhecendo"
             corpo="A nota do vencedor está ok (**$nota**), mas alguma fase não foi re-medida a tempo: $velhas. A nota do produto está sendo calculada com número velho — ver logs do run para saber qual régua falhou."
+          elif grep -qE "regua\(s\) VELHA|regua\(s\) SEM CARIMBO" frescor_out.txt 2>/dev/null; then
+            titulo="⚠️ Frescor: régua velha ou sem carimbo"
+            corpo="A nota está ok (**$nota**), mas alguma régua passou de 3x a própria cadência, ou não tem carimbo de data. Régua velha repete o número antigo com toda a confiança — foi assim que a nota caiu sem ninguém ver. Ver evidence/frescor.json."
           elif grep -q "item(ns) com 30 dias ou mais" livro_out.txt 2>/dev/null; then
             velhos=$(grep -oE "[0-9]+ item\(ns\) com 30 dias ou mais" livro_out.txt | head -1)
             titulo="⚠️ Livro-caixa: $velhos sem decisão"

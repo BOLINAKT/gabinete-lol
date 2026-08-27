@@ -126,7 +126,8 @@ def main() -> int:
     out_path = Path(args.out) if args.out else (ROOT / "evidence" / "nota_por_liga.json")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(
-        json.dumps({"season": season, "nota_geral": round(float(_grade_from_logloss(geral_ll)), 2),
+        json.dumps({"gerado_em": __import__("datetime").datetime.now().isoformat(timespec="seconds"),
+        "season": season, "nota_geral": round(float(_grade_from_logloss(geral_ll)), 2),
                     "min_n": int(args.min_n), "ligas": out}, ensure_ascii=False, indent=1),
         encoding="utf-8")
     print(f"\n[salvo] {out_path}")

@@ -58,6 +58,7 @@ evidence/*
 !evidence/gate_calibradores_lol.json
 !evidence/auditoria_pre_jogo.json
 !evidence/gate_calibrador_final.json
+!evidence/frescor.json
 tmp/
 # live_models/ é VERSIONADO (23/07): o app roda na Streamlit Cloud, que só puxa
 # do git e NÃO consegue treinar (1GB de RAM). Sem os modelos no repo, o painel

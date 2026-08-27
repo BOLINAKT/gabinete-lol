@@ -1,0 +1,158 @@
+# -*- coding: utf-8 -*-
+"""FRESCOR DAS RÉGUAS — a nota que você está lendo é de quando?
+
+Pergunta dele: "como a nota caiu de 9,25 para 5 sem ninguém ver?". A resposta
+estrutural é que **a nota é um programa que só roda quando alguém roda**. Velha,
+ela repete o número antigo com toda a confiança do mundo. O sintoma aparece
+como "nota estranha", que não aponta para a causa.
+
+╔══ FONTES ═══════════════════════════════════════════════════════════════════╗
+║                                                                             ║
+║ 1. POR QUE O ALARME É POR AUSÊNCIA, e não por erro:                         ║
+║    padrão do "dead man's switch" — "alerte-me quando o SILÊNCIO for o       ║
+║    problema". Quem checa não pode ser quem executa; o vigia é externo.       ║
+║                                                                             ║
+║ 2. POR QUE CADA RÉGUA TEM PRAZO PRÓPRIO, e não um prazo único:              ║
+║    prática de SLA de frescor de dados — "defina o prazo em relação à        ║
+║    frequência de atualização: o que atualiza a cada hora tem prazo de 2h,   ║
+║    não de 61 minutos", e "o erro mais comum é usar o mesmo prazo para       ║
+║    tudo: 1h numa tabela semanal gera ruído; 24h numa tabela de tempo real   ║
+║    perde todo incidente".                                                    ║
+║                                                                             ║
+║ 3. POR QUE DUAS FAIXAS (atrasado / velho) e não uma:                        ║
+║    mesma fonte — "é mais prático definir duas faixas do que um limiar só".  ║
+║    E "comece generoso e aperte depois; começar apertado cria fadiga de      ║
+║    alerta", por isso o prazo é o DOBRO da frequência, não 1,1x.             ║
+║                                                                             ║
+║ 4. POR QUE "FREQUÊNCIA NÃO DECLARADA" É UM ACHADO, e não um caso a ignorar: ║
+║    sem cadência declarada não existe prazo possível — e um artefato que     ║
+║    ninguém sabe quando deveria ser refeito é exatamente o que envelhece     ║
+║    calado. Ele aparece na lista com essa marca.                             ║
+╚═════════════════════════════════════════════════════════════════════════════╝
+
+Uso: python tools/frescor.py [--root OUTRO_REPO]
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from datetime import datetime
+from pathlib import Path
+
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, OSError, ValueError):
+    pass
+
+# Cadencia DECLARADA de cada regua, em dias. Prazo = 2x (atrasado) e 3x (velho),
+# pela fonte 3. O que nao esta aqui aparece como "frequencia nao declarada".
+CADENCIA = {
+    "fusion_scorecard.json": ("nota oficial (vigia semanal)", 7),
+    "product_scorecard.json": ("nota do produto (vigia semanal)", 7),
+    "totals_scorecard.json": ("regua dos totais (vigia semanal)", 7),
+    "nota_por_liga.json": ("nota por liga — APARECE NA TELA", 7),
+    "livro_caixa.json": ("livro-caixa do silencio", 7),
+    "dota_scorecard.json": ("regua do Dota (esteira diaria)", 1),
+    "dota_totals_scorecard.json": ("totais do Dota", 7),
+    "live_scorecard.json": ("regua da live", 7),
+    "code_scorecard.json": ("regua de codigo", 30),
+    "data_scorecard.json": ("regua de dados", 7),
+    "players_scorecard.json": ("regua de jogadores", 30),
+    "portability_scorecard.json": ("regua de portabilidade", 30),
+    "reliability_scorecard.json": ("regua de confiabilidade", 30),
+    "stress_emulator.json": ("emulador de estresse", 30),
+}
+CAMPOS_CARIMBO = ("gerado_em", "generated_at", "ajustado_em", "timestamp", "data")
+
+
+def _carimbo(caminho: Path):
+    try:
+        d = json.loads(caminho.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(d, dict):
+        return None
+    for campo in CAMPOS_CARIMBO:
+        v = d.get(campo)
+        if isinstance(v, str) and v.strip():
+            try:
+                return datetime.fromisoformat(v.replace("Z", "+00:00").split("+")[0])
+            except ValueError:
+                continue
+    return None
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--root", default=None)
+    ap.add_argument("--out", default="evidence/frescor.json")
+    args = ap.parse_args()
+
+    raiz = Path(args.root).resolve() if args.root else Path(__file__).resolve().parents[1]
+    ev = raiz / "evidence"
+    if not ev.is_dir():
+        print(f"sem pasta evidence em {raiz}")
+        return 1
+
+    agora = datetime.now()
+    linhas = []
+    for arq in sorted(ev.glob("*.json")):
+        if arq.name.startswith("_"):
+            continue
+        rotulo, cad = CADENCIA.get(arq.name, (None, None))
+        c = _carimbo(arq)
+        idade = None if c is None else (agora - c).total_seconds() / 86400.0
+        if cad is None:
+            estado = "frequencia nao declarada"
+        elif c is None:
+            estado = "SEM CARIMBO"
+        elif idade > 3 * cad:
+            estado = "VELHA"
+        elif idade > 2 * cad:
+            estado = "atrasada"
+        else:
+            estado = "ok"
+        linhas.append({"arquivo": arq.name, "rotulo": rotulo or "(nao declarada)",
+                       "cadencia_dias": cad,
+                       "idade_dias": None if idade is None else round(idade, 1),
+                       "estado": estado})
+
+    ordem = {"VELHA": 0, "SEM CARIMBO": 1, "atrasada": 2, "frequencia nao declarada": 3, "ok": 4}
+    linhas.sort(key=lambda x: (ordem[x["estado"]], -(x["idade_dias"] or 0)))
+
+    print(f"[raiz] {raiz}\n")
+    print(f"{'regua':<34}{'cadencia':>10}{'idade':>9}   estado")
+    for x in linhas:
+        cad = f"{x['cadencia_dias']}d" if x["cadencia_dias"] else "-"
+        idade = f"{x['idade_dias']:.1f}d" if x["idade_dias"] is not None else "-"
+        marca = "  <<<" if x["estado"] in ("VELHA", "SEM CARIMBO") else ""
+        print(f"{x['rotulo'][:33]:<34}{cad:>10}{idade:>9}   {x['estado']}{marca}")
+
+    velhas = [x for x in linhas if x["estado"] == "VELHA"]
+    sem = [x for x in linhas if x["estado"] == "SEM CARIMBO"]
+    nao_decl = [x for x in linhas if x["estado"] == "frequencia nao declarada"]
+    print()
+    if velhas:
+        print(f"ATENCAO: {len(velhas)} regua(s) VELHA(s) — passaram de 3x a propria cadencia.")
+    if sem:
+        print(f"ATENCAO: {len(sem)} regua(s) SEM CARIMBO — nao da pra saber a idade,")
+        print("         que e o mesmo que nao ter vigia nenhum ali.")
+    if nao_decl:
+        print(f"{len(nao_decl)} artefato(s) sem cadencia declarada: nao da pra ter prazo,")
+        print("         e artefato sem prazo e o que envelhece calado (fonte 4).")
+    if not (velhas or sem):
+        print("todas as reguas declaradas estao dentro do prazo.")
+
+    destino = raiz / str(args.out)
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    destino.write_text(json.dumps({"gerado_em": agora.isoformat(timespec="seconds"),
+                                   "reguas": linhas}, ensure_ascii=False, indent=1),
+                       encoding="utf-8")
+    print(f"[salvo] {args.out}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
