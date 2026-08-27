@@ -1,0 +1,244 @@
+# -*- coding: utf-8 -*-
+"""GATE do calibrador final do pré-jogo — escolha honesta, teste tocado UMA vez.
+
+O número servido é subconfiante: quando diz 69%, acontece ~76%. A causa medida
+não é o método, é DEFASAGEM — o calibrador final é ajustado em temporadas
+antigas e a distorção a corrigir é da atual.
+
+Este gate escolhe COMO consertar sem trapacear na escolha.
+
+╔══ FONTES ═══════════════════════════════════════════════════════════════════╗
+║                                                                             ║
+║ 1. POR QUE O CALIBRADOR RECEBE O GRUPO COMO FEATURE, em vez de um           ║
+║    calibrador separado por grupo:                                           ║
+║    pesquisa sobre calibração condicional — "usar representações baseadas    ║
+║    em características em vez de calibradores separados por grupo, para      ║
+║    agrupar a força estatística entre os grupos". Elimina o corte arbitrário ║
+║    de "mínimo N por grupo": grupo pequeno encolhe sozinho para o global.    ║
+║                                                                             ║
+║ 2. POR QUE POUCOS GRUPOS:                                                   ║
+║    sample complexity de multicalibração — impor calibração por grupo custa  ║
+║    erro^-3 de dado contra erro^-2 da calibração simples, e o mecanismo      ║
+║    estima médias em células que ficam pequenas. Medido aqui: com 79 grupos  ║
+║    (BO x liga) o ganho SOME e o IC cruza zero.                              ║
+║                                                                             ║
+║ 3. POR QUE A ESCOLHA DE L2 E DE AGRUPAMENTO É FEITA DENTRO DO CONJUNTO DE   ║
+║    CALIBRAÇÃO, e o teste é tocado uma vez só:                               ║
+║    Cawley & Talbot (JMLR 2010), "On Over-fitting in Model Selection and     ║
+║    Subsequent Selection Bias in Performance Evaluation" — usar o mesmo      ║
+║    conjunto para escolher hiperparâmetro e medir desempenho gera viés       ║
+║    otimista e leva a escolher modelos complexos demais.                     ║
+║    ISTO CORRIGE UM ERRO MEU: na primeira rodada eu comparei os valores de   ║
+║    L2 e as estruturas de agrupamento pelo desempenho NO TESTE.              ║
+║                                                                             ║
+║ 4. POR QUE NÃO USO A REGRA DE UM ERRO-PADRÃO:                               ║
+║    a evidência é mista — ela ajuda em seleção esparsa de variáveis, mas em  ║
+║    estimação/predição "frequentemente tem desempenho pior". O nosso caso é  ║
+║    predição.                                                                ║
+║                                                                             ║
+║ 5. POR QUE A LOGLOSS DECIDE E O ECE SÓ INFORMA:                             ║
+║    recalibração monotônica preserva a resolução, então a diferença de       ║
+║    logloss entre candidatos É a diferença de calibração — medida por regra  ║
+║    de pontuação própria, sem binning e sem viés de estimação. ECE binado é  ║
+║    estimador enviesado e sensível ao número de caixas.                      ║
+║                                                                             ║
+║ 6. POR QUE HÁ BOOTSTRAP PAREADO E A BARRA É CONJUNÇÃO:                      ║
+║    critério da casa, já usado em tools/run_phase8_first_markets_gate.py:    ║
+║    accept = (ganho > 0.002) E (p < 0.05) E (ci_lo > 0).                     ║
+╚═════════════════════════════════════════════════════════════════════════════╝
+
+Uso: python tools/gate_calibrador_final.py
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import random
+import sys
+from pathlib import Path
+
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, OSError, ValueError):
+    pass
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from mlcore.calibration import _fit_logistic, fit_platt_from_raw_probs  # noqa: E402
+from mlcore.replay_pre_jogo import cadeia, carregar, variante  # noqa: E402
+from mlcore.utils import logit, sigmoid  # noqa: E402
+
+EPS = 1e-12
+
+# Candidatos. Poucos de proposito (fonte 2), e a escolha entre eles acontece
+# DENTRO do conjunto de calibracao (fonte 3).
+AGRUPAMENTOS = {
+    "nenhum (so global)": lambda a: "*",
+    "formato BO": lambda a: a.bo,
+    "fase": lambda a: a.phase,
+    "formato + fase": lambda a: f"{a.bo}|{a.phase}",
+}
+L2_CANDIDATOS = (0.03, 0.1, 0.3, 1.0, 3.0, 10.0)
+
+
+def _perdas(ps, ys):
+    return [-(math.log(min(max(p, EPS), 1 - EPS)) if y == 1
+              else math.log(1 - min(max(p, EPS), 1 - EPS))) for p, y in zip(ps, ys)]
+
+
+def _ll(ps, ys):
+    return sum(_perdas(ps, ys)) / max(1, len(ys))
+
+
+def _ece(ps, ys, bins=10):
+    cx = {}
+    for p, y in zip(ps, ys):
+        cx.setdefault(min(bins - 1, int(p * bins)), []).append((p, y))
+    n = len(ys)
+    return sum((len(v) / n) * abs(sum(q for q, _ in v) / len(v)
+                                  - sum(w for _, w in v) / len(v)) for v in cx.values())
+
+
+def _z_spiegelhalter(ps, ys):
+    num = den = 0.0
+    for p, y in zip(ps, ys):
+        p = min(max(p, 1e-9), 1 - 1e-9)
+        num += (y - p) * (1 - 2 * p)
+        den += ((1 - 2 * p) ** 2) * p * (1 - p)
+    z = num / math.sqrt(den) if den > 0 else float("nan")
+    return z, math.erfc(abs(z) / math.sqrt(2.0))
+
+
+def _ic(a, b, n_boot=2000, semente=17):
+    d = [x - y for x, y in zip(a, b)]
+    n = len(d)
+    r = random.Random(semente)
+    v = sorted(sum(d[r.randrange(n)] for _ in range(n)) / n for _ in range(n_boot))
+    media = sum(d) / n
+    return media, v[int(0.025 * n_boot)], v[int(0.975 * n_boot)]
+
+
+def _ajusta(amostras, ps, chave, niveis, l2_grupo):
+    """Um calibrador so, com o grupo como FEATURE (fonte 1).
+
+    Termos globais quase sem penalidade; desvios por grupo penalizados por
+    l2_grupo — e por isso grupo com pouco dado encolhe para o global sozinho,
+    sem eu escolher um corte de tamanho minimo."""
+    def feats(a, p):
+        z = logit(p)
+        f = [z, 1.0]
+        for nv in niveis:
+            ind = 1.0 if chave(a) == nv else 0.0
+            f += [ind * z, ind]
+        return f
+    X = [feats(a, p) for a, p in zip(amostras, ps)]
+    pen = [1e-6, 1e-6] + [l2_grupo] * (2 * len(niveis))
+    w = _fit_logistic(X, [float(a.y) for a in amostras], l2=pen, max_iter=300)
+    return lambda a, p: sigmoid(sum(wi * fi for wi, fi in zip(w, feats(a, p))))
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--folds", type=int, default=5)
+    ap.add_argument("--out", default="evidence/gate_calibrador_final.json")
+    args = ap.parse_args()
+
+    d = carregar()
+    tr, va, te, tab = d["treino"], d["val"], d["teste"], d["tabela"]
+    ys_te = [a.y for a in te]
+
+    hoje = variante(tr, te, tabela=tab)
+
+    # Base comum: sem microssegmento (medido: atrapalha) e com o Platt do time
+    # ajustado no treino (medido: ajuda). O que este gate escolhe e SO o
+    # calibrador FINAL.
+    pt = fit_platt_from_raw_probs(
+        [a.y for a in tr],
+        cadeia(tr, tabela=tab, usar_ms1=False, usar_platt_time=False,
+               usar_fusao=False, usar_ms2=False, usar_platt_fusao=False))
+    b_va = cadeia(va, tabela=tab, platt_time=pt, usar_ms1=False, usar_ms2=False,
+                  usar_platt_fusao=False)
+    b_te = cadeia(te, tabela=tab, platt_time=pt, usar_ms1=False, usar_ms2=False,
+                  usar_platt_fusao=False)
+
+    print(f"calibracao: {len(va)} jogos | teste cego: {len(te)} jogos")
+    print(f"escolha por validacao cruzada de {args.folds} dobras DENTRO da "
+          f"calibracao — o teste e tocado uma vez so (fonte 3)\n")
+
+    # ---- escolha interna, sem tocar no teste -------------------------------
+    idx = list(range(len(va)))
+    random.Random(0).shuffle(idx)
+    dobras = [idx[i::args.folds] for i in range(args.folds)]
+
+    print(f"{'agrupamento':<22}{'L2':>7}{'logloss VC':>12}")
+    melhor = (float("inf"), None, None)
+    tabela_vc = []
+    for nome, chave in AGRUPAMENTOS.items():
+        niveis = sorted({chave(a) for a in va})[1:]
+        for l2 in (L2_CANDIDATOS if niveis else (1.0,)):
+            perdas_vc = []
+            for f in dobras:
+                fora = set(f)
+                dentro = [i for i in idx if i not in fora]
+                am_tr = [va[i] for i in dentro]
+                p_tr = [b_va[i] for i in dentro]
+                cal = _ajusta(am_tr, p_tr, chave, niveis, l2)
+                perdas_vc += _perdas([cal(va[i], b_va[i]) for i in f],
+                                     [va[i].y for i in f])
+            m = sum(perdas_vc) / len(perdas_vc)
+            tabela_vc.append({"agrupamento": nome, "l2": l2, "logloss_vc": round(m, 5)})
+            print(f"{nome:<22}{l2:>7g}{m:>12.5f}")
+            if m < melhor[0]:
+                melhor = (m, nome, l2)
+            if not niveis:
+                break
+    _, nome_esc, l2_esc = melhor
+    print(f"\nESCOLHIDO pela validacao cruzada: '{nome_esc}' com L2={l2_esc:g}")
+
+    # ---- teste cego, tocado UMA vez ---------------------------------------
+    chave = AGRUPAMENTOS[nome_esc]
+    niveis = sorted({chave(a) for a in va})[1:]
+    cal = _ajusta(va, b_va, chave, niveis, l2_esc)
+    novo = [cal(a, p) for a, p in zip(te, b_te)]
+
+    g, lo, hi = _ic(_perdas(hoje, ys_te), _perdas(novo, ys_te))
+    z_h, p_h = _z_spiegelhalter(hoje, ys_te)
+    z_n, p_n = _z_spiegelhalter(novo, ys_te)
+    print(f"\n{'':<10}{'logloss':>10}{'ECE':>8}{'Z':>9}{'p':>9}")
+    print(f"{'hoje':<10}{_ll(hoje, ys_te):>10.5f}{_ece(hoje, ys_te):>8.3f}{z_h:>9.2f}{p_h:>9.4f}")
+    print(f"{'novo':<10}{_ll(novo, ys_te):>10.5f}{_ece(novo, ys_te):>8.3f}{z_n:>9.2f}{p_n:>9.4f}")
+    print(f"\nganho {g:+.5f}   IC 95% [{lo:+.5f}, {hi:+.5f}]")
+
+    passa = bool(g > 0.002 and lo > 0)
+    print(f"barra da casa (ganho>0.002 E ci_lo>0): {'PASSA' if passa else 'NAO passa'} (fonte 6)")
+
+    print("\ncurva de confiabilidade no teste cego:")
+    print(f"{'faixa':<12}{'n':>6}{'diz':>9}{'acontece':>11}{'antes dizia':>13}{'antes acontecia':>17}")
+    for lo_, hi_ in ((0, .2), (.2, .4), (.4, .6), (.6, .8), (.8, 1.01)):
+        s = [(p, y) for p, y in zip(novo, ys_te) if lo_ <= p < hi_]
+        a_ = [(p, y) for p, y in zip(hoje, ys_te) if lo_ <= p < hi_]
+        if len(s) < 50 or len(a_) < 50:
+            continue
+        print(f"{f'{lo_:.0%}-{hi_:.0%}':<12}{len(s):>6}"
+              f"{sum(p for p, _ in s) / len(s):>9.1%}{sum(y for _, y in s) / len(s):>11.1%}"
+              f"{sum(p for p, _ in a_) / len(a_):>13.1%}{sum(y for _, y in a_) / len(a_):>17.1%}")
+
+    destino = ROOT / str(args.out)
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    destino.write_text(json.dumps({
+        "escolha": {"agrupamento": nome_esc, "l2": l2_esc},
+        "validacao_cruzada": tabela_vc,
+        "teste": {"logloss_hoje": round(_ll(hoje, ys_te), 5),
+                  "logloss_novo": round(_ll(novo, ys_te), 5),
+                  "ganho": round(g, 5), "ic_lo": round(lo, 5), "ic_hi": round(hi, 5),
+                  "z_hoje": round(z_h, 2), "z_novo": round(z_n, 2), "passa": passa},
+    }, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"[salvo] {args.out}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,113 @@
+{
+ "escolha": {
+  "agrupamento": "formato + fase",
+  "l2": 1.0
+ },
+ "validacao_cruzada": [
+  {
+   "agrupamento": "nenhum (so global)",
+   "l2": 1.0,
+   "logloss_vc": 0.57812
+  },
+  {
+   "agrupamento": "formato BO",
+   "l2": 0.03,
+   "logloss_vc": 0.56991
+  },
+  {
+   "agrupamento": "formato BO",
+   "l2": 0.1,
+   "logloss_vc": 0.5699
+  },
+  {
+   "agrupamento": "formato BO",
+   "l2": 0.3,
+   "logloss_vc": 0.56989
+  },
+  {
+   "agrupamento": "formato BO",
+   "l2": 1.0,
+   "logloss_vc": 0.56986
+  },
+  {
+   "agrupamento": "formato BO",
+   "l2": 3.0,
+   "logloss_vc": 0.5699
+  },
+  {
+   "agrupamento": "formato BO",
+   "l2": 10.0,
+   "logloss_vc": 0.57053
+  },
+  {
+   "agrupamento": "fase",
+   "l2": 0.03,
+   "logloss_vc": 0.57743
+  },
+  {
+   "agrupamento": "fase",
+   "l2": 0.1,
+   "logloss_vc": 0.57743
+  },
+  {
+   "agrupamento": "fase",
+   "l2": 0.3,
+   "logloss_vc": 0.57742
+  },
+  {
+   "agrupamento": "fase",
+   "l2": 1.0,
+   "logloss_vc": 0.57742
+  },
+  {
+   "agrupamento": "fase",
+   "l2": 3.0,
+   "logloss_vc": 0.57741
+  },
+  {
+   "agrupamento": "fase",
+   "l2": 10.0,
+   "logloss_vc": 0.57743
+  },
+  {
+   "agrupamento": "formato + fase",
+   "l2": 0.03,
+   "logloss_vc": 0.56684
+  },
+  {
+   "agrupamento": "formato + fase",
+   "l2": 0.1,
+   "logloss_vc": 0.5668
+  },
+  {
+   "agrupamento": "formato + fase",
+   "l2": 0.3,
+   "logloss_vc": 0.56674
+  },
+  {
+   "agrupamento": "formato + fase",
+   "l2": 1.0,
+   "logloss_vc": 0.56672
+  },
+  {
+   "agrupamento": "formato + fase",
+   "l2": 3.0,
+   "logloss_vc": 0.56689
+  },
+  {
+   "agrupamento": "formato + fase",
+   "l2": 10.0,
+   "logloss_vc": 0.56746
+  }
+ ],
+ "teste": {
+  "logloss_hoje": 0.58577,
+  "logloss_novo": 0.56209,
+  "ganho": 0.02368,
+  "ic_lo": 0.01847,
+  "ic_hi": 0.02866,
+  "z_hoje": -8.97,
+  "z_novo": -2.94,
+  "passa": true
+ }
+}
