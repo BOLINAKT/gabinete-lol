@@ -83,7 +83,7 @@ jobs:
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add -f evidence/product_scorecard.json evidence/nota_por_liga.json evidence/totals_scorecard.json
+          git add -f evidence/product_scorecard.json evidence/nota_por_liga.json evidence/totals_scorecard.json evidence/regua_28.json evidence/frescor.json evidence/livro_caixa.json
           if git diff --cached --quiet; then
             echo "nota do produto sem mudanca — sem commit"
           else
@@ -108,7 +108,7 @@ jobs:
       # pelo criterio do proprio artigo.
       - name: Regua das 28
         continue-on-error: true
-        run: python tools/regua_28.py
+        run: python tools/regua_28.py 2>&1 | tee regua_out.txt
 
       - name: Frescor das reguas
         continue-on-error: true
@@ -151,6 +151,10 @@ jobs:
           elif grep -qE "regua\(s\) VELHA|regua\(s\) SEM CARIMBO" frescor_out.txt 2>/dev/null; then
             titulo="⚠️ Frescor: régua velha ou sem carimbo"
             corpo="A nota está ok (**$nota**), mas alguma régua passou de 3x a própria cadência, ou não tem carimbo de data. Régua velha repete o número antigo com toda a confiança — foi assim que a nota caiu sem ninguém ver. Ver evidence/frescor.json."
+          elif grep -q -e "declaracao(oes) VENCIDA" -e "declaracoes RECUSADAS" regua_out.txt 2>/dev/null; then
+            quais=$(grep -A 6 "VENCIDA(s) ou sem data" regua_out.txt | tr -s " \n" ' ' | head -c 400)
+            titulo="Regua das 28: declaracao vencida"
+            corpo="A nota esta ok (**$nota**), mas alguma declaracao da regua das 28 passou dos 90 dias. Ela vale ZERO ate alguem reverificar, entao a nota da regua caiu sozinha sem nada ter mudado no sistema - isso e de proposito, carimbo que ninguem confere e decoracao. Itens: $quais Reverificar e atualizar evidence/regua_28_declaracoes.json."
           elif grep -q "item(ns) com 30 dias ou mais" livro_out.txt 2>/dev/null; then
             velhos=$(grep -oE "[0-9]+ item\(ns\) com 30 dias ou mais" livro_out.txt | head -1)
             titulo="⚠️ Livro-caixa: $velhos sem decisão"

@@ -115,3 +115,8 @@ release/
 
 # Estado de maquina (overrides com caminho absoluto) - NUNCA versionar
 .gabinete_settings.json
+
+# As DECLARACOES da regua das 28 sao ENTRADA, nao saida: e o que o repo afirma
+# sobre si mesmo. Sem versionar, a esteira roda com zero declaracoes e a nota
+# despenca sozinha na nuvem sem nada ter mudado.
+!evidence/regua_28_declaracoes.json

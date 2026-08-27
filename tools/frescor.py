@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -79,6 +80,35 @@ CADENCIA = {
 CAMPOS_CARIMBO = ("gerado_em", "generated_at", "ajustado_em", "timestamp", "data")
 
 
+def _raiz_do_repo(inicio: Path) -> Path:
+    """A raiz do repositorio, sem depender de ONDE este arquivo mora.
+
+    Terceira vez que este bug aparece (livro_caixa.py e regua_28.py foram as
+    outras duas): no LoL este script vive em tools/ e no Dota na raiz, entao
+    parents[1] resolvia para a Area de Trabalho. Aqui ele ao menos falhava
+    alto ("sem pasta evidence em C:/Users/.../Desktop"); a regua das 28 falhou
+    CALADA, medindo o Desktop e reportando nota.
+
+    `git rev-parse --show-toplevel` e o jeito canonico e independente de onde o
+    script foi chamado; travessia atras de .git fica de reserva se o git nao
+    estiver no PATH. (A copia esta em tres arquivos de proposito: um modulo
+    comum precisaria da raiz para ser importado, que e o que se quer descobrir.)
+    """
+    try:
+        r = subprocess.run(["git", "rev-parse", "--show-toplevel"],
+                           cwd=str(inicio.parent), capture_output=True,
+                           text=True, encoding="utf-8", timeout=30)
+        if r.returncode == 0 and r.stdout.strip():
+            return Path(r.stdout.strip()).resolve()
+    except (OSError, subprocess.SubprocessError):
+        pass
+    atual = inicio.resolve().parent
+    for cand in [atual, *atual.parents]:
+        if (cand / ".git").exists():
+            return cand
+    return atual
+
+
 def _carimbo(caminho: Path):
     try:
         d = json.loads(caminho.read_text(encoding="utf-8"))
@@ -102,7 +132,7 @@ def main() -> int:
     ap.add_argument("--out", default="evidence/frescor.json")
     args = ap.parse_args()
 
-    raiz = Path(args.root).resolve() if args.root else Path(__file__).resolve().parents[1]
+    raiz = Path(args.root).resolve() if args.root else _raiz_do_repo(Path(__file__))
     ev = raiz / "evidence"
     if not ev.is_dir():
         print(f"sem pasta evidence em {raiz}")

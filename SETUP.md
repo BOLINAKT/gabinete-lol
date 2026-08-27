@@ -19,10 +19,15 @@ entram no git de propósito — são pesados e gerados).
    ```powershell
    pip install -r requirements.txt
    ```
-4. **Receber o modelo + dados.** Quem tem o projeto rodando gera o bundle com
-   `\.tools\make_release.ps1` e te manda o `gabinete_data_<data>.zip`.
-   **Descompacte na RAIZ do repositório** (de forma que `ml_artifact.json` fique
-   na raiz e os CSVs em `CSV_HISTORICO/` e `CSV_DIARIO/`).
+4. **Modelo + dados: já vêm no `git clone`.** Conferido em 27/08/2026 —
+   `ml_artifact.json`, `params_fitted.json`, `players_artifact.json`,
+   `CSV_HISTORICO/`, `CSV_DIARIO/`, `live_models/` e `evidence/` **estão
+   versionados**. Não é mais preciso bundle nenhum para começar a trabalhar.
+   O bundle (`\.tools\make_release.ps1`) segue existindo para mandar a alguém
+   que não tenha acesso ao repositório privado.
+   **O que o clone NÃO traz:** `ops/baselines/` (~68 MB), que são os retratos
+   para onde `tools/rollback_baseline.py` volta. Sem eles não dá para reverter
+   um modelo ruim — copiar à mão ao trocar de máquina.
 5. **Conferir que está tudo pronto** (diz exatamente o que falta, se faltar):
    ```powershell
    python tools/setup_check.py
@@ -45,8 +50,10 @@ entram no git de propósito — são pesados e gerados).
 3. Do outro lado: passos 1–6 acima.
 
 ## Por que os bugs aconteciam antes
-`ml_artifact.json`, `players_artifact.json`, `params_fitted.json`, `CSV_HISTORICO/`,
-`CSV_DIARIO/` e `ops/` estão no `.gitignore` (não vão no git). Mandando só o
-código, a outra máquina ficava **sem o modelo e sem os dados** → o app subia sem
-"cérebro" → bugs. O bundle de release (passo 4) resolve isso. O `setup_check.py`
+**(história — corrigido desde então.)** `ml_artifact.json`,
+`players_artifact.json`, `params_fitted.json`, `CSV_HISTORICO/` e `CSV_DIARIO/`
+ficavam no `.gitignore`. Mandando só o código, a outra máquina ficava **sem o
+modelo e sem os dados** → o app subia sem "cérebro" → bugs. O mesmo mordeu na
+Streamlit Cloud, com `live_models/` ignorado: na nuvem o arquivo simplesmente
+não existia. Hoje todos esses estão versionados; só `ops/` continua de fora. O bundle de release (passo 4) resolve isso. O `setup_check.py`
 detecta na hora se algo está faltando, em vez de o app quebrar com erro críptico.

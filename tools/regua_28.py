@@ -35,6 +35,39 @@ Gabinetes.
 ║    mecanicamente (existe passo na esteira? existe arquivo de evidência?),   ║
 ║    a régua checa — porque declaração envelhece e verificação não. Onde não  ║
 ║    dá, a declaração é obrigada a NOMEAR a evidência.                        ║
+║ 6. POR QUE A DECLARAÇÃO VIVE NO REPO E NOMEIA O SEU DONO:                  ║
+║    este .py é o mesmo nos dois Gabinetes; com as declarações dentro dele,  ║
+║    medir o Dota herdava afirmações escritas olhando o LoL. Mover para      ║
+║    dentro do repo não basta — o arquivo também se copia —, então a régua   ║
+║    confere o SUJEITO, como nas atestações de cadeia de suprimentos:        ║
+║    "nomes podem ser reusados, mas o resumo criptográfico identifica o      ║
+║    conteúdo exato", e uma atestação de uma versão não vale para outro      ║
+║    binário com o mesmo rótulo. Sujeito errado vale ZERO.                   ║
+║    kusari.dev/learning-center/attestation/                                 ║
+║                                                                            ║
+║ 7. POR QUE A DECLARAÇÃO É VERSIONADA (exceção no .gitignore):              ║
+║    ela é ENTRADA da régua, não saída. A prática é guardar a política em    ║
+║    repositório versionado, com revisão obrigatória, "garantindo trilha     ║
+║    auditável de toda mudança de política". Ignorada, a esteira roda com    ║
+║    zero declarações e a nota despenca sozinha na nuvem, sem nada ter mudado.║
+║    cloudaware.com/blog/devsecops-compliance/                               ║
+║                                                                            ║
+║ 8. POR QUE TODA DECLARAÇÃO VENCE EM 90 DIAS:                               ║
+║    carimbo de "verificado em tal dia" que ninguém confere não é controle,  ║
+║    é decoração — foi o que eu fiz na primeira versão. A prática contra     ║
+║    "compliance drift" é EXPIRAÇÃO com ciclo de revisão trimestral: um      ║
+║    controle perfeitamente conforme vira não-conformidade no dia em que a   ║
+║    certificação vence. Sem data, ou vencida, a declaração vale ZERO e a    ║
+║    nota cai sozinha até alguém reverificar.                                ║
+║                                                                            ║
+║ 9. POR QUE OS CAMINHOS SÃO ESCRITOS, e não procurados no disco:            ║
+║    as ferramentas moram em tools/ no LoL e na raiz no Dota. A primeira     ║
+║    correção foi varrer o disco pelo NOME quando o caminho falhasse — e ela ║
+║    achou cópias dentro de backups/. Descoberta implícita é anti-padrão por ║
+║    resolver ambíguo sem avisar: "misturar referência explícita e implícita"║
+║    faz o sistema pegar a origem errada (é o mecanismo do dependency        ║
+║    confusion). Os dois caminhos possíveis ficam ESCRITOS na lista de itens.║
+║    cloudsmith.com/blog/eliminating-ambiguity-the-case-for-explicit-docker-image-paths║
 ╚═════════════════════════════════════════════════════════════════════════════╝
 
 Uso: python tools/regua_28.py [--root OUTRO_REPO]
@@ -43,6 +76,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -53,7 +87,34 @@ try:
 except (AttributeError, OSError, ValueError):
     pass
 
-RAIZ_PADRAO = Path(__file__).resolve().parents[1]
+def _raiz_do_repo(inicio: Path) -> Path:
+    """A raiz do repositorio, sem depender de ONDE este arquivo mora.
+
+    Segunda vez que este bug aparece: no LoL o script vive em tools/ e no Dota
+    na raiz, entao parents[1] fixo resolvia para a Area de Trabalho. A copia do
+    Dota varria o Desktop INTEIRO — enxergava as ferramentas do LoL como se
+    fossem dela e gravava o resultado em Desktop/evidence/. A nota do Dota que
+    eu vinha reportando media a Area de Trabalho, nao o repositorio.
+
+    Mesma cura ja escrita em tools/livro_caixa.py, pelo mesmo motivo:
+    `git rev-parse --show-toplevel` e o jeito canonico; travessia atras de .git
+    fica de reserva se o git nao estiver no PATH."""
+    try:
+        r = subprocess.run(["git", "rev-parse", "--show-toplevel"],
+                           cwd=str(inicio.parent), capture_output=True,
+                           text=True, encoding="utf-8", timeout=30)
+        if r.returncode == 0 and r.stdout.strip():
+            return Path(r.stdout.strip()).resolve()
+    except (OSError, subprocess.SubprocessError):
+        pass
+    atual = inicio.resolve().parent
+    for cand in [atual, *atual.parents]:
+        if (cand / ".git").exists():
+            return cand
+    return atual
+
+
+RAIZ_PADRAO = _raiz_do_repo(Path(__file__))
 
 # --------------------------------------------------------------------------
 # Verificadores mecanicos. Devolvem (nota, evidencia). Nota: 0, 0.5 ou 1.0.
@@ -61,8 +122,19 @@ RAIZ_PADRAO = Path(__file__).resolve().parents[1]
 
 
 def _existe(raiz: Path, *padroes: str):
-    achados = [p for pad in padroes for p in raiz.glob(pad) if p.exists()]
-    return achados
+    """Acha a ferramenta pelos caminhos DECLARADOS — nunca por busca no disco.
+
+    Os dois Gabinetes guardam as ferramentas em lugares diferentes: no LoL
+    vivem em tools/, no Dota na raiz. A primeira correcao foi cair para uma
+    varredura por NOME quando o caminho falhasse, e ela achou copias dentro de
+    backups/ — remendei ordenando por profundidade, o que so escondeu o
+    problema. Descoberta implicita e anti-padrao justamente por isso: mistura
+    referencia explicita com implicita e resolve para o alvo errado sem avisar
+    (o mesmo mecanismo do "dependency confusion"). Entao os dois caminhos
+    possiveis ficam ESCRITOS na lista de itens, e o que nao esta escrito nao
+    conta.
+    """
+    return [p for pad in padroes for p in raiz.glob(pad) if p.exists()]
 
 
 def _na_esteira(raiz: Path, *trechos: str):
@@ -107,6 +179,84 @@ def v_ferramenta(*, arquivos: tuple[str, ...], esteira: tuple[str, ...] = ()):
     return verificar
 
 
+VALIDADE_DECLARACAO_DIAS = 90
+ARQ_DECLARACOES = "evidence/regua_28_declaracoes.json"
+
+
+def _sujeito(raiz: Path) -> str:
+    """Quem e este repositorio, na voz do proprio git."""
+    try:
+        r = subprocess.run(["git", "remote", "get-url", "origin"], cwd=str(raiz),
+                           capture_output=True, text=True, encoding="utf-8", timeout=30)
+        if r.returncode == 0 and r.stdout.strip():
+            return r.stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return raiz.name
+
+
+def _declaracoes(raiz: Path) -> tuple[dict, str]:
+    """As declaracoes sao DO REPOSITORIO medido, e so valem NELE.
+
+    Antes elas moravam neste arquivo. Como o arquivo e o mesmo nos dois
+    Gabinetes, medir o Dota herdava as afirmacoes escritas olhando o LoL — a
+    regua creditava ao Dota coisas que so existem aqui.
+
+    Mover para dentro do repo nao basta: o arquivo tambem se copia. Por isso a
+    declaracao NOMEIA o seu sujeito e a regua confere. E a regra das atestacoes
+    de cadeia de suprimentos, onde a afirmacao se prende ao artefato exato:
+    "nomes podem ser reusados, mas o resumo criptografico identifica o conteudo
+    exato" — uma atestacao de uma versao nao vale para outro binario com o
+    mesmo rotulo. Aqui o sujeito e o remoto do git, e declaracao com sujeito
+    errado vale ZERO em vez de virar credito emprestado."""
+    cache = _declaracoes.__dict__.setdefault("_c", {})
+    chave = str(raiz)
+    if chave not in cache:
+        p = raiz / ARQ_DECLARACOES
+        try:
+            bruto = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            cache[chave] = ({}, f"{ARQ_DECLARACOES} ausente ou ilegivel")
+            return cache[chave]
+        dono = str(bruto.get("repo") or "").strip()
+        sujeito = _sujeito(raiz)
+        if not dono:
+            cache[chave] = ({}, "declaracoes sem campo 'repo': nao da para saber de quem sao")
+        elif dono not in sujeito:
+            cache[chave] = ({}, f"declaracoes sao de '{dono}', mas este repo e '{sujeito}'")
+        else:
+            cache[chave] = (bruto.get("declaracoes") or {}, "")
+    return cache[chave]
+
+
+def declarado(area: str, num: int):
+    """Uma declaracao COM VALIDADE, lida do repositorio medido.
+
+    O carimbo "verificado em tal dia" nao serve para nada se ninguem confere o
+    carimbo — foi o que eu fiz na primeira versao, reintroduzindo dentro da
+    regua a mesma doenca que o livro-caixa existe para tratar. Ver fonte 6."""
+    def verificar(raiz: Path):
+        d = _declaracoes(raiz)[0].get(f"{area} {num}")
+        if not d:
+            return 0.0, f"NAO DECLARADO neste repositorio ({ARQ_DECLARACOES})"
+        just = str(d.get("justificativa") or "")
+        carimbo = d.get("verificado_em")
+        if not carimbo:
+            return 0.0, f"SEM DATA DE VERIFICACAO (vale zero): {just}"
+        try:
+            quando = datetime.fromisoformat(str(carimbo))
+        except ValueError:
+            return 0.0, f"data de verificacao ilegivel: {just}"
+        idade = (datetime.now() - quando).days
+        if idade > VALIDADE_DECLARACAO_DIAS:
+            return 0.0, (f"VENCIDA ha {idade - VALIDADE_DECLARACAO_DIAS}d "
+                         f"(verificada em {carimbo}): {just}")
+        resta = VALIDADE_DECLARACAO_DIAS - idade
+        return float(d.get("nota") or 0.0), (f"{just} [verificada em {carimbo}, "
+                                             f"vence em {resta}d]")
+    return verificar
+
+
 def v_evidencia(nome: str, cadencia_dias: float):
     """Existe evidencia recente? Usa o mesmo criterio do tools/frescor.py."""
     def verificar(raiz: Path):
@@ -133,59 +283,70 @@ def v_evidencia(nome: str, cadencia_dias: float):
 ITENS = [
     # ---- DADOS ----
     ("dados", 1, "expectativas das features num esquema",
-     (0.5, "VERIFICADO 27/08: tools/run_phase1_data_contract.py existe e o app le o relatorio (params_sections_core), mas nao roda em esteira")),
+     declarado("dados", 1)),
     ("dados", 2, "todas as features sao beneficas",
-     (1.0, "toda camada passa por gate OOS antes de entrar; ha REJECTs registrados (draft, players no Dota, circuitos)")),
-    ("dados", 3, "nenhuma feature custa demais", (0.0, "custo por feature nunca foi medido")),
+     declarado("dados", 2)),
+    ("dados", 3, "nenhuma feature custa demais",
+     declarado("dados", 3)),
     ("dados", 4, "features atendem requisitos de nivel superior",
-     (0.5, "regras existem (so tier pro no Dota, ano/liga no LoL) mas nao sao verificadas por programa")),
+     declarado("dados", 4)),
     ("dados", 5, "controles de privacidade no pipeline",
-     (1.0, "dado publico de partida; sem dado pessoal — requisito nao se aplica e isso esta declarado")),
-    ("dados", 6, "feature nova entra rapido", (0.5, "entra, mas o caminho e manual e nao cronometrado")),
+     declarado("dados", 5)),
+    ("dados", 6, "feature nova entra rapido",
+     declarado("dados", 6)),
     ("dados", 7, "codigo de feature testado",
-     v_ferramenta(arquivos=("mlcore/tests/test_*features*.py", "mlcore/tests/test_*data*.py"))),
+     v_ferramenta(arquivos=("mlcore/tests/test_*features*.py",
+                            "mlcore/tests/test_*data*.py"))),
     # ---- MODELO ----
     ("modelo", 1, "especificacao revisada e versionada",
-     (1.0, "tudo em git com o porque no texto do commit; nenhuma mudanca de modelo sem gate")),
+     declarado("modelo", 1)),
     ("modelo", 2, "metricas offline e online se correlacionam",
-     (0.0, "NAO medido: exigiria CLV, que esta fora do plano por decisao dele")),
+     declarado("modelo", 2)),
     ("modelo", 3, "hiperparametros ajustados",
-     (1.0, "gates com validacao cruzada; L2 e agrupamento do calibrador escolhidos por VC repetida DENTRO da calibracao")),
+     declarado("modelo", 3)),
     ("modelo", 4, "impacto do envelhecimento conhecido",
-     (1.0, "medido em 27/08: calibrador ajustado em temporada velha custa +0.023 de logloss")),
+     declarado("modelo", 4)),
     ("modelo", 5, "modelo simples nao e melhor",
-     (1.0, "toda camada e medida contra a base; ha casos em que o simples ganhou e foi mantido")),
+     declarado("modelo", 5)),
     ("modelo", 6, "qualidade suficiente em cada FATIA",
      v_ferramenta(arquivos=("tools/nota_por_liga.py", "dota_scorecard.py"),
                   esteira=("nota_por_liga.py", "dota_scorecard.py"))),
     ("modelo", 7, "testado quanto a inclusao",
-     (1.0, "nao se aplica: nao ha pessoa como sujeito da previsao, e isso esta declarado")),
+     declarado("modelo", 7)),
     # ---- INFRA ----
-    ("infra", 1, "treino reproduzivel", (0.0, "VERIFICADO 27/08: NAO ha semente aleatoria no treino — os 'seed' em fit_ml_params sao checkpoints de estagio — nem teste que rode duas vezes e compare")),
-    ("infra", 2, "especificacao com teste unitario", v_ferramenta(arquivos=("mlcore/tests/test_artifact.py",))),
+    ("infra", 1, "treino reproduzivel",
+     declarado("infra", 1)),
+    ("infra", 2, "especificacao com teste unitario",
+     v_ferramenta(arquivos=("mlcore/tests/test_artifact.py",))),
     ("infra", 3, "pipeline com teste de integracao",
-     v_na_esteira("python -m unittest", descricao="a suite roda na esteira de retreino")),
+     v_na_esteira("test_live_artifact_complete",
+                  descricao="3 modulos-guarda (artifact completo, regressao de odds) rodam "
+                            "antes de publicar — a suite INTEIRA nao roda em esteira nenhuma")),
     ("infra", 4, "qualidade validada ANTES de servir",
      v_na_esteira("Guardas pos-retreino", "Guardas pós-retreino",
                   descricao="guarda que barra modelo quebrado antes de publicar")),
     ("infra", 5, "modelo depuravel",
-     (1.0, "VERIFICADO 27/08: session_state[_ml_trace_last] guarda o caminho da previsao (first_x_gap_core, flow_runtime_core) e a aba de explicabilidade o exibe")),
+     declarado("infra", 5)),
     ("infra", 6, "canario antes de servir",
-     (0.5, "o calibrador com grupo entrou desligado ate os coeficientes existirem, mas nao ha canario sistematico")),
-    ("infra", 7, "da para reverter", v_ferramenta(arquivos=("tools/rollback_baseline.py",))),
+     declarado("infra", 6)),
+    ("infra", 7, "da para reverter", v_ferramenta(arquivos=("tools/rollback_baseline.py", "rollback_baseline.py"))),
     # ---- MONITORAMENTO ----
-    ("monitor", 1, "mudanca de dependencia notifica", (0.0, "nao existe")),
+    ("monitor", 1, "mudanca de dependencia notifica",
+     declarado("monitor", 1)),
     ("monitor", 2, "invariantes valem na entrada",
-     (0.5, "VERIFICADO 27/08: retreino.yml tem 'Guardas pos-retreino' e retreino_ao_vivo tem GUARDA FALHOU; mas schema/volume/distribuicao nao sao vigiados")),
+     declarado("monitor", 2)),
     ("monitor", 3, "treino e servico NAO divergem",
-     (0.0, "divergencia ENCONTRADA duas vezes em 26/08 (scope_meta) e a nota oficial mede caminho diferente do servido; nao ha vigia")),
+     declarado("monitor", 3)),
     ("monitor", 4, "modelo nao esta velho demais",
-     v_ferramenta(arquivos=("tools/frescor.py",), esteira=("frescor.py",))),
-    ("monitor", 5, "numericamente estavel", (0.0, "VERIFICADO 27/08: train_offline tem UM isfinite, numa conta especifica — nao ha vigia de NaN/infinito")),
-    ("monitor", 6, "desempenho computacional nao regrediu", (0.0, "tempo de treino e de resposta nao sao medidos")),
+     v_ferramenta(arquivos=("tools/frescor.py", "frescor.py"), esteira=("frescor.py",))),
+    ("monitor", 5, "numericamente estavel",
+     declarado("monitor", 5)),
+    ("monitor", 6, "desempenho computacional nao regrediu",
+     declarado("monitor", 6)),
     ("monitor", 7, "qualidade de previsao nao regrediu",
-     v_ferramenta(arquivos=("tools/ml_fusion_scorecard.py",), esteira=("ml_fusion_scorecard.py",))),
+     v_ferramenta(arquivos=("tools/ml_fusion_scorecard.py", "ml_fusion_scorecard.py"), esteira=("ml_fusion_scorecard.py",))),
 ]
+
 
 AREAS = {"dados": "DADOS", "modelo": "MODELO", "infra": "INFRAESTRUTURA", "monitor": "MONITORAMENTO"}
 
@@ -212,14 +373,11 @@ def main() -> int:
     raiz = Path(args.root).resolve() if args.root else RAIZ_PADRAO
 
     print(f"[raiz] {raiz}")
-    if raiz != RAIZ_PADRAO:
-        # Os itens DECLARADOS foram escritos olhando o LoL. Os verificados
-        # mecanicamente se adaptam ao repo; os declarados NAO. Herdar
-        # declaracao e exatamente o tipo de afirmacao velha que faz regua
-        # mentir — entao a regua avisa em vez de fingir que vale.
-        print("AVISO: os itens DECLARADOS foram escritos olhando o repositorio")
-        print("       do LoL. Aqui eles precisam ser revistos um a um antes de")
-        print("       a nota valer. Os verificados mecanicamente ja se adaptam.")
+    d, recusa = _declaracoes(raiz)
+    if recusa:
+        print(f"[declaracoes] NENHUMA vale aqui: {recusa}")
+    else:
+        print(f"[declaracoes] {len(d)} lidas de {ARQ_DECLARACOES}")
     print()
     por_area: dict[str, float] = {k: 0.0 for k in AREAS}
     linhas = []
@@ -249,6 +407,22 @@ def main() -> int:
     print(f"  media (que NAO e a nota, e serve so de contraste): "
           f"{sum(por_area.values()) / 4:.1f}")
     print("=" * 78)
+
+    # Uma linha resumindo o VENCIMENTO, para o vigia semanal poder escalar.
+    # Sem isto a expiracao seria decadencia silenciosa: a nota cairia sozinha
+    # daqui a 90 dias e ninguem saberia — o defeito que esta regua ataca.
+    vencidas = [x for x in linhas if x["evidencia"].startswith(("VENCIDA", "SEM DATA"))]
+    if recusa:
+        print(f"ATENCAO: declaracoes RECUSADAS ({recusa}) — a nota abaixo ignora todas.")
+    elif vencidas:
+        print(f"ATENCAO: {len(vencidas)} declaracao(oes) VENCIDA(s) ou sem data — "
+              f"a nota caiu sozinha ate alguem reverificar:")
+        for x in vencidas:
+            print(f"         {x['area']} {x['n']}. {x['item']}")
+    else:
+        print("todas as declaracoes estao dentro da validade "
+              f"({VALIDADE_DECLARACAO_DIAS} dias).")
+    print()
 
     destino = raiz / str(args.out)
     destino.parent.mkdir(parents=True, exist_ok=True)
