@@ -1,6 +1,6 @@
 {
   "market": "first_blood",
-  "best_iteration": 37,
+  "best_iteration": 55,
   "base_rate_blue": 0.5134374073708131,
   "feature_cols": [
     "z_pre",
@@ -14,7 +14,7 @@
     "n_train": 20242,
     "n_val": 2377,
     "base_rate_blue": 0.5134374073708131,
-    "best_iteration": 37,
+    "best_iteration": 55,
     "feature_names": [
       "z_pre",
       "league_tier",
@@ -23,11 +23,11 @@
       "playoffs"
     ],
     "feature_importance": {
-      "z_pre": 2569.812744963914,
-      "league_tier": 126.53231978416443,
-      "league_strength": 498.4015624821186,
-      "bo": 163.23361945152283,
-      "playoffs": 39.55878043174744
+      "z_pre": 2684.6916960179806,
+      "league_tier": 158.29456090927124,
+      "league_strength": 738.2289881110191,
+      "bo": 238.1100400686264,
+      "playoffs": 38.89601016044617
     }
   }
 }

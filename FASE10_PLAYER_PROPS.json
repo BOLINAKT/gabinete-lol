@@ -1,23 +1,23 @@
 {
   "version": "phase10_player_props_v1",
-  "generated_at": "2026-08-24T08:07:40.386185+00:00",
+  "generated_at": "2026-08-31T14:48:16.403956+00:00",
   "val_cutoff": "2026-03-31",
   "n_train": 202520,
   "n_val": 23770,
-  "n_test": 54760,
-  "baseline_rmse": 2.7020867089282437,
-  "candidate_rmse": 2.551541872078716,
-  "delta_rmse": 0.15054483684952746,
-  "ci_low": 0.14314242394785692,
-  "ci_high": 0.1578285921798046,
+  "n_test": 56810,
+  "baseline_rmse": 2.7030031028380157,
+  "candidate_rmse": 2.5544319161497264,
+  "delta_rmse": 0.14857118668828928,
+  "ci_low": 0.14111074915403243,
+  "ci_high": 0.1566148902152733,
   "p_value": 0.0,
   "accept": true,
-  "residual_sigma": 2.577632831836837,
+  "residual_sigma": 2.5791356785064528,
   "feature_importance_top5": {
-    "champ_kills_mean_pos": 4951541.364321709,
-    "player_kills_mean": 413262.45404052734,
-    "z_pre": 330241.79091358185,
-    "league_tier": 68275.05268001556,
-    "player_kills_std": 56508.157390117645
+    "champ_kills_mean_pos": 4953530.414863586,
+    "player_kills_mean": 412552.17922878265,
+    "z_pre": 327555.496216774,
+    "league_tier": 67557.29493713379,
+    "player_kills_std": 59510.83758544922
   }
 }
