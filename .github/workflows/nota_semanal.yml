@@ -159,6 +159,15 @@ jobs:
             velhos=$(grep -oE "[0-9]+ item\(ns\) com 30 dias ou mais" livro_out.txt | head -1)
             titulo="⚠️ Livro-caixa: $velhos sem decisão"
             corpo="A nota está ok (**$nota**), mas o livro-caixa do silêncio tem item tolerado há 30 dias ou mais sem decisão. O que machuca não é quebrar, é ficar semanas quebrado sem ninguém ver — a aba StatsCamps do Dota ficou morta 6 semanas assim. Ver evidence/livro_caixa.json, ordenado por idade."
+          # Faixa de AVISO do frescor. Fica por ULTIMO de proposito: e o nivel
+          # mais baixo da cadeia, abaixo de todos os alarmes de erro acima.
+          # Ate 04/09/2026 esta faixa nao existia aqui, e o CI so olhava VELHA
+          # e SEM CARIMBO — o mesmo ponto cego que o proprio frescor.py tinha
+          # (divida D6). Regua atrasada nao gerava aviso nenhum.
+          elif grep -qE "regua\(s\) ATRASADA" frescor_out.txt 2>/dev/null; then
+            quantas=$(grep -oE "[0-9]+ regua\(s\) ATRASADA" frescor_out.txt | head -1)
+            titulo="Frescor: $quantas — hora de rodar"
+            corpo="A nota está ok (**$nota**), e nada está velho ainda. Mas $quantas passou de 2x a própria cadência, que é a faixa de AVISO — existe justamente para dar tempo de agir antes de virar régua VELHA, que é quando o número antigo passa a ser repetido com confiança. Não é emergência: é o lembrete de rodar. Ver evidence/frescor.json."
           else
             echo "nota $nota >= piso $PISO — tudo certo"; exit 0
           fi

@@ -374,7 +374,33 @@ rodou no app, o número servido hoje é o de qual cadeia exatamente?
 
 ---
 
-**D6. O `frescor.py` dá sinal verde com régua atrasada.** Achado em 04/09/2026.
+**D6. RESOLVIDA em 04/09/2026** — o `frescor.py` dava sinal verde com régua
+atrasada. Conserto: o resumo agora emite a faixa de aviso (`AVISO: N régua(s)
+ATRASADA(s)`), separada do nível de erro. Rodando hoje, o LoL passou a dizer
+"AVISO: 8 régua(s) ATRASADA(s)" onde antes dizia "todas dentro do prazo".
+
+Junto vieram três coisas que o conserto sozinho não resolveria:
+
+- **O CI tinha o mesmo ponto cego.** `nota_semanal.yml` decidia o alerta com
+  `grep -qE "regua\(s\) VELHA|regua\(s\) SEM CARIMBO"` — a faixa de aviso era
+  invisível lá também. Entrou um ramo novo, por último na cadeia de `elif`,
+  porque é o nível mais baixo. É a armadilha do `CLAUDE.md` ("casar string em
+  YAML não prova que o passo roda") aparecendo de novo.
+- **Não havia UM teste** cobrindo o arquivo. Agora há `mlcore/tests/test_frescor.py`,
+  com 5 testes, idêntico nos dois repositórios. Ele foi verificado contra o bug:
+  revertendo o conserto, o teste falha com a mensagem da D6; com o conserto,
+  passa. Não é teste vazio.
+- **O CI do Dota não olha o frescor de jeito nenhum** — `dados_diarios_dota.yml`
+  roda `python frescor.py` sem capturar nem examinar a saída. Lá o vigia roda e
+  o resultado é jogado fora. **Fica em aberto**, é conserto de esteira, não do
+  arquivo compartilhado.
+
+Fonte do desenho (conferida em 04/09): a prática de monitoramento de frescor
+configura os testes com nível de **aviso e de erro**, emitindo sinal em ambos —
+ter duas faixas e reportar só a de erro desperdiça a faixa que existe para agir
+a tempo. https://dqops.com/docs/categories-of-data-quality-checks/how-to-detect-timeliness-and-freshness-issues/
+
+Registro do que era: achado em 04/09/2026.
 O interruptor de homem morto tem três estados — `atrasada` (passou de 2x a
 cadência), `VELHA` (3x) e `SEM CARIMBO`. A linha de resumo em
 `tools/frescor.py:188` é `if not (velhas or sem)`, e **o balde `atrasada` fica

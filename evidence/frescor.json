@@ -1,11 +1,116 @@
 {
- "gerado_em": "2026-08-27T15:01:44",
+ "gerado_em": "2026-09-04T15:03:27",
  "reguas": [
+  {
+   "arquivo": "fusion_scorecard.json",
+   "rotulo": "nota oficial (vigia semanal)",
+   "cadencia_dias": 7,
+   "idade_dias": 19.0,
+   "estado": "atrasada"
+  },
+  {
+   "arquivo": "code_scorecard.json",
+   "rotulo": "regua de codigo (product --run)",
+   "cadencia_dias": 7,
+   "idade_dias": 18.9,
+   "estado": "atrasada"
+  },
+  {
+   "arquivo": "data_scorecard.json",
+   "rotulo": "regua de dados (product --run)",
+   "cadencia_dias": 7,
+   "idade_dias": 18.9,
+   "estado": "atrasada"
+  },
+  {
+   "arquivo": "live_scorecard.json",
+   "rotulo": "regua da live (product --run)",
+   "cadencia_dias": 7,
+   "idade_dias": 18.9,
+   "estado": "atrasada"
+  },
+  {
+   "arquivo": "players_scorecard.json",
+   "rotulo": "regua de jogadores (product --run)",
+   "cadencia_dias": 7,
+   "idade_dias": 18.9,
+   "estado": "atrasada"
+  },
+  {
+   "arquivo": "portability_scorecard.json",
+   "rotulo": "regua de portabilidade (product --run)",
+   "cadencia_dias": 7,
+   "idade_dias": 18.9,
+   "estado": "atrasada"
+  },
+  {
+   "arquivo": "product_scorecard.json",
+   "rotulo": "nota do produto (vigia semanal)",
+   "cadencia_dias": 7,
+   "idade_dias": 18.9,
+   "estado": "atrasada"
+  },
+  {
+   "arquivo": "reliability_scorecard.json",
+   "rotulo": "regua de confiabilidade (product --run)",
+   "cadencia_dias": 7,
+   "idade_dias": 18.9,
+   "estado": "atrasada"
+  },
   {
    "arquivo": "stress_emulator.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 35.3,
+   "idade_dias": 43.3,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "regua_28.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.2,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "sombra_calibrador_grupo.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.1,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "varredura_janela_c4b400.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.1,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "varredura_janela_c6b250.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.1,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "varredura_janela_c8b200.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.1,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "varredura_janela_calibrador.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.1,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "varredura_janela_calibrador_curta.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.1,
    "estado": "frequencia nao declarada"
   },
   {
@@ -44,13 +149,6 @@
    "estado": "frequencia nao declarada"
   },
   {
-   "arquivo": "regua_28.json",
-   "rotulo": "(nao declarada)",
-   "cadencia_dias": null,
-   "idade_dias": 0.0,
-   "estado": "frequencia nao declarada"
-  },
-  {
    "arquivo": "regua_28_declaracoes.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
@@ -58,80 +156,24 @@
    "estado": "frequencia nao declarada"
   },
   {
-   "arquivo": "fusion_scorecard.json",
-   "rotulo": "nota oficial (vigia semanal)",
-   "cadencia_dias": 7,
-   "idade_dias": 11.0,
-   "estado": "ok"
-  },
-  {
-   "arquivo": "code_scorecard.json",
-   "rotulo": "regua de codigo (product --run)",
-   "cadencia_dias": 7,
-   "idade_dias": 10.9,
-   "estado": "ok"
-  },
-  {
-   "arquivo": "data_scorecard.json",
-   "rotulo": "regua de dados (product --run)",
-   "cadencia_dias": 7,
-   "idade_dias": 10.9,
-   "estado": "ok"
-  },
-  {
-   "arquivo": "live_scorecard.json",
-   "rotulo": "regua da live (product --run)",
-   "cadencia_dias": 7,
-   "idade_dias": 10.9,
-   "estado": "ok"
-  },
-  {
-   "arquivo": "players_scorecard.json",
-   "rotulo": "regua de jogadores (product --run)",
-   "cadencia_dias": 7,
-   "idade_dias": 10.9,
-   "estado": "ok"
-  },
-  {
-   "arquivo": "portability_scorecard.json",
-   "rotulo": "regua de portabilidade (product --run)",
-   "cadencia_dias": 7,
-   "idade_dias": 10.9,
-   "estado": "ok"
-  },
-  {
-   "arquivo": "product_scorecard.json",
-   "rotulo": "nota do produto (vigia semanal)",
-   "cadencia_dias": 7,
-   "idade_dias": 10.9,
-   "estado": "ok"
-  },
-  {
-   "arquivo": "reliability_scorecard.json",
-   "rotulo": "regua de confiabilidade (product --run)",
-   "cadencia_dias": 7,
-   "idade_dias": 10.9,
-   "estado": "ok"
-  },
-  {
    "arquivo": "totals_scorecard.json",
    "rotulo": "regua dos totais (vigia semanal)",
    "cadencia_dias": 7,
-   "idade_dias": 1.2,
+   "idade_dias": 9.2,
    "estado": "ok"
   },
   {
    "arquivo": "livro_caixa.json",
    "rotulo": "livro-caixa do silencio",
    "cadencia_dias": 7,
-   "idade_dias": 0.6,
+   "idade_dias": 8.6,
    "estado": "ok"
   },
   {
    "arquivo": "nota_por_liga.json",
    "rotulo": "nota por liga — APARECE NA TELA",
    "cadencia_dias": 7,
-   "idade_dias": 0.5,
+   "idade_dias": 8.5,
    "estado": "ok"
   },
   {

@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-08-27T15:03:23",
+ "gerado_em": "2026-09-04T10:18:25",
  "nota": 2.5,
  "por_area": {
   "dados": 4.0,
@@ -13,42 +13,42 @@
    "n": 1,
    "item": "expectativas das features num esquema",
    "nota": 0.5,
-   "evidencia": "tools/run_phase1_data_contract.py existe e o app le o relatorio (params_sections_core), mas NAO roda em esteira [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "tools/run_phase1_data_contract.py existe e o app le o relatorio (params_sections_core), mas NAO roda em esteira [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "dados",
    "n": 2,
    "item": "todas as features sao beneficas",
    "nota": 1.0,
-   "evidencia": "22 ferramentas de gate em tools/; REJECTs registrados no historico (draft, players no Dota, circuitos, calibracao ao vivo) [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "22 ferramentas de gate em tools/; REJECTs registrados no historico (draft, players no Dota, circuitos, calibracao ao vivo) [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "dados",
    "n": 3,
    "item": "nenhuma feature custa demais",
    "nota": 0.0,
-   "evidencia": "custo/latencia por feature nunca foi medido — nada no repo faz isso [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "custo/latencia por feature nunca foi medido — nada no repo faz isso [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "dados",
    "n": 4,
    "item": "features atendem requisitos de nivel superior",
    "nota": 1.0,
-   "evidencia": "as regras existem (is_pro_tier, keep_playoffs, MAJOR_LEAGUES) E ha testes que as forcam (test_active_teams_filter, test_exhibition_league), com a suite rodando em retreino.yml [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "as regras existem (is_pro_tier, keep_playoffs, MAJOR_LEAGUES) E ha testes que as forcam (test_active_teams_filter, test_exhibition_league), com a suite rodando em retreino.yml [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "dados",
    "n": 5,
    "item": "controles de privacidade no pipeline",
    "nota": 0.5,
-   "evidencia": "o CSV tem playername e playerid — identidade PROFISSIONAL publica, sem dado privado (nada de e-mail, endereco, nascimento). Nao ha controle de privacidade porque nunca foi preciso; declarar 'nao se aplica' era generoso demais [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "o CSV tem playername e playerid — identidade PROFISSIONAL publica, sem dado privado (nada de e-mail, endereco, nascimento). Nao ha controle de privacidade porque nunca foi preciso; declarar 'nao se aplica' era generoso demais [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "dados",
    "n": 6,
    "item": "feature nova entra rapido",
    "nota": 0.5,
-   "evidencia": "nao ha registro central de features nem documento de 'como adicionar' (nada em docs/); a feature nova e ligada por bandeira (feature_flags_ui_core) e medida por gate, mas o caminho e manual e o tempo de ponta a ponta nunca foi cronometrado [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "nao ha registro central de features nem documento de 'como adicionar' (nada em docs/); a feature nova e ligada por bandeira (feature_flags_ui_core) e medida por gate, mas o caminho e manual e o tempo de ponta a ponta nunca foi cronometrado [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "dados",
@@ -62,35 +62,35 @@
    "n": 1,
    "item": "especificacao revisada e versionada",
    "nota": 1.0,
-   "evidencia": "tudo em git, e os commits carregam o porque no corpo (346 linhas de corpo nos ultimos 20 commits); nenhuma mudanca de modelo sem gate [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "tudo em git, e os commits carregam o porque no corpo (346 linhas de corpo nos ultimos 20 commits); nenhuma mudanca de modelo sem gate [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "modelo",
    "n": 2,
    "item": "metricas offline e online se correlacionam",
    "nota": 0.0,
-   "evidencia": "NAO medido: exigiria CLV, que esta fora do plano por decisao dele. E fronteira escolhida, nao falha de execucao [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "NAO medido: exigiria CLV, que esta fora do plano por decisao dele. E fronteira escolhida, nao falha de execucao [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "modelo",
    "n": 3,
    "item": "hiperparametros ajustados",
    "nota": 1.0,
-   "evidencia": "validacao cruzada nos gates; L2 e agrupamento do calibrador escolhidos por VC repetida DENTRO da calibracao, sem tocar no teste [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "validacao cruzada nos gates; L2 e agrupamento do calibrador escolhidos por VC repetida DENTRO da calibracao, sem tocar no teste [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "modelo",
    "n": 4,
    "item": "impacto do envelhecimento conhecido",
    "nota": 1.0,
-   "evidencia": "medido em 27/08: calibrador ajustado em temporada velha custa +0.023 de logloss; evidence/gate_calibrador_final.json [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "medido em 27/08: calibrador ajustado em temporada velha custa +0.023 de logloss; evidence/gate_calibrador_final.json [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "modelo",
    "n": 5,
    "item": "modelo simples nao e melhor",
    "nota": 1.0,
-   "evidencia": "comparacao contra a base presente nas ferramentas de gate; ha casos em que o simples ganhou e foi mantido (calibrar o ao vivo perdeu em 15 de 15) [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "comparacao contra a base presente nas ferramentas de gate; ha casos em que o simples ganhou e foi mantido (calibrar o ao vivo perdeu em 15 de 15) [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "modelo",
@@ -104,14 +104,14 @@
    "n": 7,
    "item": "testado quanto a inclusao",
    "nota": 1.0,
-   "evidencia": "o sujeito da previsao e o TIME vencer um mapa, nao uma pessoa; nao ha grupo protegido em jogo. Declarado, nao ignorado [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "o sujeito da previsao e o TIME vencer um mapa, nao uma pessoa; nao ha grupo protegido em jogo. Declarado, nao ignorado [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "infra",
    "n": 1,
    "item": "treino reproduzivel",
    "nota": 0.0,
-   "evidencia": "NAO ha semente aleatoria no treino (os 'seed' em fit_ml_params sao checkpoints de estagio) nem teste que rode duas vezes e compare [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "NAO ha semente aleatoria no treino (os 'seed' em fit_ml_params sao checkpoints de estagio) nem teste que rode duas vezes e compare [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "infra",
@@ -139,14 +139,14 @@
    "n": 5,
    "item": "modelo depuravel",
    "nota": 1.0,
-   "evidencia": "session_state[_ml_trace_last] guarda o caminho da previsao (first_x_gap_core, flow_runtime_core) e a aba de explicabilidade o exibe [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "session_state[_ml_trace_last] guarda o caminho da previsao (first_x_gap_core, flow_runtime_core) e a aba de explicabilidade o exibe [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "infra",
    "n": 6,
    "item": "canario antes de servir",
    "nota": 0.5,
-   "evidencia": "o calibrador com grupo entrou desligado ate os coeficientes existirem (postfusion_calibration_core), mas e um caso pontual, nao pratica sistematica [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "o calibrador com grupo entrou desligado ate os coeficientes existirem (postfusion_calibration_core), mas e um caso pontual, nao pratica sistematica [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "infra",
@@ -160,21 +160,21 @@
    "n": 1,
    "item": "mudanca de dependencia notifica",
    "nota": 0.0,
-   "evidencia": "nao ha dependabot nem renovate em .github/; nada notifica [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "nao ha dependabot nem renovate em .github/; nada notifica [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "monitor",
    "n": 2,
    "item": "invariantes valem na entrada",
    "nota": 0.5,
-   "evidencia": "retreino.yml tem 'Guardas pos-retreino' e retreino_ao_vivo tem GUARDA FALHOU; mas schema, volume e distribuicao nao sao vigiados [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "retreino.yml tem 'Guardas pos-retreino' e retreino_ao_vivo tem GUARDA FALHOU; mas schema, volume e distribuicao nao sao vigiados [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "monitor",
    "n": 3,
    "item": "treino e servico NAO divergem",
    "nota": 0.0,
-   "evidencia": "divergencia ENCONTRADA duas vezes em 26/08 (scope_meta nos dois repos) e a nota oficial mede caminho diferente do servido (3.36pp em 69% dos jogos). Nenhum vigia existe [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "divergencia ENCONTRADA duas vezes em 26/08 (scope_meta nos dois repos) e a nota oficial mede caminho diferente do servido (3.36pp em 69% dos jogos). Nenhum vigia existe [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "monitor",
@@ -188,14 +188,14 @@
    "n": 5,
    "item": "numericamente estavel",
    "nota": 0.0,
-   "evidencia": "train_offline tem UM isfinite, numa conta especifica; NaN/infinito nao sao vigiados [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "train_offline tem UM isfinite, numa conta especifica; NaN/infinito nao sao vigiados [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "monitor",
    "n": 6,
    "item": "desempenho computacional nao regrediu",
    "nota": 0.0,
-   "evidencia": "tempo de treino e de resposta nao sao medidos em lugar nenhum [verificada em 2026-08-27, vence em 90d]"
+   "evidencia": "tempo de treino e de resposta nao sao medidos em lugar nenhum [verificada em 2026-08-27, vence em 82d]"
   },
   {
    "area": "monitor",
