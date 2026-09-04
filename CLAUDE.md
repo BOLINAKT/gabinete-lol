@@ -72,6 +72,13 @@ pode significar **"prevê melhor"** — nunca "é lucrativo". Não reabrir sozin
   um baseline conveniente.
 - **`git add` seletivo no workflow** faz a medição morrer no runner.
 - Antes de rodar medição pesada, conferir se a saída não sobrescreve produção.
+- **Acento no caminho da pasta cega o modelo ao vivo, e a suíte MENTE.** O
+  LightGBM não abre arquivo por caminho absoluto que tenha acento. Com o repo
+  em `...\Área de Trabalho\...`, `load_live_state_models` devolvia **0 modelos**
+  por caminho absoluto e 4 por caminho relativo — e as 14 falhas que isso
+  causava pareciam bug de modelo. Medido em 04/09/2026; o mesmo repo em
+  `C:\Gabinetes\` passa a suíte inteira. **O projeto tem que morar em caminho
+  sem acento.** Vale para qualquer pasta do sistema, não só esta.
 
 ## Comandos
 
@@ -82,6 +89,14 @@ pode significar **"prevê melhor"** — nunca "é lucrativo". Não reabrir sozin
 .venv\Scripts\python tools\ml_fusion_scorecard.py   # a nota oficial
 ```
 
-A suíte leva ~11 min e roda 4.697 testes. Há **1 falha conhecida** em
-`test_e2e_smoke` que só aparece na suíte inteira — está descrita em `RETOMAR.md`,
-dívida D1. Qualquer outra falha é nova.
+A suíte roda 4.697 testes. Na máquina de 04/09/2026 (5700X, Python 3.13.15) ela
+leva **~3,7 min** e o resultado é **`OK (skipped=3)` — nenhuma falha.**
+Qualquer falha é nova.
+
+Isso mudou em 04/09/2026. Antes eram 11 min e **1 falha conhecida** em
+`test_e2e_smoke` (dívida D1: algum teste deixava estado que fazia o app gravar
+em `ml_artifact.json` / `params_fitted.json` / `players_artifact.json`). Em duas
+execuções limpas no caminho novo, **D1 não reproduziu e nada foi gravado em
+disco** — conferido por `git status` antes e depois. A dívida continua escrita
+em `RETOMAR.md` porque a causa nunca foi identificada; ela só não aparece hoje.
+Se voltar a aparecer, é o mesmo problema de sempre, não um novo.
