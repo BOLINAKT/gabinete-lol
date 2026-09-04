@@ -36,6 +36,29 @@ Este gate escolhe COMO consertar sem trapacear na escolha.
 ║    estimação/predição "frequentemente tem desempenho pior". O nosso caso é  ║
 ║    predição.                                                                ║
 ║                                                                             ║
+║ 8. POR QUE EXISTE `--janela`, E POR QUE ELA CORTA TAMBÉM A ESCOLHA:         ║
+║    a premissa desta frente é DEFASAGEM: o calibrador de hoje é ajustado em  ║
+║    temporada velha e a distorção a corrigir é da atual. Servir com os N     ║
+║    jogos mais recentes exige MEDIR com os N mais recentes — medir na        ║
+║    calibração inteira e servir numa janela é divergência treino/serviço,    ║
+║    que já apareceu duas vezes neste projeto (`scope_meta`).                 ║
+║    O tamanho de N NÃO é escolhido aqui: ele vem de                          ║
+║    `tools/varrer_janela_calibrador.py`, que o mede por validação de origem  ║
+║    rolante DENTRO da calibração, sem tocar no teste cego (a fonte 3 vale    ║
+║    para a janela como vale para o L2).                                     ║
+║                                                                             ║
+║    RESULTADO DE 04/09/2026 — NEGATIVO, e é por isso que o default é 0:      ║
+║    aquela varredura recomendou 900 com L2=3. Levado ao teste cego UMA vez,  ║
+║    o 900 perdeu para a calibração inteira: ganho +0,01256 [+0,00460,        ║
+║    +0,02006] contra +0,02368 [+0,01847, +0,02866], e o Z de Spiegelhalter   ║
+║    virou de −2,94 para +6,88 — trocou subconfiança por superconfiança.      ║
+║    Causa: a varredura avaliava horizonte de dias e o serviço é de meses.    ║
+║    Detalhe e fontes na FONTE 6 daquele arquivo.                             ║
+║    **A janela fica em 0 (calibração inteira). `--janela` existe para que a  ║
+║    medição seja repetível, não porque esteja em uso.**                      ║
+║    E NÃO varrer janela contra o teste cego para "achar uma melhor": isso é  ║
+║    exatamente o viés da fonte 3.                                            ║
+║                                                                             ║
 ║ 5. POR QUE A LOGLOSS DECIDE E O ECE SÓ INFORMA:                             ║
 ║    recalibração monotônica preserva a resolução, então a diferença de       ║
 ║    logloss entre candidatos É a diferença de calibração — medida por regra  ║
@@ -64,6 +87,7 @@ import json
 import math
 import random
 import sys
+from datetime import datetime
 from pathlib import Path
 
 try:
@@ -153,6 +177,9 @@ def main() -> int:
     ap.add_argument("--folds", type=int, default=5)
     ap.add_argument("--repeticoes", type=int, default=5,
                     help="repeticoes da validacao cruzada (reduz a variancia da escolha)")
+    ap.add_argument("--janela", type=int, default=0,
+                    help="usar so os N jogos mais RECENTES da calibracao "
+                         "(0 = todos, o comportamento de sempre). Ver fonte 8.")
     ap.add_argument("--out", default="evidence/gate_calibrador_final.json")
     args = ap.parse_args()
 
@@ -173,6 +200,19 @@ def main() -> int:
                   usar_platt_fusao=False)
     b_te = cadeia(te, tabela=tab, platt_time=pt, usar_ms1=False, usar_ms2=False,
                   usar_platt_fusao=False)
+
+    # JANELA (fonte 8): o calibrador servido e ajustado nos jogos mais recentes,
+    # entao a calibracao aqui e cortada do mesmo jeito — na ESCOLHA e no ajuste
+    # final. Medir com toda a calibracao e servir com os ultimos N seria medir
+    # uma coisa e servir outra, que e a divergencia treino/servico que este
+    # projeto ja pegou duas vezes.
+    if int(args.janela) > 0:
+        ordem = sorted(range(len(va)), key=lambda i: (va[i].month or ""))
+        ordem = ordem[-int(args.janela):]
+        va = [va[i] for i in ordem]
+        b_va = [b_va[i] for i in ordem]
+        print(f"janela: ultimos {len(va)} jogos da calibracao "
+              f"({va[0].month} -> {va[-1].month})")
 
     print(f"calibracao: {len(va)} jogos | teste cego: {len(te)} jogos")
     print(f"escolha por validacao cruzada de {args.folds} dobras DENTRO da "
@@ -250,7 +290,9 @@ def main() -> int:
     destino = ROOT / str(args.out)
     destino.parent.mkdir(parents=True, exist_ok=True)
     destino.write_text(json.dumps({
-        "escolha": {"agrupamento": nome_esc, "l2": l2_esc},
+        "gerado_em": datetime.now().isoformat(timespec="seconds"),
+        "escolha": {"agrupamento": nome_esc, "l2": l2_esc,
+                    "janela": int(args.janela), "n_calibracao": len(va)},
         "validacao_cruzada": tabela_vc,
         "teste": {"logloss_hoje": round(_ll(hoje, ys_te), 5),
                   "logloss_novo": round(_ll(novo, ys_te), 5),

@@ -153,24 +153,95 @@ número que aparece na tela, e ela está pronta e **desligada**.
 **A pesquisa desta frente já foi feita (27/08) e mudou o plano em três pontos** —
 não repita do zero, comece daqui:
 
-1. **Sombra antes de ligar.** Rodar o calibrador novo em 100% do tráfego sem
-   servir o resultado, e comparar a distribuição de saída contra a base. A fonte
-   é direta sobre este caso: se o candidato prevê sistematicamente diferente,
-   "provavelmente é distorção de calibração ou numérica, mesmo que a métrica
-   offline pareça boa". A inclinação global medida foi **1,296** (maior que 1 =
-   afiando), então os números **vão** mudar de verdade.
-   Fonte: https://resiliotech.com/blog/model-canary-releases-shadow-traffic-guide
-2. **A janela de ajuste não pode ser chutada.** Eu tinha cravado "últimos 2.500
-   jogos" sem medir. A literatura de deriva de calibração usa **janela
-   adaptativa**: o detector escolhe qual é o pedaço recente estável e ele mesmo
-   avisa quando reajustar. No mínimo, varrer a janela por validação cruzada em
-   vez de afirmar 2.500.
-   Fonte: Davis & Greevy, *Detection of calibration drift in clinical prediction
-   models to inform model updating*, J. Biomed. Inform. 2020 —
-   https://pubmed.ncbi.nlm.nih.gov/33157313/
-3. **Deriva moderada pede recalibrar; deriva severa pede retreinar.** O gatilho
-   tem que separar os dois, senão recalibra em cima de um modelo que já perdeu a
-   ordenação. Fonte: https://smartdev.com/ai-model-drift-retraining-a-guide-for-ml-system-maintenance/
+1. **Sombra antes de ligar. FEITO em 04/09/2026** —
+   `tools/sombra_calibrador_grupo.py`, nota em
+   `evidence/sombra_calibrador_grupo.json`. Em 5.525 jogos: diferença absoluta
+   média de **7,15 pp**, 64% dos jogos mexem mais de 5 pp, e **8,43% trocam de
+   favorito** (466 jogos cruzam os 50%). Os jogos fora da faixa 20–80% saem de
+   9,6% para 23,5% — a inclinação de 1,296 afiando, como previsto.
+
+   **CORREÇÃO DE FONTE (04/09/2026).** A frase que estava aqui — "se o candidato
+   prevê sistematicamente diferente, provavelmente é distorção de calibração ou
+   numérica, mesmo que a métrica offline pareça boa" — era atribuída a
+   https://resiliotech.com/blog/model-canary-releases-shadow-traffic-guide.
+   A página foi aberta e **não diz isso**; o único trecho sobre sombra ali é
+   "Compare the shadow outputs against the production baseline using statistical
+   A/B testing methods". A afirmação forte fica **sem fonte** e não decidiu nada.
+   O apoio real para o desenho da sombra está em
+   https://arize.com/glossary/shadow-deployment/ e
+   https://atlan.com/know/shadow-deployment-for-ml-models/ — comparar
+   distribuição de saída, taxa de concordância e os casos de discordância.
+2. **A janela de ajuste não pode ser chutada. FECHADO em 04/09/2026, com
+   resultado NEGATIVO — o 2.500 fica.**
+   Foi medido: `tools/varrer_janela_calibrador.py` varreu a janela por validação
+   de origem rolante dentro da calibração, e recomendou **900 com L2=3**.
+   Levado ao teste cego **uma vez**, o 900 **perdeu**:
+
+   | | ganho | IC 95% | Z |
+   |---|---|---|---|
+   | calibração inteira (~2.400) | **+0,02368** | [+0,01847, +0,02866] | −2,94 |
+   | janela 900 | +0,01256 | [+0,00460, +0,02006] | **+6,88** |
+
+   O 900 troca subconfiança por superconfiança. **Causa do erro:** a varredura
+   avaliava blocos de 200–400 jogos (horizonte de dias) e a produção serve cinco
+   meses à frente — janela curta ajuda o horizonte próximo e não o longo. Isso é
+   conhecido: Zanotti M., *On the retraining frequency of global models in retail
+   demand forecasting*, arXiv:2505.00356 — https://arxiv.org/pdf/2505.00356
+   (domínio diferente; é analogia com apoio, e quem prova aqui é o teste cego).
+
+   **Correção de leitura minha:** eu disse que o "2.500" não era janela, e sim
+   "usar tudo", porque a calibração tem 2.427 jogos. A mecânica está certa, a
+   conclusão não: ele produz um pedaço do mesmo tamanho que o teste cego acabou
+   de validar. Foi escolhido sem medir, mas o valor está certo. **Não trocar.**
+
+   **Não varrer janela contra o teste cego** para procurar uma melhor — é o viés
+   de seleção de Cawley & Talbot (JMLR 11:2079–2107, 2010,
+   https://jmlr.org/papers/v11/cawley10a.html), o erro que o gate já registra
+   ter cometido uma vez.
+
+   Sobre a fonte original deste ponto: Davis SE, Greevy RA Jr, Lasko TA, Walsh CG,
+   Matheny ME, *Detection of calibration drift in clinical prediction models to
+   inform model updating*, J. Biomed. Inform. 112:103611 (2020) — conferida em
+   04/09. Ela usa janela deslizante adaptativa para **DETECTAR** miscalibração,
+   não para escolher o tamanho da janela de **AJUSTE**. Usá-la para a segunda
+   coisa era extrapolação, e está marcada como tal nas ferramentas.
+3. ~~**Deriva moderada pede recalibrar; deriva severa pede retreinar.**~~
+   **REFORMULADO em 04/09/2026 — a fonte não sustenta, e a evidência é contra.**
+
+   A fonte citada (https://smartdev.com/ai-model-drift-retraining-a-guide-for-ml-system-maintenance/)
+   foi aberta em 04/09 e **não mapeia severidade para recalibrar vs. retreinar**.
+   Ela tem uma matriz de severidade por % de degradação (verde/amarelo/laranja/
+   vermelho), mas as respostas são cinco caminhos paralelos — monitorar,
+   investigar, retreinar, redesenhar, reverter — escolhidos por análise de
+   causa-raiz, não por severidade. E é guia prescritivo, sem experimento.
+
+   **O que fica de pé, verificado:** recalibrar só opera sobre a ordenação que o
+   modelo já produz. Um modelo que sempre chuta a taxa-base é perfeitamente
+   calibrado e inútil. Então ordenação estragada não se conserta recalibrando —
+   só se maquia.
+
+   **O que a evidência diz sobre o gatilho:** ele foi testado e não venceu.
+   Schnellinger EM, Yang W, Kimmel SE, *Comparison of dynamic updating strategies
+   for clinical prediction models*, Diagn Progn Res 2021;5:20,
+   doi:10.1186/s41512-021-00110-w — https://pmc.ncbi.nlm.nih.gov/articles/PMC8647501/
+   comparou cinco estratégias, entre elas o *closed testing procedure* (o
+   gatilho) e "sempre recalibrar". Conclusão lida no artigo: *"Recalibration
+   strategies led to more consistent improvements and less variability over time
+   compared to the other updating strategies."* Refazer o modelo só compensou
+   quando as covariáveis mudam bastante, e atualizar com mais frequência foi
+   melhor **independentemente** da estratégia.
+   (O *closed testing* original é Vergouwe et al., Stat Med 2017;36:4529–4539 —
+   **não foi aberto**: PubMed bloqueou por cookie e a Wiley devolveu 403. É
+   citação de segunda mão, pela descrição do Schnellinger.)
+
+   **Consequência para o plano:** não construir gatilho de severidade. Em vez
+   dele, (a) recalibração periódica com cadência declarada — o que conversa com
+   a dívida D4 — e (b) um vigia que acompanha **ordenação** e **calibração** em
+   trilhas separadas, porque só uma delas o recalibrador sabe curar. O alarme
+   que importa é o da ordenação: se ela cair, recalibrar é o remédio errado.
+   Acompanhar AUROC ao longo do tempo é o sinal padrão, e agregado esconde
+   deriva por segmento — medir por fatia.
+   https://mlflow.org/articles/why-monitor-model-drift-production/
 
 **Reverter, se der errado:** apagar a chave `postfusion_group_calibration` de
 `params_fitted.json`. Sem ela, o código volta ao comportamento de hoje — isso
@@ -257,6 +328,51 @@ morando em código compartilhado), e a cura é a mesma: cadência vira dado do r
 3,36 pontos percentuais, em 69,2% dos jogos ≥ 2 pp. A causa é que o caminho
 servido não é função pura. `mlcore/replay_pre_jogo.py` foi criado para atacar
 isso e ainda não fechou a frente.
+
+**D8. A CALIBRAÇÃO PÓS-FUSÃO NÃO FAZ NADA EM PRODUÇÃO — e isto trava a frente 0.**
+Achado em 04/09/2026, e é o motivo de a frente 0 estar PARADA esperando decisão.
+
+A bandeira `ml_postfusion_cal_enabled` tem default **True**, e o docstring de
+`app_core/postfusion_calibration_core.py` afirmava que "a etapa ESTÁ ativa em
+produção". Ela não está. O estágio recebe três coisas por injeção
+(`apply_microseg_fn`, `apply_fused_postcal_fn`, `postfusion_microseg_table`) e
+**nenhuma delas existe no caminho servido**:
+
+- o contrato de entrada `MlPreEngineInput` (`app_core/ml_pre_pipeline_models.py`)
+  não tem esses campos;
+- `build_pre_engine_input` (`app_core/visao_geral_ml_pipeline_core.py:63`) não
+  os produz;
+- `visao_tab_core.py:491–602` monta o dicionário uma vez e o passa sem mexer.
+
+Conferido rodando com os argumentos exatos do caminho servido:
+`p_out == p_in`, `applied == False`. A bandeira está ligada e o estágio é
+inerte.
+
+**Por que isto importa para a frente 0.** O gate mediu o calibrador com grupo
+**substituindo** o Platt da fusão. Em produção não há Platt da fusão para
+substituir. Então ligar o bloco não faz o que a medição descreve: faz uma coisa
+diferente, e possivelmente maior, porque o grupo passaria a ser o único estágio
+ativo ali. **A medição de +0,02368 continua válida para o caminho medido, e
+não se pode afirmar que vale para o servido.**
+
+Isto é a dívida D5 aparecendo com nome e endereço: a nota mede um caminho que
+não é o servido. Aqui está uma causa concreta, localizada.
+
+**Também explica o achado da ablação** em `MODELO_LOL.md` ("sem o Platt da fusão
+melhora 0,00435"): essa ablação corre na cadeia de replay, onde o Platt existe.
+No app, ele não roda. Não é contradição de dado — são dois caminhos.
+
+**O que NÃO fiz, de propósito:** não liguei os callbacks. Injetar
+`apply_fused_post_calibration` (que existe, em `app_core/fit_runtime_core.py:299`)
+ligaria de uma vez um estágio que está morto há tempo indeterminado, mudando o
+número na tela sem medição do efeito dessa mudança isolada. É decisão do Bruno,
+e provavelmente uma frente própria antes da 0.
+
+**Perguntas em aberto, para quem retomar:** desde quando está inerte? A ablação
+de 27/08 e a nota oficial mediram com ou sem ele? Se o Platt da fusão nunca
+rodou no app, o número servido hoje é o de qual cadeia exatamente?
+
+---
 
 **D6. O `frescor.py` dá sinal verde com régua atrasada.** Achado em 04/09/2026.
 O interruptor de homem morto tem três estados — `atrasada` (passou de 2x a
