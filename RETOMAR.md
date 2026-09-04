@@ -413,7 +413,46 @@ tudo bem**. É o mesmo arquivo compartilhado da D4, então as duas saem juntas �
 e, pela regra 5, junto com a frente que tocar nele, não em mutirão. Vale nos
 dois repositórios.
 
-**D7. A suíte do Dota retreina os modelos de produção.** Achado em 04/09/2026.
+**D7. RESOLVIDA em 04/09/2026** — a suíte do Dota retreinava os modelos de
+produção. Culpado: `mlcore/tests/test_retrain_pre_voo.py`, que chamava
+`launch_retrain_background(project_root=".")` — a raiz real e o `live_models/`
+real. Conserto: raiz temporária.
+
+O teste era pior do que parecia: a chamada estava **antes** da checagem de
+existência, então ele lançava o retreino e só depois via que o script existe
+neste repo e dava `skipTest`. **Pagava o efeito colateral e não verificava
+nada.** Com a raiz temporária o guarda de pré-voo passa a ser exercitado de
+verdade, e a suíte não toca em produção.
+
+Verificado rodando a suíte inteira: os 4 `lgb_model.txt` ficam **byte a byte
+idênticos** (md5 conferido antes e depois), `FASE6_LIVE_DOTA.json` não é
+reescrito e `live_models/retrain.log` não é tocado. Baseline mantido: 15 falhas
+e 30 erros, agora em 4.681 testes.
+
+Fonte (conferida em 04/09): teste hermético — só o conteúdo do próprio teste
+decide se ele passa, sem depender do sistema de arquivos real e sem efeito
+colateral, e injeção de dependência é o meio de trocar o que é do ambiente por
+algo controlado pelo teste. https://testrigor.com/blog/hermetic-testing/
+
+**PERDA QUE EU CAUSEI, e que não dá para desfazer:** o retreino acidental de
+04/09 sobrescreveu `live_models/last_auto_retrain.txt` com
+`2026-09-04T10:20:41`. O valor que estava lá antes **está perdido** — a cópia de
+segurança foi feita depois do acidente. O git tem `2026-08-26T07:56:01` no HEAD,
+que é o último commitado, não o que estava em uso. Não inventei carimbo no
+lugar. Consequência prática: o agendador do auto-retreino acha que retreinou
+hoje e vai esperar mais um ciclo, enquanto os modelos são de 27/08. **Se quiser
+forçar um retreino, é decisão sua** — apagar ou recuar esse carimbo faz o app
+retreinar no próximo ciclo.
+
+**FICA EM ABERTO, menor:** vários outros testes leem o `live_models/` real por
+`Path(__file__).parents[2]` — `test_live_assessment_integration`,
+`test_live_state_runtime_core`, `test_live_markets_runtime_core`,
+`test_live_first_markets`, `test_player_props`, `test_live_state_panel_ui`.
+Ler não destrói, mas torna o teste dependente do estado do disco: foi por isso
+que 14 deles falharam no caminho com acento parecendo bug de modelo. Consertar
+é refatoração maior, e não foi feita.
+
+Registro do que era: achado em 04/09/2026.
 Um teste chama `launch_retrain_background` contra o `live_models/` real em vez
 de uma pasta temporária: rodar a suíte sobrescreve os 12 arquivos dos 4 minutos.
 Não há chave de ambiente para desligar. Enquanto o repo morou em caminho com
