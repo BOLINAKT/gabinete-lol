@@ -73,6 +73,33 @@ Este gate escolhe COMO consertar sem trapacear na escolha.
 ║    ESTÁVEIS generalizam melhor que os instáveis", e "aumentar K melhora a   ║
 ║    estabilidade por promediar mais modelos".                                ║
 ║                                                                             ║
+║ 9. POR QUE A BASE DE COMPARAÇÃO MUDOU EM 05/09/2026 (dívida D8):            ║
+║    até aqui o "hoje" era `variante(tr, te, tabela=tab)` com os defaults, e  ║
+║    os defaults ligam o microssegmento da fusão e o Platt da fusão. O APP    ║
+║    NÃO RODA essas duas etapas. Era medir contra base mais fraca que a       ║
+║    realidade — e base fraca infla ganho. A prática em teste A/B é comparar  ║
+║    contra o melhor método do sistema em produção, não contra uma base       ║
+║    conveniente; base fraca "atrapalha entender" o efeito real.              ║
+║    https://arxiv.org/html/2409.12116v1                                      ║
+║    Medido: base velha 0,58577 contra produção 0,58109 (+0,00469,            ║
+║    IC [+0,00339, +0,00587]). O ganho do calibrador cai de +0,02368 para     ║
+║    +0,01899 — e continua passando na barra da casa.                         ║
+║                                                                             ║
+║ 10. O NOME DISSO, e a lição de como se acha (pesquisado 05/09/2026,         ║
+║    DEPOIS de eu ter achado lendo código — a ordem certa era o contrário):   ║
+║    é DIVERGÊNCIA TREINO/SERVIÇO (training-serving skew): o pipeline de      ║
+║    avaliação calcula de um jeito e o serviço de outro. A lição que eu não   ║
+║    sabia: **o teste cego NÃO consegue revelar isso**, porque o conjunto de  ║
+║    teste é construído a partir do mesmo pipeline de avaliação e herda a     ║
+║    divergência. Só ler o caminho servido revela — que foi como apareceu.    ║
+║    Ou seja: nenhuma quantidade de medição teria pego este erro.             ║
+║    https://www.giskard.ai/glossary/training-serving-skew                    ║
+║    https://developers.google.com/machine-learning/crash-course/production-ml-systems/monitoring ║
+║    Isto é o item MONITORAMENTO 3 da régua das 28 ("treino e serviço não     ║
+║    divergem"), que já estava VERMELHO nos dois repositórios desde 26/08     ║
+║    por causa do `scope_meta`. Esta é a terceira ocorrência. A régua estava  ║
+║    certa e ninguém tinha ido atrás.                                         ║
+║                                                                             ║
 ║ 6. POR QUE HÁ BOOTSTRAP PAREADO E A BARRA É CONJUNÇÃO:                      ║
 ║    critério da casa, já usado em tools/run_phase8_first_markets_gate.py:    ║
 ║    accept = (ganho > 0.002) E (p < 0.05) E (ci_lo > 0).                     ║
