@@ -187,7 +187,17 @@ def main() -> int:
     tr, va, te, tab = d["treino"], d["val"], d["teste"], d["tabela"]
     ys_te = [a.y for a in te]
 
-    hoje = variante(tr, te, tabela=tab)
+    # BASE DE COMPARACAO — corrigida em 05/09/2026 (divida D8).
+    # `variante(...)` com os defaults liga TODAS as etapas, inclusive o
+    # microssegmento da fusao e o Platt da fusao. O APP NAO RODA ESSAS DUAS:
+    # elas dependem de callbacks que nunca sao injetados no caminho servido
+    # (o contrato MlPreEngineInput nem tem os campos). Comparar contra elas e
+    # comparar contra uma base PIOR que a realidade — a armadilha "base fraca
+    # da ACCEPT falso" do CLAUDE.md, cometida por este proprio arquivo.
+    # Medido: a base antiga da 0,58577 e a de producao 0,58109 (+0,00469,
+    # IC [+0,00339, +0,00587]). Quem decide agora e a de producao.
+    hoje_com_pos = variante(tr, te, tabela=tab)
+    hoje = variante(tr, te, tabela=tab, usar_ms2=False, usar_platt_fusao=False)
 
     # Base comum: sem microssegmento (medido: atrapalha) e com o Platt do time
     # ajustado no treino (medido: ajuda). O que este gate escolhe e SO o
@@ -268,10 +278,21 @@ def main() -> int:
     g, lo, hi = _ic(_perdas(hoje, ys_te), _perdas(novo, ys_te))
     z_h, p_h = _z_spiegelhalter(hoje, ys_te)
     z_n, p_n = _z_spiegelhalter(novo, ys_te)
-    print(f"\n{'':<10}{'logloss':>10}{'ECE':>8}{'Z':>9}{'p':>9}")
-    print(f"{'hoje':<10}{_ll(hoje, ys_te):>10.5f}{_ece(hoje, ys_te):>8.3f}{z_h:>9.2f}{p_h:>9.4f}")
-    print(f"{'novo':<10}{_ll(novo, ys_te):>10.5f}{_ece(novo, ys_te):>8.3f}{z_n:>9.2f}{p_n:>9.4f}")
+    z_a, p_a = _z_spiegelhalter(hoje_com_pos, ys_te)
+    print(f"\n{'':<26}{'logloss':>10}{'ECE':>8}{'Z':>9}{'p':>9}")
+    print(f"{'hoje (o app roda ISTO)':<26}{_ll(hoje, ys_te):>10.5f}"
+          f"{_ece(hoje, ys_te):>8.3f}{z_h:>9.2f}{p_h:>9.4f}")
+    print(f"{'novo':<26}{_ll(novo, ys_te):>10.5f}{_ece(novo, ys_te):>8.3f}"
+          f"{z_n:>9.2f}{p_n:>9.4f}")
+    print(f"{'(base velha, NAO servida)':<26}{_ll(hoje_com_pos, ys_te):>10.5f}"
+          f"{_ece(hoje_com_pos, ys_te):>8.3f}{z_a:>9.2f}{p_a:>9.4f}")
     print(f"\nganho {g:+.5f}   IC 95% [{lo:+.5f}, {hi:+.5f}]")
+
+    # A titulo de contraste, o numero que este gate reportava ate 05/09 — para
+    # quem comparar com evidencias antigas nao achar que houve regressao.
+    g0, lo0, hi0 = _ic(_perdas(hoje_com_pos, ys_te), _perdas(novo, ys_te))
+    print(f"(contra a base velha, so para conferir historico: {g0:+.5f} "
+          f"[{lo0:+.5f}, {hi0:+.5f}] — NAO decide)")
 
     passa = bool(g > 0.002 and lo > 0)
     print(f"barra da casa (ganho>0.002 E ci_lo>0): {'PASSA' if passa else 'NAO passa'} (fonte 6)")
@@ -294,6 +315,10 @@ def main() -> int:
         "escolha": {"agrupamento": nome_esc, "l2": l2_esc,
                     "janela": int(args.janela), "n_calibracao": len(va)},
         "validacao_cruzada": tabela_vc,
+        "base": ("producao: sem microssegmento da fusao e sem Platt da fusao, "
+                 "porque o app nao roda esses dois (divida D8)"),
+        "logloss_base_velha": round(_ll(hoje_com_pos, ys_te), 5),
+        "ganho_contra_base_velha": round(g0, 5),
         "teste": {"logloss_hoje": round(_ll(hoje, ys_te), 5),
                   "logloss_novo": round(_ll(novo, ys_te), 5),
                   "ganho": round(g, 5), "ic_lo": round(lo, 5), "ic_hi": round(hi, 5),

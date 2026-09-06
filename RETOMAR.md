@@ -329,8 +329,78 @@ morando em código compartilhado), e a cura é a mesma: cadência vira dado do r
 servido não é função pura. `mlcore/replay_pre_jogo.py` foi criado para atacar
 isso e ainda não fechou a frente.
 
-**D8. A CALIBRAÇÃO PÓS-FUSÃO NÃO FAZ NADA EM PRODUÇÃO — e isto trava a frente 0.**
-Achado em 04/09/2026, e é o motivo de a frente 0 estar PARADA esperando decisão.
+**D8. RESOLVIDA em 05/09/2026, e o diagnóstico mudou de figura.** Ela NÃO trava
+mais a frente 0 — o que ela fez foi corrigir a régua.
+
+**O que era.** Achei em 04/09 que "a calibração pós-fusão não faz nada em
+produção" e que isso invalidava a medição da frente. Metade estava certa.
+
+**O que é, depois da arqueologia de 05/09.** Existem DUAS camadas com nomes
+parecidos, e só uma está morta:
+
+- **VIVA:** `plays_app.py:2261` injeta `apply_microseg_fn` e
+  `apply_fused_postcal_fn` em `compute_ml_core_prediction`
+  (`app_core/ml_prediction_core.py`). Isso roda **antes da fusão**, sobre a
+  probabilidade do time. O Platt do time e o microssegmento do time estão de pé.
+- **MORTA:** o estágio pós-fusão de `ml_pre_engine_core.py`, que chama
+  `postfusion_calibration_core.apply_postfusion_calibration`. Os callbacks dele
+  nunca são injetados (o contrato `MlPreEngineInput` nem tem os campos).
+  Conferido rodando: `p_out == p_in`, `applied == False`.
+
+Ou seja: o **microssegmento da fusão** e o **Platt da fusão** não rodam no app.
+
+**O erro que isso causava, e é o mais grave.** `mlcore/replay_pre_jogo.cadeia()`
+tem no docstring "roda o caminho servido", e os defaults dela ligam essas duas
+etapas mortas. O gate usava `variante(tr, te, tabela=tab)` com os defaults como
+"hoje". **Estava medindo contra uma base pior que a realidade** — a armadilha
+"base fraca dá ACCEPT falso" do próprio `CLAUDE.md`, cometida pelo instrumento
+que decide.
+
+Medido no teste cego (5.525 jogos):
+
+| | logloss | ECE | Z |
+|---|---|---|---|
+| base velha do gate (com as duas etapas mortas) | 0,58577 | 0,047 | −8,97 |
+| **o que o app realmente roda** | **0,58109** | 0,036 | −6,64 |
+| calibrador com grupo | 0,56209 | 0,031 | −2,94 |
+
+A base velha é pior que a realidade em **+0,00469, IC [+0,00339, +0,00587]** —
+acima da barra da casa. Isso bate com a ablação do `MODELO_LOL.md`, que já dizia
+"sem o Platt da fusão melhora 0,00435"; a diferença é que **não há o que
+remover: o app já não roda essa etapa.** O ganho estava contabilizado como
+pendente e já tinha sido embolsado.
+
+**Consequência para a frente 0 — ela SOBREVIVE.** O calibrador com grupo,
+medido contra a base correta:
+
+- antes reportado (base errada): +0,02368, IC [+0,01847, +0,02866]
+- **o que decide: +0,01899, IC [+0,01443, +0,02340] — PASSA**
+
+O ganho estava inflado em ~20%, e ainda assim é dez vezes a barra da casa.
+O Z melhora de −6,64 para −2,94.
+
+**A sombra também estava contra a base errada.** Refeita: a tela muda
+**6,22 pp** em média (não 7,15) e troca o favorito em **6,53%** dos jogos —
+361 de 5.525, não 466.
+
+**Consertado:** `tools/gate_calibrador_final.py` passa a comparar contra o
+caminho servido e imprime a base velha só como contraste histórico;
+`tools/sombra_calibrador_grupo.py` idem. A evidência grava as duas.
+
+**O QUE FICA EM ABERTO, e é uma decisão sua:** o estágio pós-fusão continua
+morto. A medição diz que isso é BOM (as duas etapas custavam), então a
+recomendação é **não** ligar os callbacks — mas o código continua lá, com
+bandeira ligada, dando a impressão de ativo. Ou se remove, ou se documenta como
+desligado de propósito. E `cadeia()` ainda afirma no docstring que roda "o
+caminho servido", o que não é verdade com os defaults — quem usar sem passar
+`usar_ms2=False, usar_platt_fusao=False` mede outra coisa.
+
+Registro do que era: achado em 04/09/2026, resolvido em 05/09/2026.
+
+---
+
+*(diagnóstico original, mantido para quem for auditar)*
+Achado em 04/09/2026.
 
 A bandeira `ml_postfusion_cal_enabled` tem default **True**, e o docstring de
 `app_core/postfusion_calibration_core.py` afirmava que "a etapa ESTÁ ativa em

@@ -92,8 +92,13 @@ def main() -> int:
     d = carregar()
     tr, va, te, tab = d["treino"], d["val"], d["teste"], d["tabela"]
 
-    # O que e SERVIDO hoje, no periodo mais recente que existe.
-    hoje = variante(tr, te, tabela=tab)
+    # O que e SERVIDO hoje. CORRIGIDO em 05/09/2026 (divida D8): os defaults de
+    # `variante` ligam o microssegmento da fusao e o Platt da fusao, e o APP NAO
+    # RODA essas duas — dependem de callbacks que nunca sao injetados no caminho
+    # servido. A sombra de 04/09 comparou contra a cadeia errada e por isso
+    # exagerou o susto: dizia 7,15pp de diferenca media e 8,43% de troca de
+    # favorito; contra a tela de verdade e 6,22pp e 6,53%.
+    hoje = variante(tr, te, tabela=tab, usar_ms2=False, usar_platt_fusao=False)
 
     pt = fit_platt_from_raw_probs(
         [a.y for a in tr],
