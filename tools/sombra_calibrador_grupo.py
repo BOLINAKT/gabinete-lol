@@ -30,9 +30,21 @@
 ║    o gate responde "acerta mais?" (logloss, IC, barra da casa). A sombra     ║
 ║    responde "muda o que aparece na tela, e quanto?". São perguntas           ║
 ║    diferentes: um calibrador pode ganhar logloss e ainda assim mexer o       ║
-║    número de tantos jogos que o dono precise saber ANTES. A inclinação       ║
-║    global medida é 1,296 — maior que 1 significa AFIAR: empurra as           ║
-║    probabilidades para longe de 50%. Os números vão mudar de verdade.        ║
+║    número de tantos jogos que o dono precise saber ANTES.                    ║
+║                                                                             ║
+║ 2b. CORREÇÃO DE UMA AFIRMAÇÃO MINHA (05/09/2026): aqui estava escrito que    ║
+║    "a inclinação global é 1,296, e maior que 1 significa AFIAR". Isso        ║
+║    descreve a MÉDIA e ela ENGANA. Aberto por grupo, o efeito muda de SINAL:  ║
+║    BO1 e BO3 de playoffs são afiados (inclinação 1,4 a 1,8), enquanto BO3 e  ║
+║    BO5 de fase regular são ACHATADOS com força (0,50 a 0,60) — e esses       ║
+║    somam quase 38% dos jogos. Ou seja: o modelo é subconfiante em BO1 e      ║
+║    SUPERCONFIANTE em série longa, e o calibrador conserta cada um para o     ║
+║    seu lado. Por isso a tabela POR GRUPO existe, e por isso ela vem antes    ║
+║    da leitura agregada: "agregado esconde deriva por segmento".              ║
+║    https://mlflow.org/articles/why-monitor-model-drift-production/           ║
+║    (A inclinação impressa na tabela é PONTA A PONTA na tela — inclui o       ║
+║    microssegmento do time —, por isso não bate com o coeficiente cru do      ║
+║    bloco. É o que o dono vê, que é o que esta ferramenta existe para dizer.) ║
 ║                                                                             ║
 ║ 3. POR QUE MEDIR TROCA DE FAVORITO SEPARADAMENTE:                            ║
 ║    para quem aposta, um jogo que cruza os 50% muda a DECISÃO, não só o       ║
@@ -50,6 +62,7 @@ from __future__ import annotations
 import argparse
 import importlib.util as _iu
 import json
+import math
 import random
 import subprocess
 import sys
@@ -188,12 +201,44 @@ def main() -> int:
         faixas.append({"faixa": f"{lo_:.0%}-{hi_:.0%}", "n": len(par),
                        "hoje": round(mh, 4), "candidato": round(mn, 4)})
 
+    # POR GRUPO — acrescentado em 05/09/2026 porque a media MENTIU. O resumo
+    # agregado dizia "AFIA as probabilidades", e isso e verdade so para o grupo
+    # mais numeroso: em quase 38% dos jogos o calibrador faz o CONTRARIO,
+    # puxando forte para o centro. Media que esconde o sinal de metade dos
+    # casos e pior que numero nenhum, e "agregado esconde deriva por segmento"
+    # e a razao pela qual monitoramento se faz POR FATIA (fonte 4).
+    # https://mlflow.org/articles/why-monitor-model-drift-production/
+    print("\nPOR GRUPO — a media esconde isto:")
+    print(f"{'grupo':<14}{'n':>7}{'% jogos':>10}{'inclinacao':>12}{'efeito':>10}")
+    por_grupo = {}
+    for a, hj, nv in zip(te, hoje, novo):
+        por_grupo.setdefault(f"{a.bo}|{a.phase}", []).append((hj, nv))
+    grupos = []
+    for g, par in sorted(por_grupo.items(), key=lambda kv: -len(kv[1])):
+        if len(par) < 30:
+            continue
+        # inclinacao empirica: espalhamento em logito depois / antes
+        def _lg(x):
+            x = min(max(x, 1e-9), 1 - 1e-9)
+            return math.log(x / (1 - x))
+        a_ = [_lg(h) for h, _ in par]
+        b_ = [_lg(n) for _, n in par]
+        ma, mb = sum(a_) / len(a_), sum(b_) / len(b_)
+        va = sum((x - ma) ** 2 for x in a_)
+        cov = sum((x - ma) * (y - mb) for x, y in zip(a_, b_))
+        incl = cov / va if va > 0 else float("nan")
+        ef = "AFIA" if incl > 1.02 else ("achata" if incl < 0.98 else "neutro")
+        print(f"{g:<14}{len(par):>7}{100*len(par)/n:>9.1f}%{incl:>12.3f}{ef:>10}")
+        grupos.append({"grupo": g, "n": len(par), "inclinacao": round(incl, 4), "efeito": ef})
+
     # Veredito: a sombra NAO aprova nem reprova sozinha. Ela diz o tamanho do
     # susto, para a decisao de ligar ser tomada sabendo.
     afia = extremos_novo > extremos_hoje
     print("\nleitura:")
-    print(f"  o candidato {'AFIA' if afia else 'SUAVIZA'} as probabilidades "
-          f"(jogos fora de 20-80% vao de {extremos_hoje:.1%} para {extremos_novo:.1%}).")
+    print(f"  NA MEDIA o candidato {'AFIA' if afia else 'SUAVIZA'} "
+          f"(jogos fora de 20-80% vao de {extremos_hoje:.1%} para {extremos_novo:.1%}),")
+    print("  mas olhe a tabela por grupo antes de acreditar nisso: o efeito muda")
+    print("  de SINAL entre formatos. Media agregada aqui engana.")
     print("  a sombra nao aprova nem reprova: quem decide se ACERTA mais e o")
     print("  gate. Isto aqui diz quanto a TELA muda, para ninguem ser pego de")
     print("  surpresa depois de ligar.")
@@ -215,6 +260,7 @@ def main() -> int:
         "fora_20_80_hoje": round(extremos_hoje, 4),
         "fora_20_80_candidato": round(extremos_novo, 4),
         "faixas": faixas,
+        "por_grupo": grupos,
     }, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"\n[salvo] {args.out}")
     return 0

@@ -129,7 +129,52 @@ instrumentação: réguas que medem o projeto, não previsões.
 
 ---
 
-## 3. A PRÓXIMA AÇÃO, exata
+## 3-A. FRENTE 0 — LIGADA em 06/09/2026
+
+O calibrador com grupo está **em produção**. O bloco
+`postfusion_group_calibration` foi gravado em `params_fitted.json`.
+
+**Para DESLIGAR:** apagar essa chave do arquivo, ou
+`git checkout -- params_fitted.json`. Sem ela o app volta ao comportamento
+anterior, e isso está travado por teste.
+
+**O número que decide** (teste cego, 5.525 jogos, contra o caminho REALMENTE
+servido — ver dívida D8): ganho **+0,02007**, IC [+0,01560, +0,02446].
+Z de Spiegelhalter de −6,64 para −2,94.
+
+**O QUE MAIS IMPORTA SABER, e a média escondia.** O efeito **muda de sinal**
+por formato:
+
+| grupo | inclinação na tela | efeito | % dos jogos |
+|---|---|---|---|
+| BO1 regular | 1,506 | afia | 47,3% |
+| **BO3 regular** | **0,602** | **achata** | **31,6%** |
+| BO3 playoffs | 1,797 | afia | 11,7% |
+| BO5 playoffs | 0,513 | achata | 4,7% |
+| BO1 playoffs | 1,434 | afia | 3,1% |
+| BO5 regular | 0,501 | achata | 1,6% |
+
+Ou seja: o modelo era **subconfiante em BO1** e **superconfiante em série
+longa**. Em BO3 de fase regular — quase um terço dos jogos — os números agora
+vêm bem mais perto de 50%: um 80% de antes sai por volta de 63%. Se a leitura
+parecer "o modelo ficou covarde nas BO3", é isto, e é de propósito.
+
+Impacto medido na tela: 6,22 pp de diferença média, e **6,53% dos jogos trocam
+de favorito** (361 de 5.525).
+
+**Como reajustar** (a composição de formato/fase muda ao longo do ano e o
+calibrador envelhece com ela): `python tools/ajustar_calibrador_grupo.py`
+para ver, `--escrever` para gravar. Cadência ainda **não declarada** — está na
+lista de artefatos sem prazo do `frescor.py`, e declarar é dívida aberta.
+
+**O que ficou de fora, e é decisão sua:** o estágio pós-fusão continua com
+microssegmento da fusão e Platt da fusão desligados, porque foi medido que
+custam. O código deles segue lá com bandeira ligada, parecendo ativo — ou se
+remove, ou se documenta como desligado de propósito.
+
+---
+
+## 3. A PRÓXIMA AÇÃO, exata (histórico — a frente 0 foi concluída)
 
 **Ligar o calibrador com grupo do pré-jogo.** É a única coisa medida que muda o
 número que aparece na tela, e ela está pronta e **desligada**.
@@ -258,7 +303,7 @@ arquivo.
 
 | # | Frente | Estado |
 |---|---|---|
-| 0 | **Ligar o calibrador do pré-jogo** | **PRÓXIMA** — ver seção 3 |
+| 0 | **Ligar o calibrador do pré-jogo** | **FEITA em 06/09/2026** — ver abaixo |
 | 1 | Calibração ao vivo | Dota medido: calibrar PIORA (15 de 15). Falta o LoL |
 | 2 | Livro-caixa do silêncio | FEITO (`tools/livro_caixa.py`) |
 | 3 | Interruptor de homem morto | FEITO (`tools/frescor.py`) |
