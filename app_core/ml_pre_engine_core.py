@@ -219,6 +219,9 @@ def run_ml_pre_engine_layers(
     apply_microseg_fn: Callable[..., Any] | None = None,
     apply_fused_postcal_fn: Callable[..., Any] | None = None,
     postfusion_microseg_table: Mapping[str, Any] | None = None,
+    # Calibrador com grupo (05/09/2026, divida D8). Unico estagio pos-fusao
+    # que o app roda; ms2 e Platt da fusao seguem desligados por medicao.
+    postfusion_grupo_coef: Mapping[str, Any] | None = None,
 ) -> Dict[str, Any]:
     ss = session_state if isinstance(session_state, Mapping) else {}
     ssw = session_state if isinstance(session_state, MutableMapping) else None
@@ -613,6 +616,7 @@ def run_ml_pre_engine_layers(
                             microseg_cap_pp=float(ss.get("ml_microseg_cap_pp", 8.0) or 8.0),
                             apply_microseg_fn=apply_microseg_fn,
                             apply_fused_postcal_fn=apply_fused_postcal_fn,
+                            grupo_coef=postfusion_grupo_coef,
                             use_fitted_postcal=bool(ss.get("ml_fused_post_cal_use_fitted", True)),
                         )
                         if math.isfinite(_p_postfus):
@@ -798,6 +802,7 @@ def run_ml_pre_engine_layers(
                         microseg_cap_pp=float(ss.get("ml_microseg_cap_pp", 8.0) or 8.0),
                         apply_microseg_fn=apply_microseg_fn,
                         apply_fused_postcal_fn=apply_fused_postcal_fn,
+                        grupo_coef=postfusion_grupo_coef,
                         use_fitted_postcal=bool(ss.get("ml_fused_post_cal_use_fitted", True)),
                     )
                     if math.isfinite(_p_postfus):

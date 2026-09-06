@@ -488,6 +488,14 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             "elo_season_players_p_map_fn": _elo_season_players_p_map,
             "apply_confidence_governor_fn": core_apply_confidence_governor,
         }
+        # Calibrador com grupo (05/09/2026, divida D8). Le o bloco do
+        # params_fitted.json; SEM o bloco fica None e o app se comporta
+        # exatamente como antes. Apagar a chave do arquivo DESLIGA.
+        try:
+            _grupo_coef = ((_load_fitted_params_cached(_file_sig(str(_FIT_PARAMS_PATH))) or {})
+                           .get("postfusion_group_calibration") or None)
+        except Exception:
+            _grupo_coef = None
         _pre_engine_in = core_build_pre_engine_input(
             p_map_used=p_map_used,
             p_series_used=p_series_used,
@@ -538,6 +546,7 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             caption_fn=_vg_caption(_box_detalhes),
             warning_fn=_box_detalhes.warning,
             match_league=str(locals().get("match_league", "") or ""),
+            postfusion_grupo_coef=_grupo_coef,
         )
         _pre_live_callbacks = {
             "season_form_blend_fn": core_season_form_blend,

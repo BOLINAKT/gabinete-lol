@@ -80,7 +80,15 @@ def main() -> int:
         [a.y for a in todas],
         cadeia(todas, tabela=tabela, usar_ms1=False, usar_platt_time=False,
                usar_fusao=False, usar_ms2=False, usar_platt_fusao=False))
-    base = cadeia(janela, tabela=tabela, platt_time=pt, usar_ms1=False,
+    # A base tem que ser A MESMA CADEIA QUE A PRODUCAO RODA (05/09/2026).
+    # Antes era usar_ms1=False, herdado do gate — mas o app RODA o
+    # microssegmento do time (plays_app.py injeta apply_microseg_fn em
+    # compute_ml_core_prediction). Ajustar sem ms1 e servir com ms1 e
+    # divergencia treino/servico, o mesmo erro da divida D8, so que do outro
+    # lado. Medido em 05/09: acrescentar o grupo MANTENDO o ms1 e melhor
+    # (+0,02007 contra +0,01899), entao nao ha nem troca a fazer.
+    # ms2 e Platt da fusao seguem False porque o app nao roda essas duas.
+    base = cadeia(janela, tabela=tabela, platt_time=pt, usar_ms1=True,
                   usar_ms2=False, usar_platt_fusao=False)
 
     # Escolha do agrupamento e do L2 por validacao cruzada REPETIDA, dentro da
