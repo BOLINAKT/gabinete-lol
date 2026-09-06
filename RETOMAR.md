@@ -374,6 +374,63 @@ morando em código compartilhado), e a cura é a mesma: cadência vira dado do r
 servido não é função pura. `mlcore/replay_pre_jogo.py` foi criado para atacar
 isso e ainda não fechou a frente.
 
+**D9. O REPLAY LÊ DE UM CACHE QUE NUNCA VENCE — e ele congelou a régua por 11
+dias.** Achado em 06/09/2026, ao integrar 45 commits do robô.
+
+`mlcore/replay_pre_jogo.carregar()` devolve `evidence/_cache_pre_jogo.json` se
+o arquivo existir, **sem conferir nada**. O cache era de **26/08 23:34** e o
+`ml_artifact.json` foi atualizado pelo robô **todo dia até 06/09**.
+
+Sintoma que denunciou: depois de integrar o modelo novo, o gate deu números
+**idênticos** aos de antes, até a quinta casa. Modelo diferente, nota igual.
+
+**Consequência:** tudo o que foi medido em 04 e 05/09 — o gate, a sombra, a
+varredura da janela, a comparação de base da D8 — usou o modelo de 26/08.
+Os números foram refeitos em 06/09 contra o modelo corrente, e estão marcados
+como tal onde aparecem.
+
+É a terceira variante da mesma doença numa semana (D5, D8, D9): **a medição
+descolada do que roda**. E é o item MONITORAMENTO 3 da régua das 28 outra vez.
+
+**Conserto que NÃO foi feito:** o cache precisa carregar a assinatura das
+entradas que o geraram (`ml_artifact.json`, `players_artifact.json`, os CSV) e
+se invalidar sozinho quando elas mudam. Hoje o jeito de forçar é apagar o
+arquivo à mão — e ninguém sabe que precisa.
+
+---
+
+**D10. O APLICADOR SÓ SABE UM AGRUPAMENTO, e isso bloqueia o reajuste.**
+Achado em 06/09/2026.
+
+`app_core/postfusion_calibration_core._calibrador_com_grupo` monta a chave do
+grupo fixa como `f"{bo}|{phase}"`. Mas `tools/gate_calibrador_final.AGRUPAMENTOS`
+oferece quatro opções ("nenhum", "formato BO", "fase", "formato + fase"), e a
+validação cruzada escolhe entre elas. **Só uma das quatro é representável no
+app.**
+
+Apareceu assim: reajustando contra o modelo de 06/09, a validação cruzada
+escolheu **"formato BO"**, e a paridade acusou divergência de 2,8e-01. O
+`ajustar_calibrador_grupo.py` **abortou sozinho e não gravou** — o guarda
+funcionou exatamente como devia.
+
+**Efeito prático:** o bloco que está servindo continua sendo o ajustado sobre o
+modelo de 26/08, e **não dá para reajustar** enquanto a validação cruzada
+preferir um agrupamento que o aplicador não representa.
+
+**Medido em 06/09**, o bloco que está de fato ligado, contra o modelo corrente
+e no teste cego: ganho **+0,02068**, IC [+0,01584, +0,02516] — **passa**.
+Mas o ECE **piora** (0,033 → 0,041) e o Z quase não anda (−6,59 → −5,95),
+enquanto um ajuste fresco daria ECE 0,030 e Z −3,70. Ou seja: pela barra da
+casa ele passa, e ainda assim deixa mais distorção sistemática do que deixaria
+um bloco novo. **Isso é motivo para consertar, não para desligar.**
+
+**O conserto:** o bloco gravado passa a carregar qual é o agrupamento, e o
+aplicador monta a chave a partir disso em vez de assumir `bo|phase`. Enquanto
+não for feito, todo reajuste depende de a validação cruzada escolher
+"formato + fase" por sorte.
+
+---
+
 **D8. RESOLVIDA em 05/09/2026, e o diagnóstico mudou de figura.** Ela NÃO trava
 mais a frente 0 — o que ela fez foi corrigir a régua.
 
