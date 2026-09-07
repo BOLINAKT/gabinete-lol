@@ -24,8 +24,10 @@ DUAS DECISÕES DE DESENHO QUE IMPORTAM:
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import asdict, dataclass
+from datetime import datetime
 from pathlib import Path
 
 from .artifact import MLArtifact
@@ -37,6 +39,57 @@ from .utils import clip_prob, logit, sigmoid
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE = ROOT / "evidence" / "_cache_pre_jogo.json"
+
+# VERSAO do formato do cache. Subir isto invalida todo cache antigo de uma vez
+# — util quando a FORMA do que se guarda muda, nao so as entradas.
+CACHE_VERSAO = 1
+
+
+def _assinatura_das_entradas(*, artifact, players_artifact, csv_train,
+                             csv_current, params, val_cutoff) -> str:
+    """Digest das ENTRADAS que geraram o cache (divida D9, 06/09/2026).
+
+    Antes, `carregar()` devolvia o cache se o ARQUIVO EXISTISSE, sem conferir
+    nada. O cache era de 26/08 23:34 e o robo atualizou o ml_artifact.json
+    todo dia ate 06/09 — entao o gate deu numeros IDENTICOS depois de trocar
+    o modelo, ate a quinta casa. Modelo diferente, nota igual, por 11 dias.
+
+    A ideia vem de cache endereçado por ENTRADA: a chave e um hash das
+    entradas da acao, e "qualquer modificacao nessas entradas produz uma chave
+    diferente, tornando o resultado antigo inacessivel sob a chave nova e
+    portanto impossivel de ser reusado por engano". Assim nao existe
+    "esquecer de invalidar": mudou a entrada, o cache erra sozinho.
+    https://blog.engflow.com/2024/05/13/the-many-caches-of-bazel/
+    (conferido abrindo a pagina em 06/09/2026)
+
+    Usa tamanho+mtime em vez de hash do conteudo: e o mesmo criterio que o
+    resto do app ja aplica em `_file_sig`, e ler ~300 MB de CSV a cada chamada
+    so para decidir se pode usar o cache anularia o proposito do cache.
+    CONSEQUENCIA ACEITA: arquivo reescrito com mesmo tamanho E mesmo mtime
+    passa despercebido. Para forcar, apague o arquivo de cache.
+    """
+    partes = [f"v{CACHE_VERSAO}", f"corte={val_cutoff}"]
+    for rotulo, caminho in (("artifact", artifact),
+                            ("players", players_artifact),
+                            ("params", params)):
+        f = ROOT / str(caminho)
+        try:
+            st = f.stat()
+            partes.append(f"{rotulo}={f.name}:{st.st_size}:{int(st.st_mtime)}")
+        except OSError:
+            partes.append(f"{rotulo}=AUSENTE")
+    for rotulo, pasta in (("csv_train", csv_train), ("csv_current", csv_current)):
+        base = ROOT / str(pasta)
+        itens = []
+        if base.is_dir():
+            for x in sorted(base.glob("*.csv")):
+                try:
+                    st = x.stat()
+                    itens.append(f"{x.name}:{st.st_size}:{int(st.st_mtime)}")
+                except OSError:
+                    itens.append(f"{x.name}:ILEGIVEL")
+        partes.append(f"{rotulo}=[{','.join(itens)}]")
+    return hashlib.sha256("|".join(partes).encode("utf-8")).hexdigest()[:32]
 
 
 @dataclass
@@ -139,9 +192,20 @@ def carregar(*, artifact: str = "ml_artifact.json",
              params: str = "params_fitted.json", val_cutoff: str = "2026-03-31",
              usar_cache: bool = True) -> dict:
     """{'treino','val','teste': [Amostra], 'tabela': {...}, 'w_lineup': float}"""
+    assinatura = _assinatura_das_entradas(
+        artifact=artifact, players_artifact=players_artifact,
+        csv_train=csv_train, csv_current=csv_current, params=params,
+        val_cutoff=val_cutoff)
+
     if usar_cache and CACHE.exists():
         try:
             b = json.loads(CACHE.read_text(encoding="utf-8"))
+            guardada = b.get("assinatura")
+            if guardada != assinatura:
+                # Falar ALTO: cache silencioso e o que congelou a regua por 11
+                # dias. Quem roda uma regua tem que saber que ela recalculou.
+                print(f"[replay] cache VENCIDO ({'sem assinatura, gerado antes de 06/09/2026' if not guardada else 'as entradas mudaram'}) — recalculando.")
+                raise ValueError("assinatura diferente")
             return {"treino": [Amostra(**d) for d in b["treino"]],
                     "val": [Amostra(**d) for d in b["val"]],
                     "teste": [Amostra(**d) for d in b["teste"]],
@@ -201,7 +265,10 @@ def carregar(*, artifact: str = "ml_artifact.json",
             {"treino": [asdict(a) for a in saida["treino"]],
              "val": [asdict(a) for a in saida["val"]],
              "teste": [asdict(a) for a in saida["teste"]],
-             "tabela": tabela, "w_lineup": w_lineup}, ensure_ascii=False),
+             "tabela": tabela, "w_lineup": w_lineup,
+             "assinatura": assinatura,
+             "gerado_em": datetime.now().isoformat(timespec="seconds")},
+            ensure_ascii=False),
             encoding="utf-8")
     except OSError:
         pass
