@@ -28,6 +28,8 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from mlcore.temporada import TemporadaInsuficiente, aviso, escolher_temporada
+
 from mlcore.artifact import MLArtifact
 from mlcore.io_oracle import load_oracle_elixir_games
 from mlcore.players_layer import (
@@ -90,7 +92,13 @@ def main() -> int:
     w_lineup = float(pl_meta.get("w_lineup", 0.0) or 0.0)
     p_art = PlayersArtifact.load_json(str(args.players))
 
-    season = int(args.season) if args.season is not None else int(pd.to_numeric(games["year"], errors="coerce").max())
+    # Escolha da temporada: NUNCA max(year). Em 02/09/2026 a fonte marcou 60
+    # linhas da EBL com year=2027 e esta nota virou `nan` sem ninguem ver.
+    # Ver mlcore/temporada.py.
+    season, _diag = escolher_temporada(
+        pd.to_numeric(games["year"], errors="coerce").dropna().tolist(),
+        explicito=args.season)
+    print(aviso(_diag))
     elo_inter, elo_same, fus_inter, fus_same = [], [], [], []
     n_delta_nonzero = 0
     for r in games.itertuples(index=False):

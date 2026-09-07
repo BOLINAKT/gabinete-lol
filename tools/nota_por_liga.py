@@ -35,6 +35,8 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from mlcore.temporada import TemporadaInsuficiente, aviso, escolher_temporada
+
 from mlcore.artifact import MLArtifact  # noqa: E402
 from mlcore.io_oracle import load_oracle_elixir_games  # noqa: E402
 from mlcore.tiers import tier_for_league  # noqa: E402
@@ -80,7 +82,13 @@ def main() -> int:
     g = pd.concat(frames, ignore_index=True, join="inner")
     g["date"] = pd.to_datetime(g["date"], errors="coerce")
     g = g.dropna(subset=["date"]).drop_duplicates("gameid", keep="last")
-    season = int(args.season) if args.season else int(pd.to_numeric(g["year"], errors="coerce").max())
+    # Mesma escolha do fusion_scorecard, pela MESMA funcao — se cada regua
+    # escolher a temporada do seu jeito, elas medem coisas diferentes e o
+    # projeto ja pagou caro por isso. Ver mlcore/temporada.py.
+    season, _diag = escolher_temporada(
+        pd.to_numeric(g["year"], errors="coerce").dropna().tolist(),
+        explicito=args.season)
+    print(aviso(_diag))
     g = g[pd.to_numeric(g["year"], errors="coerce") == season]
 
     rows = []

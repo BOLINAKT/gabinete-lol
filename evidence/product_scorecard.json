@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-08-16T16:43:37",
- "nota_produto": 8.69,
+ "generated_at": "2026-09-06T02:16:42",
+ "nota_produto": 8.63,
  "teto_produto": 9.03,
  "fases": [
   {
    "fase": "Vencedor (ML)",
    "peso": 25,
-   "nota": 9.08,
+   "nota": 8.87,
    "teto": 9.5
   },
   {
@@ -52,5 +52,12 @@
    "teto": 10.0
   }
  ],
- "stale": []
+ "stale": [
+  "Dados/automação (20d)",
+  "Live (20d)",
+  "Confiabilidade (20d)",
+  "Código/testes (20d)",
+  "Players (20d)",
+  "Portabilidade (20d)"
+ ]
 }

@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-08-27T00:08:18",
+ "gerado_em": "2026-09-06T02:16:55",
  "itens": [
   {
    "familia": "continue_on_error",
@@ -7,7 +7,7 @@
    "onde": ".github/workflows/nota_semanal.yml:78",
    "chave": "continue_on_error|nota_semanal.yml: Re-medir a nota por liga (o aviso do confronto)",
    "visto_em": "2026-08-26",
-   "idade_dias": 1
+   "idade_dias": 11
   },
   {
    "familia": "continue_on_error",
@@ -15,7 +15,7 @@
    "onde": ".github/workflows/nota_semanal.yml:66",
    "chave": "continue_on_error|nota_semanal.yml: Re-medir as demais fases (totais + as baratas) e consolidar",
    "visto_em": "2026-08-26",
-   "idade_dias": 1
+   "idade_dias": 11
   },
   {
    "familia": "continue_on_error",
@@ -23,7 +23,7 @@
    "onde": ".github/workflows/nota_semanal.yml:43",
    "chave": "continue_on_error|nota_semanal.yml: Registro de campeoes em dia? (conserta sozinho se faltar)",
    "visto_em": "2026-08-26",
-   "idade_dias": 1
+   "idade_dias": 11
   },
   {
    "familia": "lido_nao_versionado",
@@ -31,7 +31,7 @@
    "onde": "app_core/app_settings_config_core.py:12",
    "chave": "lido_nao_versionado|.gabinete_settings.json",
    "visto_em": "2026-08-26",
-   "idade_dias": 1
+   "idade_dias": 11
   },
   {
    "familia": "lido_nao_versionado",
@@ -39,7 +39,7 @@
    "onde": "plays_app.py:1268",
    "chave": "lido_nao_versionado|csv_bootstrap_maintenance.lock.json",
    "visto_em": "2026-08-26",
-   "idade_dias": 1
+   "idade_dias": 11
   },
   {
    "familia": "lido_nao_versionado",
@@ -47,7 +47,7 @@
    "onde": "plays_app.py:1267",
    "chave": "lido_nao_versionado|csv_bootstrap_maintenance_cache.json",
    "visto_em": "2026-08-26",
-   "idade_dias": 1
+   "idade_dias": 11
   },
   {
    "familia": "lido_nao_versionado",
@@ -55,7 +55,7 @@
    "onde": "app_core/csv_bootstrap_flow_core.py:123",
    "chave": "lido_nao_versionado|csv_bootstrap_maintenance_report.json",
    "visto_em": "2026-08-26",
-   "idade_dias": 1
+   "idade_dias": 11
   },
   {
    "familia": "lido_nao_versionado",
@@ -63,7 +63,7 @@
    "onde": "plays_app.py:1269",
    "chave": "lido_nao_versionado|csv_bootstrap_maintenance_state.json",
    "visto_em": "2026-08-26",
-   "idade_dias": 1
+   "idade_dias": 11
   },
   {
    "familia": "lido_nao_versionado",
@@ -71,7 +71,7 @@
    "onde": "app_core/params_sections_core.py:58",
    "chave": "lido_nao_versionado|data_leakage_label_report.json",
    "visto_em": "2026-08-26",
-   "idade_dias": 1
+   "idade_dias": 11
   },
   {
    "familia": "lido_nao_versionado",
@@ -79,7 +79,7 @@
    "onde": "app_core/ml_session_runtime_core.py:423",
    "chave": "lido_nao_versionado|ml_trace_last.json",
    "visto_em": "2026-08-26",
-   "idade_dias": 1
+   "idade_dias": 11
   },
   {
    "familia": "lido_nao_versionado",
@@ -87,7 +87,7 @@
    "onde": "app_core/picks_anti_loss_core.py:69",
    "chave": "lido_nao_versionado|ops/picks_tracker.json",
    "visto_em": "2026-08-26",
-   "idade_dias": 1
+   "idade_dias": 11
   },
   {
    "familia": "lido_nao_versionado",
@@ -95,22 +95,38 @@
    "onde": "plays_app.py:1069",
    "chave": "lido_nao_versionado|user_lines_store.json",
    "visto_em": "2026-08-26",
-   "idade_dias": 1
+   "idade_dias": 11
   },
   {
    "familia": "continue_on_error",
    "item": "nota_semanal.yml: Livro-caixa do silencio",
-   "onde": ".github/workflows/nota_semanal.yml:103",
+   "onde": ".github/workflows/nota_semanal.yml:118",
    "chave": "continue_on_error|nota_semanal.yml: Livro-caixa do silencio",
    "visto_em": "2026-08-27",
-   "idade_dias": 0
+   "idade_dias": 10
   },
   {
    "familia": "continue_on_error",
    "item": "nota_semanal.yml: Publicar o livro-caixa",
-   "onde": ".github/workflows/nota_semanal.yml:107",
+   "onde": ".github/workflows/nota_semanal.yml:122",
    "chave": "continue_on_error|nota_semanal.yml: Publicar o livro-caixa",
    "visto_em": "2026-08-27",
+   "idade_dias": 10
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "nota_semanal.yml: Frescor das reguas",
+   "onde": ".github/workflows/nota_semanal.yml:114",
+   "chave": "continue_on_error|nota_semanal.yml: Frescor das reguas",
+   "visto_em": "2026-09-06",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "nota_semanal.yml: Regua das 28",
+   "onde": ".github/workflows/nota_semanal.yml:110",
+   "chave": "continue_on_error|nota_semanal.yml: Regua das 28",
+   "visto_em": "2026-09-06",
    "idade_dias": 0
   }
  ]

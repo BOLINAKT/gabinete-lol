@@ -1,21 +1,21 @@
 {
- "generated_at": "2026-08-26T09:09:25",
+ "generated_at": "2026-09-06T02:16:36",
  "nota_totais": 6.12,
  "por_mercado": {
-  "kills": 8.32,
+  "kills": 8.29,
   "towers": 5.29,
-  "dragons": 5.54,
-  "barons": 6.69,
-  "inhibitors": 5.05,
-  "time": 5.83
+  "dragons": 5.56,
+  "barons": 6.67,
+  "inhibitors": 5.06,
+  "time": 5.86
  },
  "season": 2026,
  "ganho_vs_base": {
-  "kills": 0.0183,
-  "towers": 0.0033,
-  "dragons": 0.005,
+  "kills": 0.0185,
+  "towers": 0.0032,
+  "dragons": 0.0051,
   "barons": 0.0007,
-  "inhibitors": -0.0013,
-  "time": 0.0022
+  "inhibitors": -0.0011,
+  "time": 0.0018
  }
 }
