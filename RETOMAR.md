@@ -374,8 +374,41 @@ morando em código compartilhado), e a cura é a mesma: cadência vira dado do r
 servido não é função pura. `mlcore/replay_pre_jogo.py` foi criado para atacar
 isso e ainda não fechou a frente.
 
-**D9. O REPLAY LÊ DE UM CACHE QUE NUNCA VENCE — e ele congelou a régua por 11
-dias.** Achado em 06/09/2026, ao integrar 45 commits do robô.
+**D9. RESOLVIDA em 06/09/2026.** O cache passa a carregar a **assinatura das
+entradas** que o geraram — `ml_artifact.json`, `players_artifact.json`,
+`params_fitted.json`, os CSVs (nome, tamanho, mtime) e o `val_cutoff`, mais um
+`CACHE_VERSAO` para invalidar tudo de uma vez se a forma do que se guarda
+mudar. Assinatura diferente → recalcula, **avisando alto**.
+
+Fonte (conferida abrindo a página): num sistema de build, "o `digestKey` é um
+hash das entradas e saídas da ação", e como a chave incorpora o hash das
+próprias entradas, qualquer modificação nelas produz chave diferente,
+"tornando o resultado antigo inacessível sob a chave nova e portanto
+impossível de ser reusado por engano" —
+https://blog.engflow.com/2024/05/13/the-many-caches-of-bazel/
+Não existe "esquecer de invalidar".
+
+Vale registrar que **abrir as páginas mudou o resultado**: das quatro
+consultadas, três não serviram. A da Bazel não descreve a composição da chave;
+a do systemoverflow **não continha** a frase que o resumo da busca lhe
+atribuía; a da ACM devolveu 403.
+
+Conferido rodando: cache sem assinatura **vence** e recalcula (224 s); cache
+válido é usado em **0,2 s**; tocar o `ml_artifact.json` **vence**.
+
+**O recálculo revelou dado escondido além de modelo escondido:** o teste cego
+passou de 5.525 para **5.917 jogos**. Os CSVs novos do robô nunca tinham
+entrado nas medições.
+
+**ESCOLHA COM PREÇO ACEITO:** tamanho+mtime em vez de hash do conteúdo — é o
+mesmo critério do `_file_sig` que o app já usa, e ler ~300 MB de CSV a cada
+chamada só para decidir se pode usar o cache anularia o cache. O preço:
+arquivo reescrito com mesmo tamanho **e** mesmo mtime passa despercebido. Para
+forçar, apagar o arquivo de cache.
+
+Testes: `mlcore/tests/test_cache_replay.py`, 10. Suíte: 4.739, OK.
+
+Registro do que era: achado em 06/09/2026.
 
 `mlcore/replay_pre_jogo.carregar()` devolve `evidence/_cache_pre_jogo.json` se
 o arquivo existir, **sem conferir nada**. O cache era de **26/08 23:34** e o
