@@ -138,7 +138,12 @@ def main() -> int:
     # Confere a paridade AQUI tambem: o que o app vai calcular tem que bater
     # com o que acabou de ser ajustado. E o erro que originou tudo isto.
     from app_core.postfusion_calibration_core import _calibrador_com_grupo
-    bloco = {"niveis": niveis, "w": [float(x) for x in w]}
+    # O `agrupamento` entra AQUI, antes da paridade: quem aplica le esse
+    # campo para montar a chave (divida D10). Se ele so entrasse depois, a
+    # conferencia usaria o legado e divergiria em todo agrupamento que nao
+    # fosse "formato + fase" — que foi exatamente o que travou o reajuste.
+    bloco = {"agrupamento": nome_esc, "niveis": niveis,
+             "w": [float(x) for x in w]}
     pior = 0.0
     for a, p in list(zip(janela, base))[:500]:
         esperado = sigmoid(sum(wi * fi for wi, fi in zip(w, feats(a, p))))
@@ -151,7 +156,7 @@ def main() -> int:
         return 1
 
     bloco.update({
-        "agrupamento": nome_esc, "l2": l2_esc,
+        "l2": l2_esc,
         "ajustado_em": datetime.now().strftime("%Y-%m-%d"),
         "n_ajuste": len(janela),
         "periodo": f"{janela[0].month}..{janela[-1].month}",

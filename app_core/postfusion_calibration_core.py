@@ -66,22 +66,38 @@ import math
 from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 
 from app_core.prob_math_core import safe_float as _f
+from mlcore.agrupamentos import chave as _chave_do_grupo
+from mlcore.agrupamentos import nome_do_bloco as _nome_do_agrupamento
 
 
 def _calibrador_com_grupo(coef, bo: str, phase: str):
     """Devolve a funcao de calibracao, ou None quando nao ha coeficientes.
 
     Formato do bloco em params_fitted.json:
-      {"niveis": ["3|regular", ...], "w": [w_z, w_1, w_z_g1, w_1_g1, ...]}
+      {"agrupamento": "formato + fase",
+       "niveis": ["3|regular", ...], "w": [w_z, w_1, w_z_g1, w_1_g1, ...]}
     A ordem das features e [logit(p), 1] seguida de [ind*logit(p), ind] para
-    cada nivel — o primeiro nivel do ajuste e a REFERENCIA e nao aparece."""
+    cada nivel — o primeiro nivel do ajuste e a REFERENCIA e nao aparece.
+
+    A CHAVE DO GRUPO vem do campo `agrupamento` do proprio bloco (divida D10,
+    06/09/2026). Antes era cravada como f"{bo}|{phase}", entao dos quatro
+    agrupamentos que a validacao cruzada pode escolher so um era
+    representavel: quando ela escolhia outro, a paridade divergia e o
+    reajuste ficava bloqueado. Bloco sem o campo cai no legado, que era o
+    unico que podia estar em producao. Ver mlcore/agrupamentos.py."""
     if not coef:
         return None
     niveis = list(coef.get("niveis") or [])
     w = [float(x) for x in (coef.get("w") or [])]
     if len(w) != 2 + 2 * len(niveis):
         return None
-    chave = f"{bo}|{phase}"
+    try:
+        chave = _chave_do_grupo(_nome_do_agrupamento(coef), bo, phase)
+    except KeyError:
+        # Agrupamento que este app nao sabe montar: NAO servir o global
+        # calado fingindo que aplicou o grupo — desligar e o comportamento
+        # honesto, e o de antes.
+        return None
 
     def aplicar(p: float) -> float:
         pc = min(max(float(p), 1e-12), 1.0 - 1e-12)

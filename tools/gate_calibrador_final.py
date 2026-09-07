@@ -128,17 +128,20 @@ sys.path.insert(0, str(ROOT))
 
 from mlcore.calibration import _fit_logistic, fit_platt_from_raw_probs  # noqa: E402
 from mlcore.replay_pre_jogo import cadeia, carregar, variante  # noqa: E402
+from mlcore.agrupamentos import AGRUPAMENTOS as _AGRUPAMENTOS_COMPARTILHADOS  # noqa: E402
+from mlcore.agrupamentos import chave_de_amostra as _chave_de_amostra  # noqa: E402
 from mlcore.utils import logit, sigmoid  # noqa: E402
 
 EPS = 1e-12
 
 # Candidatos. Poucos de proposito (fonte 2), e a escolha entre eles acontece
 # DENTRO do conjunto de calibracao (fonte 3).
+# As chaves vem de mlcore/agrupamentos.py — FONTE UNICA, a mesma que o app
+# usa para servir (divida D10). Manter uma copia aqui foi o que permitiu o
+# aplicador so saber "formato + fase" sem ninguem perceber.
 AGRUPAMENTOS = {
-    "nenhum (so global)": lambda a: "*",
-    "formato BO": lambda a: a.bo,
-    "fase": lambda a: a.phase,
-    "formato + fase": lambda a: f"{a.bo}|{a.phase}",
+    _nome: (lambda a, _n=_nome: _chave_de_amostra(_n, a))
+    for _nome in _AGRUPAMENTOS_COMPARTILHADOS
 }
 L2_CANDIDATOS = (0.03, 0.1, 0.3, 1.0, 3.0, 10.0)
 

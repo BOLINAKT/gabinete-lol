@@ -399,8 +399,52 @@ arquivo à mão — e ninguém sabe que precisa.
 
 ---
 
-**D10. O APLICADOR SÓ SABE UM AGRUPAMENTO, e isso bloqueia o reajuste.**
-Achado em 06/09/2026.
+**D10. RESOLVIDA em 06/09/2026.** O aplicador cravava a chave do grupo como
+`f"{bo}|{phase}"`, então dos quatro agrupamentos que a validação cruzada pode
+escolher só um era representável — e o reajuste ficava bloqueado.
+
+**Conserto:** `mlcore/agrupamentos.py` (novo) é a **fonte única** da chave, e
+tanto quem ajusta (gate e `ajustar_calibrador_grupo.py`) quanto quem serve
+(`postfusion_calibration_core`) passam a importar dali. O bloco em
+`params_fitted.json` já gravava `agrupamento`; agora o aplicador **lê esse
+campo** em vez de adivinhar. Bloco antigo, sem o campo, cai no legado
+("formato + fase") — que era o único que podia estar em produção.
+
+Junto veio um segundo defeito, que sozinho manteria o bloqueio: o
+`ajustar_calibrador_grupo.py` só escrevia `agrupamento` no bloco **depois** da
+conferência de paridade, então a conferência usava o legado e divergia em todo
+agrupamento que não fosse "formato + fase". O campo passou para antes.
+
+Prova: reajustando contra o modelo de hoje, a validação cruzada escolhe
+**"formato BO"** e a paridade dá **1,11e-16** — antes dava 2,8e-01 e abortava.
+
+Fontes (conferidas em 06/09): o artefato tem que se **descrever**, para o
+código de serviço não cravar suposições sobre o que o modelo espera
+(https://mlflow.org/docs/latest/ml/model/signatures/); e a transformação
+precisa de **uma definição só**, porque reimplementada de um lado ela "começa
+idêntica e deriva" (https://feast.dev/blog/what-is-a-feature-store/).
+
+Testes: `mlcore/tests/test_agrupamentos.py` (7) e três casos novos em
+`test_paridade_grupo_servido.py`, cobrindo os quatro agrupamentos, o
+agrupamento desconhecido (que **desliga** em vez de servir o global calado) e
+o bloco legado. Suíte: 4.729 testes, OK. O gate reproduz o mesmo número de
+antes do refactor (+0,01698), então nada regrediu.
+
+**E o reajuste, agora que dá? NÃO é preciso.** Medidos contra o modelo
+corrente, no teste cego:
+
+| | logloss | ECE | Z | ganho |
+|---|---|---|---|---|
+| app sem calibrador | 0,58300 | 0,033 | −6,59 | — |
+| bloco em produção (26/08) | 0,56017 | 0,033 | −4,26 | +0,02284 |
+| bloco novo (modelo de hoje) | 0,56560 | 0,033 | −4,97 | +0,01740 |
+
+O reajuste não mostra melhora. **Cuidado com a leitura:** escolher entre os
+dois pelo teste cego seria o viés de seleção da fonte 3 do gate. O que se pode
+afirmar é o bastante para decidir — não há motivo para trocar o bloco. Fica
+como está, e o mecanismo de reajuste agora existe para quando for preciso.
+
+Registro do que era: achado em 06/09/2026.
 
 `app_core/postfusion_calibration_core._calibrador_com_grupo` monta a chave do
 grupo fixa como `f"{bo}|{phase}"`. Mas `tools/gate_calibrador_final.AGRUPAMENTOS`

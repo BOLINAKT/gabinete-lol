@@ -123,5 +123,49 @@ class TestParidadeServidoVsMedido(unittest.TestCase):
             self.assertTrue(0.0 <= q <= 1.0 and math.isfinite(q), f"p={p} -> {q}")
 
 
+
+class TestParidadeEmTodosOsAgrupamentos(unittest.TestCase):
+    """A D10: paridade tem que valer para os QUATRO, nao so para bo|phase."""
+
+    def _bloco(self, agrupamento, niveis):
+        n = len(niveis)
+        return {"agrupamento": agrupamento, "niveis": niveis,
+                "w": [1.29, 0.36] + [0.1 * (i + 1) for i in range(2 * n)]}
+
+    def test_paridade_em_cada_agrupamento(self):
+        from mlcore.agrupamentos import AGRUPAMENTOS, chave as _ch
+        casos = {
+            "nenhum (so global)": [],
+            "formato BO": ["3", "5"],
+            "fase": ["regular"],
+            "formato + fase": ["3|regular", "5|playoffs"],
+        }
+        self.assertEqual(set(casos), set(AGRUPAMENTOS))
+        for agrupamento, niveis in casos.items():
+            bloco = self._bloco(agrupamento, niveis)
+            for bo, ph in ((1, "regular"), (3, "regular"), (5, "playoffs")):
+                for p in (0.2, 0.5, 0.8):
+                    with self.subTest(a=agrupamento, bo=bo, ph=ph, p=p):
+                        medido = _calibrador_com_grupo(bloco, str(bo), ph)
+                        self.assertAlmostEqual(
+                            _servido(p, bo=bo, phase=ph, coef=bloco),
+                            medido(p), delta=_TOL,
+                            msg=f"divergencia em '{agrupamento}'")
+
+    def test_agrupamento_que_o_app_nao_conhece_DESLIGA(self):
+        """Nao servir o global fingindo que aplicou o grupo."""
+        bloco = {"agrupamento": "inventado", "niveis": ["x"],
+                 "w": [1.29, 0.36, 0.1, 0.1]}
+        for p in (0.3, 0.7):
+            self.assertEqual(_servido(p, bo=3, phase="regular", coef=bloco), p)
+
+    def test_bloco_legado_sem_agrupamento_continua_valendo(self):
+        """O que esta em producao hoje nao pode quebrar com esta mudanca."""
+        legado = {"niveis": ["3|regular"], "w": [1.29, 0.36, -0.8, -0.4]}
+        medido = _calibrador_com_grupo(legado, "3", "regular")
+        for p in (0.2, 0.5, 0.8):
+            self.assertAlmostEqual(_servido(p, bo=3, phase="regular", coef=legado),
+                                   medido(p), delta=_TOL)
+
 if __name__ == "__main__":
     unittest.main()
