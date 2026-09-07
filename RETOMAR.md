@@ -358,10 +358,47 @@ Sem fonte: `app_core/nota_liga_core.py`, `app_core/postfusion_calibration_core.p
 `tools/run_phase6_live_gate.py`.
 Preencher junto com a frente que tocar cada arquivo, não numa mutirão separado.
 
-**D3. `SETUP.md` está desatualizado.** Ele afirma que `ml_artifact.json`,
-`params_fitted.json`, `CSV_HISTORICO/` e `CSV_DIARIO/` estão no `.gitignore`.
-**Não estão mais** — foram versionados. Quem seguir o SETUP.md no PC novo vai
-procurar arquivo que já veio no clone.
+**D3. RESOLVIDA em 06/09/2026.** O `SETUP.md` apodreceu do jeito mais
+traiçoeiro: alguém corrigiu o **meio** e esqueceu as **pontas**. O passo 4 foi
+atualizado em 27/08 para dizer (certo) que o modelo vem no clone, mas o
+cabeçalho continuou dizendo o contrário — "vão por um zip separado, eles não
+entram no git de propósito" — e o fim ainda mandava o bundle resolver um
+problema que já não existia. Quem lesse de cima para baixo recebia duas
+instruções opostas. O caminho do `make_release.ps1` também estava errado
+(`.tools\` em vez de `tools\`).
+
+Conferi cada afirmação de fato contra o repositório antes de reescrever: os
+sete caminhos que ele promete no clone **estão** versionados, o
+`ops/baselines/` **não** está (confere), e das seis ferramentas citadas só o
+caminho do `make_release.ps1` estava errado.
+
+**E ele passou a ter teste** — `mlcore/tests/test_setup_md.py`, 6 testes.
+Documento de instalação apodrece porque mudança de código passa por revisão,
+CI e merge, e mudança de documento não passa por nada
+(https://understandingdata.com/posts/doc-drift-detection-ci/). A cura é "docs
+as tests": as alegações do guia viram ações executáveis, e um teste vermelho
+revela ou guia velho, ou produto que quebrou um caminho que funcionava
+(https://www.cherryleaf.com/2026/08/docs-as-tests/). As duas conferidas
+abrindo as páginas.
+
+O teste foi verificado contra o bug: repondo a frase do cabeçalho, ele falha
+com "o cabecalho voltou a dizer que modelo/dados nao vem no git".
+
+**Um teste meu nasceu errado e foi apagado, não remendado:** eu tinha posto uma
+varredura por regex atrás de todo token terminado em `.py`/`.ps1`. Ela produzia
+lixo — fragmentos como `.py` e `Activate.ps1`, tirados de coisas como
+`-p "test_*.py"` — e ficava vermelha com o documento correto. Teste que chora
+sem motivo ensina a ignorar teste. O motivo está escrito no lugar onde ele
+estava.
+
+**Limite honesto:** o teste confere fatos verificáveis — o que está versionado,
+se as ferramentas existem, se os caminhos batem. Ele **não** roda o passo a
+passo numa máquina limpa, então instrução certa porém incompleta continua
+passando.
+
+Aproveitei para acrescentar ao guia o que esta semana ensinou e não estava lá:
+o aviso de **caminho sem acento**, o **recriar o `.venv` ao mover a pasta**, e
+que o `.streamlit/secrets.toml` também não vem no clone.
 
 **D4. `frescor.py` usa uma tabela de cadência compartilhada pelos dois repos.**
 Ela diz 7 dias para `livro_caixa.json` e `frescor.json`, mas a esteira do Dota
