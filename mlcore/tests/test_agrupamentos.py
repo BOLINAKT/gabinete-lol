@@ -9,11 +9,17 @@
 ║ bloco em produção preso a um ajuste sobre modelo velho.                     ║
 ║                                                                             ║
 ║ O que estes testes travam:                                                  ║
-║  - o artefato se DESCREVE (o bloco diz seu agrupamento; o app não adivinha) ║
+║  - o artefato se DESCREVE: o bloco diz seu agrupamento e o app lê, em vez   ║
+║    de adivinhar. O MLflow guarda a assinatura junto do modelo e valida a    ║
+║    entrada "sem exigir lógica de validação própria no código de serviço".   ║
 ║    https://mlflow.org/docs/latest/ml/model/signatures/                      ║
-║  - há UMA definição de chave, usada por quem ajusta e por quem serve —      ║
-║    reimplementar de um lado é a origem clássica da divergência              ║
-║    treino/serviço. https://feast.dev/blog/what-is-a-feature-store/          ║
+║    (A leitura "isso evita cravar suposições no serviço" é MINHA, não da     ║
+║    página — mas aqui foi medida: cravar `bo|phase` bloqueou o reajuste.)    ║
+║  - há UMA definição de chave, usada por quem ajusta e por quem serve. O     ║
+║    Feast: as definições de treino têm que bater EXATAMENTE com as do        ║
+║    serviço online, e quando não batem "introduz-se divergência              ║
+║    treino/serviço, que pode causar problemas catastróficos e difíceis de    ║
+║    depurar". https://feast.dev/blog/what-is-a-feature-store/                ║
 ╚═════════════════════════════════════════════════════════════════════════════╝
 """
 from __future__ import annotations

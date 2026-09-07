@@ -13,21 +13,32 @@
 ║   O guarda funcionou — mas o reajuste ficou bloqueado, com o bloco em       ║
 ║   produção ajustado sobre um modelo já velho.                               ║
 ║                                                                             ║
-║ 1. O ARTEFATO TEM QUE SE DESCREVER, e o serviço não pode assumir:           ║
-║    a prática é o artefato do modelo carregar a própria assinatura/esquema   ║
-║    junto dos pesos — assim "o código de serviço não precisa cravar          ║
-║    suposições sobre o que o modelo espera". É o que passa a acontecer aqui: ║
-║    o bloco em `params_fitted.json` já grava `agrupamento`, e agora o        ║
-║    aplicador LÊ esse campo em vez de adivinhar.                             ║
+║ 1. O ARTEFATO GUARDA A PRÓPRIA ASSINATURA (conferido abrindo a página em    ║
+║    06/09/2026): o MLflow "guarda a assinatura e o exemplo JUNTO do seu      ║
+║    modelo" e valida a entrada automaticamente ao carregar e ao servir,      ║
+║    "sem exigir lógica de validação própria no código de serviço".          ║
 ║    https://mlflow.org/docs/latest/ml/model/signatures/                      ║
 ║                                                                             ║
-║ 2. UMA DEFINIÇÃO SÓ, USADA POR QUEM AJUSTA E POR QUEM SERVE:                ║
-║    quando a transformação é reimplementada de um lado, ela "começa idêntica ║
-║    e deriva" — é a origem clássica da divergência treino/serviço. Por isso  ║
-║    o gate/ajustador e o app passam a importar as chaves DAQUI, e não cada   ║
-║    um manter a sua. Este projeto pagou por isso três vezes nesta semana     ║
-║    (D8, D9, D10).                                                           ║
+║    HONESTIDADE SOBRE O QUE É MEU: a página NÃO diz "isso evita o serviço    ║
+║    cravar suposições". Essa é a MINHA leitura, aplicada ao nosso caso — e   ║
+║    aqui ela vale porque foi medida, não porque a fonte disse: cravar        ║
+║    `bo|phase` no aplicador foi exatamente o que bloqueou o reajuste (D10).  ║
+║                                                                             ║
+║ 2. UMA DEFINIÇÃO SÓ, USADA POR QUEM AJUSTA E POR QUEM SERVE (conferido      ║
+║    abrindo a página em 06/09/2026, e ela é mais forte do que eu resumi):    ║
+║    "As definições das features usadas para treinar um modelo têm que bater  ║
+║    EXATAMENTE com as features fornecidas no serviço online. Quando não      ║
+║    batem, introduz-se divergência treino/serviço, que pode causar problemas ║
+║    de desempenho catastróficos e difíceis de depurar." E: "o código de      ║
+║    transformação é reusado entre os ambientes, prevenindo divergência       ║
+║    treino/serviço e livrando os times de reescrever o código de um          ║
+║    ambiente para o outro."                                                  ║
 ║    https://feast.dev/blog/what-is-a-feature-store/                          ║
+║    Por isso o gate/ajustador e o app importam as chaves DAQUI, e não cada   ║
+║    um mantém a sua. Este projeto pagou por isso três vezes nesta semana     ║
+║    (D8, D9, D10).                                                           ║
+║    (Correção: a frase "começa idêntica e deriva", que eu havia atribuído a  ║
+║    esta página, vem de outro resultado de busca. Não é do Feast.)           ║
 ║                                                                             ║
 ║ CUIDADO AO MEXER: `bo` e `phase` são STRING (ver `Amostra` em               ║
 ║ mlcore/replay_pre_jogo.py). Comparar com int aqui faria a chave nunca       ║
