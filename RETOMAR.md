@@ -444,6 +444,55 @@ roda 2x por dia — lá o prazo está tolerante demais (avisaria com 14 dias em 
 de 2). É a mesma doença curada na régua das 28 (afirmação sobre um repositório
 morando em código compartilhado), e a cura é a mesma: cadência vira dado do repo.
 
+**D11. O PADRÃO POR TRÁS DE QUATRO DÍVIDAS — atacado em 08/09/2026.**
+
+Esta semana quatro coisas quebraram do mesmo jeito: **ausência de dado virando
+um número plausível, calado.** A D8 (estágio inerte com bandeira ligada), a D9
+(cache que nunca vencia), a nota oficial virando `nan`, e a D5
+(`getattr` com default 0.0 de um campo que não existe). Em três das quatro, a
+régua que deveria avisar estava ela própria quebrada.
+
+**Já existia ferramenta, e eu reusei em vez de construir:**
+`tools/find_silent_failures.py`, de 16/08. Ela tinha quatro famílias — e o
+docstring dela dizia **duas**, porque também tinha apodrecido. Corrigido.
+
+**O que a varredura reporta hoje:**
+
+| família | achados |
+|---|---|
+| 1. imprime não-ASCII sem ajustar encoding | 2 arquivos |
+| 2. subprocesso com resultado ignorado | 0 |
+| 3. **exceção engolida (`except: pass`)** | **301 em 173** |
+| 4. coerce + fillna (dado ruim vira número) | 97 em 28 |
+| 5. **`getattr` com default lendo outra camada** (nova) | **65 em 31** |
+
+**A família 5 é a da D5**, e foi desenhada para pegar exatamente aquele caso:
+`getattr(x, "nome", 0.0)` de um objeto que não tem o campo. Só conta default
+**plausível** — com `None` o idioma é correto, porque obriga quem chama a
+tratar. Essa distinção tirou 14 falsos positivos, entre eles o `elo.py`, que
+faz `getattr(row, "tier", None)` seguido de `if tg is not None`.
+
+**Um defeito meu, no relatório, que vale registrar:** a primeira versão
+mostrava os 12 maiores **por contagem** — e o caso que originou a família
+inteira, com uma ocorrência só, ficava de fora. **A ferramenta achou e
+escondeu.** Agora ordena por risco: `mlcore` e `tools` primeiro, porque
+contagem alta em arquivo de tela é ruído e uma ocorrência no núcleo de medição
+apaga uma nota. Há teste travando que o caso da D5 apareça.
+
+Fonte (conferida abrindo a página em 08/09/2026): "Errors should never pass
+silently"; `except: pass` é o pior anti-padrão; e "é melhor falhar rápido do
+que esconder um erro que causa bug lá na frente".
+https://pybit.es/articles/python-errors-should-not-pass-silently/
+
+**O QUE FICA EM ABERTO, e é grande:** as **301 exceções engoladas**. A própria
+ferramenta avisa que nem todo caso é bug — às vezes engolir é a decisão certa,
+e por isso ela reporta com linha e tipo em vez de proibir. Triar 301 é frente
+própria, e a ordem sensata é começar pelas que estão em caminho de medição.
+
+Testes: `mlcore/tests/test_find_silent_failures.py`, 11.
+
+---
+
 **D5. DIAGNOSTICADA em 08/09/2026 — e o número que ela citava nunca foi
 confiável.** Ela dizia: divergência média de 3,36 pp entre a régua oficial e o
 caminho servido, em 69,2% dos jogos ≥ 2 pp. Medindo de novo, com a D8 e a D9

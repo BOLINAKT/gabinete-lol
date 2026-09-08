@@ -8,7 +8,9 @@ gritou. A régua de Dados ficou SEMANAS quebrada e o sintoma aparecia apenas com
 "nota velha", que não aponta para a causa. E o que a escondia era outro silêncio:
 `subprocess.run(capture_output=True)` sem checar o returncode.
 
-Duas famílias, ambas detectáveis mecanicamente:
+CINCO famílias, todas detectáveis mecanicamente. (O texto aqui dizia DUAS
+até 08/09/2026: o próprio arquivo tinha apodrecido, e ninguém notou porque
+docstring não é executado.)
 
   1) IMPRIME NÃO-ASCII E NÃO AJUSTA O ENCODING
      Um print com acento/emoji derruba o script inteiro num console cp1252 —
@@ -16,6 +18,21 @@ Duas famílias, ambas detectáveis mecanicamente:
 
   2) RODA SUBPROCESSO E IGNORA O RESULTADO
      subprocess.run(...) cujo retorno não é checado: a falha vira silêncio.
+
+  3) EXCEÇÃO ENGOLIDA (`except ...: pass`)
+     Nem todo caso é bug — às vezes engolir é a decisão certa. Por isso
+     REPORTA com linha e tipo, para julgar caso a caso.
+
+  4) coerce + fillna — DADO RUIM VIRA NÚMERO REAL
+     O coerce transforma o ilegível em NaN e o fillna troca por um valor
+     plausível. Junto, "a coluna mudou de formato" vira "todo mundo com 0".
+
+  5) getattr COM DEFAULT LENDO CAMPO DE OUTRA CAMADA  (08/09/2026)
+     `getattr(x, "nome", 0.0)` de um objeto que não tem esse campo devolve
+     0.0 calado, para sempre. Foi assim que a camada de jogadores sumiu da
+     nota oficial (dívida D5): o replay lia `delta_players_eff` de um
+     `Sample` que não tem delta nenhum. Só conta default PLAUSÍVEL — com
+     `None` o idioma é correto, porque obriga quem chama a tratar.
 
 Uso:  python tools/find_silent_failures.py [--fix-encoding]
 Saída: lista de arquivos, e com --fix-encoding insere o ajuste de stdout.
@@ -136,6 +153,71 @@ def coerce_com_fillna(tree: ast.AST) -> list[int]:
     return linhas
 
 
+
+def getattr_com_default(tree: ast.AST) -> list[tuple[int, str]]:
+    """`getattr(x, "nome", default)` — leitura que NUNCA falha, mesmo errada.
+
+    Familia acrescentada em 08/09/2026, pela divida D5. O replay lia
+    `getattr(s, "delta_players_eff", 0.0)` de um objeto `Sample` que NAO TEM
+    campo de delta nenhum. O default 0.0 voltava calado, em 100% dos jogos, e
+    a nota oficial passou a medir o Elo sozinho sem ninguem saber.
+
+    O `getattr` com default e a versao do `except: pass` para leitura de
+    atributo: em vez de estourar, devolve algo plausivel para sempre.
+    "Errors should never pass silently" e "e melhor falhar rapido do que
+    esconder um erro que causa bug la na frente".
+    https://pybit.es/articles/python-errors-should-not-pass-silently/
+    (conferida abrindo a pagina em 08/09/2026)
+    """
+    fora = []
+    for no in ast.walk(tree):
+        if (isinstance(no, ast.Call) and isinstance(no.func, ast.Name)
+                and no.func.id == "getattr" and len(no.args) == 3
+                and isinstance(no.args[1], ast.Constant)
+                and isinstance(no.args[1].value, str)):
+            # SO conta default PLAUSIVEL. `None` e o idioma CERTO: nao e um
+            # valor de dado, entao obriga quem chama a tratar -- e o codigo ao
+            # lado normalmente faz `if x is not None`. Perigoso e 0.0, "" ou
+            # 0, que entram na conta fingindo ser medicao. Foi 0.0 que apagou
+            # a camada de jogadores da nota oficial por meses (divida D5).
+            padrao = no.args[2]
+            if isinstance(padrao, ast.Constant) and padrao.value is None:
+                continue
+            fora.append((getattr(no, "lineno", 0), no.args[1].value))
+    return fora
+
+
+def _nomes_de_campo(raiz, pastas):
+    """Onde cada nome de atributo APARECE, por pasta de topo.
+
+    Separa `getattr` que le algo da propria camada (normal) de `getattr` que
+    le a forma de OUTRA camada — o caso da D5: mlcore lendo um campo que so
+    existe em app_core."""
+    onde = {}
+    for pasta in pastas:
+        base = raiz / pasta
+        if not base.exists():
+            continue
+        arqs = sorted(base.glob("*.py")) if pasta == "." else sorted(base.rglob("*.py"))
+        for q in arqs:
+            if "__pycache__" in q.parts or "backups" in q.parts:
+                continue
+            try:
+                t = ast.parse(q.read_text(encoding="utf-8"))
+            except (OSError, SyntaxError, UnicodeDecodeError):
+                continue
+            topo = q.relative_to(raiz).parts[0]
+            for no in ast.walk(t):
+                nome = None
+                if isinstance(no, ast.Attribute):
+                    nome = no.attr
+                elif isinstance(no, ast.AnnAssign) and isinstance(no.target, ast.Name):
+                    nome = no.target.id
+                if nome:
+                    onde.setdefault(nome, set()).add(topo)
+    return onde
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--fix-encoding", action="store_true",
@@ -152,6 +234,8 @@ def main() -> int:
     risco_sub: list[tuple[Path, int]] = []
     risco_exc: list[tuple[Path, list]] = []
     risco_coerce: list[tuple[Path, list]] = []
+    risco_getattr: list[tuple[Path, list]] = []
+    onde_aparece = _nomes_de_campo(ROOT, ALVOS)
     for pasta in ALVOS:
         base = ROOT / pasta
         if not base.exists():
@@ -179,6 +263,14 @@ def main() -> int:
             co = coerce_com_fillna(tree)
             if co:
                 risco_coerce.append((p, co))
+            # So interessa o getattr que le a forma de OUTRA camada: dentro da
+            # propria pasta e uso normal. Foi assim que a D5 passou -- mlcore
+            # lendo um campo que so existe em app_core.
+            minha = p.relative_to(ROOT).parts[0]
+            ga = [(ln, nm) for ln, nm in getattr_com_default(tree)
+                  if onde_aparece.get(nm) and minha not in onde_aparece[nm]]
+            if ga:
+                risco_getattr.append((p, ga))
 
     print(f"=== 1) IMPRIME NÃO-ASCII SEM AJUSTAR O ENCODING: {len(risco_enc)} arquivo(s) ===")
     for p, ch in risco_enc:
@@ -225,6 +317,27 @@ def main() -> int:
 
     if not risco_enc and not risco_sub:
         print("\nlimpo — nada falhando calado por estes dois padrões.")
+    tot_ga = sum(len(v) for _, v in risco_getattr)
+    print(f"\n=== 5) getattr COM DEFAULT lendo campo de OUTRA camada: "
+          f"{tot_ga} em {len(risco_getattr)} ===")
+    print("    (o caso da divida D5: o default volta calado quando o campo nao"
+          " existe naquele objeto)")
+    # ORDENAR POR RISCO, NAO POR VOLUME (08/09/2026). A primeira versao deste
+    # relatorio mostrava os 12 MAIORES por contagem — e o caso que originou a
+    # familia inteira (o `delta_players_eff` do replay, uma ocorrencia so)
+    # ficava de fora. A ferramenta ACHOU e ESCONDEU. Contagem alta em arquivo
+    # de tela e ruido; UMA ocorrencia no nucleo de medicao apaga uma nota.
+    _PESO = {"mlcore": 0, "tools": 1}   # medicao primeiro; o resto depois
+
+    def _risco(item):
+        q, v = item
+        return (_PESO.get(q.relative_to(ROOT).parts[0], 2), -len(v), str(q))
+
+    for q, v in sorted(risco_getattr, key=_risco):
+        nomes = ", ".join(sorted({nm for _, nm in v})[:4])
+        linhas = ", ".join(str(ln) for ln, _ in sorted(v)[:4])
+        print(f"  {str(q.relative_to(ROOT)):<46} {len(v)}x  L{linhas}  {nomes}")
+
     return 0
 
 
