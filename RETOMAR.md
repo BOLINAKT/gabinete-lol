@@ -129,6 +129,61 @@ instrumentação: réguas que medem o projeto, não previsões.
 
 ---
 
+## 3-A. FRENTE 0 — LIGADA, MAS QUASE NUNCA APLICA (corrigido em 08/09/2026)
+
+**LEIA ISTO ANTES DOS NÚMEROS ABAIXO.** Em 08/09 o app foi aberto pela
+primeira vez desde que o calibrador foi ligado, e o resultado desmente o que
+eu havia reportado.
+
+**Teste A/B no app real** (Gen.G × KT Rolster, BO3, via `AppTest`), o mesmo
+confronto com e sem o bloco em `params_fitted.json`:
+
+```
+COM bloco:  p_fused=0.7283620756282652   p_map_used=0.6282993349969191
+SEM bloco:  p_fused=0.7283620756282652   p_map_used=0.6282993349969191
+```
+
+**Idênticos até o último dígito. O calibrador NÃO aplicou.**
+
+**A causa.** O estágio pós-fusão está dentro de
+`app_core/ml_pre_engine_core.py`, no ramo
+
+```python
+if ml_engine == "mlcore_v2" and bool(use_lineup) and (ml is not None):
+```
+
+e `use_lineup` vem de
+`st.session_state.get('use_lineup_adjust', False)` — **padrão DESLIGADO**.
+Sem o ajuste de escalação ligado, o ramo inteiro é pulado e o calibrador nunca
+é chamado. No confronto testado, `p_players` veio `null`, confirmando.
+
+**O QUE EU REPORTEI ERRADO.** Eu disse que ligar mudaria o número em 64% dos
+jogos e trocaria o favorito em 6,53%. **Isso vale para o REPLAY**, que aplica o
+calibrador em toda a cadeia. **No app, ele só aplica quando a escalação está
+ligada** — e ela vem desligada por padrão. A cobertura real depende de quanto
+o dono usa esse ajuste, e isso **não foi medido**.
+
+**O ganho de +0,02 continua válido para o caminho medido, e NÃO se pode
+afirmar que está sendo entregue na tela.** É a dívida D5/D8 outra vez, agora
+do lado do encanamento que eu mesmo construí.
+
+**O calibrador ficou LIGADO**, e a razão é que ele não faz mal: onde o ramo não
+roda, o número é idêntico; onde roda, a medição diz que melhora. O que estava
+errado era a minha afirmação de cobertura, não o bloco.
+
+**O RASTRO NÃO COBRE O ESTÁGIO.** `_ml_trace_last` tem 20 chaves e um
+`pipeline` de 14 etapas, e **nenhuma é o pós-fusão**. Foi por isso que a
+ausência precisou de um A/B para ser provada. Instrumentar o estágio no rastro
+é dívida aberta — sem isso, a próxima pessoa repete este mesmo trabalho.
+
+**O QUE FALTA DECIDIR, e é seu:** o calibrador deve valer para todo jogo, ou só
+quando a escalação está ligada? Se for para todo jogo, o estágio precisa sair
+de dentro daquele ramo — e aí a medição de cobertura (64%, 6,53%) volta a
+valer. Se for só com escalação, os números que eu dei precisam ser refeitos
+sobre a fatia certa.
+
+---
+
 ## 3-A. FRENTE 0 — LIGADA em 06/09/2026
 
 O calibrador com grupo está **em produção**. O bloco
