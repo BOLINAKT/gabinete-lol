@@ -499,6 +499,38 @@ roda 2x por dia — lá o prazo está tolerante demais (avisaria com 14 dias em 
 de 2). É a mesma doença curada na régua das 28 (afirmação sobre um repositório
 morando em código compartilhado), e a cura é a mesma: cadência vira dado do repo.
 
+**D12. ABRIR O APP REESCREVE ARTEFATOS VERSIONADOS.** Achado em 08/09/2026, ao
+dirigir o app pela primeira vez.
+
+Rodar o `plays_app.py` — mesmo por `AppTest`, sem clicar em nada de manutenção —
+modificou dois arquivos **rastreados no git**:
+
+- `wf_last_report.json` — carimbo pulou de 14/07 para 08/09
+- `team_state_artifact.json` — cresceu ~52 mil linhas
+
+Descartei os dois (`git checkout --`), porque foram gerados por execução de
+teste e não pela esteira do robô. Publicar artefato produzido por um `AppTest`
+ad-hoc seria pior que não atualizar.
+
+**É a mesma família da D7 no Dota:** dirigir a medição muda o estado de
+produção. Lá era a suíte retreinando os modelos ao vivo; aqui é o app
+regravando artefatos ao simplesmente abrir. Em ambos, quem quisesse **verificar**
+o sistema pagava o preço de **alterá-lo**.
+
+**O risco concreto:** quem abrir o app para conferir alguma coisa e depois
+commitar sem olhar o `git status` publica artefato gerado numa sessão de
+teste. E como esses arquivos são grandes, o diff não convida a ler.
+
+**Não consertei**, e o motivo é que o conserto certo depende de saber se essas
+escritas são intencionais (cache legítimo que o app mantém) ou efeito colateral.
+Isso exige ler o caminho que as produz — frente própria, curta.
+
+**Enquanto isso:** depois de abrir o app, rodar `git status` antes de qualquer
+commit. Se aparecer `team_state_artifact.json` ou `wf_last_report.json`,
+provavelmente é isto, e não trabalho seu.
+
+---
+
 **D11. O PADRÃO POR TRÁS DE QUATRO DÍVIDAS — atacado em 08/09/2026.**
 
 Esta semana quatro coisas quebraram do mesmo jeito: **ausência de dado virando
