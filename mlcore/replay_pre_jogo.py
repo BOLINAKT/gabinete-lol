@@ -124,8 +124,25 @@ def _ms(p: float, a: Amostra, tabela: dict) -> float:
 
 def cadeia(amostras: list[Amostra], *, tabela: dict, platt_time=None,
            platt_fusao=None, usar_ms1=True, usar_platt_time=True,
-           usar_fusao=True, usar_ms2=True, usar_platt_fusao=True) -> list[float]:
-    """Roda o caminho servido com as etapas que forem pedidas."""
+           usar_fusao=True, usar_ms2=False, usar_platt_fusao=False) -> list[float]:
+    """Roda o caminho servido com as etapas que forem pedidas.
+
+    OS DEFAULTS SAO OS DE PRODUCAO (corrigido em 08/09/2026, divida D8).
+
+    Ate 07/09 `usar_ms2` e `usar_platt_fusao` vinham True, e o docstring ja
+    dizia "roda o caminho servido" — mas o APP NAO RODA essas duas etapas: elas
+    dependem de callbacks que nunca sao injetados no caminho servido (o
+    contrato MlPreEngineInput nem tem os campos). Quem escrevia codigo novo
+    usando os defaults media uma cadeia que nao existe, e isso derrubou TRES
+    chamadores: o gate (D8), a sombra, e a auditoria do pre-jogo (D5).
+
+    A cura e a mesma que a fonte da divergencia treino/servico prescreve —
+    "garanta que treino e producao se imitem o mais perto possivel". Aqui isso
+    vira: o default e producao, e quem quer as etapas mortas PEDE.
+    https://developers.google.com/machine-learning/crash-course/production-ml-systems/monitoring
+    (conferida abrindo a pagina em 06/09/2026)
+
+    Para ABLACAO, passe usar_ms2=True / usar_platt_fusao=True de proposito."""
     saida = []
     for a in amostras:
         p = float(a.p_team)
@@ -160,7 +177,7 @@ def variante(treino: list[Amostra], alvo: list[Amostra], *, tabela: dict,
                       usar_platt_fusao=False)
         pt = fit_platt_from_raw_probs(y_tr, base)
     pf = None
-    if chaves.get("usar_platt_fusao", True):
+    if chaves.get("usar_platt_fusao", False):
         # O calibrador FINAL pode ser ajustado noutro conjunto: a distorcao que
         # ele corrige e da temporada, e o treino sao temporadas ANTIGAS. Ajustar
         # no val (recente) testa se o problema e defasagem em vez de metodo.
@@ -169,7 +186,7 @@ def variante(treino: list[Amostra], alvo: list[Amostra], *, tabela: dict,
                       usar_ms1=chaves.get("usar_ms1", True),
                       usar_platt_time=chaves.get("usar_platt_time", True),
                       usar_fusao=chaves.get("usar_fusao", True),
-                      usar_ms2=chaves.get("usar_ms2", True),
+                      usar_ms2=chaves.get("usar_ms2", False),
                       usar_platt_fusao=False)
         y_fin = [a.y for a in (treino_final if treino_final else treino)]
         if familia_final == "beta":
@@ -181,7 +198,28 @@ def variante(treino: list[Amostra], alvo: list[Amostra], *, tabela: dict,
 
 
 def p_regua(amostras: list[Amostra], w_lineup: float) -> list[float]:
-    """O que a nota oficial mede: sigmoid(logit(p_elo) + w_lineup * delta)."""
+    """O que a nota oficial mede: sigmoid(logit(p_elo) + w_lineup * delta).
+
+    CUIDADO — DEFEITO CONHECIDO, achado em 08/09/2026 (divida D5):
+    `delta_eff` chega ZERO em 100% dos jogos. A causa e que `Amostra` monta o
+    campo com `getattr(s, "delta_players_eff", 0.0)` e a classe `Sample`
+    (mlcore/fit_samples_core.py) NAO TEM campo de delta nenhum — o delta e
+    calculado durante a montagem e descartado. O `getattr` com default devolve
+    0.0 calado, para sempre.
+
+    Consequencia: com delta = 0, esta funcao devolve o ELO SOZINHO, nao
+    "Elo + jogadores". Conferido: a saida bate com `p_team` em 1,11e-16.
+    Entao a "divergencia regua x servido" de 3,36 pp que a divida D5 citava
+    NAO era medicao da divergencia — era, em boa parte, este zero.
+
+    Consertar de verdade exige levar o delta ate a `Sample`, que o TREINO usa.
+    E frente propria. Ate la, esta funcao AVISA em vez de mentir calada."""
+    deltas = [abs(float(a.delta_eff)) for a in amostras]
+    if amostras and max(deltas, default=0.0) < 1e-12:
+        print("[replay] AVISO: delta_eff e ZERO em todos os jogos — p_regua "
+              "esta devolvendo o Elo SOZINHO, nao Elo+jogadores. Ver o "
+              "docstring desta funcao (divida D5). Qualquer comparacao "
+              "'regua x servido' feita agora mede outra coisa.")
     return [float(sigmoid(logit(float(a.p_team)) + w_lineup * float(a.delta_eff)))
             for a in amostras]
 
@@ -254,6 +292,9 @@ def carregar(*, artifact: str = "ml_artifact.json",
                 month=str(getattr(s, "month", "") or ""),
                 y=int(s.y), p_team=float(s.p_team), p_players=float(s.p_players),
                 n_team=float(s.n_team), n_players=float(s.n_players),
+                # `Sample` nao tem campo de delta (conferido em 08/09/2026):
+                # este getattr devolve 0.0 SEMPRE. Fica explicito em vez de
+                # parecer que le alguma coisa. Ver p_regua() e a divida D5.
                 delta_eff=float(getattr(s, "delta_players_eff", 0.0) or 0.0)))
         return fora
 

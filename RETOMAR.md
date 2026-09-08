@@ -444,10 +444,64 @@ roda 2x por dia — lá o prazo está tolerante demais (avisaria com 14 dias em 
 de 2). É a mesma doença curada na régua das 28 (afirmação sobre um repositório
 morando em código compartilhado), e a cura é a mesma: cadência vira dado do repo.
 
-**D5. A nota oficial mede um caminho que não é o servido.** Divergência média de
-3,36 pontos percentuais, em 69,2% dos jogos ≥ 2 pp. A causa é que o caminho
-servido não é função pura. `mlcore/replay_pre_jogo.py` foi criado para atacar
-isso e ainda não fechou a frente.
+**D5. DIAGNOSTICADA em 08/09/2026 — e o número que ela citava nunca foi
+confiável.** Ela dizia: divergência média de 3,36 pp entre a régua oficial e o
+caminho servido, em 69,2% dos jogos ≥ 2 pp. Medindo de novo, com a D8 e a D9
+já consertadas, apareceu o seguinte.
+
+**1) A ferramenta que mede a D5 tinha a D8 dentro.**
+`tools/auditoria_pre_jogo.py:156` fazia `servido = variante(treino, teste,
+tabela=tabela)` — defaults, com o microssegmento e o Platt da fusão que o app
+não roda. Terceira ocorrência da mesma armadilha.
+
+**Consertado na raiz, não no chamador:** os defaults de `cadeia()` e
+`variante()` passaram a ser **os de produção**. Quem quiser as etapas mortas
+agora **pede**. O docstring dizia "roda o caminho servido" e não era verdade;
+agora é. O gate reproduz o mesmo número de antes, com a base velha pedida
+explicitamente.
+
+**2) A ablação, refeita, confirma a D8 de forma limpa:**
+
+| variante | Δ logloss |
+|---|---|
+| sem microssegmento da fusão | **+0,00000** |
+| sem Platt da fusão | **+0,00000** |
+| sem microssegmento do time | +0,00069 |
+| sem Platt do time | **−0,00175** (remover MELHORA) |
+| sem a camada de jogadores | +0,00987 (paga muito) |
+
+Zero exato nas duas primeiras porque elas não rodam. Isso **substitui** a
+tabela do `MODELO_LOL.md`, que foi medida com elas ligadas.
+
+**3) O ACHADO QUE INVALIDA O NÚMERO DA DÍVIDA.** `Amostra.delta_eff` chega
+**zero em 100% dos jogos**. A causa: o replay monta o campo com
+`getattr(s, "delta_players_eff", 0.0)` e a classe `Sample`
+(`mlcore/fit_samples_core.py`) **não tem campo de delta nenhum** — o delta é
+calculado durante a montagem e descartado. O `getattr` com default devolve
+0,0 calado, para sempre.
+
+Com delta = 0, `p_regua` devolve **o Elo sozinho** — conferido, bate com
+`p_team` em 1,11e-16. Então a "divergência régua × servido" comparava o Elo
+puro contra a cadeia completa. Mede alguma coisa, mas **não o que a dívida
+afirma**.
+
+**O que fica medido e vale:** a régua oficial dá logloss **0,59109** e o
+caminho servido **0,58464** — a nota oficial **subestima** o modelo, porque
+não tem a camada de jogadores, que vale +0,00987.
+
+**Conserto feito hoje:** `p_regua` **avisa em voz alta** quando o delta é zero
+em todos os jogos, em vez de mentir calada. `mlcore/tests/test_regua_vs_servido.py`
+(6 testes) trava o aviso, e trava que ele **não** apareça quando o dado estiver
+certo — aviso que vira ruído é aviso ignorado.
+
+**O QUE FALTA, e é frente própria:** levar o delta até a `Sample`. Isso mexe
+num arquivo que o TREINO usa, então não entra de carona. Só depois disso dá
+para medir a divergência de verdade.
+
+**Fonte da regra aplicada** (conferida abrindo a página em 04/09/2026):
+ausência de dado não pode virar um número — "as métricas devolvem nulo quando
+nada foi medido... e imprimem um aviso explícito", e "falhe alto na fronteira".
+https://thicket.sh/blog/when-your-metric-is-broken-not-your-business
 
 **D9. RESOLVIDA em 06/09/2026.** O cache passa a carregar a **assinatura das
 entradas** que o geraram — `ml_artifact.json`, `players_artifact.json`,

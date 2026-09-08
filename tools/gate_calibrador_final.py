@@ -238,8 +238,11 @@ def main() -> int:
     # da ACCEPT falso" do CLAUDE.md, cometida por este proprio arquivo.
     # Medido: a base antiga da 0,58577 e a de producao 0,58109 (+0,00469,
     # IC [+0,00339, +0,00587]). Quem decide agora e a de producao.
-    hoje_com_pos = variante(tr, te, tabela=tab)
-    hoje = variante(tr, te, tabela=tab, usar_ms2=False, usar_platt_fusao=False)
+    # A base velha agora precisa ser PEDIDA: desde 08/09 os defaults de
+    # `cadeia`/`variante` sao os de producao (D8).
+    hoje_com_pos = variante(tr, te, tabela=tab, usar_ms2=True,
+                            usar_platt_fusao=True)
+    hoje = variante(tr, te, tabela=tab)   # defaults = producao
 
     # Base comum: sem microssegmento (medido: atrapalha) e com o Platt do time
     # ajustado no treino (medido: ajuda). O que este gate escolhe e SO o
