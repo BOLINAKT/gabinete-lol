@@ -41,7 +41,72 @@ p < 0,05 e limite inferior do intervalo acima de zero** — as três coisas junt
 
 ---
 
-## ACHADO QUE MUDA A ORDEM DE TUDO
+## ACHADO QUE MUDA A ORDEM DE TUDO — **SUPERADO em 08/09/2026**
+
+> **Este bloco continua aqui de propósito.** A prática de registro de decisão é
+> log **append-only**: "não volte para editar registros aceitos; se uma decisão
+> muda, escreva um novo registro que supersede o original e ligue os dois —
+> isso preserva o histórico do seu raciocínio e deixa claro quando e por que a
+> direção mudou". E: "evite esconder consequências, intencionalmente ou por
+> acidente".
+> https://learn.microsoft.com/en-us/azure/well-architected/architect-role/architecture-decision-record
+> (conferida abrindo a página em 08/09/2026)
+>
+> Apagar a tabela abaixo tiraria a chance de alguém entender **por que** a fila
+> apontava para o lado errado. Ela fica; a correção vem depois dela.
+
+### A MEDIÇÃO NOVA (08/09/2026) — é esta que vale
+
+A ablação de 27/08 mediu uma cadeia que **o app não roda**, sobre um modelo
+**velho**. Duas causas, ambas já corrigidas:
+
+- **dívida D8:** a cadeia do replay ligava o microssegmento da fusão e o Platt
+  da fusão por default, e esses dois estágios **nunca são executados no app** —
+  dependem de callbacks que o caminho servido não injeta.
+- **dívida D9:** o cache do replay não vencia, e o modelo usado era de 26/08
+  enquanto o robô atualizava todo dia.
+
+Refeita contra o caminho **realmente servido**, em **6.002 jogos**:
+
+| Variante | logloss | efeito |
+|---|---|---|
+| caminho completo (o que é servido hoje) | 0,58464 | — |
+| sem o microssegmento **da fusão** | 0,58464 | **0,00000 — não roda** |
+| sem o Platt **da fusão** | 0,58464 | **0,00000 — não roda** |
+| sem o microssegmento do time | 0,58533 | piora 0,00069 (paga pouco) |
+| **sem o Platt do time** | **0,58289** | **melhora 0,00175 (este CUSTA)** |
+| sem a camada de jogadores | 0,59451 | piora 0,00987 (**esta paga muito**) |
+
+**O que mudou, ponto a ponto:**
+
+1. **Os dois estágios que a fila mandava remover valem ZERO EXATO** — porque
+   não rodam. Não há o que tirar; o ganho já estava embolsado sem ninguém
+   saber. A frente "tirar o que custa" **deixou de existir**.
+
+2. **O Platt do time INVERTEU de sinal.** A tabela antiga dizia "piora 0,00204
+   — **este paga**". Agora remover **melhora 0,00175**: ele passou a custar.
+   **Ainda assim não é para mexer**: 0,00175 fica **abaixo da barra da casa**
+   (ganho > 0,002). É o único candidato vivo da lista, e não passa. Confiança
+   baixa — vale re-medir antes de agir.
+
+3. **A camada de jogadores é o maior efeito medido** (+0,00987) e continua
+   paga. Isso ganhou importância: a régua oficial **não a inclui** (dívida D5),
+   então a nota que você lê subestima o modelo.
+
+**Consequência para a fila:** a premissa de que "a primeira frente é tirar o que
+custa" caiu. Não há remoção com ganho acima da barra. O que sobrou de maior
+valor é **fazer a nota oficial medir o que a tela mostra** (D5), porque hoje ela
+mede o Elo sozinho.
+
+**Nota sobre o calibrador com grupo:** ele está ligado e, desde 08/09, é
+**aplicado de verdade** na tela — até então vivia dentro de um ramo
+(`use_lineup`) que vem desligado por padrão, e o ganho medido não chegava ao
+usuário. Ver a frente 0 no `RETOMAR.md`.
+
+---
+
+### A medição antiga (27/08/2026) — SUPERADA, mantida para histórico
+
 
 A ablação de 27/08, em **5.525 jogos de teste**, diz que **três estágios de
 calibração do caminho servido estão CUSTANDO**, não pagando:
@@ -66,8 +131,9 @@ composição dos jogos muda ao longo do ano (BO1 de fase regular sai de 36,8% pa
 49,7% do volume). Isto é o mesmo mecanismo por trás do calibrador com grupo, que
 mede **+0,02296** exatamente por substituir esse estágio.
 
-**Consequência prática:** a primeira frente não é acrescentar nada. É *tirar* o
-que custa e pôr no lugar o que já foi medido.
+~~**Consequência prática:** a primeira frente não é acrescentar nada. É *tirar*
+o que custa e pôr no lugar o que já foi medido.~~
+**(SUPERADA: os dois estágios que ela mandava tirar não rodam. Ver acima.)**
 
 **RESSALVA, e ela importa.** Esta ablação roda sobre uma *reconstrução* do
 caminho servido (`mlcore/replay_pre_jogo.py`), não sobre o app rodando. A própria
@@ -278,23 +344,30 @@ Para **cada** frente, nesta ordem:
 
 ---
 
-## O que tem nesta pasta
+## Onde este arquivo mora, e onde estão os dados (corrigido em 08/09/2026)
+
+Este documento foi escrito em 27/08 **dentro da pasta de backup**, e a seção
+que ficava aqui descrevia aquele layout. Ele agora vive **no repositório**:
 
 ```
-GABINETE_BACKUP/
-  MODELO_LOL.md        <- este arquivo
-  LOL/    (303 MB)     ml_artifact.json, params_fitted.json,
-                       players_artifact.json, user_team_aliases.json,
-                       CSV_HISTORICO/, CSV_DIARIO/, live_models/,
-                       evidence/ (todas as notas), ops/baselines/
-  DOTA/   (39 MB)      ml_artifact.json, data.csv, CSV_DOTA/,
-                       live_models/, evidence/, team_api_cache.json
+C:\Gabinetes\gabinetelolweb3.1\MODELO_LOL.md      <- este arquivo
+C:\Gabinetes\GabineteDOTA\                        <- o Dota
 ```
 
-Quase tudo isso também está no git (`BOLINAKT/gabinete-lol` e
-`BOLINCRVG/gabinete-dota`). A exceção que **só existe aqui** é
-`LOL/ops/baselines/`: são os retratos para onde `tools/rollback_baseline.py`
-volta. Sem eles, acaba a capacidade de reverter um modelo ruim.
+Caminho **sem acento** de propósito: com o repositório em
+`...\Área de Trabalho\...` o LightGBM não abre modelo ao vivo nenhum. Ver a
+armadilha no `CLAUDE.md`.
 
-Na máquina nova: `git clone`, restaurar `ops/baselines/`, e o resto vem junto.
-O passo a passo está em `RETOMAR.md`, na raiz do repositório do LoL.
+**Os dados vêm no `git clone`** — `ml_artifact.json`, `params_fitted.json`,
+`players_artifact.json`, `CSV_HISTORICO/`, `CSV_DIARIO/`, `live_models/` e
+`evidence/` estão versionados. O passo a passo está no `SETUP.md`, que a partir
+de 08/09 tem teste conferindo cada uma dessas afirmações.
+
+**A exceção continua sendo `ops/baselines/`** (~68 MB): são os retratos para
+onde `tools/rollback_baseline.py` volta, não estão no git, e sem eles acaba a
+capacidade de reverter um modelo ruim. A cópia de 27/08 segue em
+`GABINETE_BACKUP\LOL\opsaselines\`, no OneDrive.
+
+**Consequência de os projetos terem saído do OneDrive:** baseline nova criada
+daqui em diante **não tem cópia em lugar nenhum**. Decidir uma estratégia de
+backup é assunto aberto — está registrado no `RETOMAR.md`.
