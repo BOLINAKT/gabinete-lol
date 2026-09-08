@@ -178,3 +178,45 @@ class TestParidadeEmTodosOsAgrupamentos(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestOEstagioEAlcancadoNoApp(unittest.TestCase):
+    """A reserva: sem ela, o calibrador NUNCA era alcancado (08/09/2026).
+
+    Os dois pontos de aplicacao no motor vivem dentro de ramos `use_lineup`,
+    e `use_lineup` vem DESLIGADO por padrao. Medido abrindo o app: com e sem o
+    bloco em params_fitted.json, o numero servido era IDENTICO ate o ultimo
+    digito. O ganho medido nao chegava na tela.
+
+    Estes testes travam o CONTRATO da aplicacao de reserva. Eles nao substituem
+    o A/B no app -- nenhum teste desta suite instancia o Streamlit --, mas
+    pegam quem mexer no motor e quebrar a chamada.
+    """
+
+    def test_o_motor_tem_a_aplicacao_de_reserva(self):
+        import inspect
+        from app_core.ml_pre_engine_core import run_ml_pre_engine_layers
+        src = inspect.getsource(run_ml_pre_engine_layers)
+        self.assertIn("_pfc_grupo_aplicado", src,
+                      "o marcador da reserva sumiu do motor")
+        self.assertIn("postfusion_calibration_reserva", src,
+                      "a aplicacao de reserva sumiu do motor")
+
+    def test_a_reserva_fica_FORA_dos_ramos_de_escalacao(self):
+        """Se ela voltar para dentro de `use_lineup`, o bug volta inteiro."""
+        import inspect, re
+        from app_core.ml_pre_engine_core import run_ml_pre_engine_layers
+        linhas = inspect.getsource(run_ml_pre_engine_layers).split("\n")
+        alvo = next(i for i, l in enumerate(linhas)
+                    if "not _pfc_grupo_aplicado" in l)
+        recuo = len(linhas[alvo]) - len(linhas[alvo].lstrip())
+        # o guarda tem que estar no nivel do corpo da funcao (recuo 4), nao
+        # aninhado dentro de um `if use_lineup` (recuo 8+)
+        self.assertLessEqual(recuo, 4,
+                             f"a reserva esta aninhada (recuo {recuo}): "
+                             "voltou para dentro de um ramo condicional")
+
+    def test_sem_bloco_a_reserva_nao_faz_nada(self):
+        """O interruptor continua sendo o bloco no params_fitted.json."""
+        for p in (0.2, 0.5, 0.8):
+            self.assertEqual(_servido(p, bo=3, phase="regular", coef=None), p)
