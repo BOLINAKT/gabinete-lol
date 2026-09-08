@@ -271,7 +271,12 @@ def carregar(*, artifact: str = "ml_artifact.json",
 
     art = MLArtifact.load_json(str(ROOT / artifact))
     p_art = PlayersArtifact.load_json(str(ROOT / players_artifact))
-    w_lineup = float((((art.meta or {}).get("players_layer") or {}).get("w_lineup") or 0.85))
+    # `or 0.85` era BUG (achado em 08/09/2026): em Python 0.0 e falso, entao o
+    # valor REAL do artefato -- que hoje e 0.0 -- era descartado e trocado por
+    # 0,85. O replay passava a medir uma camada de jogadores com peso que a
+    # producao nao usa. Agora so cai no default quando a chave FALTA mesmo.
+    _wl = (((art.meta or {}).get("players_layer") or {}).get("w_lineup"))
+    w_lineup = float(0.85 if _wl is None else _wl)
     pr = load_match_player_rows(caminhos, keep_playoffs=None,
                                 gameids=set(jogos["gameid"].astype(str)))
     brutas = _make_samples(art=art, p_art=p_art, games=jogos,

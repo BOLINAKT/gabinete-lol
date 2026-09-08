@@ -548,64 +548,56 @@ Testes: `mlcore/tests/test_find_silent_failures.py`, 11.
 
 ---
 
-**D5. DIAGNOSTICADA em 08/09/2026 — e o número que ela citava nunca foi
-confiável.** Ela dizia: divergência média de 3,36 pp entre a régua oficial e o
-caminho servido, em 69,2% dos jogos ≥ 2 pp. Medindo de novo, com a D8 e a D9
-já consertadas, apareceu o seguinte.
+**D5. DIAGNOSTICADA E MEDIDA em 08/09/2026 — e ela é MENOR do que parecia.**
 
-**1) A ferramenta que mede a D5 tinha a D8 dentro.**
-`tools/auditoria_pre_jogo.py:156` fazia `servido = variante(treino, teste,
-tabela=tabela)` — defaults, com o microssegmento e o Platt da fusão que o app
-não roda. Terceira ocorrência da mesma armadilha.
+A dívida dizia: divergência média de 3,36 pp entre a régua oficial e o caminho
+servido. Investigada até o fim, com a D8 e a D9 já consertadas:
 
-**Consertado na raiz, não no chamador:** os defaults de `cadeia()` e
-`variante()` passaram a ser **os de produção**. Quem quiser as etapas mortas
-agora **pede**. O docstring dizia "roda o caminho servido" e não era verdade;
-agora é. O gate reproduz o mesmo número de antes, com a base velha pedida
-explicitamente.
+**A CAUSA REAL: existem DUAS fusões diferentes, e a régua usa a que está
+desligada.**
 
-**2) A ablação, refeita, confirma a D8 de forma limpa:**
+| caminho | como funde jogadores | estado |
+|---|---|---|
+| régua oficial | `w_lineup · delta` (aditiva no logito) | **desligada** — `w_lineup = 0,0` |
+| app / cadeia servida | `_fuse_probs_by_precision` | **ligada**, vale +0,00987 |
 
-| variante | Δ logloss |
-|---|---|
-| sem microssegmento da fusão | **+0,00000** |
-| sem Platt da fusão | **+0,00000** |
-| sem microssegmento do time | +0,00069 |
-| sem Platt do time | **−0,00175** (remover MELHORA) |
-| sem a camada de jogadores | +0,00987 (paga muito) |
+O `w_lineup` no `ml_artifact.json` é **genuinamente 0,0**. Não é bug: é
+configuração. Só que a régua oficial *só sabe* fundir por esse peso, então com
+ele zerado ela mede **o Elo sozinho** — enquanto o app funde por precisão e
+entrega mais.
 
-Zero exato nas duas primeiras porque elas não rodam. Isso **substitui** a
-tabela do `MODELO_LOL.md`, que foi medida com elas ligadas.
+**BUG CORRIGIDO NO CAMINHO:** o replay fazia
+`(... .get("w_lineup") or 0.85)`. Em Python `0.0` é falso, então o valor real
+do artefato era **descartado e trocado por 0,85**. O replay media uma camada de
+jogadores com peso que a produção não usa. Agora só cai no default quando a
+chave **falta** de verdade. (O `p_regua` também passou a avisar alto quando o
+delta é zero em todos os jogos — ver `mlcore/tests/test_regua_vs_servido.py`.)
 
-**3) O ACHADO QUE INVALIDA O NÚMERO DA DÍVIDA.** `Amostra.delta_eff` chega
-**zero em 100% dos jogos**. A causa: o replay monta o campo com
-`getattr(s, "delta_players_eff", 0.0)` e a classe `Sample`
-(`mlcore/fit_samples_core.py`) **não tem campo de delta nenhum** — o delta é
-calculado durante a montagem e descartado. O `getattr` com default devolve
-0,0 calado, para sempre.
+**O TAMANHO REAL, medido em 6.002 jogos:**
 
-Com delta = 0, `p_regua` devolve **o Elo sozinho** — conferido, bate com
-`p_team` em 1,11e-16. Então a "divergência régua × servido" comparava o Elo
-puro contra a cadeia completa. Mede alguma coisa, mas **não o que a dívida
-afirma**.
+| | logloss | ECE | nota |
+|---|---|---|---|
+| régua oficial (o que a nota mede) | 0,59109 | 0,039 | 8,21 |
+| caminho servido (o que a tela mostra) | 0,58920 | 0,035 | 8,27 |
 
-**O que fica medido e vale:** a régua oficial dá logloss **0,59109** e o
-caminho servido **0,58464** — a nota oficial **subestima** o modelo, porque
-não tem a camada de jogadores, que vale +0,00987.
+Diferença: **+0,00189**, IC [+0,00089, +0,00291] — **abaixo da barra da casa**
+(> 0,002). Em nota, **0,059 ponto**: a oficial iria de 8,87 para ~8,93, bem
+acima do piso de 8,5 do vigia semanal.
 
-**Conserto feito hoje:** `p_regua` **avisa em voz alta** quando o delta é zero
-em todos os jogos, em vez de mentir calada. `mlcore/tests/test_regua_vs_servido.py`
-(6 testes) trava o aviso, e trava que ele **não** apareça quando o dado estiver
-certo — aviso que vira ruído é aviso ignorado.
+**Duas coisas verdadeiras ao mesmo tempo**, e confundi-las foi o que inflou a
+dívida: a régua e o servido **discordam ~3 pp por jogo**, e mesmo assim a
+**nota agregada** difere só 0,059. Números diferentes por jogo, qualidade
+parecida no total.
 
-**O QUE FALTA, e é frente própria:** levar o delta até a `Sample`. Isso mexe
-num arquivo que o TREINO usa, então não entra de carona. Só depois disso dá
-para medir a divergência de verdade.
+**DECISÃO: não reescrever o scorecard agora.** A prática correta é a régua
+reusar o caminho de produção em vez de reimplementá-lo, e por isso a dívida
+**fica aberta**. Mas a mudança é grande (o scorecard tem pipeline próprio por
+segmento) para um efeito **abaixo do limiar que a própria casa usa para aceitar
+qualquer coisa**. Fazer agora seria gastar risco onde não paga.
 
-**Fonte da regra aplicada** (conferida abrindo a página em 04/09/2026):
-ausência de dado não pode virar um número — "as métricas devolvem nulo quando
-nada foi medido... e imprimem um aviso explícito", e "falhe alto na fronteira".
-https://thicket.sh/blog/when-your-metric-is-broken-not-your-business
+**O que reabre a decisão:** se o `w_lineup` deixar de ser 0,0, ou se a fusão
+por precisão ganhar peso, a diferença cresce e a conta muda. Vale re-medir
+quando qualquer um dos dois acontecer.
 
 **D9. RESOLVIDA em 06/09/2026.** O cache passa a carregar a **assinatura das
 entradas** que o geraram — `ml_artifact.json`, `players_artifact.json`,
