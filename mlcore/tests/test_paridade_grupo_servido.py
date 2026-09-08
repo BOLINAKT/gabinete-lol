@@ -6,18 +6,27 @@
 ║ ninguem estava vigiando isto, e o erro passou meses.                        ║
 ║                                                                             ║
 ║ 1. O NOME DO PERIGO: divergencia treino/servico (training-serving skew) —   ║
-║    o pipeline de avaliacao calcula de um jeito e o servico de outro. A      ║
-║    licao dura: o TESTE CEGO NAO REVELA ISSO, porque o conjunto de teste e   ║
-║    construido pelo mesmo pipeline de avaliacao e herda a divergencia. So    ║
-║    comparar os DOIS CAMINHOS revela.                                        ║
+║    "o descasamento entre os dados ou features usados no treino e os vistos  ║
+║    no momento de servir". A regra que as fontes dao e a REGRA DE OURO:      ║
+║    "garanta que treino e producao se imitem o mais perto possivel", e "use  ║
+║    o MESMO esquema para validar os dados de treino e os de servico".        ║
 ║    https://www.giskard.ai/glossary/training-serving-skew                    ║
 ║    https://developers.google.com/machine-learning/crash-course/production-ml-systems/monitoring ║
+║    (as duas conferidas abrindo as paginas em 06/09/2026)                    ║
+║                                                                             ║
+║ 1b. O QUE E INFERENCIA MINHA, e estava aqui como se fosse das fontes        ║
+║    (corrigido em 06/09/2026): que o TESTE CEGO nao revela isso, porque o    ║
+║    conjunto de teste e construido pelo mesmo pipeline e herda a             ║
+║    divergencia. NENHUMA das duas paginas diz isso. Continua valendo como    ║
+║    raciocinio — e foi o que aconteceu aqui, o erro so apareceu LENDO o      ║
+║    caminho servido — mas e conclusao minha, sustentada pelo caso.           ║
 ║                                                                             ║
 ║ 2. A FORMA DO TESTE: rodar as MESMAS entradas pelos dois caminhos e exigir  ║
 ║    igualdade dentro de tolerancia numerica apertada, falhando em qualquer   ║
-║    divergencia — "compare todo campo, falhe em qualquer diferenca", nao     ║
-║    "perto o suficiente".                                                    ║
-║    https://apxml.com/courses/feature-stores-for-ml/chapter-3-data-consistency-quality/diagnosing-mitigating-skew ║
+║    divergencia. NAO CONFERIDA: a pagina que eu citava aqui devolve 403 e    ║
+║    nao pude abrir, entao a forma fica como pratica que eu apliquei, sem     ║
+║    fonte verificavel. O que a sustenta e a REGRA DE OURO da fonte 1 e o     ║
+║    proprio caso da D8.                                                      ║
 ║                                                                             ║
 ║ 3. ISTO E O ITEM MONITORAMENTO 3 DA REGUA DAS 28 ("treino e servico nao     ║
 ║    divergem"), que esta VERMELHO nos dois repositorios desde 26/08. Este    ║

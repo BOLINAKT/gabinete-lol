@@ -85,16 +85,28 @@ Este gate escolhe COMO consertar sem trapacear na escolha.
 ║    IC [+0,00339, +0,00587]). O ganho do calibrador cai de +0,02368 para     ║
 ║    +0,01899 — e continua passando na barra da casa.                         ║
 ║                                                                             ║
-║ 10. O NOME DISSO, e a lição de como se acha (pesquisado 05/09/2026,         ║
-║    DEPOIS de eu ter achado lendo código — a ordem certa era o contrário):   ║
-║    é DIVERGÊNCIA TREINO/SERVIÇO (training-serving skew): o pipeline de      ║
-║    avaliação calcula de um jeito e o serviço de outro. A lição que eu não   ║
-║    sabia: **o teste cego NÃO consegue revelar isso**, porque o conjunto de  ║
-║    teste é construído a partir do mesmo pipeline de avaliação e herda a     ║
-║    divergência. Só ler o caminho servido revela — que foi como apareceu.    ║
-║    Ou seja: nenhuma quantidade de medição teria pego este erro.             ║
-║    https://www.giskard.ai/glossary/training-serving-skew                    ║
-║    https://developers.google.com/machine-learning/crash-course/production-ml-systems/monitoring ║
+║ 10. O NOME DISSO é DIVERGÊNCIA TREINO/SERVIÇO (training-serving skew): o    ║
+║    pipeline de avaliação calcula de um jeito e o serviço de outro.          ║
+║    O que as fontes DIZEM (conferido abrindo as páginas em 06/09/2026):      ║
+║      - a definição: "o descasamento entre os dados ou features usados no    ║
+║        treino e os vistos no momento de servir".                            ║
+║        https://www.giskard.ai/glossary/training-serving-skew                ║
+║      - a REGRA DE OURO: "garanta que treino e produção se imitem o mais     ║
+║        perto possível"; e "use o MESMO esquema para validar os dados de     ║
+║        treino e os de serviço".                                             ║
+║        https://developers.google.com/machine-learning/crash-course/production-ml-systems/monitoring ║
+║                                                                             ║
+║    O QUE É INFERÊNCIA MINHA, e estava escrito aqui como se fosse das        ║
+║    fontes (corrigido em 06/09/2026): que **o teste cego não consegue        ║
+║    revelar isso**, porque o conjunto de teste é construído pelo mesmo       ║
+║    pipeline de avaliação e herda a divergência. NENHUMA das duas páginas    ║
+║    diz isso. Continua valendo como raciocínio, e foi o que aconteceu na     ║
+║    prática — o erro só apareceu lendo o caminho servido, não medindo —,     ║
+║    mas é conclusão minha, sustentada pelo caso, não por autoridade.         ║
+║                                                                             ║
+║    Isto é o item MONITORAMENTO 3 da régua das 28 ("treino e serviço não     ║
+║    divergem"), VERMELHO nos dois repositórios desde 26/08. Terceira         ║
+║    ocorrência na semana (D8, D9, D10). A régua estava certa.                ║
 ║    Isto é o item MONITORAMENTO 3 da régua das 28 ("treino e serviço não     ║
 ║    divergem"), que já estava VERMELHO nos dois repositórios desde 26/08     ║
 ║    por causa do `scope_meta`. Esta é a terceira ocorrência. A régua estava  ║

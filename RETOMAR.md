@@ -284,9 +284,12 @@ não repita do zero, comece daqui:
    a dívida D4 — e (b) um vigia que acompanha **ordenação** e **calibração** em
    trilhas separadas, porque só uma delas o recalibrador sabe curar. O alarme
    que importa é o da ordenação: se ela cair, recalibrar é o remédio errado.
-   Acompanhar AUROC ao longo do tempo é o sinal padrão, e agregado esconde
-   deriva por segmento — medir por fatia.
-   https://mlflow.org/articles/why-monitor-model-drift-production/
+   Acompanhar AUROC ao longo do tempo é o sinal padrão. Sobre "agregado
+   esconde deriva por segmento": eu citava aqui um artigo do MLflow, e ao
+   abrir a página em 06/09/2026 ela **não diz isso** — trata de limiares por
+   feature, não por coorte. A afirmação fica **sem fonte externa**, e não
+   precisa de uma: a sombra do calibrador mediu o agregado dizendo "afia"
+   enquanto 38% dos jogos eram achatados. A evidência é nossa.
 
 **Reverter, se der errado:** apagar a chave `postfusion_group_calibration` de
 `params_fitted.json`. Sem ela, o código volta ao comportamento de hoje — isso
@@ -344,19 +347,54 @@ onde a suíte dispara retreino de verdade (D7). **Isto é hipótese, não mediç
 Importa para a frente 0, que grava exatamente em `params_fitted.json` — e essa
 frente ficou mais segura de tocar do que estava em 27/08.
 
-**D2. Fontes faltando em 15 arquivos.** A regra é que tudo carregue a fonte no
-arquivo. Do que foi construído desde 26/08, **5 arquivos têm bloco FONTES e 15
-não têm**. Em vários deles a pesquisa aconteceu de verdade (`mlcore/calibration.py`
-é construído sobre Platt 1999, Kull 2017 e Guo 2017), mas não ficou escrita — o
-que, pela regra, é igual a não ter pesquisado, porque ninguém consegue conferir.
-Sem fonte: `app_core/nota_liga_core.py`, `app_core/postfusion_calibration_core.py`,
-`app_core/statscamps_tab_core.py`, `app_core/streamlit_apptest_core.py`,
-`app_core/viewer_mode_core.py`, `mlcore/calibration.py`, `mlcore/replay_pre_jogo.py`,
-`mlcore/tests/test_calibradores_aninhados.py`, `mlcore/tests/test_e2e_smoke.py`,
-`mlcore/tests/test_postfusion_grupo.py`, `mlcore/tests/test_viewer_mode_core.py`,
-`tools/auditoria_pre_jogo.py`, `tools/find_code_errors.py`, `tools/nota_por_liga.py`,
-`tools/run_phase6_live_gate.py`.
-Preencher junto com a frente que tocar cada arquivo, não numa mutirão separado.
+**D2. REENQUADRADA em 06/09/2026 — o problema não era o que eu pensava.**
+
+A dívida dizia "15 arquivos sem bloco FONTES". Hoje são **14** (o
+`postfusion_calibration_core.py` saiu junto com a frente 0, como a regra 5
+manda). Mas ao trabalhar nela apareceu coisa pior.
+
+**A regra 5 proíbe fazer o resto agora.** "Cada um sai junto com a frente que
+tocar nele — não em mutirão separado." Das frentes desta semana, só duas
+tocaram arquivos da lista: `mlcore/replay_pre_jogo.py` (D9) e
+`tools/nota_por_liga.py` (temporada). Os outros 12 esperam.
+
+**O ACHADO QUE IMPORTA: bloco FONTES que não pode ser conferido é pior que
+bloco nenhum.** Auditei as **28 URLs** que entraram nos arquivos desta semana.
+**15 tinham sido citadas a partir do RESUMO da busca, sem eu abrir a página.**
+Abri as que carregavam peso, e o resultado:
+
+| fonte | o que aconteceu |
+|---|---|
+| thicket.sh (ausência de dado) | **confere**, textual |
+| blog.engflow.com (chave por entrada) | **confere**, textual |
+| feast.dev (uma definição só) | **confere**, e mais forte que meu resumo |
+| dqops.com (aviso + erro no frescor) | **confere**: "We advise configuring the check for warning and error severity levels" |
+| cherryleaf.com (docs as tests) | **confere** |
+| PMC8647501 (Schnellinger) | **confere** |
+| arXiv 2505.00356 (Zanotti) | **confere** |
+| mlflow.org/docs (assinatura do modelo) | **confere em parte** — não diz "evita cravar suposições"; isso é meu |
+| resiliotech (sombra) | **NÃO diz** o que se afirmava |
+| smartdev (deriva moderada × severa) | **NÃO diz** o que se afirmava |
+| mlflow.org/articles (agregado × segmento) | **NÃO diz** o que se afirmava |
+| giskard + Google (teste cego não revela) | dão a definição e a Regra de Ouro, **não** a minha lição |
+| apxml (tolerância da paridade) | **403, não pude abrir** |
+| bazel.build/remote/caching | não descreve a chave — descartada antes de citar |
+| systemoverflow | não continha a frase — descartada antes de citar |
+
+**Quatro afirmações minhas estavam vestidas de citação.** Todas corrigidas no
+lugar onde estavam, marcadas como inferência minha ou como sem fonte. Nenhuma
+conclusão técnica mudou — o que mudou foi o que cada afirmação pode sustentar.
+
+**A lição, que vale mais que a dívida original:** resumo de busca não é fonte.
+Ele confirma o que você já queria ouvir. Das cinco páginas que abri procurando
+confirmação, **três não confirmavam**. Regra nova, a cumprir: *nenhuma URL
+entra em bloco FONTES sem ter sido aberta, e o bloco diz a data em que foi.*
+
+**O que os 12 restantes precisam, quando a frente chegar neles:** não é um
+link. Um registro de decisão captura a decisão, a razão, **e as consequências
+— boas e ruins**. Os blocos bons deste repositório já fazem isso (o do
+`gate_calibrador_final.py` registra até um erro do autor); os ruins são lista
+de link. https://adr.github.io/ (conferida em 06/09/2026)
 
 **D3. RESOLVIDA em 06/09/2026.** O `SETUP.md` apodreceu do jeito mais
 traiçoeiro: alguém corrigiu o **meio** e esqueceu as **pontas**. O passo 4 foi

@@ -40,8 +40,13 @@
 ║    somam quase 38% dos jogos. Ou seja: o modelo é subconfiante em BO1 e      ║
 ║    SUPERCONFIANTE em série longa, e o calibrador conserta cada um para o     ║
 ║    seu lado. Por isso a tabela POR GRUPO existe, e por isso ela vem antes    ║
-║    da leitura agregada: "agregado esconde deriva por segmento".              ║
-║    https://mlflow.org/articles/why-monitor-model-drift-production/           ║
+║    da leitura agregada.                                                      ║
+║    SEM FONTE, e sustentado por MEDIÇÃO NOSSA (corrigido em 06/09/2026): eu   ║
+║    citava aqui um artigo do MLflow para "agregado esconde deriva por         ║
+║    segmento". A página foi aberta e NÃO diz isso — ela trata de limiares     ║
+║    por feature, não por coorte. A afirmação fica sem fonte externa, e não    ║
+║    precisa de uma: nesta própria ferramenta o agregado dizia "AFIA" enquanto ║
+║    38% dos jogos eram ACHATADOS. A evidência é o nosso próprio número.       ║
 ║    (A inclinação impressa na tabela é PONTA A PONTA na tela — inclui o       ║
 ║    microssegmento do time —, por isso não bate com o coeficiente cru do      ║
 ║    bloco. É o que o dono vê, que é o que esta ferramenta existe para dizer.) ║
