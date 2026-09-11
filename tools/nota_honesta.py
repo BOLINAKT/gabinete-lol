@@ -296,10 +296,23 @@ class NotaDeJogadorAprendida(NotaDeJogador):
     ║ jogador vencer a partir de suas estatisticas de fim de jogo".           ║
     ║ https://arxiv.org/html/2501.10049  (aberta em 10/09/2026)               ║
     ║                                                                         ║
-    ║ E a avaliacao DEVE ser por rota: "a avaliacao de desempenho deve ser    ║
-    ║ especifica da funcao, reconhecendo as responsabilidades distintas de    ║
-    ║ cada posicao — para o suporte, farm nao importa como para o atirador".  ║
-    ║ https://journals.sagepub.com/doi/10.1177/17479541251381652 (11/09/2026) ║
+    ║ AVALIAR POR ROTA: isto e INFERENCIA MINHA, nao citacao.                 ║
+    ║ Ate 11/09/2026 havia aqui uma frase entre aspas atribuida ao trabalho   ║
+    ║ do SAGE 10.1177/17479541251381652. REBAIXADA no mesmo dia: tentei       ║
+    ║ reabrir a pagina e o SAGE, o ResearchGate e o IEEE (documento 11153635) ║
+    ║ devolveram 403 / conteudo fechado. Nao consigo conferir a frase, entao  ║
+    ║ ela sai das aspas. A divida D2 do RETOMAR.md diz por que: bloco de      ║
+    ║ fontes que nao da para conferir e pior que bloco nenhum.                ║
+    ║                                                                         ║
+    ║ O que sustenta a escolha por rota, e QUE DA para conferir, e o          ║
+    ║ PandaSkill acima: "for each role, we train a machine learning model".   ║
+    ║                                                                         ║
+    ║ SUSPEITA REGISTRADA, tambem minha e tambem nao confirmada: o resumo     ║
+    ║ daquele trabalho relata acuracia de 0,8686. Previsao pre-jogo de LoL    ║
+    ║ nao chega perto disso — o proprio PandaSkill fica em 0,6498. Numero     ║
+    ║ desse tamanho e tipico de quem preve a partida usando estatistica DA    ║
+    ║ PROPRIA partida, o que seria pos-fato e nao serviria para nos. Nao      ║
+    ║ afirmo que seja o caso; nao li o artigo.                                ║
     ║                                                                         ║
     ║ SEM VAZAMENTO: os pesos sao aprendidos SO com jogos anteriores a 2026,  ║
     ║ e todas as dobras avaliadas sao de 2026. A padronizacao usa media e     ║
@@ -820,11 +833,23 @@ def main() -> int:
     notas = [nt for _, _, nt in linhas]
     print(f"\nNOTA HONESTA ({args.marca}): {geral:.2f} / 10   "
           f"(n={n_tot}, {len(linhas)} dobras, TODOS fora da amostra)")
-    if notas:
+    # A nota de uma dobra e indefinida quando a janela nao tem jogo ENTRE
+    # REGIOES — a mistura 45/55 nao existe com um dos lados vazio. Acontece de
+    # verdade: em janeiro nao ha evento internacional. Antes de 11/09/2026 esse
+    # nan escorria pelo min()/max() e o resumo saia "pior nan | melhor nan",
+    # escondendo tanto o resumo quanto o motivo.
+    # PRINCIPIO IV: ausencia nao vira numero — ela e CONTADA e DITA.
+    validas = [x for x in notas if x == x]
+    vazias = len(notas) - len(validas)
+    if validas:
         # Varios operadores de resumo, como a fonte 5 recomenda: a media esconde
         # dobra ruim, o pior caso nao.
-        print(f"  por dobra -> pior {min(notas):.2f} | mediana "
-              f"{sorted(notas)[len(notas)//2]:.2f} | melhor {max(notas):.2f}")
+        print(f"  por dobra -> pior {min(validas):.2f} | mediana "
+              f"{sorted(validas)[len(validas)//2]:.2f} | melhor {max(validas):.2f}")
+    if vazias:
+        print(f"  {vazias} dobra(s) sem nota propria: a janela nao teve jogo "
+              f"entre regioes, e a mistura 45/55 precisa dos dois lados. "
+              f"Os jogos delas CONTAM na nota geral, que soma tudo.")
 
     saida = pasta / (f"nota_honesta_{args.marca}_{args.cadencia}"
                              f"{'_hybrid' if args.com_hybrid else ''}"

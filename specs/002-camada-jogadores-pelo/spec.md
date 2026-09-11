@@ -1,131 +1,145 @@
-# Feature Specification: [FEATURE NAME]
+# Especificação: camada de jogadores pelo caminho servido
 
-**Feature Branch**: `[###-feature-name]`
+**Branch**: `002-camada-jogadores-pelo` | **Criada**: 11/09/2026 | **Status**: Rascunho
 
-**Created**: [DATE]
-
-**Status**: Draft
-
-**Input**: User description: "$ARGUMENTS"
-
-## User Scenarios & Testing *(mandatory)*
-
-<!--
-  IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
-  Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
-  you should still have a viable MVP (Minimum Viable Product) that delivers value.
-
-  Assign priorities (P1, P2, P3, etc.) to each story, where P1 is the most critical.
-  Think of each story as a standalone slice of functionality that can be:
-  - Developed independently
-  - Tested independently
-  - Deployed independently
-  - Demonstrated to users independently
--->
-
-### User Story 1 - [Brief Title] (Priority: P1)
-
-[Describe this user journey in plain language]
-
-**Why this priority**: [Explain the value and why it has this priority level]
-
-**Independent Test**: [Describe how this can be tested independently - e.g., "Can be fully tested by [specific action] and delivers [specific value]"]
-
-**Acceptance Scenarios**:
-
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
-2. **Given** [initial state], **When** [action], **Then** [expected outcome]
+**Pedido do dono**: *"vai melhorar a metrica dos jogadores, pesquisando onde
+você pode achar dados melhores, enfim, esse tipo de coisa, ou mesmo só
+melhorando os dados que já tem"*
 
 ---
 
-### User Story 2 - [Brief Title] (Priority: P2)
+## O problema, em uma frase
 
-[Describe this user journey in plain language]
+A camada de jogadores rende **+0,00346** na régua e **não está ligada**, porque
+a régua mediu por um caminho que o app não percorre inteiro.
 
-**Why this priority**: [Explain the value and why it has this priority level]
+## Por que isso não é birra de método
 
-**Independent Test**: [Describe how this can be tested independently]
+O app faz três coisas, nesta ordem
+(`app_core/ml_pre_engine_core.py` ~565–595):
 
-**Acceptance Scenarios**:
+1. desloca o logito **cru**: `logit(p_raw) + w_lineup × delta`
+2. **calibra** o resultado
+3. **funde por precisão** com a probabilidade só-de-time
 
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
+A régua fazia só uma versão do passo 1, sobre o logito **já calibrado**, e
+pulava o passo 3 inteiro. O passo 3 **encolhe** o deslocamento na direção do
+time. Então **+0,00346 é um teto, não a entrega** — e ninguém sabe ainda quanto
+sobra depois do encolhimento.
 
----
-
-### User Story 3 - [Brief Title] (Priority: P3)
-
-[Describe this user journey in plain language]
-
-**Why this priority**: [Explain the value and why it has this priority level]
-
-**Independent Test**: [Describe how this can be tested independently]
-
-**Acceptance Scenarios**:
-
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
+Ligar a camada com base nesse número seria prometer um ganho medido num
+caminho que o app não roda. É o que o Princípio V proíbe, e é o mesmo erro que
+já custou uma rodada inteira quando o calibrador com grupo media +0,02 num
+estágio que nunca era alcançado.
 
 ---
 
-[Add more user stories as needed, each with an assigned priority]
+## Histórias
 
-### Edge Cases
+### US1 — Saber quanto sobra depois da fusão (P1)
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right edge cases.
--->
+Como dono, quero saber **o ganho real** da camada de jogadores pelo caminho que
+o app percorre, para decidir se vale ligar.
 
-- What happens when [boundary condition]?
-- How does system handle [error scenario]?
+**Por que é P1**: se sobrar pouco, as histórias 2 e 3 não têm motivo para
+existir. Esta pode matar a frente inteira, e é barata.
 
-## Requirements *(mandatory)*
+**Teste independente**: rodar a régua com e sem `--fusao-servida`, comparar
+pareado, e ler o intervalo de confiança.
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right functional requirements.
--->
+**Cenários**:
 
-### Functional Requirements
+1. **Dado** a régua com a fusão por precisão ligada, **quando** comparo a base
+   com e sem a camada de jogadores, **então** obtenho o ganho pareado com IC
+   diádico e p corrigido.
+2. **Dado** que o ganho **não** passa na barra da casa (> 0,002, p < 0,05,
+   limite inferior acima de zero), **então** a frente é encerrada e registrada
+   como morta — sem tentar salvá-la ajustando parâmetro até passar.
 
-- **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]
-- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]
-- **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
-- **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
-- **FR-005**: System MUST [behavior, e.g., "log all security events"]
+### US2 — Nota de habilidade em vez de média acumulada (P2)
 
-*Example of marking unclear requirements:*
+Como dono, quero que a nota de um jogador saiba **contra quem** ele jogou e
+quanta **incerteza** ela tem, em vez de ser uma média simples do passado.
 
-- **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+Hoje a nota é `soma acumulada ÷ (jogos + β)`. O PandaSkill trata cada partida
+como um confronto dos **10 jogadores entre si**, ordenados pela nota de
+desempenho, e atualiza a habilidade por esse ranking.
 
-### Key Entities *(include if feature involves data)*
+**Por que é P2**: é a maior diferença estrutural contra o desenho de
+referência, mas só faz sentido depois que US1 disser que existe sinal.
 
-- **[Entity 1]**: [What it represents, key attributes without implementation]
-- **[Entity 2]**: [What it represents, relationships to other entities]
+**Teste independente**: trocar só o estágio 2, medir na régua com fusão.
 
-## Success Criteria *(mandatory)*
+### US3 — Correção de contexto por região (P3)
 
-<!--
-  ACTION REQUIRED: Define measurable success criteria.
-  These must be technology-agnostic and measurable.
--->
+Como dono, quero que nota alta em liga fraca não valha o mesmo que nota alta em
+liga forte.
 
-### Measurable Outcomes
+Temos correção de liga **no nível de time**; **não temos no nível de jogador**.
+O PandaSkill separa nota contextual (dentro da região) de nota da própria
+região — e é justamente entre regiões que o método deles ganha mais
+(70,07% contra 64,86%).
 
-- **SC-001**: [Measurable metric, e.g., "Users can complete account creation in under 2 minutes"]
-- **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
-- **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
-- **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+**Por que é P3**: maior esforço, e o time já corrige parte disso. Só depois de
+US1 e US2.
 
-## Assumptions
+---
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right assumptions based on reasonable defaults
-  chosen when the feature description did not specify certain details.
--->
+## Requisitos
 
-- [Assumption about target users, e.g., "Users have stable internet connectivity"]
-- [Assumption about scope boundaries, e.g., "Mobile support is out of scope for v1"]
-- [Assumption about data/environment, e.g., "Existing authentication system will be reused"]
-- [Dependency on existing system/service, e.g., "Requires access to the existing user profile API"]
+- **RF-001** A régua DEVE aplicar a fusão por precisão **importando**
+  `fuse_with_coherence_guard` de `mlcore/fusion_core.py`. Nenhuma cópia da
+  matemática da fusão pode existir em `tools/`.
+- **RF-002** A régua DEVE aplicar o deslocamento ao logito **cru** e calibrar
+  depois, na mesma ordem do app.
+- **RF-003** As escalas de evidência DEVEM ser lidas de
+  `params_fitted["best"]`, onde o app as lê — não cravadas no código.
+- **RF-004** Cada variante DEVE gravar em arquivo próprio. Colisão de nome já
+  invalidou uma comparação antes.
+- **RF-005** Todo ganho publicado DEVE vir de uma corrida do
+  `comparar_variantes.py`, com IC diádico, colada junto. Esta regra nasceu do
+  erro de 11/09, quando o ganho da margem foi publicado como +0,00573 por
+  leitura à mão e o valor pareado era +0,00463.
+- **RF-006** Nada sobe sem passar na barra da casa: ganho > 0,002, p < 0,05
+  **corrigido para comparações múltiplas**, e limite inferior do IC acima de
+  zero — as três coisas.
+- **RF-007** Se a camada for ligada, DEVE haver caminho de volta verificado,
+  como no rollback da spec 001.
+- **RF-008** A citação não-conferida no bloco FONTES de
+  `NotaDeJogadorAprendida` (SAGE, HTTP 403 em 11/09) DEVE ser reaberta ou
+  rebaixada a inferência minha.
+
+## Critérios de sucesso
+
+- **CS-001** O ganho da camada de jogadores **pelo caminho servido** está
+  medido, com IC diádico, e escrito.
+- **CS-002** A decisão de ligar ou não está tomada **por esse número**, não
+  pelo +0,00346.
+- **CS-003** Se ligada, a nota honesta de produção sobe, medida pareada.
+- **CS-004** Se não ligada, o motivo está escrito de forma que ninguém precise
+  refazer a medição para entender.
+
+## Fora de escopo
+
+- Draft (vive no lado ao vivo).
+- Qualquer coisa que dependa de registro de ações dentro da partida — nossa
+  fonte é estatística de fim de jogo.
+- Trocar o motor de rating (medido, empate, p = 0,49).
+
+## Premissas
+
+- A régua honesta continua sendo a única régua que decide. A nota do
+  `ml_fusion_scorecard` mede dentro da amostra e não entra em nenhuma decisão.
+- Os artefatos de dobra já treinados com a marca `margem` são reaproveitáveis,
+  então medir variantes novas custa minutos, não horas.
+- `w_lineup_used = 0,85` fica como está enquanto US1 roda. Mexer nele no meio
+  da medição criaria um segundo fator e estragaria a comparação.
+
+## Riscos
+
+| risco | o que fazer |
+|---|---|
+| a fusão engole o ganho quase todo | é o resultado mais provável; US1 existe para descobrir isso barato |
+| ligar `use_lineup_adjust` mexe em mais coisa que a fusão | o portão abre **dois** pontos; o segundo (~linha 747) ainda não foi lido |
+| `w_lineup_used = 0,85` foi ajustado na régua velha | pode estar errado; reajustar na régua honesta é candidato a tarefa |
+| tentar muitas variantes até uma passar | maldição do vencedor; por isso RF-006 exige correção para comparações múltiplas |

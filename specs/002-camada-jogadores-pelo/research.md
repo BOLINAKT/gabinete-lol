@@ -1,5 +1,19 @@
 # Pesquisa — camada de jogadores pelo caminho servido
 
+> **AVISO, 11/09/2026 — parte deste arquivo foi DESMENTIDA pela medição.**
+>
+> Este documento afirma, em mais de um lugar, que o **+0,00346 é um teto**
+> porque a fusão por precisão encolheria o ganho. **Medido: não encolhe.** O
+> ganho é *maior* com a fusão (+0,00565) do que sem (+0,00491).
+>
+> E a fusão, medida sozinha, **faz mal** à base: −0,00183, com o intervalo
+> inteiro abaixo de zero. Por isso a recomendação de imitar o precedente do
+> calibrador com grupo — abrir o ramo `use_lineup` com uma "aplicação de
+> reserva" — **está errada** e não deve ser seguida.
+>
+> O arquivo fica como está, sem edição no corpo, porque registro de decisão é
+> append-only. **O que vale é `medicao-us1.md`.**
+
 **Data**: 11/09/2026 | **Feature**: 002-camada-jogadores-pelo
 
 Todas as fontes abaixo foram **abertas**, não citadas a partir do resumo da
