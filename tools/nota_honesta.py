@@ -90,6 +90,25 @@ from tools.ml_quality_scorecard import _grade_from_logloss, _metrics, default_cs
 PY = sys.executable
 
 
+def _escalas_de_fusao() -> tuple[float, float]:
+    """Le os pesos de evidencia da fusao do MESMO params_fitted.json que o app.
+
+    O app os pega em params_fitted["best"]["team_scale"] / ["players_scale"]
+    (app_core/fit_runtime_core.py, linhas 30-31) e cai em 1.0 se faltarem.
+    Cravar o numero aqui seria reimplementar producao — Principio V.
+    """
+    try:
+        _pf = json.loads((ROOT / "params_fitted.json").read_text(encoding="utf-8"))
+        _b = _pf.get("best") or {}
+        return (max(0.0, float(_b.get("team_scale") or 1.0)),
+                max(0.0, float(_b.get("players_scale") or 1.0)))
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        return (1.0, 1.0)
+
+
+FUS_TEAM_SCALE, FUS_PLAYERS_SCALE = _escalas_de_fusao()
+
+
 def treinar_dobra(dias: int, marca: str, extra: list[str], csvs: list[str],
                   pasta: Path) -> tuple[Path, Path]:
     """Treina um artefato que so enxerga dados anteriores a (data_max - dias)."""
@@ -422,7 +441,8 @@ def pontuar_janela_prequencial(art_path: Path, ply_path: Path, jogos: pd.DataFra
                                ini, fim, player_rows, domestic_by_year, team_meta_infer,
                                historico=None, ss_app=None, cfg_form=None,
                                usar_hybrid=True, usar_platt=True,
-                               jogadores=None, w_jog=0.0) -> dict:
+                               jogadores=None, w_jog=0.0,
+                               fusao_servida=False) -> dict:
     """Como pontuar_janela, mas com a CADENCIA DE PRODUCAO.
 
     POR QUE ISTO EXISTE (09/09/2026): a dobra congelada treina no corte e preve
@@ -485,6 +505,7 @@ def pontuar_janela_prequencial(art_path: Path, ply_path: Path, jogos: pd.DataFra
         # absolutos estavam todos deslocados.
         # Point-in-time: o calibrador vem do artefato DA DOBRA, ajustado so com
         # dados anteriores ao corte dela.
+        p_raw_pre = float(p0)
         if usar_platt:
             try:
                 p0 = float(clip_prob(art.calibrator.predict_proba(p0)))
@@ -498,6 +519,56 @@ def pontuar_janela_prequencial(art_path: Path, ply_path: Path, jogos: pd.DataFra
         cov_tot = float(res.get("coverage_total", 5) or 5.0)
         cov = float(res.get("coverage", 0) or 0.0) / (cov_tot if cov_tot else 5.0)
         fundido = float(_sigmoid(_logit(p0) + w_lineup * (d * cov)))
+
+        # ---- FUSAO POR PRECISAO: o estagio que faltava na regua ----
+        #
+        # POR QUE ISTO EXISTE (11/09/2026). Ate hoje a regua parava no
+        # deslocamento do logito acima, e eu afirmei que "o app nao desloca o
+        # logito, ele funde por precisao". ERRADO, conferido lendo o codigo:
+        # o app faz AS DUAS coisas, nesta ordem
+        # (app_core/ml_pre_engine_core.py, linhas ~565-595):
+        #
+        #   logit_used = logit(p_RAW) + w_lineup * delta
+        #   p_players  = calibrar(sigmoide(logit_used))
+        #   p_final    = fundir_por_precisao(p_team=p_map, p_players=p_players)
+        #
+        # Duas diferencas contra o caminho acima, e as duas importam:
+        #   1) o deslocamento entra no logito CRU, e a calibracao vem DEPOIS.
+        #      Por isso este ramo recomeca de p_raw_pre.
+        #   2) existe uma etapa de fusao que ENCOLHE o deslocamento de volta
+        #      na direcao da probabilidade so-de-time, por variancia inversa.
+        #
+        # Consequencia: todo ganho de jogadores medido SEM esta etapa e um
+        # TETO, nao a entrega.
+        #
+        # PRINCIPIO V: fuse_with_coherence_guard e IMPORTADA de
+        # mlcore/fusion_core.py — a mesma funcao que o app chama. Nada aqui
+        # reimplementa producao.
+        if fusao_servida:
+            from mlcore.fusion_core import fuse_with_coherence_guard
+            _pp = float(_sigmoid(_logit(p_raw_pre) + w_lineup * (d * cov)))
+            if usar_platt:
+                try:
+                    _pp = float(clip_prob(art.calibrator.predict_proba(_pp)))
+                except Exception:
+                    pass
+            _gp = getattr(art.model, "games_played", {}) or {}
+            _n_team = min(float(_gp.get(blue, 0.0) or 0.0),
+                          float(_gp.get(red, 0.0) or 0.0))
+            _n_play = max(0.0, float(res.get("avg_gp_min", 0.0) or 0.0)
+                          * float(cov)
+                          * float(res.get("freshness_avg", 1.0) or 1.0))
+            try:
+                _fus = fuse_with_coherence_guard(
+                    p_team=float(p0), p_players=float(_pp),
+                    n_team=float(_n_team), n_players=float(_n_play),
+                    team_scale=float(FUS_TEAM_SCALE),
+                    players_scale=float(FUS_PLAYERS_SCALE),
+                    coverage=float(cov), season_phase="auto",
+                )
+                fundido = float(_fus.get("p_fused", fundido))
+            except (TypeError, ValueError, ZeroDivisionError):
+                pass
 
         # ---- camada de jogadores por DESEMPENHO ----
         # Deslocamento no logito, que e a forma que a camada atual ja usa
@@ -604,6 +675,10 @@ def main() -> int:
     ap.add_argument("--com-jogadores", action="store_true",
                     help="Camada de jogadores por DESEMPENHO. O peso e ajustado so "
                          "em dobras ANTERIORES a cada janela (prequencial).")
+    ap.add_argument("--fusao-servida", action="store_true",
+                    help="Aplica a FUSAO POR PRECISAO depois do deslocamento da "
+                         "camada de jogadores, que e o que o app faz de verdade. "
+                         "Sem isto o ganho de jogadores e um TETO, nao a entrega.")
     ap.add_argument("--sem-platt", action="store_true",
                     help="Mede SEM o calibrador Platt (o que a regua fazia por engano "
                          "ate 10/09/2026). So para comparar com as medicoes antigas.")
@@ -713,7 +788,8 @@ def main() -> int:
                             historico=historico, ss_app=ss_app,
                             cfg_form=cfg_form, usar_hybrid=bool(args.com_hybrid),
                             usar_platt=not args.sem_platt,
-                            jogadores=jogadores, w_jog=w_jog)
+                            jogadores=jogadores, w_jog=w_jog,
+                            fusao_servida=bool(args.fusao_servida))
         else:
             res = f_pontuar(art, ply, jogos, ini, fim, player_rows,
                             domestic_by_year, team_meta)
@@ -754,7 +830,11 @@ def main() -> int:
                              f"{'_hybrid' if args.com_hybrid else ''}"
                              f"{'_form' if args.com_form else ''}"
                              f"{'_semplatt' if args.sem_platt else '_platt'}"
-                             f"{('_jogA' if args.jogadores_aprendido else '_jog') if args.com_jogadores else ''}.json")
+                             f"{('_jogA' if args.jogadores_aprendido else '_jog') if args.com_jogadores else ''}"
+                             # Sem este sufixo a variante servida sobrescreveria a
+                             # base, que foi o erro de 10/09 (comparacao com n
+                             # diferente porque um arquivo comeu o outro).
+                             f"{'_fus' if args.fusao_servida else ''}.json")
     saida.write_text(json.dumps({
         "marca": args.marca, "extra": extra, "cadencia": args.cadencia, "com_hybrid": bool(args.com_hybrid), "com_form": bool(args.com_form), "nota_honesta": geral, "n": n_tot,
         "dobras": [{"janela": j, "n": n, "nota": nt} for j, n, nt in linhas],

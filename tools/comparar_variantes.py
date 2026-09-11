@@ -68,10 +68,28 @@ PASTA = ROOT / "scratchpad" / "nota_honesta"
 
 
 def carregar(marca: str) -> dict:
-    p = PASTA / f"nota_honesta_prod_{marca}.json"
-    if not p.exists():
-        raise SystemExit(f"variante ausente: {p.name}")
-    return json.loads(p.read_text(encoding="utf-8"))
+    """Aceita o sufixo curto da marca 'prod' OU o nome completo do arquivo.
+
+    Nasceu so com o prefixo `nota_honesta_prod_`, e por isso nao conseguia
+    comparar nada rodado com outra marca (`--marca margem`, por exemplo) —
+    o que escondeu por um tempo qual numero pertencia a qual variante.
+    Os candidatos vao do mais especifico ao mais geral, entao o
+    comportamento antigo continua valendo palavra por palavra.
+    """
+    nome = str(marca).strip()
+    if nome.endswith(".json"):
+        nome = nome[:-5]
+    candidatos = [
+        PASTA / f"nota_honesta_prod_{nome}.json",   # jeito antigo, vem primeiro
+        PASTA / f"{nome}.json",                     # nome completo do arquivo
+        PASTA / f"nota_honesta_{nome}.json",        # sem o 'prod_'
+        Path(nome).with_suffix(".json"),            # caminho solto
+    ]
+    for p in candidatos:
+        if p.exists():
+            return json.loads(p.read_text(encoding="utf-8"))
+    tentados = "\n  ".join(str(c) for c in candidatos)
+    raise SystemExit(f"variante ausente: '{marca}'. Procurei em:\n  {tentados}")
 
 
 def _times_por_jogo() -> dict:
