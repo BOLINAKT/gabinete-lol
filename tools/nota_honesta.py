@@ -330,90 +330,48 @@ class NotaDeJogadorAprendida(NotaDeJogador):
             "earnedgoldshare", "cspm", "visionscore", "golddiffat15"]
 
     def __init__(self, csvs, usar_escalacao_anterior: bool = False):
-        base = ["gameid", "date", "participantid", "position", "playername",
-                "result", "teamname"]
-        quadros = []
-        for c in csvs:
-            pv = pd.read_csv(c, nrows=1, low_memory=False)
-            uso = [x for x in base + self.COLS if x in pv.columns]
-            quadros.append(pd.read_csv(c, low_memory=False, usecols=uso))
-        df = pd.concat(quadros, ignore_index=True)
-        df = df[(df["participantid"] >= 1) & (df["participantid"] <= 10)].copy()
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
-        df = df.dropna(subset=["date", "playername", "position", "result"])
-        df = df.sort_values("date").reset_index(drop=True)
-        df["lado"] = np.where(df["participantid"] <= 5, "blue", "red")
-        df["ano"] = df["date"].dt.year
+        """Delega a matematica para mlcore — a regua NAO tem copia propria.
 
-        # participacao em kills normaliza por quao sangrento foi o jogo —
-        # melhor que KDA cru, que premia jogo cheio de luta.
-        if set(["kills", "assists", "teamkills"]).issubset(df.columns):
-            tk = pd.to_numeric(df["teamkills"], errors="coerce")
-            df["kp"] = ((pd.to_numeric(df["kills"], errors="coerce").fillna(0)
-                         + pd.to_numeric(df["assists"], errors="coerce").fillna(0))
-                        / tk.replace(0, np.nan)).fillna(0.0)
+        PRINCIPIO V. Ate 11/09/2026 esta classe carregava o CSV, ajustava os
+        pesos por rota e montava a nota AQUI DENTRO, em tools/. Era a regua
+        medindo uma implementacao que so existia na regua: se ela subisse para
+        producao, o app rodaria outro codigo e o numero medido nao valeria.
 
-        feats = [c for c in ("kp", "deaths", "dpm", "damageshare", "earnedgoldshare",
-                             "cspm", "visionscore", "golddiffat15") if c in df.columns]
-        treino_mask = (df["ano"] < self.ANO_CORTE).to_numpy()
-        if int(treino_mask.sum()) < 2000:
-            raise SystemExit("poucos jogos antes do corte para aprender os pesos")
+        Agora tudo vem de mlcore/players_pscore_core.py, o MESMO modulo que o
+        treino usa para montar o artefato e que o app usa para servir. Se
+        alguem mexer na matematica, muda nos dois lugares de uma vez, e esta
+        regua acusa.
+        """
+        from datetime import date as _date
 
-        y_all = pd.to_numeric(df["result"], errors="coerce").fillna(0).to_numpy(float)
-        X_all = np.zeros((len(df), len(feats)), dtype=float)
-        self._w = {}
-        for rota, idx in df.groupby("position", sort=False).indices.items():
-            tr = [i for i in idx if treino_mask[i]]
-            if len(tr) < 300:
-                continue
-            for j, f in enumerate(feats):
-                v = pd.to_numeric(df[f], errors="coerce").fillna(0.0).to_numpy(float)
-                m = float(v[tr].mean())
-                sd = float(v[tr].std()) or 1.0
-                X_all[idx, j] = (v[idx] - m) / sd
-            Xtr = np.column_stack([X_all[tr], np.ones(len(tr))])
-            w = np.zeros(Xtr.shape[1])
-            for _ in range(60):
-                pr = 1.0 / (1.0 + np.exp(-np.clip(Xtr @ w, -30, 30)))
-                g = Xtr.T @ (y_all[tr] - pr)
-                H = -(Xtr.T * (pr * (1 - pr))) @ Xtr - 1e-6 * np.eye(Xtr.shape[1])
-                try:
-                    passo = np.linalg.solve(H, -g)
-                except np.linalg.LinAlgError:
-                    break
-                w = w + passo
-                if np.max(np.abs(passo)) < 1e-9:
-                    break
-            self._w[rota] = w
+        from mlcore.players_pscore_core import (
+            ajustar as _ajustar,
+            calcular_pscore as _calcular_pscore,
+            carregar_linhas as _carregar_linhas,
+            notas_ponto_no_tempo as _notas_pit,
+        )
 
-        ps = np.zeros(len(df), dtype=float)
-        for rota, idx in df.groupby("position", sort=False).indices.items():
-            w = self._w.get(rota)
-            if w is None:
-                continue
-            ps[idx] = np.column_stack([X_all[idx], np.ones(len(idx))]) @ w
-        df["pscore"] = ps
-
-        df = df.sort_values(["playername", "date"])
-        g = df.groupby("playername", sort=False)
-        df["nota"] = (g["pscore"].cumsum() - df["pscore"]) / (g.cumcount() + self.BETA)
+        df = _carregar_linhas(list(csvs))
+        # Corte por ANO: os pesos saem so de jogos anteriores a 2026, e todas
+        # as dobras avaliadas sao de 2026. Nenhuma dobra enxerga os proprios
+        # dados no ajuste dos pesos.
+        ajuste = _ajustar(df, ate=_date(int(self.ANO_CORTE), 1, 1))
+        df["nota"] = _notas_pit(df, _calcular_pscore(df, ajuste))
 
         agg = df.groupby(["gameid", "lado"], sort=False)["nota"].sum().unstack("lado").dropna()
         self._dif = {str(k): float(v) for k, v in (agg["blue"] - agg["red"]).items()}
         print("[jogadores] pesos aprendidos em {} rotas, {} estatisticas, "
-              "so com jogos < {}".format(len(self._w), len(feats), self.ANO_CORTE))
-        # ESCALACAO ANTERIOR x ESCALACAO REAL — a diferenca entre medir o que da
-        # para entregar e medir o que seria bom.
+              "so com jogos < {} (via mlcore)".format(
+                  len(ajuste["pesos_por_rota"]), len(ajuste["atributos"]), self.ANO_CORTE))
+
+        # ESCALACAO ANTERIOR x ESCALACAO REAL — a diferenca entre medir o que
+        # da para entregar e medir o que seria bom.
         #
-        # Por padrao a nota usa os 5 que DE FATO jogaram, lidos do CSV. Antes da
-        # partida o app NAO SABE quem vai jogar — ele so conhece a ultima
-        # escalacao vista. Quando ha substituicao, sao pessoas diferentes, e o
-        # ganho medido com a escalacao real supoe adivinhacao.
-        #
-        # Era uma variavel de ambiente ate 11/09/2026, o que tinha dois defeitos:
-        # nao aparecia no --help e nao mudava o nome do arquivo de saida, entao
-        # as duas medicoes se sobrescreviam e depois era impossivel saber qual
-        # numero veio de qual. Virou opcao de verdade, com sufixo proprio.
+        # Por padrao a nota usa os 5 que DE FATO jogaram. Antes da partida o
+        # app NAO SABE quem vai jogar — so conhece a ultima escalacao vista.
+        # Com substituicao, sao pessoas diferentes, e o ganho medido com a
+        # escalacao real supoe adivinhacao. Medido em 11/09/2026: +0,00491 com
+        # a real contra +0,00402 com a anterior.
         if usar_escalacao_anterior or os.environ.get("ESCALACAO_ANTERIOR") == "1":
             alt = self._usar_escalacao_anterior(df)
             if alt:
