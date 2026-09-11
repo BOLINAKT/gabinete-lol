@@ -329,7 +329,7 @@ class NotaDeJogadorAprendida(NotaDeJogador):
     COLS = ["kills", "deaths", "assists", "teamkills", "dpm", "damageshare",
             "earnedgoldshare", "cspm", "visionscore", "golddiffat15"]
 
-    def __init__(self, csvs):
+    def __init__(self, csvs, usar_escalacao_anterior: bool = False):
         base = ["gameid", "date", "participantid", "position", "playername",
                 "result", "teamname"]
         quadros = []
@@ -402,12 +402,29 @@ class NotaDeJogadorAprendida(NotaDeJogador):
         self._dif = {str(k): float(v) for k, v in (agg["blue"] - agg["red"]).items()}
         print("[jogadores] pesos aprendidos em {} rotas, {} estatisticas, "
               "so com jogos < {}".format(len(self._w), len(feats), self.ANO_CORTE))
-        if os.environ.get("ESCALACAO_ANTERIOR") == "1":
+        # ESCALACAO ANTERIOR x ESCALACAO REAL — a diferenca entre medir o que da
+        # para entregar e medir o que seria bom.
+        #
+        # Por padrao a nota usa os 5 que DE FATO jogaram, lidos do CSV. Antes da
+        # partida o app NAO SABE quem vai jogar — ele so conhece a ultima
+        # escalacao vista. Quando ha substituicao, sao pessoas diferentes, e o
+        # ganho medido com a escalacao real supoe adivinhacao.
+        #
+        # Era uma variavel de ambiente ate 11/09/2026, o que tinha dois defeitos:
+        # nao aparecia no --help e nao mudava o nome do arquivo de saida, entao
+        # as duas medicoes se sobrescreviam e depois era impossivel saber qual
+        # numero veio de qual. Virou opcao de verdade, com sufixo proprio.
+        if usar_escalacao_anterior or os.environ.get("ESCALACAO_ANTERIOR") == "1":
             alt = self._usar_escalacao_anterior(df)
             if alt:
                 self._dif = alt
                 print("[jogadores] usando a ESCALACAO ANTERIOR de cada time "
                       "({} jogos) — e o que o app sabe antes da partida".format(len(alt)))
+            else:
+                raise SystemExit(
+                    "[jogadores] --escalacao-anterior pedido mas nao foi possivel "
+                    "montar (falta teamname no CSV). PARANDO: seguir com a "
+                    "escalacao real daria um numero otimista com nome de realista.")
 
 
 class HistoricoPorTime:
@@ -688,6 +705,10 @@ def main() -> int:
     ap.add_argument("--com-jogadores", action="store_true",
                     help="Camada de jogadores por DESEMPENHO. O peso e ajustado so "
                          "em dobras ANTERIORES a cada janela (prequencial).")
+    ap.add_argument("--escalacao-anterior", action="store_true",
+                    help="Usa a ULTIMA escalacao conhecida de cada time em vez da "
+                         "real do jogo. E o que o app sabe ANTES da partida; sem "
+                         "isto o ganho supoe adivinhar substituicao.")
     ap.add_argument("--fusao-servida", action="store_true",
                     help="Aplica a FUSAO POR PRECISAO depois do deslocamento da "
                          "camada de jogadores, que e o que o app faz de verdade. "
@@ -726,8 +747,8 @@ def main() -> int:
     cfg_form = None
     jogadores = None
     if args.com_jogadores:
-        jogadores = (NotaDeJogadorAprendida(csvs) if args.jogadores_aprendido
-                     else NotaDeJogador(csvs))
+        jogadores = (NotaDeJogadorAprendida(csvs, args.escalacao_anterior)
+                     if args.jogadores_aprendido else NotaDeJogador(csvs))
         print(f"[jogadores] nota por desempenho montada para {len(jogadores._dif)} jogos")
     if args.com_form:
         _pf = json.loads((ROOT / "params_fitted.json").read_text(encoding="utf-8"))
@@ -859,6 +880,7 @@ def main() -> int:
                              # Sem este sufixo a variante servida sobrescreveria a
                              # base, que foi o erro de 10/09 (comparacao com n
                              # diferente porque um arquivo comeu o outro).
+                             f"{'_ant' if args.escalacao_anterior else ''}"
                              f"{'_fus' if args.fusao_servida else ''}.json")
     saida.write_text(json.dumps({
         "marca": args.marca, "extra": extra, "cadencia": args.cadencia, "com_hybrid": bool(args.com_hybrid), "com_form": bool(args.com_form), "nota_honesta": geral, "n": n_tot,
