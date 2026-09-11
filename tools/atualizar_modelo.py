@@ -73,6 +73,7 @@ def main() -> int:
 
     art = ROOT / "ml_artifact.json"
     players = ROOT / "players_artifact.json"
+    pscore = ROOT / "players_pscore.json"
 
     # 1) Nota ANTES (se já há artefato).
     if art.exists():
@@ -82,21 +83,31 @@ def main() -> int:
 
     # 2) Backup.
     ts = time.strftime("%Y%m%d_%H%M%S")
-    for f in (art, players):
+    for f in (art, players, pscore):
         if f.exists():
             bak = f.with_suffix(f.suffix + f".pre_update_{ts}")
             bak.write_bytes(f.read_bytes())
             print(f"backup: {f.name} -> {bak.name}")
 
     # 3) Rebuild (defaults validados; --fit-players já é default ON).
+    #
     # MARGEM DE VITORIA ligada em 11/09/2026 (specs/001-ligar-margem-vitoria).
-    # Medido na regua honesta (7 dobras, 7.359 jogos fora da amostra, cadencia
-    # de producao, calibrador aplicado): +0,00573 de logloss, IC95 diadico
-    # [+0,00396, +0,00751], p < 1e-8. Nota 7,12 -> 7,32.
+    # Medido na regua honesta, teste pareado jogo a jogo: +0,00463 de logloss,
+    # IC95 diadico [+0,00273, +0,00654], p ~ 2e-6. Nota 7,12 -> 7,24.
     # Sinal: ouro aos 15 min, escolhido medindo (bate kills e torres).
+    # (Uma versao anterior deste comentario dizia +0,00573 e 7,32. Estava
+    #  errado: aquele numero era da margem MAIS a camada de jogadores.)
     # Para reverter: trocar 'gd15' por 'off' — o fit volta a ser bit a bit o
     # anterior, e ha teste travando isso (test_whr_mov.py).
+    #
+    # CAMADA DE JOGADORES POR DESEMPENHO ligada em 11/09/2026
+    # (specs/002-camada-jogadores-pelo). Nao precisa de opcao: vem ligada por
+    # padrao. Medida contra a base REAL servida, 8 dobras, n=8.494, pareado:
+    # +0,00388, IC [+0,00270, +0,00506]. Nota 7,09 -> 7,20.
+    # Para reverter: acrescentar "--no-pscore" abaixo, ou simplesmente apagar
+    # players_pscore.json — sem o arquivo o estagio fica inerte.
     cmd = [PY, "-m", "mlcore.train_offline", "--out", str(art), "--players-out", str(players),
+           "--pscore-out", str(pscore),
            "--holdout-days", str(int(args.holdout_days)),
            "--whr-mov", "gd15", "--whr-mov-lambda", "0.35", "--whr-mov-folga", "0.15"]
     for c in csvs:
