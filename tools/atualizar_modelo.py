@@ -89,8 +89,16 @@ def main() -> int:
             print(f"backup: {f.name} -> {bak.name}")
 
     # 3) Rebuild (defaults validados; --fit-players já é default ON).
+    # MARGEM DE VITORIA ligada em 11/09/2026 (specs/001-ligar-margem-vitoria).
+    # Medido na regua honesta (7 dobras, 7.359 jogos fora da amostra, cadencia
+    # de producao, calibrador aplicado): +0,00573 de logloss, IC95 diadico
+    # [+0,00396, +0,00751], p < 1e-8. Nota 7,12 -> 7,32.
+    # Sinal: ouro aos 15 min, escolhido medindo (bate kills e torres).
+    # Para reverter: trocar 'gd15' por 'off' — o fit volta a ser bit a bit o
+    # anterior, e ha teste travando isso (test_whr_mov.py).
     cmd = [PY, "-m", "mlcore.train_offline", "--out", str(art), "--players-out", str(players),
-           "--holdout-days", str(int(args.holdout_days))]
+           "--holdout-days", str(int(args.holdout_days)),
+           "--whr-mov", "gd15", "--whr-mov-lambda", "0.35", "--whr-mov-folga", "0.15"]
     for c in csvs:
         cmd += ["--csv", c]
     rc = _run(cmd, title="REBUILD do modelo (train_offline)")

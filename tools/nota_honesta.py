@@ -56,6 +56,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import shlex
 import subprocess
 import sys
@@ -67,6 +68,7 @@ try:
 except (AttributeError, OSError, ValueError):
     pass
 
+import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -232,9 +234,148 @@ class NotaDeJogador:
         agg = agg.dropna()
         self._dif = {str(k): float(v) for k, v in (agg["blue"] - agg["red"]).items()}
 
+
+    def _usar_escalacao_anterior(self, df):
+        """Troca a nota dos 5 que jogaram pela dos 5 do jogo ANTERIOR do time.
+
+        E o que o app consegue saber antes da partida: quem jogou da ultima vez.
+        Medir com a escalacao real superestima, porque supoe adivinhar
+        substituicao.
+        """
+        if "teamname" not in df.columns:
+            print("[jogadores] CSV sem teamname — nao da para usar escalacao anterior")
+            return None
+        d = df[["gameid", "date", "teamname", "lado", "nota"]].copy()
+        d = d.sort_values(["teamname", "date", "gameid"])
+        # soma das notas dos 5 daquele time naquele jogo
+        soma = d.groupby(["teamname", "gameid", "lado", "date"], sort=False)["nota"].sum()
+        soma = soma.reset_index().sort_values(["teamname", "date", "gameid"])
+        # a do jogo ANTERIOR do mesmo time
+        soma["nota_ant"] = soma.groupby("teamname", sort=False)["nota"].shift(1)
+        soma = soma.dropna(subset=["nota_ant"])
+        piv = soma.pivot_table(index="gameid", columns="lado", values="nota_ant")
+        piv = piv.dropna()
+        if "blue" not in piv.columns or "red" not in piv.columns:
+            return None
+        return {str(k): float(v) for k, v in (piv["blue"] - piv["red"]).items()}
+
     def dif(self, gameid) -> float:
         """Soma das notas dos 5 do blue menos a dos 5 do red. 0 = sem dado."""
         return self._dif.get(str(gameid), 0.0)
+
+
+class NotaDeJogadorAprendida(NotaDeJogador):
+    """Nota de jogador com os pesos APRENDIDOS por rota, nao media simples.
+
+    ╔══ FONTES ══════════════════════════════════════════════════════════════╗
+    ║ A versao anterior fazia media SIMPLES de quatro z-scores — tratando     ║
+    ║ participacao em ouro e visao como igualmente importantes, o que nao ha  ║
+    ║ razao para ser verdade.                                                 ║
+    ║                                                                         ║
+    ║ O caminho da literatura, em artigo especifico de LoL (37.400 partidas): ║
+    ║ "para cada rota, treinamos um modelo que preve a probabilidade de o     ║
+    ║ jogador vencer a partir de suas estatisticas de fim de jogo".           ║
+    ║ https://arxiv.org/html/2501.10049  (aberta em 10/09/2026)               ║
+    ║                                                                         ║
+    ║ E a avaliacao DEVE ser por rota: "a avaliacao de desempenho deve ser    ║
+    ║ especifica da funcao, reconhecendo as responsabilidades distintas de    ║
+    ║ cada posicao — para o suporte, farm nao importa como para o atirador".  ║
+    ║ https://journals.sagepub.com/doi/10.1177/17479541251381652 (11/09/2026) ║
+    ║                                                                         ║
+    ║ SEM VAZAMENTO: os pesos sao aprendidos SO com jogos anteriores a 2026,  ║
+    ║ e todas as dobras avaliadas sao de 2026. A padronizacao usa media e     ║
+    ║ desvio do mesmo recorte anterior.                                        ║
+    ║                                                                         ║
+    ║ SEM DECAIMENTO, de proposito: testado em 11/09/2026 com meia-vida de    ║
+    ║ 180 dias (a que o projeto ja usa) e a nota PIOROU, 7,41 -> 7,31. Bate   ║
+    ║ com a ressalva da fonte: "decaimento mais rapido capta mudancas rapido, ║
+    ║ mas e mais suscetivel a ruido de amostra pequena".                       ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+    """
+
+    ANO_CORTE = 2026
+    COLS = ["kills", "deaths", "assists", "teamkills", "dpm", "damageshare",
+            "earnedgoldshare", "cspm", "visionscore", "golddiffat15"]
+
+    def __init__(self, csvs):
+        base = ["gameid", "date", "participantid", "position", "playername",
+                "result", "teamname"]
+        quadros = []
+        for c in csvs:
+            pv = pd.read_csv(c, nrows=1, low_memory=False)
+            uso = [x for x in base + self.COLS if x in pv.columns]
+            quadros.append(pd.read_csv(c, low_memory=False, usecols=uso))
+        df = pd.concat(quadros, ignore_index=True)
+        df = df[(df["participantid"] >= 1) & (df["participantid"] <= 10)].copy()
+        df["date"] = pd.to_datetime(df["date"], errors="coerce")
+        df = df.dropna(subset=["date", "playername", "position", "result"])
+        df = df.sort_values("date").reset_index(drop=True)
+        df["lado"] = np.where(df["participantid"] <= 5, "blue", "red")
+        df["ano"] = df["date"].dt.year
+
+        # participacao em kills normaliza por quao sangrento foi o jogo —
+        # melhor que KDA cru, que premia jogo cheio de luta.
+        if set(["kills", "assists", "teamkills"]).issubset(df.columns):
+            tk = pd.to_numeric(df["teamkills"], errors="coerce")
+            df["kp"] = ((pd.to_numeric(df["kills"], errors="coerce").fillna(0)
+                         + pd.to_numeric(df["assists"], errors="coerce").fillna(0))
+                        / tk.replace(0, np.nan)).fillna(0.0)
+
+        feats = [c for c in ("kp", "deaths", "dpm", "damageshare", "earnedgoldshare",
+                             "cspm", "visionscore", "golddiffat15") if c in df.columns]
+        treino_mask = (df["ano"] < self.ANO_CORTE).to_numpy()
+        if int(treino_mask.sum()) < 2000:
+            raise SystemExit("poucos jogos antes do corte para aprender os pesos")
+
+        y_all = pd.to_numeric(df["result"], errors="coerce").fillna(0).to_numpy(float)
+        X_all = np.zeros((len(df), len(feats)), dtype=float)
+        self._w = {}
+        for rota, idx in df.groupby("position", sort=False).indices.items():
+            tr = [i for i in idx if treino_mask[i]]
+            if len(tr) < 300:
+                continue
+            for j, f in enumerate(feats):
+                v = pd.to_numeric(df[f], errors="coerce").fillna(0.0).to_numpy(float)
+                m = float(v[tr].mean())
+                sd = float(v[tr].std()) or 1.0
+                X_all[idx, j] = (v[idx] - m) / sd
+            Xtr = np.column_stack([X_all[tr], np.ones(len(tr))])
+            w = np.zeros(Xtr.shape[1])
+            for _ in range(60):
+                pr = 1.0 / (1.0 + np.exp(-np.clip(Xtr @ w, -30, 30)))
+                g = Xtr.T @ (y_all[tr] - pr)
+                H = -(Xtr.T * (pr * (1 - pr))) @ Xtr - 1e-6 * np.eye(Xtr.shape[1])
+                try:
+                    passo = np.linalg.solve(H, -g)
+                except np.linalg.LinAlgError:
+                    break
+                w = w + passo
+                if np.max(np.abs(passo)) < 1e-9:
+                    break
+            self._w[rota] = w
+
+        ps = np.zeros(len(df), dtype=float)
+        for rota, idx in df.groupby("position", sort=False).indices.items():
+            w = self._w.get(rota)
+            if w is None:
+                continue
+            ps[idx] = np.column_stack([X_all[idx], np.ones(len(idx))]) @ w
+        df["pscore"] = ps
+
+        df = df.sort_values(["playername", "date"])
+        g = df.groupby("playername", sort=False)
+        df["nota"] = (g["pscore"].cumsum() - df["pscore"]) / (g.cumcount() + self.BETA)
+
+        agg = df.groupby(["gameid", "lado"], sort=False)["nota"].sum().unstack("lado").dropna()
+        self._dif = {str(k): float(v) for k, v in (agg["blue"] - agg["red"]).items()}
+        print("[jogadores] pesos aprendidos em {} rotas, {} estatisticas, "
+              "so com jogos < {}".format(len(self._w), len(feats), self.ANO_CORTE))
+        if os.environ.get("ESCALACAO_ANTERIOR") == "1":
+            alt = self._usar_escalacao_anterior(df)
+            if alt:
+                self._dif = alt
+                print("[jogadores] usando a ESCALACAO ANTERIOR de cada time "
+                      "({} jogos) — e o que o app sabe antes da partida".format(len(alt)))
 
 
 class HistoricoPorTime:
@@ -458,6 +599,8 @@ def main() -> int:
     ap.add_argument("--passo", type=int, default=30, help="Tamanho da janela de teste, em dias.")
     ap.add_argument("--dobras", type=int, default=8, help="Quantas janelas para tras.")
     ap.add_argument("--pasta", default="scratchpad/nota_honesta")
+    ap.add_argument("--jogadores-aprendido", action="store_true",
+                    help="Pesos APRENDIDOS por rota em vez de media simples.")
     ap.add_argument("--com-jogadores", action="store_true",
                     help="Camada de jogadores por DESEMPENHO. O peso e ajustado so "
                          "em dobras ANTERIORES a cada janela (prequencial).")
@@ -495,7 +638,8 @@ def main() -> int:
     cfg_form = None
     jogadores = None
     if args.com_jogadores:
-        jogadores = NotaDeJogador(csvs)
+        jogadores = (NotaDeJogadorAprendida(csvs) if args.jogadores_aprendido
+                     else NotaDeJogador(csvs))
         print(f"[jogadores] nota por desempenho montada para {len(jogadores._dif)} jogos")
     if args.com_form:
         _pf = json.loads((ROOT / "params_fitted.json").read_text(encoding="utf-8"))
@@ -610,7 +754,7 @@ def main() -> int:
                              f"{'_hybrid' if args.com_hybrid else ''}"
                              f"{'_form' if args.com_form else ''}"
                              f"{'_semplatt' if args.sem_platt else '_platt'}"
-                             f"{'_jog' if args.com_jogadores else ''}.json")
+                             f"{('_jogA' if args.jogadores_aprendido else '_jog') if args.com_jogadores else ''}.json")
     saida.write_text(json.dumps({
         "marca": args.marca, "extra": extra, "cadencia": args.cadencia, "com_hybrid": bool(args.com_hybrid), "com_form": bool(args.com_form), "nota_honesta": geral, "n": n_tot,
         "dobras": [{"janela": j, "n": n, "nota": nt} for j, n, nt in linhas],

@@ -55,6 +55,16 @@ def shared_ml_defaults() -> Dict[str, Any]:
         #   delta_logloss = +0.218pp, CI 95% [+0.034, +0.381], p=0.008
         #   delta_ECE = +0.677pp (calibration also improves)
         # DECISION: ACCEPT — flag enabled by default.
+        # patch_meta_guard DESLIGADO em 11/09/2026 (specs/001-ligar-margem-vitoria).
+        # Ele encolhe a probabilidade em direcao a 50% quando o patch muda (8% a
+        # 22%). Medido na regua honesta COM calibrador, ele PIORA a previsao em
+        # todos os niveis, com e sem a margem:
+        #   nivel "warn"  (0,08): -0,00129  IC95 [-0,00212, -0,00045]
+        #   nivel "refit" (0,16): -0,00334  IC95 [-0,00494, -0,00175]
+        # Causa: o calibrador Platt ja corrige a confianca excessiva que o guard
+        # tentava tratar; ele encolhe em cima de um numero ja calibrado.
+        # So a bandeira sai — o codigo do guard fica, para o rollback ser 1 linha.
+        "ml_patch_guard_enabled": False,
         "ml_postfusion_cal_enabled": True,
         # Live state-to-win models (Phase 6): LightGBM trained on snapshots @10/15/20/25.
         # Validated through gate (tools/run_phase6_live_gate.py) on 5000+ samples per snapshot:
