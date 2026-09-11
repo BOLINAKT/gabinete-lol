@@ -1,0 +1,121 @@
+# Retreino COMPLETO, mensal.
+#
+# POR QUE ESTE ROBO EXISTE (11/09/2026)
+# O robo de retreino (retreino.yml) roda 3x ao dia, mas so faz atualizacao
+# INCREMENTAL, que usa o caminho antigo do modelo. Duas coisas que estao em
+# producao so entram por inteiro num treino COMPLETO:
+#   - a MARGEM DE VITORIA: o incremental nao a conhece, entao cada jogo novo
+#     entra como "ganhou/perdeu" puro;
+#   - a CAMADA DE JOGADORES POR DESEMPENHO: idem, as notas nao sao refeitas.
+# Sem treino completo periodico, as duas vao se diluindo sozinhas.
+#
+# Ate hoje NAO HAVIA NENHUM agendado. Os que houve — 16/08, 15/07, 02/06 —
+# foram disparados a mao, por acaso. Quanto o ganho decai nesse intervalo nao
+# foi medido; o ponto e que ninguem estava olhando.
+#
+# POR QUE MENSAL, e nao semanal ou diario
+# O treino completo leva ~15 minutos e reconstroi tudo do zero. A cadencia
+# mensal acompanha o ritmo com que os treinos completos ja aconteciam na
+# pratica (agosto, julho, junho) e cabe folgado no limite do runner. Semanal
+# so faria sentido se o ganho decaisse rapido, e isso NAO FOI MEDIDO — medir
+# antes de apertar a cadencia e a ordem certa.
+#
+# A TRAVA
+# O modelo novo so substitui o que esta no ar depois de passar por
+# tools/portao_retreino_completo.py, que confere que ele esta INTEIRO (e nao
+# que ele e "melhor" — o porque desta escolha esta escrito la dentro). Se a
+# trava reprovar, o robo falha alto e NAO commita: o modelo antigo continua.
+name: Retreino COMPLETO (mensal)
+
+on:
+  schedule:
+    # Dia 1 de cada mes, 05:30 UTC (~02:30 em Brasilia) — longe das janelas
+    # do robo incremental (09:57, 16:03, 22:21 UTC).
+    - cron: "30 5 1 * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  # Nunca rodar junto com o incremental: os dois escrevem no mesmo artefato.
+  group: retreino
+  cancel-in-progress: false
+
+jobs:
+  completo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependências
+        run: pip install --quiet -r requirements.txt
+
+      - name: Guardar o modelo atual para comparação e rollback
+        run: |
+          cp ml_artifact.json /tmp/campeao.json
+          echo "modelo atual guardado em /tmp/campeao.json"
+
+      - name: Retreino completo (margem + camada de jogadores)
+        run: |
+          CSVS=""
+          for f in CSV_HISTORICO/*.csv CSV_DIARIO/*.csv; do
+            [ -e "$f" ] && CSVS="$CSVS --csv $f"
+          done
+          echo "CSVs: $CSVS"
+          python -m mlcore.train_offline \
+            --out ml_artifact.json \
+            --players-out players_artifact.json \
+            --pscore-out players_pscore.json \
+            --holdout-days 30 \
+            --whr-mov gd15 --whr-mov-lambda 0.35 --whr-mov-folga 0.15 \
+            $CSVS
+
+      - name: TRAVA — o modelo novo está inteiro?
+        run: |
+          python tools/portao_retreino_completo.py \
+            --novo ml_artifact.json \
+            --antigo /tmp/campeao.json \
+            --pscore players_pscore.json
+
+      - name: Re-pinar fixtures de regressão no modelo novo
+        run: python tools/update_regression_fixtures.py
+
+      - name: Guardas pós-retreino (nunca publicar modelo quebrado)
+        run: |
+          python -m unittest \
+            mlcore.tests.test_live_artifact_complete \
+            mlcore.tests.test_odds_regression \
+            mlcore.tests.test_odds_regression_40 \
+            mlcore.tests.test_players_pscore \
+            mlcore.tests.test_pscore_servido \
+            mlcore.tests.test_portao_retreino 2>&1 | tail -5
+
+      - name: Commitar modelo retreinado
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add ml_artifact.json players_artifact.json players_pscore.json mlcore/tests/fixtures/
+          if git diff --cached --quiet; then
+            echo "modelo não mudou — nada a commitar"
+          else
+            git commit -m "Robô: retreino COMPLETO mensal (margem + camada de jogadores)"
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado (concorrência) — rebase e retry $i/3"
+              git pull --rebase || exit 1
+            done
+            git push
+          fi
+
+      - name: Se falhou, dizer o que fazer
+        if: failure()
+        run: |
+          echo "::error::O retreino completo FALHOU. O modelo que está no ar NÃO foi trocado."
+          echo "O passo que falhou está acima. Nada foi commitado, então não há nada a reverter."
+          echo "Para investigar na sua máquina: python tools/atualizar_modelo.py --holdout-days 30"

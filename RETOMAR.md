@@ -154,7 +154,22 @@ modelo do zero em 7 janelas de 30 dias e só pontua jogos que ele nunca viu.
 que ele pontua estavam no treino. Um modelo que decora tira nota alta lá. A
 margem faz ele decorar menos. **Não use aquele número para decidir nada.**
 
-### O RISCO QUE VOCÊ PRECISA SABER
+### O RISCO — RESOLVIDO em 11/09/2026
+
+> **Havia um risco aqui, e ele foi fechado no mesmo dia.** O texto original
+> fica abaixo porque registro de decisão é append-only.
+>
+> **Agora existe retreino completo agendado:** `.github/workflows/retreino_completo.yml`
+> roda **dia 1 de cada mês**, às 02:30 de Brasília. Ele refaz o modelo do zero,
+> com a margem e a camada de jogadores, e só troca o que está no ar depois de
+> passar por uma trava (`tools/portao_retreino_completo.py`) que confere 20
+> coisas — se qualquer uma falhar, ele **não** publica e o modelo antigo
+> continua.
+>
+> Para disparar à mão a qualquer momento: no GitHub, aba Actions, workflow
+> "Retreino COMPLETO (mensal)", botão "Run workflow".
+
+**O texto original, de quando o risco existia:**
 
 **O ganho depende de um retreino COMPLETO mais ou menos todo mês, e não existe
 nenhum retreino completo agendado.**
