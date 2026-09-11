@@ -91,12 +91,20 @@ def main() -> int:
                 _add(f"mapa{k + 1}|{'ganhou' if prev else 'perdeu'} anterior", y, p)
                 _add(f"todos_k>=2|{'ganhou' if prev else 'perdeu'} anterior", y, p)
                 score_b = k - score_a
-                if score_a == score_b:
+                estado = ("empate" if score_a == score_b
+                          else "lider" if score_a > score_b else "atras")
+                if estado == "empate":
                     _add("decider/empate", y, p)
-                elif score_a > score_b:
+                elif estado == "lider":
                     _add("lider joga", y, p)
                 else:
                     _add("atras joga", y, p)
+                # CRUZAMENTO placar x mapa anterior (08/09/2026) — o teste que
+                # separa MOMENTO de FORCA REVELADA. Se o efeito for informacao
+                # sobre a forca do time, com a serie EMPATADA a evidencia se
+                # cancela e o mapa anterior nao deve prever nada. Se for
+                # momento (psicologico), ele deve prever mesmo empatado.
+                _add(f"[{estado}] {'ganhou' if prev else 'perdeu'} anterior", y, p)
             score_a += wins[k]
 
     print(f"[series_momentum] seasons={sorted(seasons)} | séries com 2+ mapas: {n_series}\n")

@@ -232,6 +232,42 @@ def _augment_games_with_home_meta(
     return out
 
 
+def _mov_do_jogo(r: Any, sinal: str) -> Optional[float]:
+    """Margem de vitória do BLUE, no sinal escolhido. None = não medível.
+
+    None NÃO é zero: quem chama trata "sem sinal" caindo no ganhou/perdeu puro
+    e CONTANDO o caso. Devolver 0.0 aqui seria dizer "empatou em margem", que é
+    uma afirmação — e é exatamente a família de falha silenciosa das dívidas
+    D5/D8/D9 (ausência de dado virando número plausível).
+
+    Ordem de qualidade medida no eval cego 2026 (tools/eval_whr_mov.py):
+    gd15 (+0.0099) >> kills (+0.0037) > goldpm (+0.0032) > torres/ouro (+0.0022).
+    O ouro aos 15 ganha porque mede ANTES da bola de neve: depois disso a margem
+    vira consequência do próprio resultado, não medida de qualidade.
+    """
+    def _f(nome: str) -> Optional[float]:
+        try:
+            v = float(getattr(r, nome))
+        except (TypeError, ValueError, AttributeError):
+            return None
+        return v if math.isfinite(v) else None
+
+    def _dif(stem: str) -> Optional[float]:
+        b, v = _f(f"blue_{stem}"), _f(f"red_{stem}")
+        return None if b is None or v is None else b - v
+
+    if sinal == "gd15":
+        return _f("blue_golddiffat15")
+    if sinal == "kills":
+        return _dif("teamkills")
+    if sinal == "towers":
+        return _dif("towers")
+    # 'gold'/'goldpm' ficaram de fora: `totalgold` não está em
+    # io_oracle.FLOAT_STEMS, então não chega até aqui. Ver o comentário no
+    # argumento --whr-mov.
+    return None
+
+
 def _p_from_diff_points(diff_points: float, scale_points: float = 400.0) -> float:
     """Base-10 Elo logistic (same as EloModel uses)."""
     try:
@@ -413,6 +449,25 @@ def main() -> None:
                          "MOVDA/dynamic-k não se aplicam ao fit whr.")
     ap.add_argument("--whr-w2", type=float, default=60.0,
                     help="Drift do WHR (Elo^2/dia). 60 tunado prequencialmente em 2025, eval cego 2026.")
+    # ---- margem de vitória no WHR (resultado fracionário) ----
+    # DESLIGADA por default: 'off' deixa o fit BIT A BIT o de antes de 09/2026.
+    # Prova cega em 2026 (tools/eval_whr_mov.py): gd15/lam=0.35/folga=0.15/w2=90
+    # -> logloss +0.0117 (IC95 [+0.0078,+0.0157]), acerto 65.0%->65.7%, ganho em
+    # 9/9 meses e 28/34 ligas. Ver evidence/eval_whr_mov_*.log.
+    # 'gold'/'goldpm' NÃO entram aqui de propósito: io_oracle.FLOAT_STEMS não
+    # carrega `totalgold`, então eles voltariam None em 100% dos jogos — uma
+    # opção que não faz nada é pior que uma opção que não existe. Os dois foram
+    # os PIORES no eval cego (+0.0022 e +0.0032 contra +0.0099 do gd15), então
+    # não vale mexer no io_oracle por eles.
+    ap.add_argument("--whr-mov", choices=["off", "gd15", "kills", "towers"],
+                    default="off",
+                    help="Sinal de margem no fit WHR. gd15 (ouro aos 15 min) foi o melhor "
+                         "no eval cego, por medir qualidade ANTES da bola de neve.")
+    ap.add_argument("--whr-mov-lambda", type=float, default=0.35,
+                    help="Peso da surpresa de margem. Só vale com --whr-mov != off.")
+    ap.add_argument("--whr-mov-folga", type=float, default=0.15,
+                    help="Vitória normal vale 1-folga, para sobrar teto e o modelo "
+                         "poder PREMIAR domínio (sem folga, 72%% dos jogos saturam).")
     ap.add_argument("--calibrate", choices=["auto","yes","no"], default="auto", help="Platt calibration on holdout raw probs")
     ap.add_argument("--min-holdout", type=int, default=500, help="Min holdout size to fit calibrator when --calibrate=auto")
     ap.add_argument("--min-cal-gain", type=float, default=0.0, help="Minimum holdout logloss improvement required to keep calibration")
@@ -558,6 +613,8 @@ def main() -> None:
     last_tier: Dict[str, str] = {}
 
     train_fit = train_fit.sort_values(["date", "gameid"]).reset_index(drop=True)
+    # Receita da margem, para gravar no artefato. None = treinou sem margem.
+    _whr_mov_meta: Optional[Dict[str, Any]] = None
     if str(getattr(args, "core", "elo")) == "whr":
         # ------------------ WHR (alavanca N) ------------------
         # Fit MAP do histórico completo; depois EXPORTA os ratings finais pro
@@ -566,9 +623,41 @@ def main() -> None:
         #   ratings_armazenados = R_whr - pontos_da_liga (o p_blue soma o prior
         #   de volta via league_prior_weight=1.0), alpha=0 (sem shrink),
         #   tier_prior_weight=0, scale=400, dynk/MOVDA off.
-        from .whr_core import WHRFitter
+        from .whr_core import WHRFitter, ajustar_expectativa_mov
+
+        # ---- margem de vitória: DUAS passadas ----
+        # A 1ª roda SEM margem só para colher (Δr, MOV) e ajustar E[MOV|Δr]. A
+        # expectativa TEM que vir do Δr deste modelo: usar a de outro motor faria
+        # o resíduo carregar o viés do outro. Custo: o fit do WHR roda 2x — só
+        # quando --whr-mov != off.
+        _mov_sinal = str(getattr(args, "whr_mov", "off") or "off")
+        _mov_fit: Optional[Dict[str, float]] = None
+        if _mov_sinal != "off":
+            _pre = WHRFitter(w2_elo_per_day=float(args.whr_w2),
+                             league_prior_points=dict(model.league_base_points_map))
+            _xs: List[float] = []
+            _ys: List[float] = []
+            for r in train_fit.itertuples(index=False):
+                _b, _r = str(r.blue), str(r.red)
+                _bl, _rl = str(r.blue_league), str(r.red_league)
+                _m = _mov_do_jogo(r, _mov_sinal)
+                if _m is not None:
+                    _xs.append(_pre.rating_nat(_b, _bl) - _pre.rating_nat(_r, _rl))
+                    _ys.append(float(_m))
+                _pre.add_game(_b, _r, int(r.blue_win), int(r.date.toordinal()),
+                              blue_league=_bl, red_league=_rl)
+                _pre.refresh_pair(_b, _r, iters=2)
+            _mov_fit = ajustar_expectativa_mov(_xs, _ys)
+            print(f"[train_offline] WHR margem '{_mov_sinal}': E[MOV|dr] "
+                  f"a={_mov_fit['a']:.3f} b={_mov_fit['b']:.3f} c={_mov_fit['c']:.3f} "
+                  f"desvio={_mov_fit['s']:.3f} n={_mov_fit['n']} "
+                  f"(sem sinal em {len(train_fit) - len(_xs)} jogos)")
+
         whr = WHRFitter(w2_elo_per_day=float(args.whr_w2),
-                        league_prior_points=dict(model.league_base_points_map))
+                        league_prior_points=dict(model.league_base_points_map),
+                        mov_lambda=(float(args.whr_mov_lambda) if _mov_sinal != "off" else 0.0),
+                        mov_folga=(float(args.whr_mov_folga) if _mov_sinal != "off" else 0.0),
+                        mov_fit=_mov_fit)
         _n_fit = 0
         # Predições PREQUENCIAIS (prever ANTES de adicionar o jogo) do último
         # ano de treino — é nelas que o Platt do artefato é fitado (a receita
@@ -584,7 +673,8 @@ def main() -> None:
                 whr_preq_p.append(float(whr.p_blue(_b, _r)))
                 whr_preq_y.append(int(r.blue_win))
             whr.add_game(_b, _r, int(r.blue_win), day,
-                         blue_league=str(r.blue_league), red_league=str(r.red_league))
+                         blue_league=str(r.blue_league), red_league=str(r.red_league),
+                         mov=(_mov_do_jogo(r, _mov_sinal) if _mov_sinal != "off" else None))
             whr.refresh_pair(_b, _r, iters=2)
             _n_fit += 1
             if _n_fit % 400 == 0:
@@ -592,6 +682,17 @@ def main() -> None:
         _sweeps = whr.full_sweeps(sweeps=12, tol_elo=0.5, iters=1)
         print(f"[train_offline] WHR fit: {_n_fit} jogos, convergiu em {_sweeps} varreduras finais; "
               f"{len(whr_preq_y)} predições prequenciais p/ calibração.")
+        if _mov_sinal != "off":
+            print(f"[train_offline] WHR margem aplicada em {whr.n_mov_usados} jogos, "
+                  f"ausente em {whr.n_mov_faltando} (esses caem no ganhou/perdeu puro).")
+            _whr_mov_meta = {
+                "sinal": _mov_sinal,
+                "lambda": float(args.whr_mov_lambda),
+                "folga": float(args.whr_mov_folga),
+                "expectativa": dict(_mov_fit or {}),
+                "jogos_com_margem": int(whr.n_mov_usados),
+                "jogos_sem_margem": int(whr.n_mov_faltando),
+            }
 
         # Injeta no EloModel (mesmo formato de artefato/runtime). Os ratings
         # vão COMPLETOS (prior de liga já embutido pelo 1º ponto do WHR) e
@@ -821,6 +922,10 @@ def main() -> None:
         "holdout_days": int(args.holdout_days),
         "core": str(getattr(args, "core", "elo")),
         "whr_w2": float(getattr(args, "whr_w2", 0.0)) if str(getattr(args, "core", "elo")) == "whr" else None,
+        # Margem de vitória: fica GRAVADA para o artefato dizer sozinho com que
+        # receita foi treinado. Sem isto, descobrir se um modelo usou margem
+        # exigiria adivinhar pelo comando que alguém rodou meses atrás.
+        "whr_mov": _whr_mov_meta,
         "params": {
             "k": float(args.k),
             "scale_points": float(args.scale),
