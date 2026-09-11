@@ -482,6 +482,15 @@ def main() -> None:
              "Use --no-fit-players SO para experimentos Elo-only rapidos (nao deployar).",
     )
     ap.add_argument("--players-out", default="players_artifact.json", help="Output players artifact path (json)")
+    ap.add_argument("--pscore-out", default="players_pscore.json",
+                    help="Onde gravar a nota de jogador POR DESEMPENHO (por rota).")
+    ap.add_argument("--no-pscore", action="store_true",
+                    help="Nao monta a camada de jogadores por desempenho. "
+                         "E o caminho de volta: sem ela o modelo fica como antes.")
+    ap.add_argument("--pscore-max-abs", type=float, default=0.50,
+                    help="Teto do peso da camada por desempenho. O ajuste converge "
+                         "para ~0,066; o teto so existe para holdout curto nao "
+                         "escolher um peso absurdo.")
     ap.add_argument("--players-stats", default=None, help="OracleElixir byTournament player stats CSV (optional prior)")
     ap.add_argument("--players-half-life", type=float, default=180.0, help="Players rating half-life (days)")
     ap.add_argument("--players-k", type=float, default=0.15, help="Players online update step (k)")
@@ -666,12 +675,17 @@ def main() -> None:
         _preq_cut = train_fit["date"].max() - pd.Timedelta(days=365)
         whr_preq_y: List[int] = []
         whr_preq_p: List[float] = []
+        # O gameid vai junto para que outras camadas possam ser ajustadas
+        # NESTE conjunto — sao previsoes feitas ANTES de o modelo ver o jogo,
+        # entao sao fora da amostra por construcao, e sao ~9x o holdout de 30d.
+        whr_preq_gid: List[str] = []
         for r in train_fit.itertuples(index=False):
             day = int(r.date.toordinal())
             _b, _r = str(r.blue), str(r.red)
             if r.date >= _preq_cut and whr.n_games.get(_b, 0) >= 5 and whr.n_games.get(_r, 0) >= 5:
                 whr_preq_p.append(float(whr.p_blue(_b, _r)))
                 whr_preq_y.append(int(r.blue_win))
+                whr_preq_gid.append(str(getattr(r, "gameid", "")))
             whr.add_game(_b, _r, int(r.blue_win), day,
                          blue_league=str(r.blue_league), red_league=str(r.red_league),
                          mov=(_mov_do_jogo(r, _mov_sinal) if _mov_sinal != "off" else None))
@@ -1120,6 +1134,149 @@ def main() -> None:
         except Exception as e:
             meta["players_layer"] = {"enabled": False, "error": str(e)}
             print("[train_offline] players_layer FAILED:", str(e))
+
+    # ------------------------------------------------------------------
+    # CAMADA DE JOGADORES POR DESEMPENHO (nao pelo resultado da partida)
+    #
+    # A camada acima move a nota com `y - p`: ganhou o time, sobe todo mundo.
+    # Esta aqui avalia COMO o jogador jogou, por rota. Medido na regua honesta
+    # em 11/09/2026 (8 dobras, n=8.494, pareado, contra a base REAL servida):
+    #   producao hoje ............. 7,09
+    #   + camada antiga ........... 7,13   +0,00233
+    #   + esta camada ............. 7,20   +0,00388  IC [+0,00270, +0,00506]
+    #
+    # DOIS CORTES, e confundi-los vazaria futuro:
+    #   - os PESOS por rota so enxergam jogos anteriores ao corte do treino;
+    #   - as NOTAS usadas para AJUSTAR o peso tambem param no corte, senao o
+    #     peso seria escolhido com a resposta do holdout na mao.
+    # Depois de ajustado o peso, as notas SALVAS sao refeitas com tudo, porque
+    # a partida a prever ainda nao aconteceu.
+    # ------------------------------------------------------------------
+    if bool(args.fit_players) and not bool(args.no_pscore):
+        try:
+            from mlcore.players_pscore_core import (
+                carregar_linhas as _ps_carregar,
+                construir as _ps_construir,
+                delta_da_escalacao as _ps_delta,
+            )
+
+            from mlcore.players_pscore_core import (
+                ajustar as _ps_ajustar,
+                calcular_pscore as _ps_calc,
+                deltas_por_jogo as _ps_deltas,
+            )
+
+            _corte = cutoff_dt.date() if (cutoff_dt is not None and pd.notna(cutoff_dt)) else None
+            _df_ps = _ps_carregar(csv_paths)
+
+            # ONDE O PESO E AJUSTADO, e por que NAO no holdout de 30 dias.
+            #
+            # A primeira versao ajustava nos ~984 jogos do holdout e achava
+            # w=0,032. A regua honesta, ajustando em 8.494 jogos, converge para
+            # w=0,066 — e nas dobras pequenas ela tambem oscilava (0,146 na
+            # primeira, de 1.146 jogos). Ou seja: 984 jogos nao bastam, o peso
+            # saia pela metade, e a camada entregaria menos do que foi medido.
+            #
+            # As predicoes PREQUENCIAIS do ultimo ano de treino resolvem: sao
+            # feitas ANTES de o modelo ver cada jogo, logo sao fora da amostra
+            # por construcao, e sao ~9x mais. E o mesmo conjunto onde o Platt
+            # do artefato ja e ajustado.
+            #
+            # E o delta de cada jogo usa a nota PONTO NO TEMPO do jogador: so
+            # o que ele tinha feito ANTES daquele jogo.
+            _aj = _ps_ajustar(_df_ps, ate=_corte)
+            _delta_gid = _ps_deltas(_df_ps, _ps_calc(_df_ps, _aj))
+
+            _ys: List[int] = []
+            _lb: List[float] = []
+            _dl: List[float] = []
+            _n_sem_cobertura = 0
+            _fonte_peso = "prequencial"
+
+            _preq = list(zip(whr_preq_gid, whr_preq_y, whr_preq_p)) if (
+                str(args.core) == "whr" and whr_preq_gid) else []
+            for _gid, _y, _pp in _preq:
+                _d = _delta_gid.get(str(_gid))
+                if _d is None:
+                    _n_sem_cobertura += 1
+                    continue
+                _pp = min(max(float(_pp), 1e-6), 1.0 - 1e-6)
+                _ys.append(int(_y))
+                _lb.append(float(_logit(_pp)))
+                _dl.append(float(_d))
+
+            if len(_ys) < int(args.min_holdout):
+                # Sem prequencial (outro motor, ou poucos jogos): cai no
+                # holdout, que e menor mas continua fora da amostra.
+                _fonte_peso = "holdout"
+                _ys, _lb, _dl = [], [], []
+                _n_sem_cobertura = 0
+                for rr in test_df.sort_values("date").itertuples(index=False):
+                    _d = _delta_gid.get(str(rr.gameid))
+                    if _d is None:
+                        _n_sem_cobertura += 1
+                        continue
+                    _yy = _safe_int_year(getattr(rr, "year", None))
+                    _mlg = str(getattr(rr, "league", "") or "OTHER")
+                    _bl = _resolve_home_league(team=str(rr.blue), year=_yy, match_league=_mlg,
+                                               domestic_by_year=domestic_by_year,
+                                               team_meta_latest=team_meta_latest)
+                    _rl = _resolve_home_league(team=str(rr.red), year=_yy, match_league=_mlg,
+                                               domestic_by_year=domestic_by_year,
+                                               team_meta_latest=team_meta_latest)
+                    _pp = float(model.p_blue(str(rr.blue), str(rr.red),
+                                             blue_league=_bl, red_league=_rl,
+                                             blue_tier=str(tier_for_league(_bl)),
+                                             red_tier=str(tier_for_league(_rl))))
+                    _pp = min(max(_pp, 1e-6), 1.0 - 1e-6)
+                    _ys.append(int(rr.blue_win))
+                    _lb.append(float(_logit(_pp)))
+                    _dl.append(float(_d))
+
+            if len(_ys) < int(args.min_holdout):
+                raise ValueError(
+                    "so {} jogos utilizaveis para ajustar o peso, abaixo do minimo {}".format(
+                        len(_ys), int(args.min_holdout)))
+
+            _w_raw = float(fit_w_lineup(y=_ys, logit_base=_lb, delta=_dl,
+                                        l2=float(args.wlineup_l2)))
+            # Piso em 0 pelo mesmo motivo da camada antiga: peso NEGATIVO quer
+            # dizer "apostar contra quem jogou melhor", o que nao tem base e na
+            # pratica e ruido de holdout curto. Com piso, o pior caso e a
+            # camada ficar neutra. O valor cru fica registrado.
+            _w = max(0.0, min(float(args.pscore_max_abs), _w_raw))
+
+            # (2) notas com TUDO, que sao as que vao servir
+            _pac = _ps_construir(csv_paths, ate=_corte, ate_notas=None, df=_df_ps)
+            _pac["w"] = float(_w)
+            _pac["w_raw"] = float(_w_raw)
+
+            _ps_out = Path(str(args.pscore_out)).expanduser()
+            _ps_out.parent.mkdir(parents=True, exist_ok=True)
+            _ps_out.write_text(json.dumps(_pac, ensure_ascii=False), encoding="utf-8")
+
+            meta["players_pscore"] = {
+                "enabled": True,
+                "arquivo": str(_ps_out),
+                "w": float(_w),
+                "w_raw": float(_w_raw),
+                "w_com_piso": bool(_w_raw < 0.0),
+                "corte_pesos": (_corte.isoformat() if _corte else None),
+                "rotas": len(_pac.get("pesos_por_rota") or {}),
+                "atributos": list(_pac.get("atributos") or []),
+                "n_jogadores": len(_pac.get("notas") or {}),
+                "fonte_do_peso": _fonte_peso,
+                "jogos_usados": len(_ys),
+                "jogos_sem_delta": int(_n_sem_cobertura),
+                "beta": float(_pac.get("beta", 0.0) or 0.0),
+            }
+            print("[train_offline] players_pscore: w={:.4f} (cru {:.4f}) | {} jogadores | "
+                  "peso ajustado em {} jogos ({}), {} sem delta".format(
+                      _w, _w_raw, len(_pac.get("notas") or {}), len(_ys),
+                      _fonte_peso, _n_sem_cobertura))
+        except Exception as e:
+            meta["players_pscore"] = {"enabled": False, "error": str(e)}
+            print("[train_offline] players_pscore FALHOU:", str(e))
 
     # Save artifact
     art = MLArtifact(version="0.4.0", model=model, calibrator=cal, meta=meta)

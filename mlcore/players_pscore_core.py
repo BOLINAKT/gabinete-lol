@@ -286,11 +286,55 @@ def delta_da_escalacao(
     return float(sb - sr), int(min(nb, nr))
 
 
-def construir(csvs: Iterable[str], *, ate: Optional[date]) -> Dict[str, Any]:
-    """Monta o pacote inteiro: pesos, padronizacao e nota atual por jogador."""
-    df = carregar_linhas(csvs)
+def deltas_por_jogo(df: pd.DataFrame, pscore: pd.Series, *, beta: float = BETA) -> Dict[str, float]:
+    """gameid -> (soma das notas do azul) menos (soma das notas do vermelho).
+
+    Usa a nota PONTO NO TEMPO de cada jogador: para cada jogo, so o que ele
+    tinha feito ANTES. Serve para ajustar o peso da camada num conjunto grande
+    de jogos sem vazar futuro em nenhum deles.
+
+    Diferente de `notas_finais`, que congela a nota num instante so — aqui
+    cada jogo enxerga o seu proprio passado, e nada alem dele.
+    """
+    d = df[["gameid", "lado"]].copy()
+    d["nota"] = notas_ponto_no_tempo(df, pscore, beta=beta).to_numpy()
+    ag = d.groupby(["gameid", "lado"], sort=False)["nota"].sum().unstack("lado")
+    if "blue" not in ag.columns or "red" not in ag.columns:
+        return {}
+    ag = ag.dropna()
+    return {str(k): float(v) for k, v in (ag["blue"] - ag["red"]).items()}
+
+
+def construir(
+    csvs: Iterable[str],
+    *,
+    ate: Optional[date],
+    ate_notas: Optional[date] = None,
+    df: Optional[pd.DataFrame] = None,
+) -> Dict[str, Any]:
+    """Monta o pacote: pesos, padronizacao e nota atual por jogador.
+
+    SAO DOIS CORTES, e confundi-los vaza futuro:
+
+    - `ate` corta o que os PESOS por rota enxergam;
+    - `ate_notas` corta o que as NOTAS de cada jogador enxergam.
+
+    Para AJUSTAR o peso da camada no holdout, os dois tem de valer o corte do
+    treino: usar notas que ja viram o holdout faria o peso ser escolhido com
+    resposta na mao.
+
+    Para SERVIR uma partida futura, `ate_notas` fica None — todo jogo passado
+    e passado, e a partida a prever ainda nao aconteceu.
+    """
+    if df is None:
+        df = carregar_linhas(csvs)
     ajuste = ajustar(df, ate=ate)
-    ps = calcular_pscore(df, ajuste)
-    ajuste["notas"] = notas_finais(df, ps)
+    if ate_notas is not None:
+        d_notas = df[df["date"].dt.date < ate_notas]
+    else:
+        d_notas = df
+    ajuste["notas"] = notas_finais(d_notas, calcular_pscore(d_notas, ajuste))
+    ajuste["corte_notas"] = (ate_notas.isoformat() if ate_notas else None)
     ajuste["n_linhas"] = int(len(df))
+    ajuste["n_linhas_notas"] = int(len(d_notas))
     return ajuste
