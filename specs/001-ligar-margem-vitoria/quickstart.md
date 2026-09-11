@@ -15,12 +15,17 @@ E parou de encolher a confiança quando o patch muda, porque isso piorava.
 
 ```
 7,12  antes
-7,32  agora
+7,24  agora
 ```
 
-Medido em 7.359 jogos de 2026 que o modelo nunca tinha visto, com a régua
-honesta. Ganho de logloss +0,00573, com chance de ser sorte menor que 1 em 100
-milhões.
+Medido em 7.285 jogos de 2026 que o modelo nunca tinha visto, com a régua
+honesta, comparando jogo a jogo. Ganho de logloss **+0,00463**, com margem de
+erro de [+0,00273, +0,00654] e chance de ser sorte de cerca de 2 em 1 milhão.
+
+> **Correção de 11/09/2026, feita no mesmo dia.** Este arquivo dizia **7,32** e
+> **+0,00573**. Estava errado: o 7,32 é a nota da margem **mais a camada de
+> jogadores**, e a camada de jogadores **não subiu** — ela ainda está sendo
+> medida pelo caminho certo. O que está em produção rende 7,24.
 
 **Atenção:** a nota antiga (`ml_fusion_scorecard.py`) vai mostrar **queda**, de
 8,83 para 8,78. Isso é esperado e não é problema — aquela nota mede o modelo em

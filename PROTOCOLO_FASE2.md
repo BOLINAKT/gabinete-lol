@@ -270,14 +270,15 @@ diária, calibrador Platt aplicado, ~7.350 jogos de 2026 fora da amostra).
 
 | frente | efeito (logloss) | IC 95% diádico | p corrigido | passa na barra? | decisão |
 |---|---|---|---|---|---|
-| **margem de vitória (ouro aos 15)** | **+0,00573** | **[+0,00395, +0,00751]** | **< 1e-8** | **SIM** | **LIGADA em produção** |
+| **margem de vitória (ouro aos 15)** | **+0,00463** | **[+0,00273, +0,00654]** | **~2e-6** | **SIM** | **LIGADA em produção** |
 | **desligar o guard de patch** | **+0,00206** | não cruza zero | < 0,01 | **SIM** | **DESLIGADO em produção** |
 | camada de jogadores (pesos por rota) | +0,00346 | [+0,00243, +0,00450] | < 1e-6 | SIM | **NÃO ligada** — ver abaixo |
 | draft | +0,00264 | — | — | tangencia | fora de escopo (pré-live) |
 | margem mais funda | +0,00002 | cruza zero | — | não | **morta** |
 | trocar WHR por Elo | ~0 | cruza zero | 0,49 | não | motor fica |
 
-Nota honesta: **7,12 → 7,32**.
+Nota honesta: **7,12 → 7,24** (o que subiu). Com a camada de jogadores por
+cima daria 7,32, mas ela **não subiu** — ver abaixo.
 
 ## Por que a camada de jogadores passou na barra e mesmo assim não entrou
 
@@ -311,3 +312,56 @@ Registrado em `RETOMAR.md`, seção 2-B.
 3. **Peneirar o resíduo antes de construir economiza semanas.** A frente da
    margem mais funda parecia a continuação natural da que deu certo; a peneira
    mostrou +0,00002 antes de uma linha ser escrita.
+
+
+---
+
+# CORREÇÃO — 11/09/2026, no mesmo dia
+
+**Os números da tabela acima estavam trocados na primeira versão.** Ficou
+registrado em vez de apagado, porque o log de decisão é append-only.
+
+## O que eu escrevi errado
+
+Escrevi que a margem de vitória entregava **+0,00573** com **p < 1e-8** e
+levava a nota de 7,12 para **7,32**.
+
+## O que é verdade
+
+| | nota | ganho | IC 95% diádico | p |
+|---|---|---|---|---|
+| produção antes | 7,12 | — | — | — |
+| **+ margem (foi isto que subiu)** | **7,24** | **+0,00463** | [+0,00273, +0,00654] | ~2e-6 |
+| + margem + jogadores (NÃO subiu) | 7,32 | +0,00808 sobre produção | [+0,00569, +0,01048] | ~4e-11 |
+
+O **7,32 é a nota da margem MAIS a camada de jogadores**. A camada de
+jogadores não entrou em produção — ela está na spec 002, ainda sendo medida
+pelo caminho que o app realmente usa. Eu atribuí à margem um ganho que era dos
+dois juntos.
+
+## Como o erro passou
+
+Duas causas, e as duas são de método, não de digitação:
+
+1. **Os arquivos de resultado da régua não foram comparados aos pares.** Eu li
+   a nota de um arquivo e o ganho de outro. O teste pareado, que é o que o
+   próprio protocolo manda usar, só foi rodado depois.
+2. **O comparador não conseguia carregar as variantes da margem.**
+   `tools/comparar_variantes.py` só sabia abrir arquivos com o prefixo
+   `nota_honesta_prod_`, e as corridas da margem usam a marca `margem`. Como a
+   ferramenta certa não rodava, o número saiu de leitura à mão. Corrigido na
+   branch da spec 002.
+
+## O que isto muda de decisão
+
+**Nada.** A margem continua passando na barra da casa com folga: +0,00463 é
+mais que o dobro do mínimo de 0,002, o limite inferior do intervalo está acima
+de zero, e p ~ 2e-6. Ela fica ligada.
+
+O que muda é o tamanho da promessa. **+0,00463, não +0,00573.**
+
+## A regra que sai daqui
+
+Nenhum número de ganho entra em documento sem vir de uma corrida do
+`comparar_variantes.py`, colada junto. Nota lida de arquivo solto serve para
+orientar, **não** para publicar.

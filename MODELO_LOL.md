@@ -60,7 +60,7 @@ temporal. Aplica o calibrador de Platt, como o app aplica.
 ```
 8,91   o que a régua velha dizia
 7,12   o que o modelo valia de verdade, na régua honesta
-7,32   o que ele vale hoje, com a margem de vitória ligada
+7,24   o que ele vale hoje, com a margem de vitória ligada
 ```
 
 **A partir daqui, "nota" neste arquivo quer dizer a nota honesta.** As notas de
@@ -71,7 +71,7 @@ temporal. Aplica o calibrador de Platt, como o app aplica.
 
 | peça | antes | agora | efeito medido |
 |---|---|---|---|
-| Rating do time (WHR) | aprendia só quem ganhou | aprende **por quanto** (ouro aos 15) | **+0,00573**, IC não cruza zero, p < 1e-8 |
+| Rating do time (WHR) | aprendia só quem ganhou | aprende **por quanto** (ouro aos 15) | **+0,00463**, IC diádico [+0,00273, +0,00654], p ~ 2e-6 |
 | Guard de patch | LIGADO | **DESLIGADO** | piorava com e sem a margem; o Platt já cobre |
 
 A margem de vitória é o mesmo mecanismo do **Weighted Elo** e da família

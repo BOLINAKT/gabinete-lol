@@ -143,7 +143,7 @@ calibrador de Platt já resolve o excesso de confiança sozinho.
 
 ```
 7,12  antes
-7,32  agora        (+0,00573 de logloss, p < 1e-8)
+7,24  agora        (+0,00463 de logloss, p ~ 2e-6)
 ```
 
 Essa é a nota da **régua honesta** (`tools/nota_honesta.py`), que reconstrói o
