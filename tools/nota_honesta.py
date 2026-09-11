@@ -472,7 +472,8 @@ def pontuar_janela_prequencial(art_path: Path, ply_path: Path, jogos: pd.DataFra
                                historico=None, ss_app=None, cfg_form=None,
                                usar_hybrid=True, usar_platt=True,
                                jogadores=None, w_jog=0.0,
-                               fusao_servida=False) -> dict:
+                               fusao_servida=False,
+                               sem_camada_jogadores=False) -> dict:
     """Como pontuar_janela, mas com a CADENCIA DE PRODUCAO.
 
     POR QUE ISTO EXISTE (09/09/2026): a dobra congelada treina no corte e preve
@@ -498,6 +499,23 @@ def pontuar_janela_prequencial(art_path: Path, ply_path: Path, jogos: pd.DataFra
     art = MLArtifact.load_json(str(art_path))
     p_art = PlayersArtifact.load_json(str(ply_path))
     w_lineup = float(((art.meta or {}).get("players_layer") or {}).get("w_lineup", 0.0) or 0.0)
+
+    # BASE DE VERDADE DA PRODUCAO — descoberto em 11/09/2026.
+    #
+    # A regua sempre aplicou este deslocamento de jogadores. O APP NAO APLICA:
+    # `use_lineup_adjust` vem False, e os dois unicos pontos que usariam o sinal
+    # (ml_pre_engine_core.py linhas 569 e 755) estao dentro dessa guarda. Alem
+    # disso o app nem le este campo — ele usa `pl_w` do params_fitted; o
+    # `w_lineup` do artefato so e lido por ferramentas de ajuste offline.
+    #
+    # Resultado: a base da regua era MELHOR que a producao de verdade, e todo
+    # ganho medido "em cima dela" respondia a pergunta errada — quanto a camada
+    # nova acrescenta a uma base que ninguem serve.
+    #
+    # Com --sem-camada-jogadores o deslocamento e zerado e a base passa a ser o
+    # que a sua tela mostra hoje.
+    if sem_camada_jogadores:
+        w_lineup = 0.0
     meta_times: dict = dict((art.meta or {}).get("team_meta") or {})
 
     def _home(team: str, liga_do_jogo: str):
@@ -705,6 +723,10 @@ def main() -> int:
     ap.add_argument("--com-jogadores", action="store_true",
                     help="Camada de jogadores por DESEMPENHO. O peso e ajustado so "
                          "em dobras ANTERIORES a cada janela (prequencial).")
+    ap.add_argument("--sem-camada-jogadores", action="store_true",
+                    help="Zera o deslocamento da camada de jogadores na BASE. "
+                         "E o que o app serve hoje (use_lineup_adjust=False). "
+                         "Sem isto, a base da regua e melhor que a producao.")
     ap.add_argument("--escalacao-anterior", action="store_true",
                     help="Usa a ULTIMA escalacao conhecida de cada time em vez da "
                          "real do jogo. E o que o app sabe ANTES da partida; sem "
@@ -823,7 +845,8 @@ def main() -> int:
                             cfg_form=cfg_form, usar_hybrid=bool(args.com_hybrid),
                             usar_platt=not args.sem_platt,
                             jogadores=jogadores, w_jog=w_jog,
-                            fusao_servida=bool(args.fusao_servida))
+                            fusao_servida=bool(args.fusao_servida),
+                            sem_camada_jogadores=bool(args.sem_camada_jogadores))
         else:
             res = f_pontuar(art, ply, jogos, ini, fim, player_rows,
                             domestic_by_year, team_meta)
@@ -880,6 +903,7 @@ def main() -> int:
                              # Sem este sufixo a variante servida sobrescreveria a
                              # base, que foi o erro de 10/09 (comparacao com n
                              # diferente porque um arquivo comeu o outro).
+                             f"{'_semcj' if args.sem_camada_jogadores else ''}"
                              f"{'_ant' if args.escalacao_anterior else ''}"
                              f"{'_fus' if args.fusao_servida else ''}.json")
     saida.write_text(json.dumps({
