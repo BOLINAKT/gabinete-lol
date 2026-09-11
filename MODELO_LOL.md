@@ -41,6 +41,64 @@ p < 0,05 e limite inferior do intervalo acima de zero** — as três coisas junt
 
 ---
 
+## A RÉGUA MUDOU — 11/09/2026 (supersede tudo que está abaixo)
+
+> Registro novo, o anterior fica. A direção mudou; o motivo está aqui.
+
+**O que se descobriu:** toda a tabela de notas abaixo foi construída em cima de
+medições que pontuavam jogos **que estavam dentro do treino do modelo**. Em
+84,9% dos jogos pontuados, o modelo já tinha visto o resultado. Isso não é uma
+imprecisão — é medir um aluno com a prova que ele copiou.
+
+**A régua nova:** `tools/nota_honesta.py`. Ela reconstrói o modelo do zero em
+**7 janelas de 30 dias**, avançando no tempo, e só pontua jogos **posteriores**
+a cada treino. É avaliação prequencial / rolling-origin, o padrão para série
+temporal. Aplica o calibrador de Platt, como o app aplica.
+
+**O choque de números:**
+
+```
+8,91   o que a régua velha dizia
+7,12   o que o modelo valia de verdade, na régua honesta
+7,32   o que ele vale hoje, com a margem de vitória ligada
+```
+
+**A partir daqui, "nota" neste arquivo quer dizer a nota honesta.** As notas de
+0 a 10 por peça (a régua de evidência, abaixo) continuam válidas como medida de
+*quanta evidência existe*, que é outra coisa e continua servindo.
+
+### O que mudou em produção nesta data
+
+| peça | antes | agora | efeito medido |
+|---|---|---|---|
+| Rating do time (WHR) | aprendia só quem ganhou | aprende **por quanto** (ouro aos 15) | **+0,00573**, IC não cruza zero, p < 1e-8 |
+| Guard de patch | LIGADO | **DESLIGADO** | piorava com e sem a margem; o Platt já cobre |
+
+A margem de vitória é o mesmo mecanismo do **Weighted Elo** e da família
+**MOVDA/G-Elo** da literatura: o resultado deixa de ser 0 ou 1 e vira uma
+fração entre os dois, proporcional a quão folgada foi a vitória. O gradiente do
+Bradley-Terry não muda — só o alvo.
+
+### O que foi medido nesta rodada e NÃO entrou
+
+| frente | ganho honesto | por quê não |
+|---|---|---|
+| camada de jogadores (pesos aprendidos por rota) | +0,00346 | o app aplica o sinal por um caminho diferente do que a régua usou; entrar como medido seria reimplementar produção |
+| draft | +0,00264 | é peça do lado **ao vivo**, não do pré-live |
+| margem mais funda (torres, abates, ouro em vários minutos) | +0,00002 | **morto.** A peneira de resíduo mostrou que, tirado o que o ouro aos 15 já explica, não sobra nada |
+| trocar WHR por Elo | empate (p = 0,49) | não há evidência para preferir um motor ao outro |
+
+Detalhe de cada uma: `specs/001-ligar-margem-vitoria/`, `PROTOCOLO_FASE2.md` e
+`evidence/`.
+
+### Risco aberto
+
+O ganho da margem só entra num **retreino completo**, e o robô só faz
+**incremental**. Não existe retreino completo agendado. Ver `RETOMAR.md`,
+seção 2-B.
+
+---
+
 ## ACHADO QUE MUDA A ORDEM DE TUDO — **SUPERADO em 08/09/2026**
 
 > **Este bloco continua aqui de propósito.** A prática de registro de decisão é

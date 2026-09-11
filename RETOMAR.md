@@ -129,6 +129,67 @@ instrumentação: réguas que medem o projeto, não previsões.
 
 ---
 
+## 2-B. A MARGEM DE VITÓRIA ESTÁ LIGADA — 11/09/2026
+
+**O que mudou:** o modelo passou a aprender **por quanto** um time ganhou, não
+só **se** ganhou. O sinal é a diferença de ouro aos 15 minutos. Ganhar de longe
+move o rating mais do que ganhar raspando.
+
+Junto com isso, o **guard de patch foi desligado**. Ele encolhia a confiança
+quando o patch mudava; medido, ele piora a nota com e sem a margem — o
+calibrador de Platt já resolve o excesso de confiança sozinho.
+
+**A nota, medida fora da amostra em 7.359 jogos de 2026:**
+
+```
+7,12  antes
+7,32  agora        (+0,00573 de logloss, p < 1e-8)
+```
+
+Essa é a nota da **régua honesta** (`tools/nota_honesta.py`), que reconstrói o
+modelo do zero em 7 janelas de 30 dias e só pontua jogos que ele nunca viu.
+
+**A nota antiga CAIU, de 8,83 para 8,78, e isso está certo.** O
+`ml_fusion_scorecard.py` mede o modelo em cima do próprio treino: 85% dos jogos
+que ele pontua estavam no treino. Um modelo que decora tira nota alta lá. A
+margem faz ele decorar menos. **Não use aquele número para decidir nada.**
+
+### O RISCO QUE VOCÊ PRECISA SABER
+
+**O ganho depende de um retreino COMPLETO mais ou menos todo mês, e não existe
+nenhum retreino completo agendado.**
+
+O robô roda 3x ao dia, mas só faz atualização **incremental** — e o caminho
+incremental é o antigo, que não conhece a margem. Entre um treino completo e o
+seguinte, os jogos novos entram sem ela e o ganho vai se diluindo.
+
+Treinos completos que existiram: **16/08, 15/07, 02/06** — nenhum agendado,
+todos disparados por algum evento.
+
+**Quanto o ganho decai em 2 ou 3 meses sem treino completo NÃO foi medido.**
+
+Para retreinar por completo (uns 15 minutos, faz backup sozinho):
+
+```
+python tools/atualizar_modelo.py --holdout-days 30
+```
+
+### Como voltar atrás
+
+`specs/001-ligar-margem-vitoria/quickstart.md` — passo a passo, e o rollback de
+emergência usando os arquivos `.pre_update_*`.
+
+### O que foi medido e NÃO entrou
+
+| frente | ganho | por quê não |
+|---|---|---|
+| camada de jogadores | +0,00346 | real, mas o app aplica o sinal por outro caminho; entrar como medido violaria a regra de não reimplementar produção |
+| draft | +0,00264 | vive no lado **live**, não no pré-live |
+| margem mais funda (torres, abates) | +0,00002 | morto — a peneira de resíduo mostrou que não sobra nada além do ouro aos 15 |
+| trocar o motor WHR por Elo | — | p = 0,49, empate; não há razão para trocar |
+
+---
+
 ## 3-A. FRENTE 0 — LIGADA, MAS QUASE NUNCA APLICA (corrigido em 08/09/2026)
 
 **LEIA ISTO ANTES DOS NÚMEROS ABAIXO.** Em 08/09 o app foi aberto pela

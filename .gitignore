@@ -73,6 +73,9 @@ live_models/last_auto_retrain.txt
 
 # Backups locais (nunca versionar)
 *.bak
+# Backups datados feitos a mao antes de mexer numa configuracao
+# (ex.: .gabinete_settings.json.bak_antes_patchguard_20260911).
+*.bak_*
 
 # Artefatos ML pesados (gerados automaticamente)
 ml_trace_last.json

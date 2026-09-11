@@ -95,10 +95,10 @@ níveis porque o calibrador já corrige o que ele tentava corrigir.
       (−0,00129 no nível "warn", −0,00334 no "refit") e a data.
       *FR-007: só a bandeira. O código do guard fica, para o rollback ser uma linha.*
 
-- [ ] **T013** [US2] Rodar a suíte inteira. Algum teste pode depender do guard
+- [x] **T013** [US2] Rodar a suíte inteira. Algum teste pode depender do guard
       ligado — se falhar, é informação, não obstáculo.
 
-- [ ] **T014** [US2] Recapturar o traço com `tools/caracterizacao_cadeia.py
+- [x] **T014** [US2] Recapturar o traço com `tools/caracterizacao_cadeia.py
       --capturar` e confirmar `patch_meta_guard: applied=False` nos quatro
       confrontos.
 
@@ -112,12 +112,33 @@ níveis porque o calibrador já corrige o que ele tentava corrigir.
 
 ### Implementation for User Story 3
 
-- [ ] **T015** [US3] Verificar **SC-005 / FR-005**: treinar com `--whr-mov off`
-      num caminho de rascunho e comparar os ratings com o artefato de backup
-      (T004). Devem bater bit a bit.
+- [x] **T015** [US3] Verificar **SC-005 / FR-005**: treinar com `--whr-mov off`
+      num caminho de rascunho e comparar os ratings com um **controle**. Devem
+      bater bit a bit.
       *Se não baterem, a margem está vazando para o caminho desligado — para tudo.*
 
-- [ ] **T016** [US3] Escrever `specs/001-ligar-margem-vitoria/quickstart.md` com o
+      > **CORREÇÃO DE MÉTODO, 11/09/2026.** Esta tarefa dizia "comparar com o
+      > artefato de backup (T004)". **Isso está errado e teria dado falso
+      > alarme.** O backup `ml_artifact.json.pre_update_*` é uma atualização
+      > **incremental** (27 jogos) empilhada sobre um treino completo de 16/08.
+      > Um treino completo novo nunca vai bater com ele: a diferença é de
+      > cadência, não de margem. Conferido — 0 de 880 ratings iguais, maior
+      > diferença 750 pontos, e até os conjuntos de times diferem.
+      >
+      > **O controle certo é o CÓDIGO de antes da margem rodando nos MESMOS
+      > CSVs.** Feito com uma árvore de trabalho no commit `4b86a7d`, com os
+      > três CSVs conferidos idênticos por hash de blob, e o mesmo
+      > interpretador. Comparação por `tools/comparar_ratings.py`.
+      >
+      > **RESULTADO: PASSA.** 884 de 884 ratings idênticos bit a bit, mais
+      > params, calibrador, forças de liga/tier e os 5.193 jogadores. As
+      > métricas do holdout batem dígito a dígito. Única diferença: o
+      > carimbo de hora `updated_at`. Evidência em
+      > `specs/001-ligar-margem-vitoria/verificacao-rollback.txt`
+      > (cópia versionada; `evidence/` é ignorado pelo git por convenção do
+      > repositório, e esta prova não pode sumir num formato).
+
+- [x] **T016** [US3] Escrever `specs/001-ligar-margem-vitoria/quickstart.md` com o
       procedimento de reversão em passos numerados, **em português claro**, para o
       dono executar sozinho sem pedir ajuda.
 
@@ -125,14 +146,14 @@ níveis porque o calibrador já corrige o que ele tentava corrigir.
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] **T017** [P] Atualizar `MODELO_LOL.md`: a peça "margem de vitória" sai de
+- [x] **T017** [P] Atualizar `MODELO_LOL.md`: a peça "margem de vitória" sai de
       "desligada" para "ligada e medida", com o número e a data.
 
-- [ ] **T018** [P] Atualizar `PROTOCOLO_FASE2.md` com o resultado da aplicação —
+- [x] **T018** [P] Atualizar `PROTOCOLO_FASE2.md` com o resultado da aplicação —
       o protocolo dizia que a Fase 2 mede e a decisão vem depois; registrar que a
       decisão foi tomada e qual foi.
 
-- [ ] **T019** [P] Registrar em `RETOMAR.md` a pendência declarada na pesquisa:
+- [x] **T019** [P] Registrar em `RETOMAR.md` a pendência declarada na pesquisa:
       **o ganho depende de treino completo ~mensal, e não existe treino completo
       programado.** Último foi 16/08.
 

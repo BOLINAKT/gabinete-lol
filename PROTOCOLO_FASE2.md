@@ -258,3 +258,56 @@ as comparações que decidem estão sendo **refeitas** com o calibrador ligado.
 
 A flag `--sem-platt` reproduz o comportamento antigo, só para conferir contra as
 medições já registradas.
+
+---
+
+# FECHAMENTO DA FASE 2 — 11/09/2026
+
+Este é o resultado, medido na régua da EMENDA 3 (7 dobras de 30 dias, cadência
+diária, calibrador Platt aplicado, ~7.350 jogos de 2026 fora da amostra).
+
+## A tabela que decide
+
+| frente | efeito (logloss) | IC 95% diádico | p corrigido | passa na barra? | decisão |
+|---|---|---|---|---|---|
+| **margem de vitória (ouro aos 15)** | **+0,00573** | **[+0,00395, +0,00751]** | **< 1e-8** | **SIM** | **LIGADA em produção** |
+| **desligar o guard de patch** | **+0,00206** | não cruza zero | < 0,01 | **SIM** | **DESLIGADO em produção** |
+| camada de jogadores (pesos por rota) | +0,00346 | [+0,00243, +0,00450] | < 1e-6 | SIM | **NÃO ligada** — ver abaixo |
+| draft | +0,00264 | — | — | tangencia | fora de escopo (pré-live) |
+| margem mais funda | +0,00002 | cruza zero | — | não | **morta** |
+| trocar WHR por Elo | ~0 | cruza zero | 0,49 | não | motor fica |
+
+Nota honesta: **7,12 → 7,32**.
+
+## Por que a camada de jogadores passou na barra e mesmo assim não entrou
+
+Ela passa. O problema não é o número, é o caminho.
+
+A régua aplicou o sinal de jogadores como um deslocamento no logit. **O app não
+faz isso** — ele funde o sinal por precisão (`_fuse_probs_by_precision`), e o
+portão `use_lineup_adjust=False` fecha os dois pontos de fusão.
+
+Ligar "como medido" seria escrever em produção uma versão do mecanismo que só
+existe na régua. Isso é exatamente o que o **Princípio V** da constituição
+proíbe: *não reimplementar produção para medir*. O número mediria uma coisa e o
+app rodaria outra.
+
+Fica como **spec 002**, a ser medida pelo caminho que o app realmente usa.
+
+## O que este protocolo NÃO cobriu, e precisa de dono
+
+**Retreino completo agendado.** A margem só entra em treino completo; o robô só
+faz incremental. Sem agenda, o ganho se dilui num prazo que não foi medido.
+Registrado em `RETOMAR.md`, seção 2-B.
+
+## Lições que ficam
+
+1. **A régua veio antes das conclusões, e isso salvou a fase.** Três achados
+   grandes (o guard, a margem "mais funda", a camada de jogadores) mudaram de
+   sinal quando a régua foi corrigida. Nenhum deles teria sido pego pela
+   medição antiga.
+2. **Ganho que aparece "de graça" é sintoma.** Os +0,00325 de "só recalibrar"
+   não eram dinheiro — eram o calibrador faltando na régua (EMENDA 3).
+3. **Peneirar o resíduo antes de construir economiza semanas.** A frente da
+   margem mais funda parecia a continuação natural da que deu certo; a peneira
+   mostrou +0,00002 antes de uma linha ser escrita.

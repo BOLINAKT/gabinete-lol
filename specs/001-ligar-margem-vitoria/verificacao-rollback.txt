@@ -1,0 +1,77 @@
+A = scratchpad/rollback/sem_margem.json
+B = C:/Gabinetes/_wt_premargem/out_ctl/controle_premargem.json
+
+  times so em A .............. 0
+  times so em B .............. 0
+  times em ambos ............. 884
+
+  identicos bit a bit ........ 884 de 884
+  maior diferenca ............ 0
+  diferenca media ............ 0
+
+  VEREDITO: IDENTICOS bit a bit. O rollback e limpo.
+
+================================================================================
+T015 / SC-005 / FR-005  —  verificacao de rollback, 11/09/2026
+================================================================================
+
+PERGUNTA
+  Com a margem desligada, o modelo volta a ser EXATAMENTE o de antes, ou a
+  margem vaza para o caminho desligado?
+
+O CONTROLE (e por que nao foi o backup)
+  NAO se compara contra ml_artifact.json.pre_update_*. Aquele artefato e uma
+  atualizacao INCREMENTAL de 27 jogos empilhada sobre um treino completo de
+  16/08. Um treino completo novo nunca bate com ele — a diferenca seria de
+  cadencia, nao de margem. Conferido: 0 de 880 ratings iguais, maior diferenca
+  750 pontos, e ate os conjuntos de times diferem. Teria dado falso alarme.
+
+  O controle certo e o CODIGO de antes da margem rodando nos MESMOS dados:
+    A = codigo de hoje, com --whr-mov off
+    B = arvore de trabalho no commit 4b86a7d (anterior a margem), sem a flag
+        porque naquele codigo ela nao existe
+
+  Mesmos CSVs, conferidos por hash de blob do git (identicos nos tres):
+    CSV_HISTORICO/2024_...  518d6a91396a2e33eef7ced3ed8871016b9cd8bd
+    CSV_HISTORICO/2025_...  7a6484ac803a05e8d6529f80c85b15567f039aa2
+    CSV_DIARIO/2026_...     fe0ca0dae77200347269d622e51b8c19ef39278f
+  Mesmo interpretador: .venv/Scripts/python.exe
+  Mesmo --holdout-days 30. Ambos: 27.563 jogos, 12 varreduras, 9.050
+  predicoes prequenciais para calibrar.
+
+RESULTADO
+  ratings de time .................. 884 de 884 IDENTICOS bit a bit
+  games_played ..................... identico
+  params ........................... identico
+  league_strength / tier_strength .. identicos
+  league_base_points_map ........... identico
+  rank_caps_by_tier ................ identico
+  side_adv_points / team_volatility  identicos
+  team_meta ........................ identico
+  calibrator ....................... identico {a=0.7197493973072338,
+                                               b=0.09657376133404524}
+  artefato de jogadores ............ 5.193 jogadores identicos
+
+  metricas do holdout (n=1204), digito a digito:
+    logloss_raw   0.6953688752939786   nos dois
+    logloss_cal   0.6660034811353      nos dois
+    brier_raw     0.24251756904725655  nos dois
+    brier_cal     0.23412340583569477  nos dois
+    ece_cal       0.06069678897253055  nos dois
+
+  meta.whr_mov ..................... AUSENTE nos dois, como tem de ser
+
+A UNICA DIFERENCA
+  players_artifact.updated_at — o carimbo de hora da gravacao. Os dois treinos
+  rodaram em minutos diferentes. Nao e estado do modelo.
+
+VEREDITO
+  PASSA. A margem nao vaza para o caminho desligado. O rollback descrito em
+  specs/001-ligar-margem-vitoria/quickstart.md devolve o modelo anterior
+  exatamente, nao aproximadamente.
+
+TRAVADO TAMBEM NO NIVEL DE UNIDADE
+  mlcore/tests/test_whr_mov.py::test_ratings_identicos_com_e_sem_os_parametros_novos
+  compara ratings_elo() com e sem os parametros novos neutros e exige
+  igualdade exata. Se alguem quebrar a garantia, a suite acusa sem precisar
+  de dois treinos de 10 minutos.
