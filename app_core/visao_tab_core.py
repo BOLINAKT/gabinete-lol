@@ -431,114 +431,134 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         # Fechado por padrao, de proposito: fechado, a tela fica igual a de
         # hoje. So abre quando o dono sabe de uma troca.
         # ------------------------------------------------------------------
-        with st.expander("Ajustar escalação", expanded=False):
-            st.caption(
-                "Preenchido com a última escalação conhecida de cada time. "
-                "Corrija só quando souber de uma troca — o modelo usa estes "
-                "cinco de cada lado para calcular o efeito dos jogadores."
-            )
-            if df_pr is None or getattr(df_pr, "empty", True):
-                st.info("Sem dados de jogadores carregados para editar a escalação.")
-            else:
-                _cols_ok = {"team", "pos_ml", "player_key"}.issubset(set(df_pr.columns))
-                if not _cols_ok:
-                    st.info("A base de jogadores não tem as colunas necessárias.")
-                else:
-                    def _opcoes_do_time(nome_time: str, pos: str) -> list:
-                        """Quem pode entrar naquela rota, do mais provavel ao menos.
+        # BLINDAGEM (11/09/2026, com o site fora do ar): este bloco desenha
+        # widgets, e widget que levanta excecao derruba a PAGINA INTEIRA, nao
+        # so o bloco. Um ajuste de escalacao nunca pode custar o app.
+        #
+        # Nao ficou provado que foi ele que derrubou o site — as medicoes
+        # apontaram para outro lado (0,44 s e 1,4 MB por tela, nenhuma
+        # excecao no fluxo local). Mas "nao consegui reproduzir" nao e o
+        # mesmo que "nao pode acontecer", e a nuvem tem dados e versoes que
+        # a maquina daqui nao tem. Entao ele passa a falhar sozinho, calado
+        # e visivel, em vez de levar o resto junto.
+        try:
+          with st.expander("Ajustar escalação", expanded=False):
+              st.caption(
+                  "Preenchido com a última escalação conhecida de cada time. "
+                  "Corrija só quando souber de uma troca — o modelo usa estes "
+                  "cinco de cada lado para calcular o efeito dos jogadores."
+              )
+              if df_pr is None or getattr(df_pr, "empty", True):
+                  st.info("Sem dados de jogadores carregados para editar a escalação.")
+              else:
+                  _cols_ok = {"team", "pos_ml", "player_key"}.issubset(set(df_pr.columns))
+                  if not _cols_ok:
+                      st.info("A base de jogadores não tem as colunas necessárias.")
+                  else:
+                      def _opcoes_do_time(nome_time: str, pos: str) -> list:
+                          """Quem pode entrar naquela rota, do mais provavel ao menos.
 
-                        POR QUE NAO SO O TIME (conserto de 11/09/2026, no mesmo
-                        dia): a primeira versao oferecia so quem ja jogou por
-                        aquele time naquela rota. Conferido dirigindo o app: dava
-                        DUAS opcoes — o titular e o vazio. Ou seja, era impossivel
-                        colocar um substituto, que e exatamente o caso para o
-                        qual esta tela existe.
+                          POR QUE NAO SO O TIME (conserto de 11/09/2026, no mesmo
+                          dia): a primeira versao oferecia so quem ja jogou por
+                          aquele time naquela rota. Conferido dirigindo o app: dava
+                          DUAS opcoes — o titular e o vazio. Ou seja, era impossivel
+                          colocar um substituto, que e exatamente o caso para o
+                          qual esta tela existe.
 
-                        Agora a lista vai em tres camadas, nesta ordem:
-                          1. quem ja jogou por ESTE time nesta rota (o provavel)
-                          2. quem joga a MESMA rota na mesma liga (o emprestimo,
-                             o promovido da academia, o reserva)
-                          3. o resto da rota, para o caso raro
-                        O campo e pesquisavel, entao lista longa nao atrapalha.
-                        """
-                        try:
-                            d_rota = df_pr[df_pr["pos_ml"].astype(str) == str(pos)]
-                            if "date" in d_rota.columns:
-                                d_rota = d_rota.sort_values("date", ascending=False)
+                          Agora a lista vai em tres camadas, nesta ordem:
+                            1. quem ja jogou por ESTE time nesta rota (o provavel)
+                            2. quem joga a MESMA rota na mesma liga (o emprestimo,
+                               o promovido da academia, o reserva)
+                            3. o resto da rota, para o caso raro
+                          O campo e pesquisavel, entao lista longa nao atrapalha.
+                          """
+                          try:
+                              d_rota = df_pr[df_pr["pos_ml"].astype(str) == str(pos)]
+                              if "date" in d_rota.columns:
+                                  d_rota = d_rota.sort_values("date", ascending=False)
 
-                            do_time = d_rota[d_rota["team"].astype(str) == str(nome_time)]
+                              do_time = d_rota[d_rota["team"].astype(str) == str(nome_time)]
 
-                            da_liga = d_rota.iloc[0:0]
-                            if "league" in d_rota.columns:
-                                _ligas = set(
-                                    do_time["league"].astype(str).unique().tolist()
-                                ) if not do_time.empty else set()
-                                if _ligas:
-                                    da_liga = d_rota[d_rota["league"].astype(str).isin(_ligas)]
+                              da_liga = d_rota.iloc[0:0]
+                              if "league" in d_rota.columns:
+                                  _ligas = set(
+                                      do_time["league"].astype(str).unique().tolist()
+                                  ) if not do_time.empty else set()
+                                  if _ligas:
+                                      da_liga = d_rota[d_rota["league"].astype(str).isin(_ligas)]
 
-                            vistos, saida = set(), []
-                            for _parte in (do_time, da_liga, d_rota):
-                                for k in _parte["player_key"].astype(str).tolist():
-                                    if k and k not in vistos:
-                                        vistos.add(k)
-                                        saida.append(k)
-                            return saida
-                        except (KeyError, TypeError, ValueError):
-                            return []
+                              vistos, saida = set(), []
+                              for _parte in (do_time, da_liga, d_rota):
+                                  for k in _parte["player_key"].astype(str).tolist():
+                                      if k and k not in vistos:
+                                          vistos.add(k)
+                                          saida.append(k)
+                              return saida
+                          except (KeyError, TypeError, ValueError):
+                              return []
 
-                    _nome_por_chave = {}
-                    try:
-                        if "player" in df_pr.columns:
-                            for _k, _n in zip(df_pr["player_key"].astype(str),
-                                              df_pr["player"].astype(str)):
-                                if _k and _k not in _nome_por_chave:
-                                    _nome_por_chave[_k] = _n
-                    except (KeyError, TypeError, ValueError):
-                        _nome_por_chave = {}
+                      _nome_por_chave = {}
+                      try:
+                          if "player" in df_pr.columns:
+                              for _k, _n in zip(df_pr["player_key"].astype(str),
+                                                df_pr["player"].astype(str)):
+                                  if _k and _k not in _nome_por_chave:
+                                      _nome_por_chave[_k] = _n
+                      except (KeyError, TypeError, ValueError):
+                          _nome_por_chave = {}
 
-                    def _mostrar(chave: str) -> str:
-                        if not chave:
-                            return "— ninguém —"
-                        return _nome_por_chave.get(str(chave), str(chave))
+                      def _mostrar(chave: str) -> str:
+                          if not chave:
+                              return "— ninguém —"
+                          return _nome_por_chave.get(str(chave), str(chave))
 
-                    _mudou = False
-                    for _lado, _nome_time in (("A", teamA), ("B", teamB)):
-                        st.markdown(f"**{_nome_time}**")
-                        _cs = st.columns(len(_POS_CANON_ML))
-                        for _i, _pos in enumerate(_POS_CANON_ML):
-                            _k = f"lineup_ml_{_lado}_{_safe_key(_pos)}"
-                            _atual = str(st.session_state.get(_k, "") or "")
-                            _opts = _opcoes_do_time(_nome_time, _pos)
-                            # O valor atual TEM de estar nas opcoes, senao o
-                            # widget recusa. Jogador emprestado de outro time,
-                            # ou recem-chegado, cai neste caso.
-                            if _atual and _atual not in _opts:
-                                _opts = [_atual] + _opts
-                            _opts = [""] + _opts
-                            with _cs[_i]:
-                                _novo = st.selectbox(
-                                    _pos, options=_opts,
-                                    index=(_opts.index(_atual) if _atual in _opts else 0),
-                                    format_func=_mostrar,
-                                    key=f"ui_{_k}",
-                                )
-                            if str(_novo or "") != _atual:
-                                st.session_state[_k] = str(_novo or "")
-                                _mudou = True
+                      _mudou = False
+                      for _lado, _nome_time in (("A", teamA), ("B", teamB)):
+                          st.markdown(f"**{_nome_time}**")
+                          _cs = st.columns(len(_POS_CANON_ML))
+                          for _i, _pos in enumerate(_POS_CANON_ML):
+                              _k = f"lineup_ml_{_lado}_{_safe_key(_pos)}"
+                              _atual = str(st.session_state.get(_k, "") or "")
+                              _opts = _opcoes_do_time(_nome_time, _pos)
+                              # O valor atual TEM de estar nas opcoes, senao o
+                              # widget recusa. Jogador emprestado de outro time,
+                              # ou recem-chegado, cai neste caso.
+                              if _atual and _atual not in _opts:
+                                  _opts = [_atual] + _opts
+                              _opts = [""] + _opts
+                              with _cs[_i]:
+                                  _novo = st.selectbox(
+                                      _pos, options=_opts,
+                                      index=(_opts.index(_atual) if _atual in _opts else 0),
+                                      format_func=_mostrar,
+                                      key=f"ui_{_k}",
+                                  )
+                              if str(_novo or "") != _atual:
+                                  st.session_state[_k] = str(_novo or "")
+                                  _mudou = True
 
-                    if _mudou:
-                        # Guarda POR CONFRONTO: corrigiu Time A x Time B, fica
-                        # salvo so para esse confronto.
-                        _save_lineup_for_matchup(_lk)
+                      if _mudou:
+                          # Guarda POR CONFRONTO: corrigiu Time A x Time B, fica
+                          # salvo so para esse confronto.
+                          _save_lineup_for_matchup(_lk)
 
-                    if st.button("Voltar à escalação automática", key="lineup_reset_btn"):
-                        for _lado in ("A", "B"):
-                            for _pos in _POS_CANON_ML:
-                                st.session_state.pop(f"ui_lineup_ml_{_lado}_{_safe_key(_pos)}", None)
-                        st.session_state.pop("_lineup_autofilled_key", None)
-                        _rerun = getattr(st, "rerun", None) or getattr(st, "experimental_rerun", None)
-                        if callable(_rerun):
-                            _rerun()
+                      if st.button("Voltar à escalação automática", key="lineup_reset_btn"):
+                          for _lado in ("A", "B"):
+                              for _pos in _POS_CANON_ML:
+                                  st.session_state.pop(f"ui_lineup_ml_{_lado}_{_safe_key(_pos)}", None)
+                          st.session_state.pop("_lineup_autofilled_key", None)
+                          _rerun = getattr(st, "rerun", None) or getattr(st, "experimental_rerun", None)
+                          if callable(_rerun):
+                              _rerun()
+        except Exception as _e_esc:  # noqa: BLE001 - a tela vale mais que o bloco
+            try:
+                st.warning(
+                    "Não consegui montar o ajuste de escalação ({}). O resto da "
+                    "análise segue normal, com a última escalação conhecida."
+                    .format(type(_e_esc).__name__)
+                )
+            except Exception:
+                pass
 
         lineupA_sel = _get_lineup_selected('A', mode='ml' if use_ml_lineup else 'manual')
         lineupB_sel = _get_lineup_selected('B', mode='ml' if use_ml_lineup else 'manual')
