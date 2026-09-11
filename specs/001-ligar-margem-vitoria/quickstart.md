@@ -74,11 +74,18 @@ travando que, com a margem desligada, o resultado é idêntico bit a bit.
 1. Abra `app_core/app_state.py`
 2. Ache `"ml_patch_guard_enabled": False`
 3. Troque para `True`
-4. Abra `.gabinete_settings.json` e faça o mesmo lá
+4. Abra `.gabinete_settings.json`, procure **dentro do bloco `settings`** a
+   mesma chave `ml_patch_guard_enabled`, e troque para `true`
 
 **Por que em dois lugares:** o app tem o default do código e a sua configuração
-salva. A salva vence. Foi justamente isso que fez a primeira tentativa de
-desligar não funcionar.
+salva, e a salva vence.
+
+> **Correção de 11/09/2026.** Este trecho dizia que foi a configuração salva
+> que fez a primeira tentativa de desligar não funcionar. **Não foi.** A causa
+> real: eu tinha posto a mudança em `shared_ml_defaults()`, mas quem monta os
+> valores usa `setdefault`, então o default de `app_state.py` vencia e a minha
+> mudança nunca chegava. A configuração salva também tem a chave (aninhada em
+> `settings`), e por isso ela entra no passo 4 — mas não foi ela a culpada.
 
 ### Rollback de emergência (desfaz tudo de uma vez)
 

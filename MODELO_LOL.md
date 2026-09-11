@@ -246,7 +246,7 @@ calibrador com grupo corrige.
 
 | # | Peça | Onde | Nota | Efeito medido | Estado |
 |---|---|---|---|---|---|
-| 9 | **Camada de jogadores** | `mlcore/players_layer.py` | **10** | **paga 0,00644** (ablação 27/08) | LIGADA. A peça que mais paga |
+| 9 | **Camada de jogadores** | `mlcore/players_layer.py` | **8** | +0,00491 na régua honesta (11/09) | **NÃO ENTRA NA CONTA.** `use_lineup_adjust=False` fecha os dois pontos onde o sinal mudaria a probabilidade. Conferido no traço do app e lendo o código. Ver `specs/002-camada-jogadores-pelo/achado-camada-inerte.md` |
 | 10 | Contexto de jogadores | `mlcore/players_context_core.py` | 5 | — | **DESLIGADO à força** no runtime; os parâmetros existem ajustados |
 | 11 | Pesos por rota | `params_fitted.json` | 0 | — | **Nunca medido** |
 | 12 | Pesos por liga | `params_fitted.json` | 0 | — | **Nunca medido** |
