@@ -394,10 +394,11 @@ def _render_v3_vencedor_subpanel(
         if not _ra["team_df"].empty and not _rb["team_df"].empty:
             df_a = _ra["team_df"].copy()
             df_b = _rb["team_df"].copy()
-            st.info(
-                f"⚔️ Times de ligas diferentes — {escape(team_a)} ({escape(_ra['league'])}) "
-                f"vs {escape(team_b)} ({escape(_rb['league'])}), cada um na sua liga."
-            )
+            # NAO presumir "ligas diferentes" so porque o recorte esvaziou:
+            # ver descrever_recorte_por_time.
+            from app_core.market_v3_analysis_core import descrever_recorte_por_time
+            _desc = descrever_recorte_por_time(_ra, _rb, team_a, team_b)
+            st.info(_desc["texto"])
 
     df_a = _filter_by_map(df_a)
     df_b = _filter_by_map(df_b)

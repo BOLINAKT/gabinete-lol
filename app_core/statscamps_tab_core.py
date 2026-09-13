@@ -203,6 +203,7 @@ def render_statscamps_tab(
     Filters: Any,
     apply_filters_fn: Callable[[pd.DataFrame, Any], pd.DataFrame],
     parse_lines_fn: Callable[[str], list[float]],
+    parse_time_lines_fn: Callable[[str], list[float]],
     min_to_mmss_fn: Callable[[Any], str],
     format_num_fn: Callable[[float, int], str],
     df_contract_view_fn: Callable[..., pd.DataFrame],
@@ -370,6 +371,11 @@ def render_statscamps_tab(
             "INHIB thresholds (C. Inhib) — ex: 1.5",
             key="sc_th_inhib",
         )
+        th_time = st.text_input(
+            "TEMPO thresholds (Game Time) — ex: 32:30, 35, 28.5",
+            key="sc_th_time",
+            help="Aceita 32:30, 32.5 ou 32. O padrão é 32:30.",
+        )
 
     sc_filters = Filters(
         year=None if not sc_year else int(sc_year),
@@ -398,6 +404,16 @@ def render_statscamps_tab(
     # apagar as colunas 23.5/25.5/... — so adiciona a nova.
     from app_core.stats_config import STATS_MARKET_CONFIG as _SMC
 
+    def _th_tempo(txt: Any) -> list:
+        """Linhas de tempo, que aceitam 32:30 alem de 32.5.
+
+        O parser comum nao entende "32:30" — ele quebraria em 32 e 30, e o
+        dono ia digitar o horario e ver duas linhas erradas aparecerem.
+        """
+        cfg = _SMC.get("Tempo")
+        base = parse_time_lines_fn(str(cfg["default_thresholds"])) if cfg else []
+        return sorted(set(list(base) + list(parse_time_lines_fn(txt))))
+
     def _th(txt: Any, market: str) -> list:
         # .get, nao [] (26/08/2026): o dota_overrides troca "Dragões" por
         # "Megacreeps" no registro, e esta aba pedia a chave literal — a aba
@@ -414,6 +430,7 @@ def render_statscamps_tab(
     th_d = _th(th_dragons, "Dragões")
     th_b = _th(th_barons, "Nashors")
     th_i = _th(th_inhib, "Inibidores")
+    th_tm = _th_tempo(th_time)
     agg_rows = []
     for team_name, group in df_sc.groupby("team"):
         group = group.copy()
@@ -450,6 +467,12 @@ def render_statscamps_tab(
             row[f"% Nashors > {line}"] = _pct(pd.to_numeric(group["total_nashors"], errors="coerce") > float(line))
         for line in th_i:
             row[f"% Inhib > {line}"] = _pct(pd.to_numeric(group["total_inhibitors"], errors="coerce") > float(line))
+        for line in th_tm:
+            # O rotulo mostra o horario (32:30), nao o decimal (32.5) — e como
+            # a linha e vendida na casa.
+            row[f"% Tempo > {min_to_mmss_fn(float(line))}"] = _pct(
+                pd.to_numeric(group.get("game_time_min"), errors="coerce") > float(line)
+            )
         agg_rows.append(row)
 
     df_tab = pd.DataFrame(agg_rows)

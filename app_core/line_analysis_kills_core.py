@@ -84,6 +84,9 @@ def _render_kills_line_content(
     league_scope_a: pd.DataFrame = None,
     league_scope_b: pd.DataFrame = None,
     cross_league: bool = False,
+    # Quando cross_league e True porque o RECORTE esvaziou (e nao porque
+    # as ligas sao mesmo diferentes), isto vem True e o rotulo muda.
+    mesma_liga: bool = False,
     xl_league_a: str = "",
     xl_league_b: str = "",
     num_fmt: Callable[[Any, int], str],
@@ -302,7 +305,12 @@ def _render_kills_line_content(
     # appears in the two Liga columns); otherwise show the full liga·ano·split.
     if cross_league:
         _stats_header = f"Stats da linha · {v3_year}"
-        _stats_scope = f"{v3_year} · ligas diferentes (cada time na sua) · Mapa: {map_choice}"
+        _stats_scope = (
+            f"{v3_year} · "
+            + ("mesma liga, recorte remontado" if mesma_liga
+               else "ligas diferentes (cada time na sua)")
+            + f" · Mapa: {map_choice}"
+        )
     else:
         _stats_header = f"Stats da linha · {v3_league} · {v3_year} · {v3_split or 'todos splits'}"
         _stats_scope = f"{v3_league} {v3_year} {v3_split or '(todos splits)'} · Mapa: {map_choice}"
@@ -602,6 +610,7 @@ def _render_v3_kills_subpanel(
     _xl_scope_b = None
     _xl_league_a = ""
     _xl_league_b = ""
+    _mesma_liga = False
     if _cross_league:
         from app_core.market_v3_analysis_core import resolve_team_home_scope
         try:
@@ -620,13 +629,12 @@ def _render_v3_kills_subpanel(
         _xl_scope_b = _rb["league_scope"]
         _xl_league_a = _ra["league"]
         _xl_league_b = _rb["league"]
-        st.info(
-            f"⚔️ Times de ligas diferentes — cada um avaliado na sua liga "
-            f"(split mais recente): **{escape(team_a)}** ({escape(_xl_league_a)} · "
-            f"{escape(_ra['split'] or '—')}) vs **{escape(team_b)}** "
-            f"({escape(_xl_league_b)} · {escape(_rb['split'] or '—')}). "
-            f"Oponentes e médias da liga são de cada liga respectiva."
-        )
+        # NAO presumir "ligas diferentes" so porque o recorte esvaziou:
+        # ver descrever_recorte_por_time.
+        from app_core.market_v3_analysis_core import descrever_recorte_por_time
+        _desc = descrever_recorte_por_time(_ra, _rb, team_a, team_b)
+        _mesma_liga = bool(_desc["mesma_liga"])
+        st.info(_desc["texto"])
 
     # ---- Apply Mapa filter to all DataFrames (keep unfiltered for panoramic "Por mapa" card) ----
     # The column with map order is `map_number` after build_team_games() in
@@ -798,6 +806,7 @@ def _render_v3_kills_subpanel(
         league_scope_for_panel=league_scope_for_panel,
         league_scope_a=league_scope_a, league_scope_b=league_scope_b,
         cross_league=_cross_league,
+        mesma_liga=_mesma_liga,
         xl_league_a=_xl_league_a, xl_league_b=_xl_league_b,
         num_fmt=_num_fmt, mmss=_mmss,
         v3_year=v3_year, v3_league=v3_league, v3_split=v3_split,

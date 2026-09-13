@@ -2605,6 +2605,7 @@ _secondary_tab_renderers = {
         Filters=Filters,
         apply_filters_fn=apply_filters,
         parse_lines_fn=parse_lines_text,
+        parse_time_lines_fn=parse_time_lines_text,
         min_to_mmss_fn=_min_to_mmss,
         format_num_fn=_format_num,
         df_contract_view_fn=_df_contract_view,
