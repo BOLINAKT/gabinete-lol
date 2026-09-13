@@ -85,9 +85,21 @@ class UITestMojibakeGuardrails(unittest.TestCase):
         self.assertIn("_TAB_VISAO = TAB_VISAO", src)
         self.assertIn("_TAB_CONS = TAB_CONS", src)
         self.assertIn("_TAB_PARAMS = TAB_PARAMS", src)
-        self.assertIn("if _TAB_PARAMS in tab_refs:", src)
-        self.assertIn("if _TAB_VISAO in tab_refs:", src)
-        self.assertIn("if _TAB_CONS in tab_refs:", src)
+        # O que esta trava protege e a BUSCA PELA CONSTANTE: as tres tabs
+        # principais tem de sair de `tab_refs` pela constante canonica, nunca
+        # por texto solto nem por posicao na lista.
+        #
+        # Em 13/09/2026 a forma mudou de `if X in tab_refs:` para
+        # `tab_refs.get(X)`, porque as tres passaram a ser desenhadas
+        # isoladas (uma aba quebrada nao pode mais derrubar o site). As duas
+        # formas respeitam a regra; travar a forma literal reprovava a
+        # mudanca sem ter nada a ver com o que ela quer impedir.
+        for _nome in ("_TAB_PARAMS", "_TAB_VISAO", "_TAB_CONS"):
+            self.assertTrue(
+                ("if {} in tab_refs:".format(_nome) in src)
+                or ("tab_refs.get({})".format(_nome) in src)
+                or ("tab_refs[{}]".format(_nome) in src),
+                "{} nao e usado como chave de tab_refs".format(_nome))
         self.assertTrue(
             ('_TAB_LIVEBET = "Live-Bet"' in src)
             or ('for _tab_name in ("Rankings", "Jogos", "Series", "StatsCamps", "Campeões", "Players", "Identidade", "Live-Bet"):' in src)

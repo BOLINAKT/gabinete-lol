@@ -173,6 +173,16 @@ def conferir(novo_path: str, antigo_path: str | None, pscore_path: str | None) -
                 "a maioria dos jogos tem o dado da margem",
                 "{} com, {} sem".format(com, sem))
 
+    # O arquivo de notas e lido aqui em cima porque a checagem do EFEITO
+    # precisa dele (o peso sozinho nao diz nada sem a escala das notas).
+    alvo_ps = pscore_path or str(Path(novo_path).expanduser().with_name("players_pscore.json"))
+    pac: dict = {}
+    _erro_pac = ""
+    try:
+        pac = _carregar(alvo_ps)
+    except (OSError, ValueError) as e:
+        _erro_pac = str(e)
+
     ps = meta.get("players_pscore") or {}
     if p.exige(bool(ps.get("enabled")),
                "a camada de jogadores POR DESEMPENHO foi montada",
@@ -181,11 +191,32 @@ def conferir(novo_path: str, antigo_path: str | None, pscore_path: str | None) -
         p.exige(math.isfinite(w) and w > 0.0,
                 "o peso da camada por desempenho e positivo",
                 "w={:.4f} (cru {:.4f})".format(w, float(ps.get("w_raw", 0.0) or 0.0)))
-        # O ajuste converge para ~0,066. Muito longe disso quer dizer que o
-        # conjunto de ajuste encolheu, e o peso virou ruido.
-        p.avisa(0.01 <= w <= 0.25,
-                "o peso por desempenho esta na faixa esperada",
-                "w={:.4f}, esperado entre 0,01 e 0,25".format(w))
+        # NAO SE CHECA O PESO CRU, e sim o EFEITO.
+        #
+        # A primeira versao exigia 0,01 <= w <= 0,25, mirando o ~0,066 do modo
+        # 'media'. Isso quebra quando o modo muda: no 'ffa' a nota do jogador
+        # vive numa escala dezenas de vezes maior, e o peso certo e 0,005 —
+        # dentro da faixa antiga isso seria "avisado" a toa.
+        #
+        # O que importa nao e o peso, e quanto ele MOVE a probabilidade. Os
+        # dois modos, medidos em 11/09/2026, deslocam o logito de forma
+        # parecida: 0,15 no 'media' e 0,19 no 'ffa'. Um deslocamento tipico
+        # fora de [0,02, 1,00] quer dizer camada inerte ou camada mandando
+        # demais, e nos dois casos alguem precisa olhar.
+        _efeito = float("nan")
+        try:
+            _ns = [float(v.get("n", 0.0) or 0.0)
+                   for v in (pac.get("notas") or {}).values()]
+            if len(_ns) > 50:
+                _m = sum(_ns) / len(_ns)
+                _dp = (sum((x - _m) ** 2 for x in _ns) / len(_ns)) ** 0.5
+                # duas escalacoes de 5, independentes
+                _efeito = abs(w) * _dp * (10.0 ** 0.5)
+        except (TypeError, ValueError, AttributeError):
+            pass
+        p.avisa(math.isfinite(_efeito) and 0.02 <= _efeito <= 1.0,
+                "o quanto a camada move a probabilidade esta na faixa esperada",
+                "deslocamento tipico no logito {:.4f} (esperado entre 0,02 e 1,00)".format(_efeito))
         p.exige(str(ps.get("fonte_do_peso", "")) == "prequencial",
                 "o peso foi ajustado no conjunto grande (prequencial)",
                 "fonte={} em {} jogos".format(ps.get("fonte_do_peso"),
@@ -195,17 +226,16 @@ def conferir(novo_path: str, antigo_path: str | None, pscore_path: str | None) -
                 "{} jogadores".format(ps.get("n_jogadores")))
 
     # ---------- 4. o arquivo de notas existe e casa com o meta ----------
-    alvo_ps = pscore_path or str(Path(novo_path).expanduser().with_name("players_pscore.json"))
-    try:
-        pac = _carregar(alvo_ps)
-        p.exige(isinstance(pac.get("notas"), dict) and len(pac["notas"]) > 1000,
+    if _erro_pac or not isinstance(pac, dict):
+        p.falhas.append("nao consegui ler o arquivo de notas ({}): {}".format(
+            alvo_ps, _erro_pac or "conteudo invalido"))
+    else:
+        p.exige(isinstance(pac.get("notas"), dict) and len(pac.get("notas") or {}) > 1000,
                 "o arquivo de notas por desempenho esta no lugar",
                 "{} jogadores em {}".format(len(pac.get("notas") or {}), Path(alvo_ps).name))
         if ps:
             p.exige(abs(float(pac.get("w", -1)) - float(ps.get("w", -2))) < 1e-12,
                     "o peso do arquivo bate com o peso registrado no modelo")
-    except (OSError, ValueError) as e:
-        p.falhas.append("nao consegui ler o arquivo de notas ({}): {}".format(alvo_ps, e))
 
     # ---------- 5. nao encolheu de forma suspeita ----------
     if antigo_path and Path(antigo_path).expanduser().exists():

@@ -78,7 +78,9 @@ from app_core.tab_dispatcher import (
     TAB_CONS,
     TAB_LINE_ANALYSIS,
     SECONDARY_TAB_ORDER,
+    desenhar_aba as _desenhar_aba,
     dispatch_secondary_tabs,
+    iniciar_registro_de_falhas as _iniciar_registro_de_falhas,
 )
 from app_core.winner_pricing_core import compute_winner_pricing_bundle as core_compute_winner_pricing_bundle
 from app_core.line_store import load_json_store, persist_json_store, ensure_session_store
@@ -2525,31 +2527,31 @@ _active_tabs = _canonicalize_tab_labels(_active_tabs, _TAB_ALL)
 
 tab_refs = {n: t for n, t in zip(_active_tabs, st.tabs(_active_tabs))}
 
-if _TAB_PARAMS in tab_refs:
- with tab_refs[_TAB_PARAMS]:
-    # Fecho cross-módulo (força-tarefa 23/07): params_tab repassa ctx para
-    # _render_manutencao_ml/_render_governanca_ml, que vivem em params_sections_core.
-    # Auto-derivado das fontes dos 2 módulos (nenhum vai mais fundo).
-    _render_params_tab(st=st, ctx=_pick_ctx_from_modules(
-        "app_core.params_tab_core", "app_core.params_sections_core"))
+# ISOLAMENTO DE FALHA POR ABA — zerado uma vez, aqui, antes de qualquer aba.
+# Em 13/09/2026 o site inteiro caiu porque UMA aba recebeu um argumento que a
+# versao antiga do arquivo no servidor nao conhecia. Aba com defeito custa uma
+# aba, nao o app. Ver app_core/tab_dispatcher.py.
+_iniciar_registro_de_falhas(st)
 
+# Fecho cross-módulo (força-tarefa 23/07): params_tab repassa ctx para
+# _render_manutencao_ml/_render_governanca_ml, que vivem em params_sections_core.
+# Auto-derivado das fontes dos 2 módulos (nenhum vai mais fundo).
+_desenhar_aba(st, tab_refs.get(_TAB_PARAMS), _TAB_PARAMS, lambda: _render_params_tab(
+    st=st, ctx=_pick_ctx_from_modules(
+        "app_core.params_tab_core", "app_core.params_sections_core")))
 
-if _TAB_VISAO in tab_refs:
- with tab_refs[_TAB_VISAO]:
-    # Explicit minimal ctx: only the keys render_visao_tab actually reads,
-    # built from globals(). Decouples the renderer from plays_app internals
-    # and validates the contract (loud-fail on missing core_* import).
-    _render_visao_tab(st=st, ctx=_build_render_ctx(
+# Explicit minimal ctx: only the keys render_visao_tab actually reads, built
+# from globals(). Decouples the renderer from plays_app internals and
+# validates the contract (loud-fail on missing core_* import).
+_desenhar_aba(st, tab_refs.get(_TAB_VISAO), _TAB_VISAO, lambda: _render_visao_tab(
+    st=st, ctx=_build_render_ctx(
         globals(), renderer_source=_inspect.getsource(_render_visao_tab),
-        renderer_name="render_visao_tab",
-    ))
+        renderer_name="render_visao_tab")))
 
-if _TAB_CONS in tab_refs:
- with tab_refs[_TAB_CONS]:
-    _render_consistencia_tab(st=st, ctx=_build_render_ctx(
+_desenhar_aba(st, tab_refs.get(_TAB_CONS), _TAB_CONS, lambda: _render_consistencia_tab(
+    st=st, ctx=_build_render_ctx(
         globals(), renderer_source=_inspect.getsource(_render_consistencia_tab),
-        renderer_name="render_consistencia_tab",
-    ))
+        renderer_name="render_consistencia_tab")))
 
     
 # -----------------------------

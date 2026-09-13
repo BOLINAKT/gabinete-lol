@@ -47,9 +47,18 @@ def _modelo_bom() -> dict:
     }
 
 
-def _notas_boas(w: float = 0.0686) -> dict:
+def _notas_boas(w: float = 0.0686, dp: float = 0.6847) -> dict:
+    """Notas com a MESMA dispersao do arquivo servido (medida em 13/09/2026).
+
+    A primeira versao dava a mesma nota 0,01 para todo mundo. Como o arquivo
+    ficava sem dispersao nenhuma, a trava do EFEITO nunca era exercitada: ela
+    media deslocamento zero e o cenario "bom" passava reclamando. Fixture sem
+    variacao nao testa nada que dependa de variacao.
+    """
     return {"w": w, "beta": 10.0,
-            "notas": {"p{}|||Mid".format(i): {"n": 0.01, "gp": 30} for i in range(1500)}}
+            "notas": {"p{}|||Mid".format(i): {"n": dp * (1.0 if i % 2 else -1.0),
+                                              "gp": 30}
+                      for i in range(1500)}}
 
 
 class _Base(unittest.TestCase):
@@ -83,6 +92,49 @@ class TestAprovaOBom(_Base):
 
     def test_modelo_intacto_passa(self):
         self.assertEqual(self._rodar(_modelo_bom(), _notas_boas()), 0, self._saida)
+
+
+class TestOQuantoACamadaMove(_Base):
+    """A trava olha o EFEITO da camada, nao o peso cru.
+
+    Motivo: o peso sozinho nao quer dizer nada. No modo 'media' o peso certo
+    e ~0,069; no modo 'ffa' e ~0,005 — porque a nota do jogador vive numa
+    escala vinte vezes maior. Uma faixa fixa de peso reprovaria o 'ffa'
+    correto e aprovaria um 'media' morto. Medido no arquivo servido em
+    13/09/2026: os dois deslocam o logito quase igual (0,149 e 0,191).
+    """
+
+    def test_o_cenario_bom_nao_dispara_o_aviso(self):
+        self.assertEqual(self._rodar(_modelo_bom(), _notas_boas()), 0, self._saida)
+        self.assertNotIn("AVISO   o quanto a camada move", self._saida)
+
+    def test_o_modo_ffa_passa_com_peso_vinte_vezes_menor(self):
+        """O que a faixa de peso antiga reprovaria a toa."""
+        m = _modelo_bom()
+        m["meta"]["players_pscore"]["w"] = 0.00513
+        m["meta"]["players_pscore"]["w_raw"] = 0.00513
+        self.assertEqual(self._rodar(m, _notas_boas(w=0.00513, dp=11.7865)), 0,
+                         self._saida)
+        self.assertNotIn("AVISO   o quanto a camada move", self._saida)
+
+    def test_avisa_quando_a_camada_ficou_inerte(self):
+        """Peso positivo mas notas quase iguais: a camada nao entrega nada."""
+        self._rodar(_modelo_bom(), _notas_boas(dp=0.00001))
+        self.assertIn("AVISO   o quanto a camada move", self._saida)
+
+    def test_avisa_quando_a_camada_manda_demais(self):
+        m = _modelo_bom()
+        m["meta"]["players_pscore"]["w"] = 3.0
+        m["meta"]["players_pscore"]["w_raw"] = 3.0
+        self._rodar(m, _notas_boas(w=3.0))
+        self.assertIn("AVISO   o quanto a camada move", self._saida)
+
+    def test_poucos_jogadores_nao_viram_efeito_inventado(self):
+        """PRINCIPIO IV: sem amostra, a conta nao vira numero."""
+        notas = _notas_boas()
+        notas["notas"] = dict(list(notas["notas"].items())[:10])
+        self._rodar(_modelo_bom(), notas)
+        self.assertIn("nan", self._saida.lower())
 
 
 class TestRecusaOQuebrado(_Base):

@@ -78,6 +78,60 @@ class TestAplica(_ComArquivo):
         self.assertAlmostEqual(r["p_out"], 1.0 / (1.0 + math.exp(-z)), places=12)
 
 
+class TestNasDuasEscalas(_ComArquivo):
+    """O estagio servido tem de valer nos DOIS modos de rating.
+
+    O modo 'media' e o 'ffa' produzem notas em escalas muito diferentes, e o
+    peso compensa isso: medido nos arquivos reais em 13/09/2026,
+      media : dispersao 0,68  peso 0,0686  -> desloca 0,149 no logito
+      ffa   : dispersao 11,79 peso 0,0051  -> desloca 0,191 no logito
+    Quem olhar so o peso conclui que o 'ffa' esta morto. Nao esta: e a escala
+    da nota que e vinte vezes maior. Estes testes travam os dois.
+    """
+
+    def _pacote_escala(self, nota: float, w: float) -> dict:
+        pac = _pacote(w=w)
+        for k in pac["notas"]:
+            pac["notas"][k]["n"] = nota if k[0] in "abcde" else -nota
+        return pac
+
+    def _deslocamento(self, nota: float, w: float) -> float:
+        self._grava(self._pacote_escala(nota, w))
+        r = _aplicar_pscore(p_map=0.5, artifact_path=str(self.artefato),
+                            blue_lineup=ESCALACAO_A, red_lineup=ESCALACAO_B,
+                            session_state={})
+        self.assertTrue(r["applied"], r.get("reason"))
+        return math.log(r["p_out"] / (1.0 - r["p_out"]))
+
+    def test_as_duas_escalas_deslocam_de_forma_parecida(self):
+        media = self._deslocamento(nota=0.6847 / 2, w=0.0686)
+        ffa = self._deslocamento(nota=11.7865 / 2, w=0.00513)
+        self.assertAlmostEqual(media, ffa, delta=0.6,
+                               msg="media={:.3f} ffa={:.3f} — se descolarem, "
+                                   "um dos dois esta com o peso errado"
+                                   .format(media, ffa))
+
+    def test_a_escala_grande_nao_satura_a_probabilidade(self):
+        """Nota do 'ffa' e vinte vezes maior; o resultado tem de continuar odd."""
+        self._grava(self._pacote_escala(nota=11.7865, w=0.00513))
+        r = _aplicar_pscore(p_map=0.5, artifact_path=str(self.artefato),
+                            blue_lineup=ESCALACAO_A, red_lineup=ESCALACAO_B,
+                            session_state={})
+        self.assertTrue(0.5 < r["p_out"] < 0.75,
+                        "p_out={} — escalacao boa nao pode virar certeza"
+                        .format(r["p_out"]))
+
+    def test_caso_extremo_nao_estoura_nem_vira_0_ou_1(self):
+        """Nota absurda (10 desvios) ainda tem de sair um numero utilizavel."""
+        self._grava(self._pacote_escala(nota=118.0, w=0.00513))
+        r = _aplicar_pscore(p_map=0.5, artifact_path=str(self.artefato),
+                            blue_lineup=ESCALACAO_A, red_lineup=ESCALACAO_B,
+                            session_state={})
+        self.assertTrue(math.isfinite(r["p_out"]))
+        self.assertLess(r["p_out"], 1.0)
+        self.assertGreater(r["p_out"], 0.0)
+
+
 class TestNaoAplica(_ComArquivo):
     """Cada um destes e uma forma do caminho de volta."""
 

@@ -1198,23 +1198,30 @@ def main() -> None:
 
             # COMO A NOTA DE DESEMPENHO VIRA RATING DO JOGADOR
             #
-            # 'media' (antigo): media acumulada das notas anteriores dele.
-            # 'ffa' (padrao):   os 10 do jogo sao ordenados pela nota e o
-            #                   rating e atualizado por esse confronto, com
-            #                   Plackett-Luce. Sabe CONTRA QUEM ele jogou.
+            # 'media' (PADRAO hoje): media acumulada das notas anteriores dele.
+            # 'ffa':                os 10 do jogo sao ordenados pela nota e o
+            #                       rating e atualizado por esse confronto, com
+            #                       Plackett-Luce. Sabe CONTRA QUEM ele jogou.
             #
-            # Medido na regua honesta, 8 dobras, n=8.494, pareado, contra a
-            # base REAL servida:
-            #   media .................. 7,20   +0,00402
-            #   ffa .................... 7,43   +0,00921
+            # MEDIDO PAREADO, ffa CONTRA 'media' — o que esta servido — nos
+            # mesmos 8.494 jogos, 8 dobras, todos fora da amostra, escalacao
+            # ANTERIOR (ponto-no-tempo fiel). 13/09/2026:
+            #   ffa completo (mu - 3*sigma) .. +0,00534  IC [+0,00418, +0,00649]
+            #   so experiencia (placebo) ..... +0,00276  IC [+0,00095, +0,00456]
+            #   so habilidade (mu puro) ...... +0,00219  IC [+0,00139, +0,00299]
+            # Os tres passam BH e Holm. Nota: 7,43 contra 7,20.
             #
-            # HONESTIDADE SOBRE O QUE O GANHO E: um placebo (ordem dos 10
-            # sorteada) rende +0,00663 sozinho. Ou seja, ~72% do ganho do ffa
-            # NAO e habilidade — vem de a nota ser `mu - 3*sigma` e o sigma
-            # encolher com o numero de jogos, o que premia elenco experiente.
-            # E sinal real e disponivel antes da partida, nao e vazamento,
-            # mas nao e o que o nome sugere. Sem esse premio o ffa ainda rende
-            # +0,00606. Fica registrado para ninguem se enganar depois.
+            # O QUE O GANHO E, SEM ENFEITE: 52% vem de EXPERIENCIA, nao de
+            # habilidade — a nota e `mu - 3*sigma`, o sigma encolhe com o
+            # numero de jogos, e isso premia elenco rodado. Sinal real e
+            # disponivel antes da partida, nao e vazamento, mas nao e o que o
+            # nome sugere. Os outros 41% sao habilidade de fato, e essa parte
+            # sozinha ja passaria na regua.
+            #
+            # CORRECAO REGISTRADA: uma medicao anterior dizia "~72% e
+            # experiencia". Aquela conta usava OUTRA base (sem camada de
+            # jogadores nenhuma), nao a servida. Contra a servida, e 52%.
+            # Numero de comparacao so vale junto com a base dele.
             if str(args.pscore_rating) == "ffa":
                 from mlcore.players_skill_ffa import (
                     construir_notas as _ffa_construir,
