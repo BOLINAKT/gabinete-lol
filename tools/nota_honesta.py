@@ -385,6 +385,72 @@ class NotaDeJogadorAprendida(NotaDeJogador):
                     "escalacao real daria um numero otimista com nome de realista.")
 
 
+class NotaDeJogadorFFA(NotaDeJogadorAprendida):
+    """Nota de habilidade por CONFRONTO DE TODOS CONTRA TODOS, nao media.
+
+    Mesma nota de desempenho por rota da classe mae — o que muda e como ela
+    vira rating do jogador:
+
+      mae  : media acumulada das notas anteriores dele
+      esta : Plackett-Luce, os 10 do jogo ordenados pela nota de desempenho
+
+    A diferenca que importa e saber CONTRA QUEM ele jogou. Ir bem contra os
+    melhores do mundo passa a valer mais que ir bem contra os piores.
+
+    A matematica esta em mlcore/players_skill_ffa.py e e conferida contra a
+    biblioteca openskill. Aqui so se monta a diferenca por jogo.
+    """
+
+    def __init__(self, csvs, usar_escalacao_anterior: bool = False):
+        from datetime import date as _date
+
+        from mlcore.players_pscore_core import (
+            ajustar as _ajustar,
+            calcular_pscore as _calcular_pscore,
+            carregar_linhas as _carregar_linhas,
+        )
+        from mlcore.players_skill_ffa import construir_notas as _ffa_notas
+
+        df = _carregar_linhas(list(csvs))
+        ajuste = _ajustar(df, ate=_date(int(self.ANO_CORTE), 1, 1))
+        ps = _calcular_pscore(df, ajuste)
+
+        # PLACEBO (so para diagnostico, nunca em producao).
+        #
+        # A nota final e `mu - 3*sigma`, e sigma encolhe com o numero de jogos.
+        # Entao parte do rating sobe por EXPERIENCIA, nao por habilidade — e
+        # jogador experiente, nesta base, tende a estar em time melhor.
+        # Se o ganho vier dai, ele nao e o que eu estou dizendo que e.
+        #
+        # Com FFA_PLACEBO=1 a ordem dos 10 vira sorteio: mu fica parado perto
+        # de 25 para todo mundo e so o efeito de experiencia sobra. O ganho
+        # que sobrar AQUI e o que NAO e habilidade.
+        if os.environ.get("FFA_PLACEBO") == "1":
+            _rng = np.random.default_rng(20260911)
+            ps = pd.Series(_rng.normal(size=len(df)), index=df.index)
+            print("[jogadores] PLACEBO LIGADO — desempenho sorteado, so sobra experiencia")
+
+        antes, finais = _ffa_notas(df, ps)
+        df["nota"] = antes
+
+        agg = df.groupby(["gameid", "lado"], sort=False)["nota"].sum().unstack("lado").dropna()
+        self._dif = {str(k): float(v) for k, v in (agg["blue"] - agg["red"]).items()}
+        print("[jogadores] FFA (todos contra todos): {} rotas, {} jogadores "
+              "com rating".format(len(ajuste["pesos_por_rota"]), len(finais)))
+
+        if usar_escalacao_anterior or os.environ.get("ESCALACAO_ANTERIOR") == "1":
+            alt = self._usar_escalacao_anterior(df)
+            if alt:
+                self._dif = alt
+                print("[jogadores] usando a ESCALACAO ANTERIOR de cada time "
+                      "({} jogos)".format(len(alt)))
+            else:
+                raise SystemExit(
+                    "[jogadores] --escalacao-anterior pedido mas nao foi possivel "
+                    "montar. PARANDO: seguir com a escalacao real daria um numero "
+                    "otimista com nome de realista.")
+
+
 class HistoricoPorTime:
     """Historico de cada time, para consulta ESTRITAMENTE ANTERIOR a uma data.
 
@@ -676,6 +742,10 @@ def main() -> int:
     ap.add_argument("--passo", type=int, default=30, help="Tamanho da janela de teste, em dias.")
     ap.add_argument("--dobras", type=int, default=8, help="Quantas janelas para tras.")
     ap.add_argument("--pasta", default="scratchpad/nota_honesta")
+    ap.add_argument("--jogadores-ffa", action="store_true",
+                    help="Nota de habilidade por CONFRONTO DE TODOS CONTRA TODOS "
+                         "(Plackett-Luce) em vez de media acumulada. Implica "
+                         "--jogadores-aprendido.")
     ap.add_argument("--jogadores-aprendido", action="store_true",
                     help="Pesos APRENDIDOS por rota em vez de media simples.")
     ap.add_argument("--com-jogadores", action="store_true",
@@ -727,8 +797,11 @@ def main() -> int:
     cfg_form = None
     jogadores = None
     if args.com_jogadores:
-        jogadores = (NotaDeJogadorAprendida(csvs, args.escalacao_anterior)
-                     if args.jogadores_aprendido else NotaDeJogador(csvs))
+        if args.jogadores_ffa:
+            jogadores = NotaDeJogadorFFA(csvs, args.escalacao_anterior)
+        else:
+            jogadores = (NotaDeJogadorAprendida(csvs, args.escalacao_anterior)
+                         if args.jogadores_aprendido else NotaDeJogador(csvs))
         print(f"[jogadores] nota por desempenho montada para {len(jogadores._dif)} jogos")
     if args.com_form:
         _pf = json.loads((ROOT / "params_fitted.json").read_text(encoding="utf-8"))
@@ -857,10 +930,17 @@ def main() -> int:
                              f"{'_hybrid' if args.com_hybrid else ''}"
                              f"{'_form' if args.com_form else ''}"
                              f"{'_semplatt' if args.sem_platt else '_platt'}"
-                             f"{('_jogA' if args.jogadores_aprendido else '_jog') if args.com_jogadores else ''}"
+                             f"{('_jogFFA' if args.jogadores_ffa else ('_jogA' if args.jogadores_aprendido else '_jog')) if args.com_jogadores else ''}"
                              # Sem este sufixo a variante servida sobrescreveria a
                              # base, que foi o erro de 10/09 (comparacao com n
                              # diferente porque um arquivo comeu o outro).
+                             # O placebo PRECISA de nome proprio: a primeira
+                             # corrida dele sobrescreveu o arquivo do real,
+                             # porque variavel de ambiente nao aparecia no nome.
+                             # E a mesma armadilha que ja invalidou uma comparacao
+                             # antes — por isso RF-004 existe.
+                             f"{'_PLACEBO' if os.environ.get('FFA_PLACEBO') == '1' else ''}"
+                             f"{'_MUPURO' if os.environ.get('FFA_SEM_DESCONTO') == '1' else ''}"
                              f"{'_semcj' if args.sem_camada_jogadores else ''}"
                              f"{'_ant' if args.escalacao_anterior else ''}"
                              f"{'_fus' if args.fusao_servida else ''}.json")

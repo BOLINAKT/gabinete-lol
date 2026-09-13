@@ -487,6 +487,15 @@ def main() -> None:
     ap.add_argument("--no-pscore", action="store_true",
                     help="Nao monta a camada de jogadores por desempenho. "
                          "E o caminho de volta: sem ela o modelo fica como antes.")
+    # PADRAO AINDA E 'media', de proposito. O 'ffa' MEDE melhor (+0,00921
+    # contra +0,00402), mas ainda nao foi conferido de ponta a ponta no app
+    # dirigido. Trocar o padrao antes disso seria subir no escuro.
+    ap.add_argument("--pscore-rating", choices=("ffa", "media"), default="media",
+                    help="Como a nota de desempenho vira rating do jogador. "
+                         "'ffa' = confronto de todos contra todos (Plackett-Luce); "
+                         "'media' = media acumulada (o comportamento antigo). "
+                         "Medido em 11/09/2026, contra a base real servida: "
+                         "media +0,00402, ffa +0,00921.")
     ap.add_argument("--pscore-max-abs", type=float, default=0.50,
                     help="Teto do peso da camada por desempenho. O ajuste converge "
                          "para ~0,066; o teto so existe para holdout curto nao "
@@ -1185,7 +1194,36 @@ def main() -> None:
             # E o delta de cada jogo usa a nota PONTO NO TEMPO do jogador: so
             # o que ele tinha feito ANTES daquele jogo.
             _aj = _ps_ajustar(_df_ps, ate=_corte)
-            _delta_gid = _ps_deltas(_df_ps, _ps_calc(_df_ps, _aj))
+            _ps_valores = _ps_calc(_df_ps, _aj)
+
+            # COMO A NOTA DE DESEMPENHO VIRA RATING DO JOGADOR
+            #
+            # 'media' (antigo): media acumulada das notas anteriores dele.
+            # 'ffa' (padrao):   os 10 do jogo sao ordenados pela nota e o
+            #                   rating e atualizado por esse confronto, com
+            #                   Plackett-Luce. Sabe CONTRA QUEM ele jogou.
+            #
+            # Medido na regua honesta, 8 dobras, n=8.494, pareado, contra a
+            # base REAL servida:
+            #   media .................. 7,20   +0,00402
+            #   ffa .................... 7,43   +0,00921
+            #
+            # HONESTIDADE SOBRE O QUE O GANHO E: um placebo (ordem dos 10
+            # sorteada) rende +0,00663 sozinho. Ou seja, ~72% do ganho do ffa
+            # NAO e habilidade — vem de a nota ser `mu - 3*sigma` e o sigma
+            # encolher com o numero de jogos, o que premia elenco experiente.
+            # E sinal real e disponivel antes da partida, nao e vazamento,
+            # mas nao e o que o nome sugere. Sem esse premio o ffa ainda rende
+            # +0,00606. Fica registrado para ninguem se enganar depois.
+            if str(args.pscore_rating) == "ffa":
+                from mlcore.players_skill_ffa import (
+                    construir_notas as _ffa_construir,
+                    deltas_por_jogo as _ffa_deltas,
+                )
+                _antes_ffa, _notas_ffa = _ffa_construir(_df_ps, _ps_valores)
+                _delta_gid = _ffa_deltas(_df_ps, _antes_ffa)
+            else:
+                _delta_gid = _ps_deltas(_df_ps, _ps_valores)
 
             _ys: List[int] = []
             _lb: List[float] = []
@@ -1248,6 +1286,14 @@ def main() -> None:
 
             # (2) notas com TUDO, que sao as que vao servir
             _pac = _ps_construir(csv_paths, ate=_corte, ate_notas=None, df=_df_ps)
+            if str(args.pscore_rating) == "ffa":
+                # As notas salvas passam a ser as do confronto de todos contra
+                # todos. O FORMATO nao muda — segue chave "jogador|||Rota" com
+                # o campo "n" — entao o app nao precisa mudar nada para ler.
+                _pac["notas"] = _notas_ffa
+                _pac["rating"] = "ffa"
+            else:
+                _pac["rating"] = "media"
             _pac["w"] = float(_w)
             _pac["w_raw"] = float(_w_raw)
 
@@ -1265,15 +1311,16 @@ def main() -> None:
                 "rotas": len(_pac.get("pesos_por_rota") or {}),
                 "atributos": list(_pac.get("atributos") or []),
                 "n_jogadores": len(_pac.get("notas") or {}),
+                "rating": str(args.pscore_rating),
                 "fonte_do_peso": _fonte_peso,
                 "jogos_usados": len(_ys),
                 "jogos_sem_delta": int(_n_sem_cobertura),
                 "beta": float(_pac.get("beta", 0.0) or 0.0),
             }
-            print("[train_offline] players_pscore: w={:.4f} (cru {:.4f}) | {} jogadores | "
-                  "peso ajustado em {} jogos ({}), {} sem delta".format(
-                      _w, _w_raw, len(_pac.get("notas") or {}), len(_ys),
-                      _fonte_peso, _n_sem_cobertura))
+            print("[train_offline] players_pscore [{}]: w={:.4f} (cru {:.4f}) | "
+                  "{} jogadores | peso ajustado em {} jogos ({}), {} sem delta".format(
+                      args.pscore_rating, _w, _w_raw, len(_pac.get("notas") or {}),
+                      len(_ys), _fonte_peso, _n_sem_cobertura))
         except Exception as e:
             meta["players_pscore"] = {"enabled": False, "error": str(e)}
             print("[train_offline] players_pscore FALHOU:", str(e))
