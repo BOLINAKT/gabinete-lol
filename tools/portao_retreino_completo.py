@@ -237,6 +237,46 @@ def conferir(novo_path: str, antigo_path: str | None, pscore_path: str | None) -
             p.exige(abs(float(pac.get("w", -1)) - float(ps.get("w", -2))) < 1e-12,
                     "o peso do arquivo bate com o peso registrado no modelo")
 
+        # ---------- 4b. a camada CONSEGUE agir com escalacao por NOME ----------
+        #
+        # O DEFEITO QUE ESTA CHECAGEM EXISTE PARA IMPEDIR (13/09/2026): a
+        # camada ficou dias em producao sem entregar nada. As notas sao
+        # chaveadas por `playerid`; o app guarda a escalacao por NOME. Nenhuma
+        # das cinco chaves batia, a cobertura dava 0/5 e a camada se desligava
+        # SOZINHA E EM SILENCIO — "sem cobertura" e um caminho legitimo.
+        #
+        # Nenhuma trava pegava isso, porque todas olhavam o arquivo por dentro
+        # (tem notas? o peso bate?) e nenhuma perguntava se ele SERVE para quem
+        # vai usar. E a diferenca entre conferir o estoque e conferir a entrega.
+        #
+        # Aqui a pergunta e a do app: cinco nomes, um por rota, resolvem?
+        _apel = pac.get("apelidos") or {}
+        if p.exige(isinstance(_apel, dict) and len(_apel) > 1000,
+                   "o arquivo de notas traz o indice NOME -> id do jogador",
+                   "{} apelidos (sem eles a camada fica muda)".format(len(_apel))):
+            try:
+                from mlcore.players_pscore_core import delta_da_escalacao
+                _rotas = ("Top", "Jungle", "Mid", "Bot", "Support")
+                # Um nome de verdade por rota, tirado do proprio indice.
+                _um_por_rota = {}
+                for _ap in _apel:
+                    _nome, _, _rota = str(_ap).partition("|||")
+                    if _rota in _rotas and _rota not in _um_por_rota and _nome:
+                        _um_por_rota[_rota] = _nome
+                    if len(_um_por_rota) == len(_rotas):
+                        break
+                _d, _cob = delta_da_escalacao(
+                    pac.get("notas") or {},
+                    blue_lineup=_um_por_rota, red_lineup=_um_por_rota,
+                    apelidos=_apel)
+                p.exige(int(_cob) >= 5,
+                        "uma escalacao POR NOME resolve os 5 e a camada age",
+                        "cobertura {}/5 com {}".format(
+                            int(_cob), ", ".join(sorted(_um_por_rota.values()))))
+            except Exception as _e:
+                p.falhas.append(
+                    "nao consegui provar que a camada age por nome: {}".format(_e))
+
     # ---------- 5. nao encolheu de forma suspeita ----------
     if antigo_path and Path(antigo_path).expanduser().exists():
         try:

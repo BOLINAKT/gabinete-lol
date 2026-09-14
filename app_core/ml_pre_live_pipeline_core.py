@@ -195,10 +195,17 @@ def _aplicar_pscore(
     if not math.isfinite(w) or abs(w) <= 1e-12:
         return {"applied": False, "reason": "peso zero"}
 
+    # `apelidos` traduz NOME -> id do jogador. Sem ele a cobertura dava 0/5 e a
+    # camada ficava inerte em producao: as notas sao chaveadas por playerid e o
+    # app guarda a escalacao por nome. Descoberto em 13/09/2026, chamando esta
+    # funcao com a escalacao real de FlyQuest x Sentinels.
+    # Artefato antigo nao tem a chave; `.get` devolve None e o comportamento
+    # volta a ser o de antes, sem quebrar.
     d, cobertura = _delta_ps(
         pac.get("notas") or {},
         blue_lineup={str(k): str(v) for k, v in (blue_lineup or {}).items() if v},
         red_lineup={str(k): str(v) for k, v in (red_lineup or {}).items() if v},
+        apelidos=pac.get("apelidos") or {},
     )
     # PRINCIPIO IV: escalacao incompleta nao vira um delta menor disfarcado de
     # delta certo. Sem os 5 de cada lado, o estagio nao age.

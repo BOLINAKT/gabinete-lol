@@ -256,11 +256,75 @@ def notas_finais(df: pd.DataFrame, pscore: pd.Series, *, beta: float = BETA) -> 
     return out
 
 
+def indice_de_apelidos(df: pd.DataFrame) -> Dict[str, str]:
+    """"nome|||Rota" -> "player_key|||Rota", para quem so tem o nome.
+
+    POR QUE ISTO PRECISOU EXISTIR (13/09/2026)
+    As notas sao chaveadas por `playerid` (`oe:player:...`), porque id nao
+    muda quando o jogador troca de nick. O APP, porem, guarda a escalacao por
+    NOME — e o nome e o que o dono ve e escolhe na tela.
+
+    Resultado: nenhuma das cinco chaves batia, a cobertura dava 0/5 e a camada
+    se desligava sozinha. Em silencio, porque "sem cobertura" e um caminho
+    legitimo. A camada estava em producao sem entregar nada.
+
+    AMBIGUIDADE NAO E RESOLVIDA NO CHUTE. Medido no CSV de 2026: de 2.838
+    pares (nome, rota), 8 tem mais de um id — 0,28%. Esses 8 ficam DE FORA do
+    indice. Para eles a cobertura cai e a camada nao age, que e o certo:
+    escolher "o mais provavel" seria somar a nota do jogador errado.
+    """
+    if df is None or df.empty:
+        return {}
+    faltando = [c for c in ("playername", "pos_can", "player_key") if c not in df.columns]
+    if faltando:
+        return {}
+
+    vistos: Dict[str, set] = {}
+    for nome, rota, chave in zip(df["playername"].astype(str),
+                                 df["pos_can"].astype(str),
+                                 df["player_key"].astype(str)):
+        n = nome.strip()
+        r = rota.strip()
+        k = chave.strip()
+        if not n or not r or not k:
+            continue
+        vistos.setdefault("{}|||{}".format(n.casefold(), r), set()).add(k)
+
+    return {apelido: next(iter(chaves))
+            for apelido, chaves in vistos.items() if len(chaves) == 1}
+
+
+def resolver_chave(
+    notas: Mapping[str, Any],
+    apelidos: Optional[Mapping[str, str]],
+    jogador: str,
+    rota: str,
+) -> str:
+    """A chave de `notas` para este jogador, ou "" se nao der para saber.
+
+    Tenta primeiro o que veio (ja pode ser o id). So depois cai no indice de
+    nomes. A ordem importa: quem ja manda o id nao paga por ambiguidade de
+    nome de terceiro.
+    """
+    direta = "{}|||{}".format(str(jogador).strip(), str(rota).strip())
+    if direta in notas:
+        return direta
+    if not apelidos:
+        return ""
+    alvo = apelidos.get("{}|||{}".format(
+        str(jogador).strip().casefold(), str(rota).strip()))
+    if not alvo:
+        return ""
+    por_apelido = "{}|||{}".format(alvo, str(rota).strip())
+    return por_apelido if por_apelido in notas else ""
+
+
 def delta_da_escalacao(
     notas: Mapping[str, Mapping[str, float]],
     *,
     blue_lineup: Mapping[str, str],
     red_lineup: Mapping[str, str],
+    apelidos: Optional[Mapping[str, str]] = None,
 ) -> Tuple[float, int]:
     """Soma das notas do lado azul menos a do vermelho, e quantos foram achados.
 
@@ -274,7 +338,8 @@ def delta_da_escalacao(
             rota = norm_pos(pos)
             if not rota or not str(jogador or "").strip():
                 continue
-            reg = notas.get("{}|||{}".format(str(jogador).strip(), rota))
+            chave = resolver_chave(notas, apelidos, str(jogador), rota)
+            reg = notas.get(chave) if chave else None
             if not reg:
                 continue
             total += float(reg.get("n", 0.0) or 0.0)
@@ -335,6 +400,9 @@ def construir(
         d_notas = df
     ajuste["notas"] = notas_finais(d_notas, calcular_pscore(d_notas, ajuste))
     ajuste["corte_notas"] = (ate_notas.isoformat() if ate_notas else None)
+    # O indice de nomes e montado sobre AS MESMAS linhas das notas, para nao
+    # prometer uma chave que nao tem nota do outro lado.
+    ajuste["apelidos"] = indice_de_apelidos(d_notas)
     ajuste["n_linhas"] = int(len(df))
     ajuste["n_linhas_notas"] = int(len(d_notas))
     return ajuste

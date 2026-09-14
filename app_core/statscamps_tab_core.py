@@ -30,6 +30,53 @@ def _sc_team_match_key(value: Any) -> str:
     return s.lower().strip()
 
 
+def escolha_inicial_da_comparacao(
+    *,
+    opcoes: Any,
+    time_a: Any,
+    time_b: Any,
+    ja_escolhido: Any,
+    semeado_antes: Any,
+) -> Optional[list]:
+    """Quais times a comparacao deve ja vir marcando. None = nao mexer.
+
+    Pedido do dono em 13/09/2026: a comparacao do StatsCamps comecava vazia e
+    ele tinha de remarcar, na mao, os mesmos dois times que ja estavam
+    escolhidos no Confronto logo acima.
+
+    A regra tem de seguir o confronto SEM atropelar escolha feita a mao:
+      - ninguem mexeu ainda  -> marca os dois do confronto;
+      - trocou o confronto e a comparacao continuava como foi semeada
+        -> acompanha;
+      - o dono mexeu na comparacao (inclusive para esvaziar) -> nao toca mais.
+
+    Time que nao esta na lista de opcoes (filtro de liga/ano/split diferente)
+    NAO e forcado: o Streamlit recusaria o valor, e forcar seria mentir sobre
+    o recorte. Comparacao e tolerante a caixa e a acento quebrado, como o
+    resto desta tela.
+    """
+    disponiveis = [str(o) for o in (opcoes or [])]
+    por_chave: dict = {}
+    for o in disponiveis:
+        por_chave.setdefault(_sc_team_match_key(o), o)
+
+    alvo: list = []
+    for t in (time_a, time_b):
+        achado = por_chave.get(_sc_team_match_key(t))
+        if achado and achado not in alvo:
+            alvo.append(achado)
+    if not alvo:
+        return None
+
+    if ja_escolhido is None:
+        return alvo
+    atual = [str(x) for x in (ja_escolhido or [])]
+    semeado = [str(x) for x in (semeado_antes or [])]
+    if atual == semeado and alvo != semeado:
+        return alvo
+    return None
+
+
 def compute_statscamps_autofill(
     team_games: pd.DataFrame,
     team_a: str,
@@ -507,6 +554,22 @@ def render_statscamps_tab(
         subtitle="Selecione 2 ou mais times para ver a tabela lado a lado e o delta por metrica.",
     )
     all_teams_sc = df_tab_raw["Team"].tolist() if "Team" in df_tab_raw.columns else []
+
+    # A comparacao ja nasce com os dois times do Confronto. Tem de ser ANTES do
+    # widget: o Streamlit so aceita escrever na chave dele antes de ele existir
+    # no desenho. `_sc_compare_semeado` guarda o que foi semeado, e e o que
+    # permite saber se o dono mexeu na mao depois.
+    _alvo_cmp = escolha_inicial_da_comparacao(
+        opcoes=all_teams_sc,
+        time_a=session_state.get("teamA"),
+        time_b=session_state.get("teamB"),
+        ja_escolhido=session_state.get("sc_compare_sel"),
+        semeado_antes=session_state.get("_sc_compare_semeado"),
+    )
+    if _alvo_cmp is not None:
+        session_state["sc_compare_sel"] = list(_alvo_cmp)
+        session_state["_sc_compare_semeado"] = list(_alvo_cmp)
+
     selected = st.multiselect("Selecione 2+ times", options=all_teams_sc, key="sc_compare_sel")
     if not selected or len(selected) < 2:
         return

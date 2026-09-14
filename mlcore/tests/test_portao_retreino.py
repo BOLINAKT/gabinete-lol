@@ -55,10 +55,16 @@ def _notas_boas(w: float = 0.0686, dp: float = 0.6847) -> dict:
     media deslocamento zero e o cenario "bom" passava reclamando. Fixture sem
     variacao nao testa nada que dependa de variacao.
     """
-    return {"w": w, "beta": 10.0,
-            "notas": {"p{}|||Mid".format(i): {"n": dp * (1.0 if i % 2 else -1.0),
-                                              "gp": 30}
-                      for i in range(1500)}}
+    rotas = ("Top", "Jungle", "Mid", "Bot", "Support")
+    notas, apelidos = {}, {}
+    for i in range(1500):
+        rota = rotas[i % len(rotas)]
+        chave_id = "oe:player:{:04d}".format(i)
+        notas["{}|||{}".format(chave_id, rota)] = {
+            "n": dp * (1.0 if i % 2 else -1.0), "gp": 30}
+        # O indice NOME -> id. Sem ele a camada fica muda (ver trava 4b).
+        apelidos["jogador{}|||{}".format(i, rota)] = chave_id
+    return {"w": w, "beta": 10.0, "notas": notas, "apelidos": apelidos}
 
 
 class _Base(unittest.TestCase):
@@ -92,6 +98,44 @@ class TestAprovaOBom(_Base):
 
     def test_modelo_intacto_passa(self):
         self.assertEqual(self._rodar(_modelo_bom(), _notas_boas()), 0, self._saida)
+
+
+class TestACamadaCONSEGUEAgir(_Base):
+    """A trava que faltava: o arquivo esta cheio, mas ele SERVE?
+
+    Em 13/09/2026 a camada passou dias em producao sem entregar nada. As notas
+    sao chaveadas por `playerid`, o app guarda a escalacao por NOME, nenhuma
+    chave batia, a cobertura dava 0/5 e a camada se desligava sozinha — em
+    silencio, porque "sem cobertura" e um caminho previsto e legitimo.
+
+    Nenhuma trava pegou. Todas olhavam o arquivo por dentro (tem notas? o peso
+    bate?) e nenhuma perguntava se ele funciona para quem vai usar. E a
+    diferenca entre conferir o estoque e conferir a entrega.
+    """
+
+    def test_arquivo_SEM_o_indice_de_nomes_e_RECUSADO(self):
+        """O estado exato que estava em producao. Nunca mais passa calado."""
+        notas = _notas_boas()
+        notas.pop("apelidos")
+        self.assertEqual(self._rodar(_modelo_bom(), notas), 1)
+        self.assertIn("indice NOME", self._saida)
+
+    def test_indice_vazio_e_RECUSADO(self):
+        notas = _notas_boas()
+        notas["apelidos"] = {}
+        self.assertEqual(self._rodar(_modelo_bom(), notas), 1)
+
+    def test_indice_que_aponta_para_o_nada_e_RECUSADO(self):
+        """Indice grande mas desatualizado: cobertura 0/5 do mesmo jeito."""
+        notas = _notas_boas()
+        notas["apelidos"] = {k: "oe:player:NAO_EXISTE"
+                             for k in notas["apelidos"]}
+        self.assertEqual(self._rodar(_modelo_bom(), notas), 1)
+        self.assertIn("cobertura 0/5", self._saida)
+
+    def test_arquivo_bom_prova_que_a_camada_age(self):
+        self.assertEqual(self._rodar(_modelo_bom(), _notas_boas()), 0, self._saida)
+        self.assertIn("resolve os 5", self._saida)
 
 
 class TestOQuantoACamadaMove(_Base):
