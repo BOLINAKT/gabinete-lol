@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-09-15T10:33:45-03:00",
+  "gerado_em": "2026-09-15T15:27:10-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 36,
+    "ja_jogados": 34,
     "passados": 4,
-    "indefinidos": 24,
+    "indefinidos": 27,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "15/09",
-      "time": "11:00",
-      "league": "Hitpoint Masters",
-      "teamA_raw": "NightBirds",
-      "teamB_raw": "CITA Kaizen",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-15T14:00:00Z"
-    },
     {
       "date": "15/09",
       "time": "13:00",
@@ -27,7 +17,7 @@
       "teamA_raw": "Senshi eSports",
       "teamB_raw": "mCon Esports",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-15T16:00:00Z"
     },
     {
@@ -37,7 +27,7 @@
       "teamA_raw": "Anubis Gaming",
       "teamB_raw": "JSK Gamefy",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-15T16:00:00Z"
     },
     {
