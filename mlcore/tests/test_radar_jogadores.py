@@ -130,17 +130,76 @@ class TestQuandoNaoDaParaMostrar(unittest.TestCase):
             self.assertFalse(p["disponivel"])
             self.assertTrue(p["motivo"])
 
-    def test_artefato_velho_sem_apelidos_ESCONDE_o_painel(self):
-        """Antes do retreino o arquivo servido nao tem o indice.
-
-        Sem ele NADA resolveria: o painel sairia com traco nas dez celulas.
-        Tabela vazia nao informa — parece defeito. Melhor nao aparecer.
-        """
+    def test_sem_indice_NENHUM_o_painel_se_esconde(self):
+        """Sem indice NADA resolveria: o painel sairia com traco nas dez
+        celulas. Tabela vazia nao informa — so parece defeito."""
         for pac in ({"notas": NOTAS, "w": 0.0686},
                     {"notas": NOTAS, "apelidos": {}, "w": 0.0686}):
             p = montar_painel(pac, roster_a=A, roster_b=B)
             self.assertFalse(p["disponivel"])
             self.assertIn("indice", p["motivo"])
+
+
+class TestAPonteAteOProximoTreino(unittest.TestCase):
+    """O indice so entra no arquivo de notas no treino COMPLETO, mensal.
+
+    Sem uma ponte, esta tela ficaria semanas escondida esperando uma data. O
+    Radar ja carrega as linhas de jogador para montar o draft, entao o indice
+    sai de graca dali — sem tocar no modelo e sem mexer em nenhuma odd.
+    """
+
+    def test_o_indice_de_fora_faz_o_painel_aparecer(self):
+        pac = {"notas": NOTAS, "w": 0.0686}          # arquivo servido hoje
+        p = montar_painel(pac, roster_a=A, roster_b=B, apelidos_extra=APELIDOS)
+        self.assertTrue(p["disponivel"])
+        self.assertEqual(p["cobertura"], 5)
+
+    def test_o_indice_DO_ARQUIVO_tem_preferencia(self):
+        """Ele nasceu junto com as notas; nao pode perder para um de fora."""
+        proprio = dict(APELIDOS)
+        # Aponta para OUTRO jogador, mas da MESMA rota — apelido que cruza de
+        # rota nao resolve (e certo: a nota e por jogador E rota).
+        proprio["quad|||Mid"] = "id_b3"
+        pac = {"notas": NOTAS, "apelidos": proprio, "w": 0.0686}
+        l = [x for x in montar_painel(pac, roster_a=A, roster_b=B,
+                                      apelidos_extra=APELIDOS)["linhas"]
+             if x["rotulo"] == "MID"][0]
+        self.assertAlmostEqual(l["nota_a"], NOTAS["id_b3|||Mid"]["n"],
+                               msg="o indice do arquivo deveria ter vencido")
+
+    def test_apelido_que_cruza_de_rota_NAO_resolve(self):
+        """A nota e por jogador E rota; um mid nao herda a nota de um top."""
+        from mlcore.players_pscore_core import resolver_chave
+        self.assertEqual(
+            resolver_chave(NOTAS, {"x|||Mid": "id_a1"}, "x", "Mid"), "")
+
+    def test_monta_o_indice_a_partir_das_linhas_do_app(self):
+        import pandas as pd
+        from app_core.radar_jogadores_core import indice_das_linhas
+        linhas = pd.DataFrame([
+            {"playername": "Gakgos", "playerid": "id_a1", "position": "top"},
+            {"playername": "Quad", "playerid": "id_a3", "position": "mid"},
+        ])
+        idx = indice_das_linhas(linhas)
+        self.assertEqual(idx["gakgos|||Top"], "id_a1")
+        self.assertEqual(idx["quad|||Mid"], "id_a3")
+
+    def test_linhas_sem_as_colunas_nao_estouram(self):
+        import pandas as pd
+        from app_core.radar_jogadores_core import indice_das_linhas
+        self.assertEqual(indice_das_linhas(None), {})
+        self.assertEqual(indice_das_linhas(pd.DataFrame()), {})
+        self.assertEqual(indice_das_linhas(pd.DataFrame([{"playername": "x"}])), {})
+
+    def test_ambiguidade_continua_ficando_de_fora_na_ponte(self):
+        """A ponte nao pode ser mais frouxa que o indice do treino."""
+        import pandas as pd
+        from app_core.radar_jogadores_core import indice_das_linhas
+        idx = indice_das_linhas(pd.DataFrame([
+            {"playername": "Ace", "playerid": "id_1", "position": "bot"},
+            {"playername": "Ace", "playerid": "id_2", "position": "bot"},
+        ]))
+        self.assertNotIn("ace|||Bot", idx)
 
 
 class TestOTamanhoDaVantagem(unittest.TestCase):

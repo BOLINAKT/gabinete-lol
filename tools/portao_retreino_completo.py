@@ -237,23 +237,29 @@ def conferir(novo_path: str, antigo_path: str | None, pscore_path: str | None) -
             p.exige(abs(float(pac.get("w", -1)) - float(ps.get("w", -2))) < 1e-12,
                     "o peso do arquivo bate com o peso registrado no modelo")
 
-        # ---------- 4b. a camada CONSEGUE agir com escalacao por NOME ----------
+        # ---------- 4b. o arquivo tambem responde por NOME ----------
         #
-        # O DEFEITO QUE ESTA CHECAGEM EXISTE PARA IMPEDIR (13/09/2026): a
-        # camada ficou dias em producao sem entregar nada. As notas sao
-        # chaveadas por `playerid`; o app guarda a escalacao por NOME. Nenhuma
-        # das cinco chaves batia, a cobertura dava 0/5 e a camada se desligava
-        # SOZINHA E EM SILENCIO — "sem cobertura" e um caminho legitimo.
+        # POR QUE ISTO E CONFERIDO
+        # As notas sao chaveadas por `playerid`. O caminho da ODD manda id
+        # (`lineup_ml_*` guarda a chave) e nunca dependeu disto. Mas o RADAR
+        # monta o draft por `playername`, e sem o indice NOME -> id ele nao
+        # consegue mostrar nota nenhuma — a secao de escalacao some.
         #
-        # Nenhuma trava pegava isso, porque todas olhavam o arquivo por dentro
-        # (tem notas? o peso bate?) e nenhuma perguntava se ele SERVE para quem
-        # vai usar. E a diferenca entre conferir o estoque e conferir a entrega.
+        # A forma da checagem vale mesmo assim, e por um motivo maior: todas
+        # as outras olham o arquivo POR DENTRO (tem notas? o peso bate? ha
+        # jogadores suficientes?) e nenhuma pergunta se ele SERVE para quem vai
+        # usar. E a diferenca entre conferir o estoque e conferir a entrega.
         #
-        # Aqui a pergunta e a do app: cinco nomes, um por rota, resolvem?
+        # REGISTRO DE UM ERRO MEU (13/09/2026): eu testei o caminho servido com
+        # a escalacao do Radar (nomes), vi cobertura 0/5 e anunciei que a
+        # camada estava inerte em producao. Nao estava — eu tinha pegado a
+        # lista errada. Conferido no app dirigido em 14/09: applied=True, 5/5.
+        #
+        # Aqui a pergunta e a do Radar: cinco nomes, um por rota, resolvem?
         _apel = pac.get("apelidos") or {}
         if p.exige(isinstance(_apel, dict) and len(_apel) > 1000,
                    "o arquivo de notas traz o indice NOME -> id do jogador",
-                   "{} apelidos (sem eles a camada fica muda)".format(len(_apel))):
+                   "{} apelidos (sem eles o Radar nao mostra nota)".format(len(_apel))):
             try:
                 from mlcore.players_pscore_core import delta_da_escalacao
                 _rotas = ("Top", "Jungle", "Mid", "Bot", "Support")
@@ -328,9 +334,35 @@ def conferir(novo_path: str, antigo_path: str | None, pscore_path: str | None) -
             p_fraco = _p(pior, melhor)
             meio = ordenados[len(ordenados) // 2]
 
-            p.exige(0.02 < p_forte < 0.98 and 0.02 < p_fraco < 0.98,
-                    "as probabilidades de exemplo sao plausiveis",
-                    "{} x {} = {:.3f}".format(melhor[:18], pior[:18], p_forte))
+            # PLAUSIBILIDADE — a versao anterior desta checagem estava errada,
+            # e reprovava TAMBEM o modelo que esta em producao (conferido em
+            # 14/09/2026, mesmo par e mesmo valor).
+            #
+            # Ela exigia 0,02 < p < 0,98 no confronto entre o MELHOR e o PIOR
+            # de 887 times. Nesse par o modelo da 0,99990 — e esta certo: sao
+            # 1.604 pontos de rating entre a academia da T1 (383 jogos) e um
+            # time de 22 jogos. Quase-certeza ali e a resposta correta.
+            #
+            # A faixa foi calibrada so contra a fixture dos testes: 40 times
+            # com ~120 pontos de amplitude. A trava nunca tinha sido rodada
+            # contra o modelo de verdade, e por isso ninguem viu.
+            #
+            # Agora sao DUAS perguntas, e juntas pegam mais do que a de antes:
+            #  (a) um confronto de MEIO DE TABELA tem de ficar longe dos
+            #      extremos — e ali que probabilidade extrema denuncia modelo
+            #      quebrado;
+            #  (b) nem o par mais desigual pode SATURAR em 0 ou 1 — isso seria
+            #      confianca infinita, e viraria odd 1,00 na tela.
+            _meio_b = ordenados[len(ordenados) // 2 + 1]
+            _p_meio = _p(meio, _meio_b)
+            p.exige(0.02 < _p_meio < 0.98,
+                    "confronto de meio de tabela da probabilidade plausivel",
+                    "{} x {} = {:.3f}".format(meio[:18], _meio_b[:18], _p_meio))
+            p.exige(1e-6 < p_forte < 1.0 - 1e-6 and 1e-6 < p_fraco < 1.0 - 1e-6,
+                    "nem o confronto mais desigual satura em 0 ou 1",
+                    "{} x {} = {:.6f} (odd {:.4f})".format(
+                        melhor[:18], pior[:18], p_forte,
+                        (1.0 / p_forte) if p_forte else float("inf")))
             p.exige(p_forte > 0.55,
                     "o modelo sabe que o time mais forte e favorito",
                     "{:.3f} a favor do melhor rating (colapsado daria 0,500)".format(p_forte))

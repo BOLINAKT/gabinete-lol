@@ -62,7 +62,7 @@ def _notas_boas(w: float = 0.0686, dp: float = 0.6847) -> dict:
         chave_id = "oe:player:{:04d}".format(i)
         notas["{}|||{}".format(chave_id, rota)] = {
             "n": dp * (1.0 if i % 2 else -1.0), "gp": 30}
-        # O indice NOME -> id. Sem ele a camada fica muda (ver trava 4b).
+        # O indice NOME -> id. Sem ele o Radar nao mostra nota (trava 4b).
         apelidos["jogador{}|||{}".format(i, rota)] = chave_id
     return {"w": w, "beta": 10.0, "notas": notas, "apelidos": apelidos}
 
@@ -103,14 +103,18 @@ class TestAprovaOBom(_Base):
 class TestACamadaCONSEGUEAgir(_Base):
     """A trava que faltava: o arquivo esta cheio, mas ele SERVE?
 
-    Em 13/09/2026 a camada passou dias em producao sem entregar nada. As notas
-    sao chaveadas por `playerid`, o app guarda a escalacao por NOME, nenhuma
-    chave batia, a cobertura dava 0/5 e a camada se desligava sozinha — em
-    silencio, porque "sem cobertura" e um caminho previsto e legitimo.
+    As notas sao chaveadas por `playerid`. O caminho da ODD manda id e nunca
+    dependeu disto. O RADAR monta o draft por `playername` — sem o indice
+    NOME -> id, a secao de escalacao dele nao mostra nota nenhuma.
 
-    Nenhuma trava pegou. Todas olhavam o arquivo por dentro (tem notas? o peso
-    bate?) e nenhuma perguntava se ele funciona para quem vai usar. E a
-    diferenca entre conferir o estoque e conferir a entrega.
+    A forma da checagem vale por um motivo maior que o caso: todas as outras
+    travas olham o arquivo POR DENTRO (tem notas? o peso bate?) e nenhuma
+    pergunta se ele funciona para quem vai usar. E a diferenca entre conferir
+    o estoque e conferir a entrega.
+
+    ERRO MEU REGISTRADO (13/09/2026): testei o caminho servido com a escalacao
+    do Radar (nomes), vi 0/5 e anunciei que a camada estava inerte em
+    producao. Nao estava. Conferido no app dirigido em 14/09: 5/5.
     """
 
     def test_arquivo_SEM_o_indice_de_nomes_e_RECUSADO(self):
@@ -179,6 +183,56 @@ class TestOQuantoACamadaMove(_Base):
         notas["notas"] = dict(list(notas["notas"].items())[:10])
         self._rodar(_modelo_bom(), notas)
         self.assertIn("nan", self._saida.lower())
+
+
+class TestPlausibilidade(_Base):
+    """A checagem antiga reprovava o modelo CERTO.
+
+    Ela exigia 0,02 < p < 0,98 no confronto entre o melhor e o pior time. Com
+    887 times reais, esse par da 0,99988 — e esta certo: sao 1.604 pontos de
+    rating entre a academia da T1 (383 jogos) e um time de 22 jogos.
+
+    A faixa tinha sido calibrada so contra a fixture destes testes: 40 times
+    com ~120 pontos de amplitude. Rodada contra o modelo de PRODUCAO em
+    14/09/2026, ela reprovava — nunca tinha sido rodada contra ele.
+    """
+
+    def _com_amplitude(self, span: float) -> dict:
+        """Modelo com a mesma forma do real: elenco grande e muito espalhado."""
+        m = _modelo_bom()
+        n = len(m["model"]["ratings"])
+        m["model"]["ratings"] = {
+            "Time{:02d}".format(i): -span / 2 + span * i / max(1, n - 1)
+            for i in range(n)}
+        m["meta"]["team_meta"] = {t: {"league": "LPL", "tier": "T1"}
+                                  for t in m["model"]["ratings"]}
+        return m
+
+    def test_elenco_MUITO_espalhado_como_o_real_e_APROVADO(self):
+        """1.600 pontos de amplitude e o que o modelo servido tem."""
+        self.assertEqual(self._rodar(self._com_amplitude(1600.0), _notas_boas()),
+                         0, self._saida)
+
+    def test_o_par_mais_desigual_e_conferido_contra_SATURACAO(self):
+        """Quase-certeza pode; 0 ou 1 exatos, nao — viraria odd 1,00 na tela."""
+        self._rodar(self._com_amplitude(1600.0), _notas_boas())
+        self.assertIn("satura em 0 ou 1", self._saida)
+
+    def test_as_DUAS_perguntas_sao_feitas(self):
+        self._rodar(self._com_amplitude(1600.0), _notas_boas())
+        self.assertIn("meio de tabela", self._saida)
+        self.assertIn("mais desigual", self._saida)
+
+    def test_recusa_quando_o_MEIO_DE_TABELA_da_certeza(self):
+        """Modelo quebrado de verdade: ate os parecidos viram 0 ou 1."""
+        m = _modelo_bom()
+        # ratings absurdos e MUITO afastados entre vizinhos
+        m["model"]["ratings"] = {"Time{:02d}".format(i): float(i * 5000)
+                                 for i in range(40)}
+        m["meta"]["team_meta"] = {t: {"league": "LPL", "tier": "T1"}
+                                  for t in m["model"]["ratings"]}
+        self.assertEqual(self._rodar(m, _notas_boas()), 1)
+        self.assertIn("meio de tabela", self._saida)
 
 
 class TestRecusaOQuebrado(_Base):

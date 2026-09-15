@@ -147,7 +147,16 @@ class TestAsTresTelasUsamARegra(unittest.TestCase):
     def test_o_radar_oferece_a_outra_temporada(self):
         src = self._fonte("app_core.radar_tab_core")
         self.assertIn("anos_disponiveis", src)
-        self.assertIn('"Temporada"', src)
+        self.assertIn('"Ano da temporada"', src)
+
+    def test_o_rotulo_nao_colide_com_o_seletor_de_temporada_do_app(self):
+        """O app ja tem um "Temporada" (S14/S15/S16), que e outra coisa.
+
+        Dois seletores com o mesmo nome e significados diferentes e como se
+        erra aposta. Visto ao dirigir o app em 15/09/2026.
+        """
+        src = self._fonte("app_core.radar_tab_core")
+        self.assertNotIn('st.selectbox("Temporada"', src)
 
 
 if __name__ == "__main__":

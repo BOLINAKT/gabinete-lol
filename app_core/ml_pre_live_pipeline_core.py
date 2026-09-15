@@ -195,12 +195,17 @@ def _aplicar_pscore(
     if not math.isfinite(w) or abs(w) <= 1e-12:
         return {"applied": False, "reason": "peso zero"}
 
-    # `apelidos` traduz NOME -> id do jogador. Sem ele a cobertura dava 0/5 e a
-    # camada ficava inerte em producao: as notas sao chaveadas por playerid e o
-    # app guarda a escalacao por nome. Descoberto em 13/09/2026, chamando esta
-    # funcao com a escalacao real de FlyQuest x Sentinels.
-    # Artefato antigo nao tem a chave; `.get` devolve None e o comportamento
-    # volta a ser o de antes, sem quebrar.
+    # `apelidos` traduz NOME -> id do jogador.
+    #
+    # ESTE CAMINHO NAO PRECISAVA DELE: a escalacao daqui vem de `lineup_ml_*`,
+    # que guarda a CHAVE do jogador (o editor mostra o nome e grava a chave).
+    # Conferido no app dirigido em 14/09/2026 com o artefato de producao:
+    # applied=True, cobertura 5/5. Quem precisa e o Radar, que monta o draft
+    # por `playername`.
+    #
+    # Fica aqui mesmo assim porque custa nada e cobre quem chamar por nome —
+    # e porque em 13/09 eu concluí, ERRADO, que esta chamada recebia nomes.
+    # Artefato antigo nao tem a chave; `.get` devolve None e nada muda.
     d, cobertura = _delta_ps(
         pac.get("notas") or {},
         blue_lineup={str(k): str(v) for k, v in (blue_lineup or {}).items() if v},

@@ -259,14 +259,24 @@ def notas_finais(df: pd.DataFrame, pscore: pd.Series, *, beta: float = BETA) -> 
 def indice_de_apelidos(df: pd.DataFrame) -> Dict[str, str]:
     """"nome|||Rota" -> "player_key|||Rota", para quem so tem o nome.
 
-    POR QUE ISTO PRECISOU EXISTIR (13/09/2026)
-    As notas sao chaveadas por `playerid` (`oe:player:...`), porque id nao
-    muda quando o jogador troca de nick. O APP, porem, guarda a escalacao por
-    NOME — e o nome e o que o dono ve e escolhe na tela.
+    O QUE ACONTECEU DE VERDADE (13-14/09/2026), e o meu erro no meio
+    As notas sao chaveadas por `playerid` (`oe:player:...`), porque id
+    sobrevive a troca de nick.
 
-    Resultado: nenhuma das cinco chaves batia, a cobertura dava 0/5 e a camada
-    se desligava sozinha. Em silencio, porque "sem cobertura" e um caminho
-    legitimo. A camada estava em producao sem entregar nada.
+    O caminho da ODD manda ID e sempre funcionou: a escalacao dele vem de
+    `lineup_ml_*`, que guarda a chave (o editor mostra o nome, mas grava a
+    chave). Conferido no app dirigido em 14/09/2026 com o artefato de
+    producao: applied=True, cobertura 5/5.
+
+    O RADAR e que manda NOME: o montador de draft dele usa `latest_roster`,
+    que devolve `playername`. Sem indice, nenhuma nota resolvia ali — e era
+    por isso que nao dava para mostrar a nota por rota no Radar.
+
+    MEU ERRO, registrado de proposito: em 13/09 eu testei o caminho servido
+    com a escalacao do RADAR (nomes), vi 0/5 e anunciei que a camada estava
+    inerte em producao. Nao estava. Peguei a lista errada e concluí grande
+    demais a partir de um teste so. O indice continua valendo — e do Radar a
+    necessidade —, mas o motivo e outro.
 
     AMBIGUIDADE NAO E RESOLVIDA NO CHUTE. Medido no CSV de 2026: de 2.838
     pares (nome, rota), 8 tem mais de um id — 0,28%. Esses 8 ficam DE FORA do

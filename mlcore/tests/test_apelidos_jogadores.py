@@ -1,18 +1,21 @@
 # -*- coding: utf-8 -*-
 """Testes do indice NOME -> id do jogador.
 
-O DEFEITO (13/09/2026): a camada de jogadores por desempenho estava em
-producao havia dias SEM ENTREGAR NADA. As notas sao chaveadas por `playerid`
-(`oe:player:...`), porque id sobrevive a troca de nick. O app guarda a
-escalacao por NOME, que e o que o dono ve e escolhe.
+POR QUE ELE EXISTE
+As notas sao chaveadas por `playerid` (`oe:player:...`), porque id sobrevive
+a troca de nick. O montador de draft do RADAR usa `latest_roster`, que
+devolve `playername` — sem indice, nenhuma nota resolve ali e a secao de
+escalacao do Radar nao mostra nada.
 
-Nenhuma das cinco chaves batia. A cobertura dava 0/5, a camada exige 5/5, e
-ela se desligava sozinha — em silencio, porque "sem cobertura" e um caminho
-legitimo e previsto. O ganho medido na regua (+0,00388) nunca chegou na tela.
+O CAMINHO DA ODD NUNCA DEPENDEU DISTO: a escalacao dele vem de `lineup_ml_*`,
+que guarda a CHAVE do jogador (o editor mostra o nome e grava a chave).
+Conferido no app dirigido em 14/09/2026 com o artefato de producao:
+applied=True, cobertura 5/5.
 
-Provado chamando o codigo servido com a escalacao real de FlyQuest x
-Sentinels: com nome, `applied=False, cobertura 0/5`; com id, `applied=True`,
-0,550 -> 0,576.
+ERRO MEU, REGISTRADO PARA NINGUEM REFAZER O CAMINHO: em 13/09/2026 testei o
+caminho servido com a escalacao do RADAR (nomes), vi cobertura 0/5 e anunciei
+que a camada estava inerte em producao havia dias. Nao estava. Peguei a lista
+errada e conclui grande demais a partir de um teste so.
 """
 from __future__ import annotations
 
@@ -52,8 +55,8 @@ class TestOCasoQueQuebrou(unittest.TestCase):
         self.assertEqual(cob, 1)
         self.assertAlmostEqual(d, 1.0 - (-0.5))
 
-    def test_SEM_o_indice_a_camada_fica_muda_(self):
-        """O comportamento de producao ate hoje. Fica travado para nao voltar."""
+    def test_SEM_o_indice_o_nome_nao_resolve(self):
+        """E o caso do Radar antes do indice — nao o do caminho da odd."""
         d, cob = delta_da_escalacao(
             NOTAS, blue_lineup={"Top": "Gakgos"}, red_lineup={"Mid": "Quad"})
         self.assertEqual(cob, 0)

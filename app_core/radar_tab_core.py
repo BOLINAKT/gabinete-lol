@@ -383,11 +383,16 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
     with st.container(border=True):
         render_tab_section(st, title="Confronto", subtitle=f"Season {year} · o recorte segue a liga de cada time.")
         if len(_anos) > 1:
-            st.selectbox("Temporada", _anos, key=_chave_ano,
-                         help="Duas temporadas podem estar acontecendo ao mesmo "
-                              "tempo: as ligas europeias comecam a do ano "
-                              "seguinte ainda neste ano. O padrao e a que tem "
-                              "mais jogos agora.")
+            # Rotulo "Ano da temporada", e nao "Temporada": o app JA tem um
+            # seletor "Temporada" (S14/S15/S16), que e outra coisa. Dois
+            # seletores com o mesmo nome e coisas diferentes e como se erra
+            # aposta. Visto ao dirigir o app em 15/09/2026.
+            st.selectbox("Ano da temporada", _anos, key=_chave_ano,
+                         help="Duas temporadas convivem no calendario: as "
+                              "ligas europeias comecam a do ano seguinte ainda "
+                              "neste ano (o split Winter de 2027 comecou em "
+                              "28/08/2026). O padrao e a que tem mais jogos "
+                              "agora.")
         c1, c2 = st.columns(2)
         team_a_seed = str(session_state.get(f"radar{_S}_team_a") or session_state.get("teamA") or "")
         team_b_seed = str(session_state.get(f"radar{_S}_team_b") or session_state.get("teamB") or "")
@@ -592,10 +597,21 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
         from app_core.ml_pre_live_pipeline_core import _carregar_pscore
         from app_core.radar_jogadores_core import (
             efeito_na_probabilidade as _efeito_p,
+            indice_das_linhas as _indice_linhas,
             montar_painel as _painel_jog,
         )
         _pac_jog = _carregar_pscore(str(artifact_path))
-        _pj = _painel_jog(_pac_jog, roster_a=roster_a, roster_b=roster_b)
+        # O indice NOME -> id so entra no arquivo de notas no treino COMPLETO,
+        # que roda uma vez por mes. Ate la ele sai das linhas que esta tela ja
+        # carregou — de graca, sem tocar no modelo nem na odd. Guardado na
+        # sessao porque montar toda hora custa caro a toa.
+        _ch_idx = "_radar_apelidos_{}".format(csv_sig)
+        _idx = session_state.get(_ch_idx)
+        if _idx is None:
+            _idx = _indice_linhas(players_df)
+            session_state[_ch_idx] = _idx
+        _pj = _painel_jog(_pac_jog, roster_a=roster_a, roster_b=roster_b,
+                          apelidos_extra=_idx)
     except Exception:
         _pj = {"disponivel": False, "motivo": ""}
 
