@@ -309,10 +309,34 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         # Mesma raiz que a linha da liga usa logo acima (linha ~270), para as
         # duas lerem exatamente o mesmo arquivo de medicao.
         _raiz_notas = _P2(__file__).resolve().parents[1]
+        # CONFRONTO ENTRE LIGAS (consertado em 15/09/2026, relatado por ele).
+        # `_lg_hint` so vem preenchido quando as DUAS ligas sao a mesma; num
+        # PRM x TCL ele vem vazio e o cartao apagava — justo onde confianca
+        # mais importa, porque ligar duas escalas de rating e a conta mais
+        # dificil que o modelo faz. Agora olha as duas e fica com a PIOR.
+        from app_core.confianca_ml_core import escolher_entre_ligas as _entre_ligas
+        if str(_lg_hint or "").strip():
+            _linha_conf = _nota_da_liga(_raiz_notas, _lg_hint)
+            _entre = False
+            _liga_txt = str(_lg_hint)
+        else:
+            # NAO chamar esta variavel de `_esc`: esse nome ja e a funcao de
+            # escapar HTML, importada no topo do arquivo. Eu a atropelei com um
+            # dicionario em 15/09/2026 e a Visao Geral inteira caiu com
+            # "'dict' object is not callable" — 300 linhas abaixo, onde o
+            # `_esc` de verdade era usado.
+            _escolha_liga = _entre_ligas(
+                _nota_da_liga(_raiz_notas, str(locals().get("_lgA", "") or "")),
+                _nota_da_liga(_raiz_notas, str(locals().get("_lgB", "") or "")))
+            _linha_conf = _escolha_liga["linha"]
+            _entre = bool(_escolha_liga["entre_ligas"])
+            _liga_txt = "+".join([x for x in _escolha_liga["ligas"] if x]) or ""
+
         _conf_card = _montar_conf(
-            linha_liga=_nota_da_liga(_raiz_notas, _lg_hint),
+            linha_liga=_linha_conf,
             idade_dias=_idade_medicao(_load_notas_liga(_raiz_notas).get("gerado_em")),
-            liga=str(_lg_hint or ""),
+            liga=_liga_txt,
+            entre_ligas=_entre,
             ajuste_do_confronto=float((_conf or {}).get("pipeline_adj", 0.0) or 0.0),
             resumo_do_confronto=str((_conf or {}).get("pipeline_summary", "") or ""),
             n_jogos_dos_times=float(st.session_state.get("_ml_team_games_min", float("nan"))),

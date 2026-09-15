@@ -16,7 +16,12 @@ from __future__ import annotations
 
 import unittest
 
-from app_core.confianca_ml_core import LIMITE_DIAS, montar_confianca, pontos_da_liga
+from app_core.confianca_ml_core import (
+    LIMITE_DIAS,
+    escolher_entre_ligas,
+    montar_confianca,
+    pontos_da_liga,
+)
 
 LCK = {"liga": "LCK", "n": 490, "nota": 7.15, "acuracia": 0.64, "ece": 0.058}
 CBLOL = {"liga": "CBLOL", "n": 239, "nota": 7.1, "acuracia": 0.69, "ece": 0.124}
@@ -139,6 +144,98 @@ class TestNaoDiscordaDaLinhaDeBaixo(unittest.TestCase):
     def test_o_mesmo_prazo_de_frescor_dos_dois_lados(self):
         """A linha avisa "velha" acima de 14 dias; o cartao para de valer ali."""
         self.assertEqual(LIMITE_DIAS, 14.0)
+
+
+class TestConfrontoEntreLigas(unittest.TestCase):
+    """O cartao apagava em confronto entre ligas (relatado por ele, 15/09/2026).
+
+    `_lg_hint` so vem preenchido quando as DUAS ligas sao a mesma. Num
+    PRM x TCL ele vem vazio, `nota_for_league("")` devolve None, e o cartao
+    dizia "nao medida" — justamente onde confianca mais importa, porque ligar
+    duas escalas de rating e a conta mais dificil que o modelo faz.
+    """
+
+    def test_escolhe_a_liga_PIOR_e_nao_a_media(self):
+        """Media deixaria a liga boa maquiar a ruim.
+
+        Numeros reais de 15/09: PRM ece 0,070 nota 7,82 · TCL ece 0,060
+        nota 10,0. A odd do confronto herda a desonestia do lado pior.
+        """
+        prm = {"liga": "PRM", "n": 306, "nota": 7.82, "ece": 0.070}
+        tcl = {"liga": "TCL", "n": 204, "nota": 10.0, "ece": 0.060}
+        e = escolher_entre_ligas(prm, tcl)
+        self.assertEqual(e["linha"]["liga"], "PRM")
+        self.assertTrue(e["entre_ligas"])
+
+    def test_a_ordem_dos_times_nao_muda_a_escolha(self):
+        prm = {"liga": "PRM", "n": 306, "nota": 7.82, "ece": 0.070}
+        tcl = {"liga": "TCL", "n": 204, "nota": 10.0, "ece": 0.060}
+        self.assertEqual(escolher_entre_ligas(prm, tcl)["linha"]["liga"],
+                         escolher_entre_ligas(tcl, prm)["linha"]["liga"])
+
+    def test_a_calibracao_ruim_vence_a_previsibilidade_alta(self):
+        """Liga previsivel mas desonesta nao pode carregar o confronto."""
+        honesta = {"liga": "A", "n": 400, "nota": 6.5, "ece": 0.03}
+        desonesta = {"liga": "B", "n": 400, "nota": 10.0, "ece": 0.15}
+        self.assertEqual(escolher_entre_ligas(honesta, desonesta)["linha"]["liga"], "B")
+
+    def test_so_uma_liga_medida_usa_ela_e_NAO_marca_entre_ligas(self):
+        """Sem as duas nao da para dizer qual e o lado fraco."""
+        e = escolher_entre_ligas({"liga": "A", "n": 400, "nota": 8.0, "ece": 0.04}, None)
+        self.assertEqual(e["linha"]["liga"], "A")
+        self.assertFalse(e["entre_ligas"])
+
+    def test_nenhuma_medida_devolve_nada(self):
+        e = escolher_entre_ligas(None, None)
+        self.assertIsNone(e["linha"])
+        self.assertEqual(e["ligas"], [])
+
+    def test_o_cartao_DIZ_que_e_entre_ligas(self):
+        """Sem isso o numero pareceria a medicao de uma liga so."""
+        c = montar_confianca(
+            linha_liga={"liga": "PRM", "n": 306, "nota": 7.82, "ece": 0.070},
+            idade_dias=9.0, liga="PRM+TCL", entre_ligas=True)
+        self.assertIn("entre ligas", c["porque"])
+        self.assertIn("mais fraco", c["porque"])
+
+    def test_as_duas_ligas_aparecem_na_fonte(self):
+        c = montar_confianca(
+            linha_liga={"liga": "PRM", "n": 306, "nota": 7.82, "ece": 0.070},
+            idade_dias=9.0, liga="PRM+TCL", entre_ligas=True)
+        self.assertIn("PRM", c["source"])
+        self.assertIn("TCL", c["source"])
+
+    def test_confronto_de_UMA_liga_nao_ganha_o_aviso(self):
+        c = montar_confianca(linha_liga=LCK, idade_dias=9.0, liga="LCK")
+        self.assertNotIn("entre ligas", c["porque"])
+
+    def test_nenhuma_variavel_atropela_a_funcao_de_escapar_HTML(self):
+        """ERRO MEU, 15/09/2026: chamei uma variavel local de `_esc`.
+
+        `_esc` ja e `html.escape`, importada no topo do arquivo. O dicionario
+        atropelou a funcao e a Visao Geral inteira caiu 300 linhas abaixo, com
+        "'dict' object is not callable" — longe do ponto onde eu errei.
+        A blindagem por aba segurou o site e o teste de tela acusou; mas so o
+        teste que diz ONDE quebrou tornou a caçada rapida.
+        """
+        import re
+        import inspect
+
+        from app_core import visao_tab_core as m
+        src = inspect.getsource(m)
+        # a unica linha com `_esc =` legitima e o import do topo
+        atribuicoes = re.findall(r"^\s*_esc\s*=", src, re.M)
+        self.assertEqual(atribuicoes, [],
+                         "alguem atribuiu a `_esc`, que e html.escape")
+
+    def test_a_tela_trata_o_caso_sem_liga_compartilhada(self):
+        import inspect
+
+        from app_core import visao_tab_core as m
+        src = inspect.getsource(m.render_visao_tab)
+        self.assertIn("escolher_entre_ligas", src)
+        self.assertIn("_lgA", src)
+        self.assertIn("_lgB", src)
 
 
 class TestATelaUsaOModuloNovo(unittest.TestCase):

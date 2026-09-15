@@ -120,8 +120,33 @@ def iniciar_registro_de_falhas(st: Any) -> list:
     return falhas
 
 
+def _onde_quebrou(erro: BaseException) -> str:
+    """arquivo:linha do ponto mais fundo DO NOSSO codigo.
+
+    So o tipo e a mensagem nao bastam: em 15/09/2026 um "'dict' object is not
+    callable" na Visao Geral me custou uma caçada, porque a funcao tem
+    centenas de linhas e varios blocos protegidos. O quadro mais fundo que
+    seja nosso aponta o lugar em um segundo.
+    """
+    import traceback
+    try:
+        quadros = traceback.extract_tb(erro.__traceback__)
+    except Exception:
+        return ""
+    nosso = [q for q in quadros
+             if ("app_core" in str(q.filename) or "mlcore" in str(q.filename)
+                 or "plays_app" in str(q.filename))]
+    q = (nosso or quadros or [None])[-1]
+    if q is None:
+        return ""
+    import os
+    return "{}:{}".format(os.path.basename(str(q.filename)), q.lineno)
+
+
 def _registrar_falha(st: Any, tab_name: str, erro: BaseException) -> None:
-    marca = "{}: {}".format(type(erro).__name__, erro)
+    onde = _onde_quebrou(erro)
+    marca = "{}: {}{}".format(type(erro).__name__, erro,
+                              " [{}]".format(onde) if onde else "")
     try:
         st.session_state[CHAVE_FALHAS_DE_ABA].append((tab_name, marca))
     except (AttributeError, TypeError, KeyError, IndexError):

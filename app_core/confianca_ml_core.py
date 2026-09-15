@@ -113,11 +113,48 @@ def pontos_da_liga(linha: Optional[Mapping[str, Any]]) -> Dict[str, Any]:
             "ece": ece, "n": n, "nota": nota}
 
 
+def escolher_entre_ligas(
+    linha_a: Optional[Mapping[str, Any]],
+    linha_b: Optional[Mapping[str, Any]],
+) -> Dict[str, Any]:
+    """Num confronto ENTRE LIGAS, qual medicao manda.
+
+    O DEFEITO QUE ISTO CONSERTA (relatado por ele em 15/09/2026): o cartao
+    pedia a liga COMPARTILHADA do confronto, e num PRM x TCL nao existe uma —
+    entao ele apagava e dizia "nao medida". Apagava justamente onde confianca
+    mais importa: entre ligas o modelo precisa ligar duas escalas de rating
+    diferentes, que e a conta mais dificil que ele faz.
+
+    A ESCOLHA E A PIOR DAS DUAS, e nao a media. Confianca e sobre o % ser
+    honesto; se o modelo e desonesto num dos lados, a odd do confronto herda
+    isso. Fazer media deixaria a liga boa maquiar a ruim.
+
+    NAO invento penalidade extra por ser entre ligas. Faz sentido que exista
+    uma — a conta e mais dificil —, mas ninguem mediu, e chutar um desconto
+    daria um numero com cara de medido. Fica so a pior das duas, e a tela diz
+    que e confronto entre ligas.
+    """
+    qa, qb = pontos_da_liga(linha_a), pontos_da_liga(linha_b)
+    if qa["usavel"] and qb["usavel"]:
+        pior = linha_a if qa["pontos"] <= qb["pontos"] else linha_b
+        return {"linha": pior, "entre_ligas": True,
+                "ligas": [str((linha_a or {}).get("liga") or ""),
+                          str((linha_b or {}).get("liga") or "")]}
+    if qa["usavel"]:
+        return {"linha": linha_a, "entre_ligas": False,
+                "ligas": [str((linha_a or {}).get("liga") or "")]}
+    if qb["usavel"]:
+        return {"linha": linha_b, "entre_ligas": False,
+                "ligas": [str((linha_b or {}).get("liga") or "")]}
+    return {"linha": None, "entre_ligas": False, "ligas": []}
+
+
 def montar_confianca(
     *,
     linha_liga: Optional[Mapping[str, Any]],
     idade_dias: Optional[float],
     liga: str = "",
+    entre_ligas: bool = False,
     ajuste_do_confronto: float = 0.0,
     resumo_do_confronto: str = "",
     n_jogos_dos_times: float = float("nan"),
@@ -155,6 +192,10 @@ def montar_confianca(
     grade = "A (Alta)" if score >= 80.0 else ("B (Media)" if score >= 65.0 else "C (Baixa)")
 
     partes = list(q["notas"])
+    if entre_ligas:
+        # Dizer que e entre ligas importa: o numero saiu do lado PIOR, e sem
+        # isso ele pareceria a medicao de uma liga so.
+        partes.insert(0, "confronto entre ligas (vale o lado mais fraco)")
     if str(resumo_do_confronto or "").strip():
         partes.append(str(resumo_do_confronto).strip())
 
