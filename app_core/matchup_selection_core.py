@@ -44,6 +44,45 @@ def _safe_rerun() -> None:
         st.experimental_rerun()
 
 
+_CHAVE_NAO_RESOLVIDOS = "_agenda_times_nao_resolvidos"
+
+
+def set_pending_unresolved(session_state: Any, faltou: list) -> None:
+    """Guarda o que nao deu para casar, para a tela dizer em vez de calar."""
+    try:
+        session_state[_CHAVE_NAO_RESOLVIDOS] = list(faltou or [])
+    except (TypeError, KeyError, AttributeError):
+        pass
+
+
+def _resolver_time_salvo(session_state: Any, cru: str, times: Sequence[str]) -> str:
+    """Nome guardado na agenda -> nome do CSV, ou "" quando nao da.
+
+    Usa o MESMO resolvedor da aba Jogos, com os apelidos que ele ja ensinou.
+    Antes daqui a comparacao era `nome in times` — exata, letra por letra —, e
+    qualquer diferenca de sufixo deixava o campo vazio sem avisar.
+    """
+    alvo = str(cru or "").strip()
+    if not alvo:
+        return ""
+    if alvo in times:
+        return alvo
+    try:
+        from pathlib import Path
+
+        from app_core.schedule_import_core import (
+            load_schedule_aliases,
+            resolve_schedule_team,
+        )
+        # Mesma raiz e mesmo arquivo de apelidos que a aba Jogos usa.
+        raiz = Path(__file__).resolve().parents[1]
+        apelidos = load_schedule_aliases(session_state, raiz / "user_team_aliases.json")
+        achado, ok = resolve_schedule_team(alvo, list(times), apelidos)
+        return str(achado) if ok else ""
+    except Exception:
+        return ""
+
+
 def render_matchup_selection(
     session_state: dict[str, Any],
     *,
@@ -208,10 +247,30 @@ def render_matchup_selection(
                             game["lines_saved"] = dict(current_line_values)
                             save_schedule_games(session_state, games)
                         payload = {"_reset_flow": True}
-                        if str(game.get("teamA", "")) in teams:
-                            payload["teamA"] = str(game.get("teamA"))
-                        if str(game.get("teamB", "")) in teams:
-                            payload["teamB"] = str(game.get("teamB"))
+                        # NOME EXATO NAO BASTA (defeito relatado por ele em
+                        # 15/09/2026). A agenda dele tinha "Barczaca Esports" e
+                        # o CSV tem "Barczaca Esports by Yumisu" — o campo
+                        # Time 1 ficava vazio, EM SILENCIO, e ele so via que
+                        # nada aconteceu.
+                        #
+                        # O resolvedor com apelidos aprendidos ja existia no
+                        # projeto (e a mesma coisa que a aba Jogos usa ao
+                        # importar); aqui ele nunca tinha sido chamado.
+                        _res_a = _resolver_time_salvo(session_state, str(game.get("teamA", "")), teams)
+                        _res_b = _resolver_time_salvo(session_state, str(game.get("teamB", "")), teams)
+                        if _res_a:
+                            payload["teamA"] = _res_a
+                        if _res_b:
+                            payload["teamB"] = _res_b
+                        # O que NAO resolveu fica dito, com o palpite. Campo
+                        # vazio sem explicacao e o pior desfecho: parece que o
+                        # botao nao funcionou.
+                        _faltou = [(rot, str(game.get(ch, "") or ""))
+                                   for rot, ch, r in (("Time 1", "teamA", _res_a),
+                                                      ("Time 2", "teamB", _res_b))
+                                   if not r and str(game.get(ch, "") or "").strip()]
+                        if _faltou:
+                            set_pending_unresolved(session_state, _faltou)
                         if str(game.get("bo")) in {str(x) for x in BO_OPTIONS}:
                             payload["bo"] = int(game.get("bo"))
                         if isinstance(game, dict) and isinstance(game.get("lines_saved"), dict):
@@ -230,6 +289,40 @@ def render_matchup_selection(
         session_state["teamB"] = ""
     if str(session_state.get("bo", "1") or "1") not in {str(x) for x in BO_OPTIONS}:
         session_state["bo"] = int(BO_OPTIONS[0])
+
+    # TIME DA AGENDA QUE NAO CASOU COM O CSV (15/09/2026, relatado por ele).
+    # Antes o campo simplesmente ficava vazio e ninguem dizia nada — parecia
+    # que o botao "Usar este jogo" nao tinha funcionado. Agora diz QUAL time
+    # falhou, ja traz o palpite, e deixa ensinar ali mesmo: o apelido fica
+    # salvo e o problema nao volta.
+    _nao_casou = session_state.get(_CHAVE_NAO_RESOLVIDOS) or []
+    if _nao_casou:
+        from pathlib import Path as _Path
+
+        from app_core.schedule_import_core import (
+            load_schedule_aliases as _carregar_apelidos,
+            normalize_schedule_team_key as _chave_apelido,
+            save_schedule_aliases as _salvar_apelidos,
+            suggest_schedule_teams as _sugerir,
+        )
+        _arq_apelidos = _Path(__file__).resolve().parents[1] / "user_team_aliases.json"
+        for _rot, _cru in _nao_casou:
+            st.warning("**{}** ficou vazio: a agenda tem *{}*, que nao existe "
+                       "com esse nome no CSV.".format(_rot, _cru))
+            _sug = _sugerir(_cru, list(teams))
+            _pick = st.selectbox(
+                "Esse time e qual? (fica salvo)", options=["", *_sug],
+                key="agenda_fix_{}".format(_chave_apelido(_cru)),
+            )
+            if _pick and st.button("Salvar e usar",
+                                   key="agenda_fix_btn_{}".format(_chave_apelido(_cru))):
+                _ap = _carregar_apelidos(session_state, _arq_apelidos)
+                _ap[_chave_apelido(_cru)] = str(_pick)
+                _salvar_apelidos(session_state, _arq_apelidos, _ap)
+                session_state["teamA" if _rot == "Time 1" else "teamB"] = str(_pick)
+                session_state[_CHAVE_NAO_RESOLVIDOS] = [
+                    x for x in _nao_casou if x[0] != _rot]
+                _safe_rerun()
 
     def _fmt_team_placeholder(x: str) -> str:
         return "" if str(x) == "" else str(x)
