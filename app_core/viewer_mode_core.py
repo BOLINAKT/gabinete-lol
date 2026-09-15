@@ -96,6 +96,20 @@ def render_viewer_badge(st: Any, csv_path: str) -> None:
         st.caption(cap + " · atualizado pelo robô · modo visualização")
     else:
         st.caption("modo visualização · atualização automática pelo robô")
+
+    # QUAL VERSAO DO CODIGO ESTA RODANDO (15/09/2026).
+    # Tres vezes seguidas ele disse "nao mudou nada" sobre conserto ja
+    # publicado — e nas tres o codigo estava no GitHub e o app rodava versao
+    # antiga. O problema nao era o conserto: era nao dar para VER. Ele olhando
+    # a tela, eu olhando o repositorio, sem nada em comum para comparar.
+    try:
+        from pathlib import Path as _P
+
+        from app_core.versao_do_codigo_core import render_versao as _render_versao
+        _render_versao(st, _P(__file__).resolve().parents[1])
+    except Exception:
+        pass
+
     render_update_now_button(st)
 
 

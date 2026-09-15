@@ -1,0 +1,100 @@
+# Robô das ODDS: lê o preço da Pinnacle e guarda o movimento dele.
+#
+# PARA QUE SERVE
+# A Pinnacle trabalha com margem baixa e limite alto e aceita dinheiro afiado
+# em vez de barrar a conta — o preço dela é o mais próximo de probabilidade
+# verdadeira que o mercado oferece. Guardado COM HORA, ele vira a régua
+# externa que este projeto não tem: medir se o modelo bate o fechamento (CLV)
+# é a única medição que responde se existe lucro. Todas as réguas de hoje
+# comparam o modelo com ele mesmo.
+#
+# DE ONDE VEM, SEM DISFARCE
+# É a API interna do site DELES, aberta e sem credencial — a porta dos fundos,
+# não a oficial (que fechou ao público e, para esports, exige autorização
+# especial). Ele decidiu usá-la sabendo disso, em 15/09/2026.
+#
+# O risco NÃO é a conta de aposta dele: nada aqui usa login. É bloqueio de IP,
+# que tiraria o acesso ao site de onde ele aposta. Por isso a educação é parte
+# do desenho, não enfeite:
+#   - DUAS requisições por corrida, de 3 em 3 horas. Tráfego irrisório.
+#   - User-Agent que diz quem é e para quê.
+#   - 403/429 PARA na hora e sai com rc=75. Não insiste, não tenta contornar,
+#     não troca de identidade. Se eles não quiserem, a resposta é parar.
+#
+# POR QUE OS MINUTOS SÃO ESSES
+# Deslocados das janelas dos outros robôs (:57/:03/:21 do retreino, :40 da
+# agenda) para não disputarem runner — e, mais importante, para as duas
+# requisições nunca saírem no mesmo instante de outra corrida.
+#
+# O QUE ELE COMMITA
+# `odds_pinnacle.json` (o retrato de agora) e `odds_pinnacle_historico.jsonl`
+# (só o que MUDOU). O histórico cresce devagar de propósito: guardar o retrato
+# inteiro a cada corrida daria ~9 MB/mês, e o que o CLV precisa é o movimento.
+name: Odds (preço da Pinnacle)
+
+on:
+  schedule:
+    - cron: "25 0,3,6,9,12,15,18,21 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: odds
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependências
+        run: pip install --quiet -r requirements.txt
+
+      - name: Ler as odds
+        id: coleta
+        run: |
+          set +e
+          python tools/coletar_odds.py
+          rc=$?
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          if [ "$rc" -eq 75 ]; then
+            echo "::notice::A casa bloqueou ou a rede caiu. Nada escrito; tenta na próxima janela."
+            exit 0
+          fi
+          exit "$rc"
+
+      - name: Commitar
+        if: steps.coleta.outputs.rc == '0'
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add odds_pinnacle.json odds_pinnacle_historico.jsonl
+          if git diff --cached --quiet; then
+            echo "nenhum preço mudou — nada a commitar"
+          else
+            git commit -m "Robô: odds da Pinnacle atualizadas"
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado (concorrência) — rebase e retry $i/3"
+              git pull --rebase || exit 1
+            done
+            git push
+          fi
+
+      - name: Se falhou, dizer o que fazer
+        if: failure()
+        run: |
+          echo "::error::A leitura das odds falhou com erro de verdade (não foi bloqueio nem rede)."
+          echo "O mais provável é a API interna ter mudado de formato — o coletor"
+          echo "recusa gravar quando não reconhece a resposta, de propósito."
+          echo "O retrato anterior continua no repositório."
+          echo "Para investigar: python tools/coletar_odds.py"
