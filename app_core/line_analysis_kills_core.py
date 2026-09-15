@@ -76,6 +76,7 @@ def _render_kills_line_content(
     df_b_context_season: pd.DataFrame,
     df_h2h_year: pd.DataFrame,
     df_h2h_full: pd.DataFrame,
+    df_h2h_year_b: pd.DataFrame | None = None,
     df_a_all_maps: pd.DataFrame,
     df_b_all_maps: pd.DataFrame,
     df_a_full_year: pd.DataFrame = None,
@@ -179,6 +180,7 @@ def _render_kills_line_content(
         df_b_context_season=df_b_context_season,
         df_h2h_year=df_h2h_year,
         df_h2h_context_year_full_a=df_h2h_full,
+        df_h2h_year_b=df_h2h_year_b,
         league_scope_df=league_scope_for_panel,
         line=float(line_val),
         min_to_mmss_fn=mmss,
@@ -740,6 +742,20 @@ def _render_v3_kills_subpanel(
         df_h2h_year = pd.DataFrame()
     df_h2h_full = df_h2h_year.copy()
 
+    # O MESMO recorte visto do lado do time B (espelho). Pedido dele em
+    # 15/09/2026: o card "Past Faceoffs" mostrava so a coluna do time A, e
+    # "Gen.G fez 26" sem saber quantas o adversario fez nao diz se foi jogo de
+    # sangue ou atropelo. Mesmos filtros, mesmo ano, mesmo mapa — senao os
+    # dois lados falariam de recortes diferentes.
+    try:
+        df_h2h_year_b = _h2h_base[
+            (_h2h_base["team"].astype(str) == str(team_b))
+            & (_h2h_base["opponent"].astype(str) == str(team_a))
+        ].copy()
+        df_h2h_year_b = _filter_by_map(df_h2h_year_b)
+    except (TypeError, ValueError, KeyError, NameError):
+        df_h2h_year_b = pd.DataFrame()
+
     # Also re-filter context dataframes defensively (Streamlit reruns can lead
     # to stale references; this guarantees the panel never sees mixed-map data).
     df_a_context_all = _filter_by_map(df_a_context_all)
@@ -801,6 +817,7 @@ def _render_v3_kills_subpanel(
         df_a_context_all=df_a_context_all, df_b_context_all=df_b_context_all,
         df_a_context_season=df_a_context_season, df_b_context_season=df_b_context_season,
         df_h2h_year=df_h2h_year, df_h2h_full=df_h2h_full,
+        df_h2h_year_b=df_h2h_year_b,
         df_a_all_maps=df_a_all_maps, df_b_all_maps=df_b_all_maps,
         df_a_full_year=df_a_full_year, df_b_full_year=df_b_full_year,
         league_scope_for_panel=league_scope_for_panel,

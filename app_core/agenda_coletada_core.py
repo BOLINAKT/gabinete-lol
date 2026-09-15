@@ -1,0 +1,106 @@
+# -*- coding: utf-8 -*-
+"""Le a agenda que o robo coletou e entrega no formato que a previa ja usa.
+
+O APP NAO VAI A REDE. Quem coleta e o robo (tools/coletar_agenda.py, no
+GitHub Actions); aqui so se le o arquivo que ele gravou. Motivo: cada visita
+ao site viraria uma ida ao alvo, e a hospedagem ja mostrou que nao e confiavel
+para isso (o site caiu em 13/09/2026 por um problema dela, nao nosso).
+
+O FORMATO DE SAIDA E O MESMO de `parse_schedule_text`, de proposito: assim a
+coleta entra na MESMA previa do texto colado, e mapeamento de time, apelidos
+aprendidos e "Adicionar a agenda" continuam funcionando sem mudar uma linha.
+
+IDADE SEMPRE JUNTO. Uma agenda velha repete os jogos de ontem com toda a
+confianca do mundo — e o sintoma aparece como "esse jogo nao existe", que nao
+aponta para a causa. Mesma licao que a linha de nota por liga ja aplicava.
+"""
+from __future__ import annotations
+
+import json
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
+
+NOME_DO_ARQUIVO = "agenda_coletada.json"
+
+# Campos que a previa do app consome. Extras (bo, estado, inicio_utc) viajam
+# junto e sao usados por quem souber o que fazer com eles.
+CAMPOS = ("date", "time", "league", "teamA_raw", "teamB_raw")
+
+
+def _idade_em_horas(carimbo: Any) -> float | None:
+    """Quantas horas tem a coleta, ou None quando nao da para saber."""
+    txt = str(carimbo or "").strip()
+    if not txt:
+        return None
+    try:
+        quando = datetime.fromisoformat(txt)
+    except (TypeError, ValueError):
+        return None
+    agora = datetime.now(quando.tzinfo) if quando.tzinfo else datetime.now()
+    return (agora - quando).total_seconds() / 3600.0
+
+
+def carregar_agenda_coletada(raiz: Path, *, nome: str = NOME_DO_ARQUIVO) -> Dict[str, Any]:
+    """Jogos coletados + idade da coleta, ou o MOTIVO de nao haver.
+
+    PRINCIPIO IV: ausencia nao vira lista vazia calada. Sem o motivo, "nao tem
+    jogo hoje" e "nao consegui coletar" ficam identicos na tela — e sao coisas
+    muito diferentes para quem vai apostar.
+    """
+    alvo = Path(raiz) / str(nome)
+    if not alvo.exists():
+        return {"jogos": [], "idade_horas": None,
+                "motivo": "o robo ainda nao coletou (arquivo ausente)"}
+    try:
+        dados = json.loads(alvo.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as e:
+        return {"jogos": [], "idade_horas": None,
+                "motivo": "arquivo ilegivel ({})".format(type(e).__name__)}
+    if not isinstance(dados, dict):
+        return {"jogos": [], "idade_horas": None, "motivo": "arquivo com formato inesperado"}
+
+    brutos = dados.get("jogos")
+    if not isinstance(brutos, list):
+        return {"jogos": [], "idade_horas": None, "motivo": "arquivo sem a lista de jogos"}
+
+    jogos: List[Dict[str, Any]] = []
+    for j in brutos:
+        if not isinstance(j, dict):
+            continue
+        linha = {c: str(j.get(c, "") or "").strip() for c in CAMPOS}
+        if not (linha["teamA_raw"] and linha["teamB_raw"]):
+            continue
+        try:
+            bo = int(j.get("bo") or 0)
+        except (TypeError, ValueError):
+            bo = 0
+        linha["bo"] = bo if bo in (1, 3, 5) else 0
+        linha["estado"] = str(j.get("estado", "") or "")
+        jogos.append(linha)
+
+    return {
+        "jogos": jogos,
+        "idade_horas": _idade_em_horas(dados.get("gerado_em")),
+        "gerado_em": str(dados.get("gerado_em") or ""),
+        "motivo": "" if jogos else "a coleta nao trouxe jogo nenhum",
+    }
+
+
+def bo_do_jogo(jogo: Any, padrao: Any) -> int:
+    """O BO REAL do jogo, caindo no padrao da tela so quando nao houver.
+
+    Antes o app carimbava um unico BO em todos os jogos importados. Um BO5
+    lido como BO3 muda a odd da serie inteira — nao e detalhe.
+    """
+    try:
+        bo = int((jogo or {}).get("bo") or 0)
+    except (TypeError, ValueError, AttributeError):
+        bo = 0
+    if bo in (1, 3, 5):
+        return bo
+    try:
+        p = int(padrao)
+    except (TypeError, ValueError):
+        p = 3
+    return p if p in (1, 3, 5) else 3

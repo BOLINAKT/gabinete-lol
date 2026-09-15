@@ -1,0 +1,174 @@
+{
+  "gerado_em": "2026-09-15T10:33:45-03:00",
+  "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
+  "fuso": "America/Sao_Paulo",
+  "n_eventos_recebidos": 80,
+  "descartes": {
+    "ja_jogados": 36,
+    "passados": 4,
+    "indefinidos": 24,
+    "sem_dois_times": 0
+  },
+  "jogos": [
+    {
+      "date": "15/09",
+      "time": "11:00",
+      "league": "Hitpoint Masters",
+      "teamA_raw": "NightBirds",
+      "teamB_raw": "CITA Kaizen",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-15T14:00:00Z"
+    },
+    {
+      "date": "15/09",
+      "time": "13:00",
+      "league": "Road of Legends",
+      "teamA_raw": "Senshi eSports",
+      "teamB_raw": "mCon Esports",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-15T16:00:00Z"
+    },
+    {
+      "date": "15/09",
+      "time": "13:00",
+      "league": "Arabian League",
+      "teamA_raw": "Anubis Gaming",
+      "teamB_raw": "JSK Gamefy",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-15T16:00:00Z"
+    },
+    {
+      "date": "16/09",
+      "time": "11:00",
+      "league": "Hitpoint Masters",
+      "teamA_raw": "eSuba",
+      "teamB_raw": "UP2U Meavedron",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-16T14:00:00Z"
+    },
+    {
+      "date": "16/09",
+      "time": "13:00",
+      "league": "NLC",
+      "teamA_raw": "Verdant",
+      "teamB_raw": "Ruddy Corporation",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-16T16:00:00Z"
+    },
+    {
+      "date": "18/09",
+      "time": "12:00",
+      "league": "LEC",
+      "teamA_raw": "Movistar KOI",
+      "teamB_raw": "Natus Vincere",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-18T15:00:00Z"
+    },
+    {
+      "date": "18/09",
+      "time": "13:00",
+      "league": "LoL Italian Tournament",
+      "teamA_raw": "Colossal Gaming",
+      "teamB_raw": "TEAM AQUA",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-18T16:00:00Z"
+    },
+    {
+      "date": "18/09",
+      "time": "17:00",
+      "league": "LCS",
+      "teamA_raw": "Sentinels",
+      "teamB_raw": "Shopify Rebellion",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-18T20:00:00Z"
+    },
+    {
+      "date": "19/09",
+      "time": "06:00",
+      "league": "VCS",
+      "teamA_raw": "Saigon MVKE Academy",
+      "teamB_raw": "Saigon 1TAP DINO",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-19T09:00:00Z"
+    },
+    {
+      "date": "19/09",
+      "time": "07:00",
+      "league": "Rift Legends",
+      "teamA_raw": "BOMBA Team",
+      "teamB_raw": "Forsaken",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-19T10:00:00Z"
+    },
+    {
+      "date": "19/09",
+      "time": "09:00",
+      "league": "VCS",
+      "teamA_raw": "Saigon 9Gaming Esports",
+      "teamB_raw": "TP.HCM SN CyberCore Esports",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-19T12:00:00Z"
+    },
+    {
+      "date": "19/09",
+      "time": "13:00",
+      "league": "CBLOL",
+      "teamA_raw": "RED Kalunga",
+      "teamB_raw": "Vivo Keyd Stars",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-19T16:00:00Z"
+    },
+    {
+      "date": "19/09",
+      "time": "17:00",
+      "league": "LCS",
+      "teamA_raw": "Cloud9 Kia",
+      "teamB_raw": "LYON",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-19T20:00:00Z"
+    },
+    {
+      "date": "20/09",
+      "time": "06:00",
+      "league": "VCS",
+      "teamA_raw": "Saigon MVKE Academy",
+      "teamB_raw": "Saigon Warrior",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-20T09:00:00Z"
+    },
+    {
+      "date": "20/09",
+      "time": "09:00",
+      "league": "VCS",
+      "teamA_raw": "Saigon 9Gaming Esports",
+      "teamB_raw": "Saigon 1TAP DINO",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-20T12:00:00Z"
+    },
+    {
+      "date": "20/09",
+      "time": "17:00",
+      "league": "LCS",
+      "teamA_raw": "FlyQuest",
+      "teamB_raw": "Team Liquid Alienware",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-20T20:00:00Z"
+    }
+  ]
+}

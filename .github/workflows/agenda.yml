@@ -1,0 +1,98 @@
+# Robô da AGENDA: baixa os jogos que vêm por aí e grava no repositório.
+#
+# POR QUE ELE EXISTE (15/09/2026)
+# Até hoje o dono copiava a lista de jogos de um site e colava no app, todo
+# dia. O parser dele já existia; o que faltava era a torneira.
+#
+# POR QUE O ROBÔ COLETA, E NÃO O SITE
+# Se o app buscasse na rede, cada visita dele viraria uma ida ao alvo — e a
+# hospedagem já provou que não é confiável para isso (o site caiu em 13/09 por
+# um problema dela). Com o robô, a coleta acontece uma vez, fica versionada, e
+# o app só lê um arquivo. De quebra, o histórico da agenda vem de graça.
+#
+# POR QUE FORA DO GRUPO "retreino"
+# Este robô não encosta no modelo: escreve só agenda_coletada.json. Entrar no
+# mesmo grupo de concorrência faria a agenda esperar um retreino de 15 minutos
+# sem motivo nenhum.
+#
+# CADÊNCIA
+# De 3 em 3 horas. A agenda muda ao longo do dia (adiamento, chave de playoff
+# que se define), e 8 chamadas por dia a uma API pública são desprezíveis.
+# Os minutos são deslocados das janelas dos outros robôs (09:57, 16:03, 22:21)
+# para não disputarem runner à toa.
+#
+# A FONTE NÃO É PROMETIDA
+# É a API que o site oficial da Riot usa por trás. Pode mudar sem aviso. Por
+# isso o coletor sai com rc=75 quando é problema passageiro (rede, 429, 5xx) —
+# e aqui isso vira "tenta na próxima janela", não falha. Já mudança de FORMATO
+# sai com rc=1 e o robô falha ALTO: agenda vazia num dia de jogo é o erro mais
+# caro possível, porque é silencioso.
+name: Agenda (jogos que vêm por aí)
+
+on:
+  schedule:
+    - cron: "40 2,5,8,11,14,17,20,23 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agenda
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependências
+        run: pip install --quiet -r requirements.txt
+
+      - name: Coletar a agenda
+        id: coleta
+        run: |
+          set +e
+          python tools/coletar_agenda.py
+          rc=$?
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          if [ "$rc" -eq 75 ]; then
+            echo "::notice::Problema passageiro na fonte. Nada escrito; tenta na próxima janela."
+            exit 0
+          fi
+          exit "$rc"
+
+      - name: Commitar a agenda
+        if: steps.coleta.outputs.rc == '0'
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add agenda_coletada.json
+          if git diff --cached --quiet; then
+            echo "agenda não mudou — nada a commitar"
+          else
+            git commit -m "Robô: agenda de jogos atualizada"
+            # push com retry: os outros robôs podem commitar ao mesmo tempo
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado (concorrência) — rebase e retry $i/3"
+              git pull --rebase || exit 1
+            done
+            git push
+          fi
+
+      - name: Se falhou, dizer o que fazer
+        if: failure()
+        run: |
+          echo "::error::A coleta da agenda FALHOU com erro de verdade (não foi rede)."
+          echo "O mais provável é a API ter mudado de formato — o coletor recusa"
+          echo "gravar quando não reconhece a resposta, de propósito."
+          echo "A agenda anterior continua no repositório e o app segue usando ela."
+          echo "Para investigar: python tools/coletar_agenda.py"

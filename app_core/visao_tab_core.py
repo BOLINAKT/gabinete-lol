@@ -287,14 +287,59 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         confidence_baseline=_conf_baseline,
     )
     _conf_summary = core_build_confidence_summary(_conf if isinstance(_conf, dict) else {})
+
+    # CONFIANCA ML — refeita em 15/09/2026, depois de ele perguntar por que o
+    # cartao mostrava "C (Baixa) 35/100" TODO DIA. Mostrava porque a conta era
+    # 50 de base menos 15 de "nao tenho o relatorio de validacao": o relatorio
+    # era procurado so na memoria da sessao, que zera a cada reinicio, e o
+    # arquivo em disco era de 04/03/2026 com uma liga so.
+    # Agora a fonte e a medicao por liga (33 ligas, mesma que alimenta a linha
+    # abaixo do confronto), mais o ajuste deste confronto que ja era calculado
+    # aqui. Sem medicao utilizavel o cartao mostra "—", nunca um numero.
+    # Ver app_core/confianca_ml_core.py.
+    try:
+        from pathlib import Path as _P2
+
+        from app_core.confianca_ml_core import montar_confianca as _montar_conf
+        from app_core.nota_liga_core import (
+            _idade_em_dias as _idade_medicao,
+            load_notas as _load_notas_liga,
+            nota_for_league as _nota_da_liga,
+        )
+        # Mesma raiz que a linha da liga usa logo acima (linha ~270), para as
+        # duas lerem exatamente o mesmo arquivo de medicao.
+        _raiz_notas = _P2(__file__).resolve().parents[1]
+        _conf_card = _montar_conf(
+            linha_liga=_nota_da_liga(_raiz_notas, _lg_hint),
+            idade_dias=_idade_medicao(_load_notas_liga(_raiz_notas).get("gerado_em")),
+            liga=str(_lg_hint or ""),
+            ajuste_do_confronto=float((_conf or {}).get("pipeline_adj", 0.0) or 0.0),
+            resumo_do_confronto=str((_conf or {}).get("pipeline_summary", "") or ""),
+            n_jogos_dos_times=float(st.session_state.get("_ml_team_games_min", float("nan"))),
+        )
+    except Exception as _e_conf:
+        _conf_card = {"disponivel": False, "grade": "—", "score_text": "—",
+                      "source": "nao medida", "motivo": str(_e_conf)[:120],
+                      "porque": ""}
+
     with _box_metricas:
         ccf1, ccf2, ccf3 = st.columns(3)
         with ccf1:
-            st.metric("Confianca ML", value=str(_conf_summary.get("grade", "C (Baixa)")))
+            st.metric("Confianca ML", value=str(_conf_card.get("grade", "—")))
         with ccf2:
-            st.metric("Score", value=str(_conf_summary.get("score_text", "0/100")))
+            st.metric("Score", value=str(_conf_card.get("score_text", "—")))
         with ccf3:
-            st.metric("Base", value=str(_conf_summary.get("source", "global")))
+            st.metric("Base", value=str(_conf_card.get("source", "nao medida")))
+        # O cartao explica a si mesmo. Nota sem motivo vira superstricao.
+        if _conf_card.get("disponivel"):
+            _idade = _conf_card.get("idade_dias")
+            _sufixo = (" · medida ha {:.0f} dia(s)".format(_idade)
+                       if isinstance(_idade, (int, float)) else "")
+            if str(_conf_card.get("porque") or "").strip():
+                st.caption(str(_conf_card["porque"]) + _sufixo)
+        else:
+            st.caption("Confianca nao medida: {}. {}".format(
+                _conf_card.get("motivo", ""), _conf_card.get("porque", "")))
     # Diagnósticos técnicos (Semáforo / Baseline / Camadas A/B/C / dica de
     # manutenção) removidos a pedido do usuário — ruído para o uso diário.
     # Os 3 cards acima voltaram ao topo a pedido do usuário (2026-06-10).

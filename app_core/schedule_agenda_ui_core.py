@@ -22,6 +22,10 @@ from app_core.schedule_import_core import (
     save_schedule_aliases,
     suggest_schedule_teams,
 )
+from app_core.agenda_coletada_core import (
+    bo_do_jogo as _bo_do_jogo,
+    carregar_agenda_coletada,
+)
 from app_core.schedule_state_core import (
     append_schedule_games,
     clear_pending_schedule_import,
@@ -57,6 +61,31 @@ def render_schedule_agenda_expander(
             placeholder="Ex.:\\nLeague IconLCKFlag Icon\\n22/01\\n05:00\\nBRION\\nHanwha Life Esports\\n-\\n-\\n..."
         )
         persist_schedule_runtime_state(session_state)
+
+        # ---- AGENDA COLETADA SOZINHA (15/09/2026) ----
+        # O robo baixa a agenda e grava agenda_coletada.json. Aqui ela so
+        # entra na MESMA previa que o texto colado alimenta — mapeamento de
+        # times, apelidos aprendidos e "Adicionar a agenda" continuam iguais.
+        # O app NAO vai a rede: quem coleta e o robo, e o app so le o arquivo.
+        _agenda_auto = carregar_agenda_coletada(app_root)
+        if _agenda_auto.get("jogos"):
+            _idade = _agenda_auto.get("idade_horas")
+            _selo = ("coletada ha {:.0f}h".format(_idade)
+                     if isinstance(_idade, (int, float)) else "sem data de coleta")
+            _velha = isinstance(_idade, (int, float)) and _idade > 24.0
+            st.caption("{} jogo(s) disponiveis da coleta automatica ({}).{}".format(
+                len(_agenda_auto["jogos"]), _selo,
+                "  **A coleta esta velha — confira antes de usar.**" if _velha else ""))
+            if st.button("Trazer os jogos coletados", width='stretch',
+                         key="plays_schedule_auto_btn"):
+                save_pending_schedule_import(session_state, _agenda_auto["jogos"])
+                st.success("{} jogo(s) na previa. Confira o mapeamento e clique "
+                           "em **Adicionar a agenda**.".format(len(_agenda_auto["jogos"])))
+                st.rerun()
+        elif _agenda_auto.get("motivo"):
+            # Dizer POR QUE nao ha coleta vale mais que esconder o botao: sem
+            # isso, "nao tem jogo" e "nao consegui coletar" ficam iguais.
+            st.caption("Coleta automatica indisponivel: {}".format(_agenda_auto["motivo"]))
 
         cA, cB, cC = st.columns([1, 1, 2])
         with cA:
@@ -193,7 +222,11 @@ def render_schedule_agenda_expander(
                         "league": str(g.get("league", "") or "").strip(),
                         "teamA": a_res,
                         "teamB": b_res,
-                        "bo": int(default_bo),
+                        # O BO REAL do jogo, quando a coleta trouxe. O
+                        # seletor de BO padrao vira so o plano B — antes ele
+                        # carimbava o mesmo formato em todos os jogos, e um
+                        # BO5 lido como BO3 muda a odd da serie inteira.
+                        "bo": _bo_do_jogo(g, default_bo),
                         "lines": "",
                     })
 
