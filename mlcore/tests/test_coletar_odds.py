@@ -118,8 +118,14 @@ class TestOQueEntraEOQueFicaDeFora(unittest.TestCase):
         self.assertEqual(d["jogos"], [])
         self.assertEqual(d["descartes"]["ao_vivo"], 1)
 
-    def test_confronto_FILHO_fica_de_fora(self):
-        """Placar exato e mapa avulso; o pai ja traz o que interessa."""
+    def test_confronto_filho_SEM_O_PAI_fica_de_fora(self):
+        """Aposta de uma partida que nao esta na lista.
+
+        MUDOU EM 15/09/2026: filho COM o pai presente passou a ser adotado --
+        e assim que kills e placar exato chegam. O descarte sobrou so para o
+        orfao, que e o caso em que nao da nem para dizer de que jogo a aposta
+        e. PRINCIPIO IV.
+        """
         d = normalizar([_matchup(parentId=99)], [_mercado()])
         self.assertEqual(d["jogos"], [])
         self.assertEqual(d["descartes"]["filho"], 1)
@@ -228,10 +234,413 @@ class TestOHistoricoGuardaSoOMovimento(unittest.TestCase):
         self.assertNotEqual(chave_da_linha(dict(base, periodo=0)),
                             chave_da_linha(dict(base, periodo=1)))
 
+    def test_a_chave_separa_MERCADOS_com_o_mesmo_lado(self):
+        """Sem o nome do mercado na chave, "Yes" atropela "Yes".
+
+        Num mesmo jogo existem "Will A Win At Least One Map? / Yes" e "Will B
+        Win At Least One Map? / Yes": mesmo jogo, mesmo tipo, mesmo periodo,
+        mesmo lado, sem pontos. Com a chave antiga as duas eram A MESMA
+        aposta, e o historico de precos misturava as duas -- que e o dado
+        usado para medir se o modelo bate o fechamento.
+        """
+        base = {"jogo": 1, "tipo": "moneyline", "periodo": 0,
+                "lado": "Yes", "pontos": None}
+        k1 = chave_da_linha(dict(base, mercado="Will A Win At Least One Map?"))
+        k2 = chave_da_linha(dict(base, mercado="Will B Win At Least One Map?"))
+        self.assertNotEqual(k1, k2)
+
     def test_a_chave_separa_os_dois_lados(self):
         base = {"jogo": 1, "tipo": "moneyline", "periodo": 0, "pontos": None}
         self.assertNotEqual(chave_da_linha(dict(base, lado="home")),
                             chave_da_linha(dict(base, lado="away")))
+
+
+class TestDerivadosKillsTorresTempo(unittest.TestCase):
+    """ERRO MEU, corrigido em 15/09/2026 depois de ELE me corrigir.
+
+    Eu afirmei que a Pinnacle "so tem mercado de mapas". Ela TEM kills, torres
+    e tempo — eu e que olhei so o nivel do esporte inteiro, que traz os
+    mercados principais. Os derivados vivem por confronto, em
+    `matchups/{id}/related` + `matchups/{id}/markets/straight`.
+
+    Pior: o codigo DESCARTAVA tudo que tivesse `parentId`, chamando de "filho".
+    Entre os descartados estavam justamente os derivados.
+    """
+
+    def test_derivado_entra_PENDURADO_no_jogo_pai(self):
+        """Um jogo, nao dois.
+
+        "(Map 1) Total Kills" nao e outra partida: e outra aposta da MESMA
+        partida. Se virasse um jogo separado, a tela mostraria "Shopify x
+        Sentinels" duas vezes e ele nao saberia qual olhar.
+        """
+        pai = _matchup(id=1)
+        deriv = _matchup(id=2, parentId=1)
+        deriv["_paiId"] = 1          # marca de derivado buscado de proposito
+        d = normalizar([pai], [_mercado(matchupId=1)],
+                       matchups_extra=[deriv], mercados_extra=[_mercado(matchupId=2)])
+        self.assertEqual(d["descartes"]["filho"], 0)
+        self.assertEqual(len(d["jogos"]), 1)
+        self.assertEqual({l["jogo"] for l in d["linhas"]}, {1},
+                         "a linha do derivado tem de apontar para o jogo pai")
+
+    def test_filho_da_lista_GERAL_e_adotado_DE_GRACA(self):
+        """MUDEI DE IDEIA em 15/09/2026, e por medicao.
+
+        Eu escrevia aqui que "placar exato nao interessa". Mas ele JA VEM na
+        resposta que pedimos de qualquer jeito: descartar nao economiza nada,
+        so joga aposta fora. Medido no mesmo dia: 54 linhas de Placar Exato em
+        9 series, custo ZERO em requisicao.
+        """
+        d = normalizar([_matchup(id=1), _matchup(id=2, parentId=1)],
+                       [_mercado(matchupId=1), _mercado(matchupId=2)])
+        self.assertEqual(d["descartes"]["filho"], 0)
+        self.assertEqual(len(d["jogos"]), 1, "continua sendo UM jogo")
+        self.assertEqual(len([l for l in d["linhas"] if l["jogo"] == 1]), 4)
+
+    def test_filho_ORFAO_continua_descartado(self):
+        """Sem o pai na resposta nao ha casa nem fora.
+
+        PRINCIPIO IV: uma aposta sem saber de que jogo e nao vira palpite.
+        """
+        d = normalizar([_matchup(id=2, parentId=999)], [_mercado(matchupId=2)])
+        self.assertEqual(d["descartes"]["filho"], 1)
+        self.assertEqual(d["jogos"], [])
+
+    def test_lado_NEUTRO_sobrevive_e_ganha_nome(self):
+        """O DEFEITO QUE SEGURAVA KILLS, TORRE E TEMPO (15/09/2026).
+
+        Num mercado derivado a casa nao marca "home"/"away": marca todos como
+        "neutral" e diz o lado pelo `participantId` -- "Yes", "No", "Odd".
+        A checagem antiga exigia casa E fora, e derrubava o derivado num
+        `continue` MUDO, sem nem contar. Resultado: eu rodava, via 274 linhas,
+        e NENHUMA era de kills -- sem um unico sinal de que algo fora jogado
+        fora.
+        """
+        pai = _matchup(id=1)
+        esp = _matchup(id=2, parentId=1, units="Kills")
+        esp["special"] = {"category": "Teams", "description": "(Map 1) Total Kills"}
+        esp["participants"] = [
+            {"id": 900, "alignment": "neutral", "name": "Over 25.5"},
+            {"id": 901, "alignment": "neutral", "name": "Under 25.5"},
+        ]
+        mk = _mercado(matchupId=2, type="total", period=1, prices=[
+            {"designation": None, "participantId": 900, "price": -110, "points": 25.5},
+            {"designation": None, "participantId": 901, "price": -110, "points": 25.5},
+        ])
+        d = normalizar([pai, esp], [_mercado(matchupId=1), mk])
+        self.assertEqual(d["descartes"]["sem_lados"], 0)
+        kills = [l for l in d["linhas"] if l["mercado"] == "(Map 1) Total Kills"]
+        self.assertEqual(len(kills), 2, "kills foi descartado de novo")
+        self.assertEqual({l["lado"] for l in kills}, {"Over 25.5", "Under 25.5"})
+        self.assertEqual({l["pontos"] for l in kills}, {25.5})
+
+    def test_o_proprio_jogo_voltando_na_varredura_NAO_duplica(self):
+        """`related` devolve o confronto junto com os derivados dele.
+
+        DEFEITO DE 15/09/2026: sem isto, 9 series apareceram como "11 series"
+        e as linhas dos jogos varridos foram contadas em dobro. Numero inflado
+        e pior que numero faltando -- parece certo.
+        """
+        pai = _matchup(id=1)
+        d = normalizar([pai], [_mercado(matchupId=1)],
+                       matchups_extra=[dict(pai, _paiId=1)],
+                       mercados_extra=[_mercado(matchupId=1)])
+        self.assertEqual(len(d["jogos"]), 1)
+        self.assertEqual(len(d["linhas"]), 2, "a mesma aposta entrou duas vezes")
+
+    def test_a_marca_de_pai_sobrevive_a_remocao_de_repetidos(self):
+        """O derivado JA VEM na lista geral, so que sem saber de quem e filho.
+
+        Ficar com a primeira copia jogava a marca fora e o mercado caia como
+        "filho" -- o mesmo silencio, por outra porta.
+        """
+        pai = _matchup(id=1)
+        filho_cru = _matchup(id=2, parentId=1)
+        d = normalizar([pai, filho_cru], [_mercado(matchupId=1), _mercado(matchupId=2)],
+                       matchups_extra=[dict(filho_cru, _paiId=1)],
+                       mercados_extra=[_mercado(matchupId=2)])
+        self.assertEqual(d["descartes"]["filho"], 0)
+        self.assertEqual(len(d["jogos"]), 1)
+
+
+class TestKillsComoElaRealmenteChega(unittest.TestCase):
+    """A FORMA REAL, copiada da resposta ao vivo de 15/09/2026.
+
+    Kills nao e um "special" nem mora dentro do jogo: e um confronto FILHO
+    com unidade propria e os times renomeados. Vinha em toda leitura, de
+    graca, e o filtro de "filho" jogava fora -- por isso eu rodava e via 274
+    linhas sem uma unica de kills.
+
+    Este teste guarda a forma. Se ela mudar, quebra aqui e nao no silencio.
+    """
+
+    def _kills(self):
+        m = _matchup(id=2, parentId=1, units="Kills")
+        m["participants"] = [
+            {"alignment": "home", "name": "Fuego (Kills)"},
+            {"alignment": "away", "name": "9z (Kills)"},
+        ]
+        m["periods"] = [{"period": n, "hasMoneyline": True, "hasSpread": True,
+                         "hasTotal": True, "hasTeamTotal": True} for n in (1, 2, 3)]
+        return m
+
+    def test_o_mercado_de_kills_entra_e_diz_que_e_de_kills(self):
+        total = _mercado(matchupId=2, type="total", period=1, prices=[
+            {"designation": "over", "price": -110, "points": 33.5},
+            {"designation": "under", "price": -110, "points": 33.5},
+        ])
+        d = normalizar([_matchup(id=1), self._kills()],
+                       [_mercado(matchupId=1), total])
+        k = [l for l in d["linhas"] if "Kills" in l["mercado"]]
+        self.assertEqual(len(k), 2, "kills foi descartado")
+        self.assertEqual(k[0]["mercado"], "Total - Kills - mapa 1")
+        self.assertEqual({l["pontos"] for l in k}, {33.5})
+
+    def test_kills_fica_pendurado_no_jogo_de_verdade(self):
+        """Nao pode virar uma partida "Fuego (Kills)" x "9z (Kills)".
+
+        Se virasse, a tela mostraria um confronto que nao existe e ele nao
+        teria como ligar a linha de kills ao jogo que vai apostar.
+        """
+        d = normalizar([_matchup(id=1), self._kills()],
+                       [_mercado(matchupId=1), _mercado(matchupId=2, period=1)])
+        self.assertEqual(len(d["jogos"]), 1)
+        self.assertEqual(d["jogos"][0]["casa"], "Shopify Rebellion")
+        self.assertEqual({l["jogo"] for l in d["linhas"]}, {1})
+
+    def test_os_tres_mapas_nao_viram_a_mesma_aposta(self):
+        """A casa abre os 3 mapas com o MESMO preco antes do jogo.
+
+        Visto ao vivo: mapa 1, 2 e 3 com odd identica. Se a chave nao separar
+        o periodo, os tres viram uma linha so e o historico perde dois tercos
+        do movimento.
+        """
+        mks = [_mercado(matchupId=2, type="total", period=n, prices=[
+            {"designation": "over", "price": -110, "points": 33.5},
+            {"designation": "under", "price": -110, "points": 33.5}]) for n in (1, 2, 3)]
+        d = normalizar([_matchup(id=1), self._kills()], [_mercado(matchupId=1)] + mks)
+        k = [l for l in d["linhas"] if "Kills" in l["mercado"]]
+        self.assertEqual(len(k), 6)
+        self.assertEqual(len({chave_da_linha(l) for l in k}), 6)
+
+    def test_uma_unidade_NOVA_entra_sozinha(self):
+        """Torre e tempo ainda nao abriram; quando abrirem, tem de passar.
+
+        Nao sei como ela vai chamar a unidade. O rotulo repete o que ela
+        disser, em vez de tentar adivinhar -- se vier "Towers", aparece
+        "Towers".
+        """
+        m = self._kills()
+        m["units"] = "Towers"
+        d = normalizar([_matchup(id=1), m],
+                       [_mercado(matchupId=1), _mercado(matchupId=2, type="total", period=1)])
+        self.assertTrue(any("Towers" in l["mercado"] for l in d["linhas"]))
+
+
+class TestFilhoSoEntraSeOPaiEntrou(unittest.TestCase):
+    """Uma aposta pendurada num jogo que nao esta na lista nao serve.
+
+    Achado revendo o proprio conserto, antes de subir: se o jogo pai estivesse
+    AO VIVO (fora do escopo, que e pre-jogo) ou sem mercado nenhum, a linha de
+    kills do filho ainda entrava -- apontando para um jogo que a tela nao
+    mostra. Apareceria uma aposta orfa, sem como saber de quem e.
+
+    Por isso a leitura passou a ser em DUAS passadas: primeiro quais partidas
+    entram, so depois as apostas penduradas nelas.
+    """
+
+    def _filho(self):
+        f = _matchup(id=2, parentId=1, units="Kills")
+        f["participants"] = [{"alignment": "home", "name": "A (Kills)"},
+                             {"alignment": "away", "name": "B (Kills)"}]
+        return f
+
+    def test_pai_AO_VIVO_leva_o_filho_junto(self):
+        d = normalizar([_matchup(id=1, isLive=True), self._filho()],
+                       [_mercado(matchupId=1), _mercado(matchupId=2, period=1)])
+        self.assertEqual(d["jogos"], [])
+        self.assertEqual(d["linhas"], [], "sobrou aposta de um jogo que nao esta na lista")
+
+    def test_pai_SEM_MERCADO_leva_o_filho_junto(self):
+        d = normalizar([_matchup(id=1), self._filho()],
+                       [_mercado(matchupId=2, period=1)])
+        self.assertEqual(d["jogos"], [])
+        self.assertEqual(d["linhas"], [])
+
+    def test_filho_AO_VIVO_nao_entra_mesmo_com_o_pai_certo(self):
+        f = self._filho()
+        f["isLive"] = True
+        d = normalizar([_matchup(id=1), f],
+                       [_mercado(matchupId=1), _mercado(matchupId=2, period=1)])
+        self.assertEqual(len(d["jogos"]), 1)
+        self.assertTrue(all("Kills" not in l["mercado"] for l in d["linhas"]))
+
+    def test_filho_ANTES_do_pai_na_lista_ainda_e_adotado(self):
+        """A resposta nao promete ordem, e ordem nao pode decidir isso."""
+        d = normalizar([self._filho(), _matchup(id=1)],
+                       [_mercado(matchupId=1), _mercado(matchupId=2, period=1)])
+        self.assertEqual(len(d["jogos"]), 1)
+        self.assertTrue(any("Kills" in l["mercado"] for l in d["linhas"]))
+
+
+class TestACasaAvisaQuandoAbriu(unittest.TestCase):
+    """`periods` diz, mapa a mapa, que mercados existem.
+
+    MEDIDO EM 15/09/2026: 0 de 9 jogos de LoL tinham qualquer aposta dentro do
+    mapa; 24 de 27 do CS2 tinham. Ou seja, ela abre kills/torre/tempo perto do
+    inicio. Com este aviso nao gastamos requisicao batendo na porta para ouvir
+    "nao tem" -- e no minuto em que abrir, a varredura vai atras sozinha.
+    """
+
+    def test_sem_nada_dentro_do_mapa_da_falso(self):
+        from tools.coletar_odds import tem_mercado_no_mapa
+        m = _matchup(periods=[
+            {"period": 0, "hasMoneyline": True, "hasSpread": True, "hasTotal": True},
+            {"period": 1, "hasMoneyline": True, "hasSpread": False, "hasTotal": False},
+        ])
+        self.assertFalse(tem_mercado_no_mapa(m))
+
+    def test_total_no_mapa_1_da_verdadeiro(self):
+        from tools.coletar_odds import tem_mercado_no_mapa
+        m = _matchup(periods=[
+            {"period": 0, "hasTotal": True},
+            {"period": 1, "hasTotal": True},
+        ])
+        self.assertTrue(tem_mercado_no_mapa(m))
+
+    def test_total_so_na_SERIE_nao_conta(self):
+        """Total da serie e total de MAPAS -- e isso ele ja tinha."""
+        from tools.coletar_odds import tem_mercado_no_mapa
+        self.assertFalse(
+            tem_mercado_no_mapa(_matchup(periods=[{"period": 0, "hasTotal": True}])))
+
+    def test_sem_periods_nao_estoura(self):
+        from tools.coletar_odds import tem_mercado_no_mapa
+        self.assertFalse(tem_mercado_no_mapa({}))
+        self.assertFalse(tem_mercado_no_mapa({"periods": None}))
+        self.assertFalse(tem_mercado_no_mapa({"periods": ["lixo", 7]}))
+
+    def test_o_aviso_chega_no_jogo(self):
+        d = normalizar([_matchup(periods=[{"period": 1, "hasTotal": True}])], [_mercado()])
+        self.assertTrue(d["jogos"][0]["tem_mercado_no_mapa"])
+
+    def test_a_linha_guarda_o_NOME_do_mercado(self):
+        """Sem isso, uma linha de kills fica igual a uma de mapas."""
+        d = normalizar([_matchup()], [_mercado()])
+        self.assertIn("mercado", d["linhas"][0])
+
+    def test_o_rotulo_vem_do_special_quando_existe(self):
+        from tools.coletar_odds import rotulo_do_derivado
+        self.assertEqual(
+            rotulo_do_derivado({"special": {"description": "Total Kills"}}), "Total Kills")
+
+    def test_sem_special_usa_a_unidade(self):
+        from tools.coletar_odds import rotulo_do_derivado
+        self.assertEqual(rotulo_do_derivado({"units": "Maps"}), "Maps")
+
+    def test_sem_nada_vira_interrogacao_e_nao_um_palpite(self):
+        from tools.coletar_odds import rotulo_do_derivado
+        self.assertEqual(rotulo_do_derivado({}), "?")
+
+
+class TestSoOsJogosProximos(unittest.TestCase):
+    """A linha de um jogo de semana que vem nem abriu; buscar e trafego a toa."""
+
+    def _agora(self):
+        from datetime import datetime, timezone
+        return datetime(2026, 9, 15, 12, 0, tzinfo=timezone.utc)
+
+    def test_jogo_de_hoje_entra(self):
+        from tools.coletar_odds import _comeca_em_breve
+        self.assertTrue(_comeca_em_breve("2026-09-15T20:00:00Z", self._agora(), 36))
+
+    def test_jogo_de_semana_que_vem_fica_de_fora(self):
+        from tools.coletar_odds import _comeca_em_breve
+        self.assertFalse(_comeca_em_breve("2026-09-25T20:00:00Z", self._agora(), 36))
+
+    def test_jogo_que_ja_comecou_ha_pouco_ainda_entra(self):
+        from tools.coletar_odds import _comeca_em_breve
+        self.assertTrue(_comeca_em_breve("2026-09-15T10:00:00Z", self._agora(), 36))
+
+    def test_jogo_de_ontem_fica_de_fora(self):
+        from tools.coletar_odds import _comeca_em_breve
+        self.assertFalse(_comeca_em_breve("2026-09-14T10:00:00Z", self._agora(), 36))
+
+    def test_data_ilegivel_fica_de_fora_em_vez_de_estourar(self):
+        from tools.coletar_odds import _comeca_em_breve
+        self.assertFalse(_comeca_em_breve("nao e data", self._agora(), 36))
+
+
+class TestQuandoACasaDizNAO(unittest.TestCase):
+    """403/429 no meio da busca PARA tudo e guarda o que ja veio.
+
+    Insistir depois de um bloqueio e o caminho mais curto para ser bloqueado de
+    vez — e quem perde o acesso ao site e ELE, nao eu. Aconteceu comigo em
+    15/09/2026, sondando demais: levei 403 e parei.
+    """
+
+    class _Resp:
+        def __init__(self, code, data=None):
+            self.status_code = code
+            self._d = data if data is not None else []
+        def json(self):
+            return self._d
+
+    class _Sessao:
+        def __init__(self, respostas):
+            self.respostas = list(respostas)
+            self.pedidos = 0
+        def get(self, url, **k):
+            self.pedidos += 1
+            return self.respostas.pop(0) if self.respostas else TestQuandoACasaDizNAO._Resp(200, [])
+
+    def _jogo(self, i=1):
+        return {"id": i, "inicio_utc": "2026-09-15T20:00:00Z",
+                "tem_mercado_no_mapa": True}
+
+    def _agora(self):
+        from datetime import datetime, timezone
+        return datetime(2026, 9, 15, 12, 0, tzinfo=timezone.utc)
+
+    def test_403_para_na_hora(self):
+        from tools.coletar_odds import buscar_derivados
+        se = self._Sessao([self._Resp(403)])
+        r = buscar_derivados(se, {}, [self._jogo()], agora=self._agora(), pausa=0)
+        self.assertTrue(r["parado"])
+        self.assertEqual(se.pedidos, 1, "insistiu depois do NAO")
+
+    def test_429_tambem_para(self):
+        from tools.coletar_odds import buscar_derivados
+        se = self._Sessao([self._Resp(429)])
+        r = buscar_derivados(se, {}, [self._jogo()], agora=self._agora(), pausa=0)
+        self.assertTrue(r["parado"])
+
+    def test_o_que_ja_veio_ANTES_do_NAO_e_guardado(self):
+        from tools.coletar_odds import buscar_derivados
+        se = self._Sessao([
+            self._Resp(200, [{"id": 10}]),      # related do jogo 1
+            self._Resp(200, [{"type": "total"}]),  # mercados do derivado 10
+            self._Resp(403),                    # e ai a casa diz nao
+        ])
+        jogos = [self._jogo(1), self._jogo(2)]
+        r = buscar_derivados(se, {}, jogos, agora=self._agora(), pausa=0)
+        self.assertTrue(r["parado"])
+        self.assertEqual(len(r["matchups"]), 1, "perdeu o que ja tinha lido")
+
+    def test_o_teto_de_chamadas_e_respeitado(self):
+        from tools.coletar_odds import buscar_derivados
+        se = self._Sessao([self._Resp(200, [{"id": i}]) for i in range(50)])
+        jogos = [self._jogo(i) for i in range(30)]
+        r = buscar_derivados(se, {}, jogos, agora=self._agora(), pausa=0, teto=6)
+        self.assertLessEqual(r["chamadas"], 6)
+
+    def test_ha_pausa_entre_as_chamadas(self):
+        """Sem pausa, trinta chamadas seguidas viram enxurrada."""
+        import inspect
+
+        from tools import coletar_odds as m
+        self.assertIn("sleep", inspect.getsource(m.buscar_derivados))
 
 
 class TestEducacaoComACasa(unittest.TestCase):

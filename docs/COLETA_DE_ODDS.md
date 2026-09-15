@@ -1,8 +1,8 @@
 # Coleta de odds — o que vale, o que custa, e por onde começar
 
 Registrado em 15/09/2026, a partir do que ele pediu e corrigiu na conversa.
-Nada aqui está construído ainda. Este documento existe para a decisão não se
-perder e para ninguém recomeçar do zero.
+A parte da Pinnacle **está construída e rodando** — o que ela coleta hoje está
+no fim deste documento. O resto continua sendo plano.
 
 ## A correção que mudou a prioridade
 
@@ -83,3 +83,90 @@ saber o que era abertura e o que era fechamento.
 
 **Em qual casa ele aposta de fato?** Não adianta coletar odd de casa onde ele
 não tem conta: o preço seria bonito e inútil.
+
+---
+
+# O que já existe (15/09/2026)
+
+`tools/coletar_odds.py`, rodando de 3 em 3 horas pelo robô do GitHub. Lê a API
+interna de convidado da Pinnacle, sem login, e grava dois arquivos: o retrato
+de agora (`odds_pinnacle.json`) e só o que **mudou de preço**
+(`odds_pinnacle_historico.jsonl`), que é o que permite medir CLV depois.
+
+## O erro que custou a tarde, e como ele aparecia
+
+Ele me corrigiu: *"tanto kills, quanto torre, e tempo também na pinnacle"*. Eu
+tinha dito que ela só tinha mercado de mapas. Fui atrás dos "derivados por
+confronto", escrevi a busca, rodei — e voltaram **274 linhas, nenhuma de
+kills**. Parecia que os mercados não existiam.
+
+Existiam. Vinham **na mesma resposta que eu já pedia**, de graça. Dois filtros
+meus os matavam, os dois em silêncio:
+
+1. **"Filho não interessa."** Kills não é um campo do jogo: é um confronto
+   filho separado, com `units: "Kills"` e os times renomeados
+   `Fuego (Kills)` × `9z (Kills)`. O filtro que descartava qualquer coisa com
+   `parentId` matava kills junto com o placar exato.
+2. **"Sem casa e fora, não serve."** Num mercado assim os lados não são
+   casa/fora — são `Over 33.5` e `Under 33.5`. A checagem derrubava a linha
+   num desvio **mudo**, sem sequer somar um contador. Por isso rodar não
+   acusava nada: o número aparecia bonito e completo.
+
+Um terceiro defeito estava junto: a busca por confronto devolve **o próprio
+jogo** na lista de derivados, e eu o adicionava de novo. Nove séries viraram
+"11 séries" no relatório, com as linhas contadas em dobro. Número inflado é
+pior que número faltando — parece certo.
+
+## O que ele passa a receber sem digitar nada
+
+Medido na corrida real de 15/09/2026, 9 séries de LoL, **298 linhas**:
+
+| mercado | linhas |
+|---|---|
+| Handicap de mapas (série) | 58 |
+| Placar exato | 54 |
+| Total de mapas (série) | 36 |
+| Vencedor (série e cada mapa) | 72 |
+| **Total de kills, mapa a mapa** | 30 |
+| **Handicap de kills, mapa a mapa** | 30 |
+| **Total de kills por time** | 12 |
+| **Quem faz mais kills no mapa** | 6 |
+
+Exemplo do que chega pronto, sem ele procurar: `Fuego x 9z`, total de kills do
+mapa 1 oferecido em **31,5 · 32,5 · 33,5 · 34,5 · 35,5**, cada um com as duas
+odds e o limite da casa.
+
+Custo disso tudo: **zero requisição a mais**. Era descarte, não ausência.
+
+## Torre e tempo
+
+Ainda não apareceram. Kills abriu enquanto eu trabalhava (não existia vinte
+minutos antes), o que mostra que ela abre esses mercados aos poucos, perto do
+jogo. Torre e tempo devem chegar no mesmo formato, cada um com a sua unidade —
+e aí o coletor pega sozinho, sem precisar mexer em nada: o rótulo repete a
+unidade que ela mandar, em vez de tentar adivinhar. Há teste guardando isso.
+
+## Aviso para quem for medir CLV
+
+O histórico tem três leituras do dia 15/09/2026 escritas **antes** da
+correção, e elas não devem ser usadas:
+
+- `15:55` (170 registros) — sem o campo `mercado`;
+- `19:09` (102 registros) — com `mercado: "Regular"`, rótulo que não existe
+  mais, e com as linhas dos dois jogos varridos contadas em dobro.
+
+As duas são fáceis de separar: qualquer registro **sem `mercado`, ou com
+`mercado` igual a `Regular`**, é anterior à correção. Não apaguei porque são
+preços realmente observados; mas a identidade da aposta mudou de formato
+(passou a incluir o nome do mercado, senão `Yes` de um mercado colidia com
+`Yes` de outro), então cruzar os antigos com os novos daria par errado.
+
+A partir de `20:21` o formato é o definitivo.
+
+## O que ainda não existe
+
+- **Tela** mostrando essas linhas ao lado da odd justa do modelo. Hoje o dado
+  está no arquivo, não na frente dele.
+- **A régua de CLV.** Precisa de histórico acumulado; começou agora.
+- **Segunda casa** para comparar. Ele pediu Thunderpick ou alguma com linhas
+  próximas de Betesporte/BB. Não foi tentado ainda.
