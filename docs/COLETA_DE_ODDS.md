@@ -152,8 +152,11 @@ O histórico tem três leituras do dia 15/09/2026 escritas **antes** da
 correção, e elas não devem ser usadas:
 
 - `15:55` (170 registros) — sem o campo `mercado`;
-- `19:09` (102 registros) — com `mercado: "Regular"`, rótulo que não existe
-  mais, e com as linhas dos dois jogos varridos contadas em dobro.
+- `19:09` (54 registros) — com `mercado: "Regular"`, rótulo que não existe
+  mais. Foram **102 gravados e 54 distintos**: a metade repetida é a prova
+  direta do defeito que contava o mesmo jogo duas vezes;
+- `20:33` (54 registros) — o robô do GitHub rodou o código antigo enquanto eu
+  consertava, e gravou mais uma leva no formato velho.
 
 As duas são fáceis de separar: qualquer registro **sem `mercado`, ou com
 `mercado` igual a `Regular`**, é anterior à correção. Não apaguei porque são
@@ -161,7 +164,9 @@ preços realmente observados; mas a identidade da aposta mudou de formato
 (passou a incluir o nome do mercado, senão `Yes` de um mercado colidia com
 `Yes` de outro), então cruzar os antigos com os novos daria par errado.
 
-A partir de `20:21` o formato é o definitivo.
+O formato definitivo é o de `20:21` em diante — exceto essa leva
+de `20:33`, que é do robô e ficou para trás. Da próxima corrida
+do robô em diante, tudo já sai certo.
 
 ## O que ainda não existe
 
