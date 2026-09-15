@@ -1,35 +1,15 @@
 {
-  "gerado_em": "2026-09-15T15:27:10-03:00",
+  "gerado_em": "2026-09-15T20:09:16-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 34,
+    "ja_jogados": 36,
     "passados": 4,
-    "indefinidos": 27,
+    "indefinidos": 25,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "15/09",
-      "time": "13:00",
-      "league": "Road of Legends",
-      "teamA_raw": "Senshi eSports",
-      "teamB_raw": "mCon Esports",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-09-15T16:00:00Z"
-    },
-    {
-      "date": "15/09",
-      "time": "13:00",
-      "league": "Arabian League",
-      "teamA_raw": "Anubis Gaming",
-      "teamB_raw": "JSK Gamefy",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-09-15T16:00:00Z"
-    },
     {
       "date": "16/09",
       "time": "11:00",
@@ -43,12 +23,32 @@
     {
       "date": "16/09",
       "time": "13:00",
+      "league": "Arabian League",
+      "teamA_raw": "Pyramid IV Esports",
+      "teamB_raw": "JSK Gamefy",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-16T16:00:00Z"
+    },
+    {
+      "date": "16/09",
+      "time": "13:00",
       "league": "NLC",
       "teamA_raw": "Verdant",
       "teamB_raw": "Ruddy Corporation",
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-09-16T16:00:00Z"
+    },
+    {
+      "date": "17/09",
+      "time": "13:00",
+      "league": "Road of Legends",
+      "teamA_raw": "Senshi eSports",
+      "teamB_raw": "Frites Esports Club",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-17T16:00:00Z"
     },
     {
       "date": "18/09",
