@@ -129,12 +129,69 @@ def _mov_towers(r):
     return None if a is None or b is None else a - b
 
 
+# ---- candidatos acrescentados em 15/09/2026 ----
+# Ele perguntou se ha ganho a extrair do que JA existe no CSV, antes de sair
+# coletando dado novo. Medido na base inteira (28.964 jogos), a correlacao de
+# cada um com a vitoria:
+#     ouro@10 0,439 | ouro@15 0,531 | ouro@20 0,616
+#     xp@10   0,404 | xp@15   0,504 | xp@20   0,590
+#     cs@10   0,366 | cs@15   0,453 | cs@20   0,507
+#
+# CORRELACAO ALTA AQUI E ARMADILHA: aos 20 minutos o jogo ja esta decidido, e
+# o "sinal" vira quase o proprio resultado — mede inercia, nao qualidade. O
+# gd15 foi escolhido justamente por ficar antes da bola de neve. Medir gd10 e
+# gd20 mostra o formato dessa curva em vez de deixa-la no argumento.
+
+
+def _mov_gd10(r):
+    """Ouro aos 10: ainda menos contaminado que os 15 — e com menos sinal."""
+    return _num(getattr(r, "golddiffat10_for", None))
+
+
+def _mov_gd20(r):
+    """Ouro aos 20: correlacao maior com o resultado, e por isso suspeito."""
+    return _num(getattr(r, "golddiffat20_for", None))
+
+
+def _mov_xpd15(r):
+    return _num(getattr(r, "xpdiffat15_for", None))
+
+
+def _mov_csd15(r):
+    return _num(getattr(r, "csdiffat15_for", None))
+
+
+def _mov_dom15(r):
+    """Ouro + XP + CS aos 15, com as escalas equalizadas pelo desvio medido.
+
+    Os pesos NAO sao chutados: saem da razao entre os desvios na base inteira
+    (ouro/xp = 1,32; ouro/cs = 68,9), para os tres entrarem com a mesma voz.
+    Sem isso o ouro dominaria a soma por ser o numero maior.
+
+    EXPECTATIVA HONESTA, escrita antes de medir: ouro e XP aos 15 correlacionam
+    0,875 entre si — medem quase a mesma coisa. Pela licao do fatorial deste
+    projeto, componentes assim se canibalizam, e o composto deve render pouco
+    ou nada acima do gd15 sozinho. Se render, o interessante e por que.
+    """
+    g = _num(getattr(r, "golddiffat15_for", None))
+    x = _num(getattr(r, "xpdiffat15_for", None))
+    c = _num(getattr(r, "csdiffat15_for", None))
+    if g is None or x is None or c is None:
+        return None
+    return g + 1.32 * x + 68.9 * c
+
+
 SINAIS = {
     "kills": _mov_kills,      # o que o MOVDA orfao usava
     "gold": _mov_gold,
     "goldpm": _mov_goldpm,
     "gd15": _mov_gd15,
     "towers": _mov_towers,
+    "gd10": _mov_gd10,
+    "gd20": _mov_gd20,
+    "xpd15": _mov_xpd15,
+    "csd15": _mov_csd15,
+    "dom15": _mov_dom15,
 }
 
 
@@ -421,7 +478,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="WHR com margem de vitoria (prova cega).")
     ap.add_argument("--oos-year", type=int, default=2026)
     ap.add_argument("--mov", default="gd15",
-                    help="kills|gold|goldpm|gd15|towers|todos")
+                    help="kills|gold|goldpm|gd15|towers|gd10|gd20|xpd15|csd15|dom15|todos")
     # A grade PRECISA ir alem do otimo, senao o "melhor" e so a borda. Na
     # primeira rodada (08/09/2026) os quatro sinais escolheram 0,5 — que era o
     # ultimo valor — entao o teto subiu.
@@ -436,7 +493,12 @@ def main() -> int:
     tune = oos - 1
     lams = [float(x) for x in args.lams.split(",")]
     w2s = [float(x) for x in args.w2s.split(",")]
-    sinais = list(SINAIS) if args.mov == "todos" else [args.mov]
+    # Aceita lista separada por virgula: rodar "todos" quando so interessam
+    # tres candidatos gasta tempo de maquina a toa.
+    if args.mov == "todos":
+        sinais = list(SINAIS)
+    else:
+        sinais = [x.strip() for x in str(args.mov).split(",") if x.strip()]
     for s in sinais:
         if s not in SINAIS:
             raise SystemExit(f"sinal desconhecido: {s} (use {'|'.join(SINAIS)})")

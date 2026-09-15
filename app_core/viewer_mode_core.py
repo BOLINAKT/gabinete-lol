@@ -126,7 +126,14 @@ def _gh_dispatch_config() -> tuple[str, str]:
 
 
 def dispatch_data_workflow(*, token: str, repo: str, post_fn: Any = None) -> tuple[bool, str]:
-    """Dispara o workflow de dados via API do GitHub. Retorna (ok, msg)."""
+    """Dispara um workflow via API do GitHub. Retorna (ok, msg).
+
+    SEM CHAMADOR HOJE (15/09/2026): o unico era o botao "Retreinar com o CSV
+    do repo", removido a pedido dele — ver `render_update_now_button`. Fica
+    aqui, testada, porque e o unico ponto do app que sabe acordar um robo, e
+    porque apagar e barato depois; o que nao pode e alguem ler isto e achar
+    que o app dispara alguma coisa hoje. Nao dispara.
+    """
     url = f"https://api.github.com/repos/{repo}/actions/workflows/{_WORKFLOW_FILE}/dispatches"
     try:
         if post_fn is None:
@@ -151,33 +158,29 @@ def dispatch_data_workflow(*, token: str, repo: str, post_fn: Any = None) -> tup
 
 
 def render_update_now_button(st: Any) -> None:
-    """🔄 Atualizar agora — visível quando há token configurado (site).
+    """Acompanhamento ao vivo da publicação, depois de um envio de CSV.
 
-    Cooldown de sessão evita spam de cliques; quem trabalha é o robô do
-    GitHub (o site nunca roda download/treino localmente)."""
-    tok, repo = _gh_dispatch_config()
+    O NOME FICOU HERDADO. Ate 15/09/2026 esta funcao desenhava o botao
+    "🔄 Retreinar com o CSV do repo"; ele foi REMOVIDO a pedido dele, e a
+    checagem deu razao ao pedido por um motivo diferente do que ele imaginava:
+
+      - o botao NAO estava desabilitado, como ele achava — o disparo
+        funcionava e acordava o `retreino.yml`;
+      - mas a ajuda dele prometia "baixa o CSV novo do Oracle's Elixir", e
+        esse workflow nao baixa CSV nenhum: so aplica o incremental. Sem CSV
+        novo, isso e um robo acordando para nao fazer nada.
+
+    Botao que promete uma coisa e faz outra e pior que botao ausente: ensina a
+    confiar no lugar errado. O caminho que traz dado novo e o "📤 Enviar CSV
+    novo", e e o acompanhamento DELE que sobrou aqui — por isso a funcao
+    continua sendo chamada.
+
+    O trecho de cooldown do botao foi apagado junto: nada mais escreve
+    `_upd_now_last_ts`, entao ele era codigo inalcancavel com cara de vivo.
+    """
+    tok, _repo = _gh_dispatch_config()
     if not tok:
         return
-    import time as _time
-
-    last = float(st.session_state.get("_upd_now_last_ts", 0.0) or 0.0)
-    remaining = int(_DISPATCH_COOLDOWN_S - (_time.time() - last))
-    if remaining > 0:
-        st.caption(f"🔄 Robô já acordado — aguarda {remaining}s para pedir de novo.")
-        # BUG 18/07 (report dele): o return sem o watch matava o acompanhamento
-        # no re-render seguinte — justamente durante o cooldown, a janela em
-        # que a narração mais importa. O watch expira sozinho (12 min).
-        _render_publish_watch(st)
-        return
-    if st.button("🔄 Retreinar com o CSV do repo", key="upd_now_btn",
-                 help="Acorda o robô no GitHub: baixa o CSV novo do Oracle's Elixir e publica."):
-        ok, msg = dispatch_data_workflow(token=tok, repo=repo)
-        if ok:
-            st.session_state["_upd_now_last_ts"] = _time.time()
-            st.session_state["_button_watch_t0"] = _time.time()
-            st.success(msg)
-        else:
-            st.error(msg)
     _render_publish_watch(st)
 
 
@@ -346,71 +349,48 @@ def check_publish_progress(
 
 
 def _render_publish_watch(st: Any) -> None:
-    """Checklist ao vivo pós-upload (📤) e pós-botão (🔄); expira em 12 min.
+    """Checklist ao vivo depois de um envio de CSV (📤); expira em 12 min.
 
-    No modo botão, o desfecho 'robô rodou e NÃO trouxe CSV' vira mensagem
-    honesta (cota do Drive ou OE sem novidade) — nunca mais silêncio."""
+    TINHA DOIS MODOS ate 15/09/2026: "upload" e "botao". O botao
+    ("🔄 Retreinar com o CSV do repo") foi removido a pedido dele, e o modo
+    dele ficou INALCANCAVEL — nada mais escreve `_button_watch_t0`. Foi
+    apagado junto, inclusive o aviso de "o robo rodou e nao trouxe CSV":
+    trecho que nunca roda e pior que trecho ausente, porque quem le acha que
+    a tela sabe fazer aquilo.
+    """
     import time as _time
     from datetime import datetime, timezone
 
-    mode = ""
     t0 = float(st.session_state.get("_upload_watch_t0", 0.0) or 0.0)
-    if t0:
-        mode = "upload"
-    else:
-        t0 = float(st.session_state.get("_button_watch_t0", 0.0) or 0.0)
-        if t0:
-            mode = "botao"
-    if not mode or (_time.time() - t0) > 720:
+    if not t0 or (_time.time() - t0) > 720:
         return
     tok, repo = _gh_dispatch_config()
     if not tok:
         return
     since_iso = datetime.fromtimestamp(t0 - 60, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    # include_data_run=False: o unico modo que olhava a corrida do robo de
+    # dados era o do botao removido.
     prog = check_publish_progress(token=tok, repo=repo, since_iso=since_iso,
-                                  include_data_run=(mode == "botao"))
+                                  include_data_run=False)
 
     def _ln(done: bool, doing: str, txt: str) -> str:
         return f"{'✅' if done else doing} {txt}"
 
     def _stop() -> None:
         st.session_state["_upload_watch_t0"] = 0.0
-        st.session_state["_button_watch_t0"] = 0.0
 
     retrain_line = _ln(
         prog["retrain"] == "ok",
         "⚙️" if prog["retrain"] == "rodando" else ("❌" if prog["retrain"] == "falhou" else "⏳"),
         f"Retreino do modelo na nuvem ({'~2-4 min' if prog['retrain'] in ('aguardando', 'rodando') else prog['retrain']})",
     )
-    if mode == "upload":
-        lines = [
-            _ln(prog["upload_commit"], "⏳", "CSV publicado no repositório"),
-            retrain_line,
-            _ln(prog["model_commit"], "⏳", "Modelo atualizado publicado"),
-        ]
-        done = prog["upload_commit"] and prog["retrain"] == "ok" and prog["model_commit"]
-        title = "**Acompanhamento da publicação:**"
-    else:
-        # botão: o robô pode terminar SEM trazer CSV (cota/sem novidade)
-        if prog["data_run"] == "ok" and not prog["csv_commit"]:
-            _stop()
-            st.warning(
-                "🔄 O robô rodou e **não trouxe CSV novo** — ou a cota do Google "
-                "Drive bloqueou (comum de dia), ou o Oracle's Elixir ainda não "
-                "publicou nada mais novo. **Caminho garantido: baixa o CSV no "
-                "navegador e usa o 📤 Enviar CSV novo aqui embaixo.**"
-            )
-            return
-        lines = [
-            _ln(prog["data_run"] == "ok",
-                "⚙️" if prog["data_run"] == "rodando" else ("❌" if prog["data_run"] == "falhou" else "⏳"),
-                "Robô buscando o CSV no Oracle's Elixir (~1-2 min)"),
-            _ln(prog["csv_commit"], "⏳", "CSV novo publicado"),
-            retrain_line,
-            _ln(prog["model_commit"], "⏳", "Modelo atualizado publicado"),
-        ]
-        done = prog["csv_commit"] and prog["retrain"] == "ok" and prog["model_commit"]
-        title = "**Acompanhamento da atualização:**"
+    lines = [
+        _ln(prog["upload_commit"], "⏳", "CSV publicado no repositório"),
+        retrain_line,
+        _ln(prog["model_commit"], "⏳", "Modelo atualizado publicado"),
+    ]
+    done = prog["upload_commit"] and prog["retrain"] == "ok" and prog["model_commit"]
+    title = "**Acompanhamento da publicação:**"
     box = st.success if done else st.info
     tail = (
         "**Tudo pronto! Recarrega a página (F5)** — o selo lá de cima vai mostrar os dados novos."
@@ -440,7 +420,7 @@ def render_csv_upload_panel(st: Any, csv_path: str) -> None:
     cur = Path(str(csv_path or ""))
     if not cur.name:
         return
-    with st.expander("📤 Enviar CSV novo (quando o robô estiver bloqueado pela cota)"):
+    with st.expander("📤 Enviar CSV novo"):
         st.caption(
             "Baixa o CSV no site do Oracle's Elixir e solta aqui. O arquivo é "
             "validado (nunca aceita um pior que o atual) e publicado — o site "
