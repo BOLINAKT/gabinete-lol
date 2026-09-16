@@ -120,3 +120,78 @@ class TestATelaUsaOResolvedor(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestOBOSobreviveAoEnsinarOApelido(unittest.TestCase):
+    """O DEFEITO (relatado por ele em 16/09/2026, com print): escolheu
+    "16/09 11:00 | Hitpoint Masters | eSuba x UP2U Meavedron | BO5", os times
+    preencheram e o BO abriu em **1**.
+
+    Dirigindo o app, o ponto exato apareceu:
+        depois de "Usar este jogo"  -> bo = 5   (certo)
+        depois de "Salvar e usar"   -> bo = 1   (perdido)
+
+    A CAUSA nao e obvia: o botao "Salvar e usar" vive ACIMA da caixa de BO na
+    tela, e o rerun para o script na hora -- antes de a caixa ser criada. O
+    Streamlit descarta o estado de widget que nao chegou a ser desenhado,
+    entao o BO voltava ao padrao. Escrever direto em session_state nao
+    adiantava: o valor morria junto.
+
+    O botao "Usar este jogo" nunca sofreu disso porque passa os valores pela
+    FILA (pending_load), aplicada antes dos widgets. Agora os dois caminhos
+    usam a mesma fila -- um so, e nao dois.
+
+    UM BO5 LIDO COMO BO1 MUDA A ODD DA SERIE INTEIRA. Nao e detalhe de tela.
+    """
+
+    def test_o_apelido_viaja_pela_FILA_e_nao_por_escrita_direta(self):
+        import inspect
+
+        from app_core import matchup_selection_core as m
+        src = inspect.getsource(m.render_matchup_selection)
+        corte = src.split("Salvar e usar", 1)[1]
+        self.assertIn("set_pending_load", corte)
+        self.assertNotIn('session_state["teamA" if _rot == "Time 1" else "teamB"]', corte)
+
+    def test_o_BO_entra_na_fila(self):
+        import inspect
+
+        from app_core import matchup_selection_core as m
+        src = inspect.getsource(m.render_matchup_selection)
+        corte = src.split("Salvar e usar", 1)[1]
+        self.assertIn('_pendente["bo"]', corte)
+
+    def test_o_OUTRO_time_tambem_entra_na_fila(self):
+        """Senao ensinar o Time 2 apagaria o Time 1, pelo mesmo motivo."""
+        import inspect
+
+        from app_core import matchup_selection_core as m
+        src = inspect.getsource(m.render_matchup_selection)
+        corte = src.split("Salvar e usar", 1)[1]
+        self.assertIn("_outro", corte)
+
+    def test_BO_fora_da_lista_NAO_entra_na_fila(self):
+        """PRINCIPIO IV: formato desconhecido nao vira 3 chutado.
+
+        A agenda grava bo=0 quando a fonte nao diz o formato. Deixar o 0
+        passar faria a tela mostrar um BO que ninguem afirmou.
+        """
+        import inspect
+
+        from app_core import matchup_selection_core as m
+        src = inspect.getsource(m.render_matchup_selection)
+        corte = src.split("Salvar e usar", 1)[1]
+        self.assertIn("BO_OPTIONS", corte)
+
+    def test_a_fila_e_aplicada_ANTES_dos_widgets(self):
+        """Se fosse depois, o valor chegaria tarde e a tela mostraria o antigo.
+
+        O plays_app chama apply_pending_load bem no alto, de proposito. Este
+        teste existe para ninguem mover a chamada para baixo sem perceber.
+        """
+        from pathlib import Path
+        raiz = Path(__file__).resolve().parents[2]
+        src = (raiz / "plays_app.py").read_text(encoding="utf-8")
+        self.assertLess(src.index("core_apply_pending_load(st.session_state"),
+                        src.index("core_render_matchup_selection("),
+                        "a fila passou a ser aplicada depois dos widgets")

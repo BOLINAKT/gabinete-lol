@@ -381,7 +381,30 @@ def render_matchup_selection(
                 _ap = _carregar_apelidos(session_state, _arq_apelidos)
                 _ap[_chave_apelido(_cru)] = str(_pick)
                 _salvar_apelidos(session_state, _arq_apelidos, _ap)
-                session_state["teamA" if _rot == "Time 1" else "teamB"] = str(_pick)
+
+                # O BO SUMIA AQUI (relatado por ele em 16/09/2026, com print:
+                # escolheu "eSuba x UP2U Meavedron | BO5" e a tela abriu BO 1).
+                #
+                # CAUSA: este botao vive ACIMA da caixa de BO na tela, e o
+                # rerun para o script na hora -- antes de a caixa ser criada.
+                # O Streamlit descarta o estado de widget que nao chegou a ser
+                # desenhado, entao o BO voltava ao padrao. Escrever direto em
+                # session_state nao adianta: o valor morre junto.
+                #
+                # O botao "Usar este jogo" nunca sofreu disso porque passa os
+                # valores pela FILA, que e aplicada antes dos widgets. Aqui
+                # passa a ser igual -- um caminho so, e nao dois.
+                _campo = "teamA" if _rot == "Time 1" else "teamB"
+                _outro = "teamB" if _rot == "Time 1" else "teamA"
+                _pendente = {_campo: str(_pick)}
+                _ja_escolhido = str(session_state.get(_outro, "") or "")
+                if _ja_escolhido:
+                    _pendente[_outro] = _ja_escolhido
+                _bo_atual = session_state.get("bo")
+                if str(_bo_atual) in {str(x) for x in BO_OPTIONS}:
+                    _pendente["bo"] = int(_bo_atual)
+                set_pending_load(session_state, _pendente)
+
                 session_state[_CHAVE_NAO_RESOLVIDOS] = [
                     x for x in _nao_casou if x[0] != _rot]
                 _safe_rerun()
