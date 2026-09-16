@@ -35,8 +35,10 @@
 # tempo devem chegar do mesmo jeito, e são pegos sozinhos quando chegarem.
 #
 # O QUE ELE COMMITA
-# `odds_pinnacle.json` (o retrato de agora) e `odds_pinnacle_historico.jsonl`
-# (só o que MUDOU). O histórico cresce devagar de propósito: guardar o retrato
+# `odds_pinnacle.json` (o retrato de agora), `odds_pinnacle_historico.jsonl`
+# (só o que MUDOU) e `odds_coletas.jsonl` (o DIÁRIO: uma linha por corrida,
+# tenha ela dado certo ou não — é o que permite distinguir "a casa bloqueou"
+# de "a janela nem rodou"). O histórico cresce devagar de propósito: guardar o retrato
 # inteiro a cada corrida daria ~9 MB/mês, e o que o CLV precisa é o movimento.
 name: Odds (preço da Pinnacle)
 
@@ -80,16 +82,32 @@ jobs:
           fi
           exit "$rc"
 
+      # COMMITA SEMPRE, MESMO QUANDO A CORRIDA PAROU.
+      #
+      # Ele perguntou (16/09/2026) se tudo tinha funcionado durante a noite.
+      # As odds deviam ser lidas 4 vezes; o histórico tinha UMA leitura. E eu
+      # não consegui responder por quê — porque uma janela BLOQUEADA ficava
+      # idêntica a uma janela que nem rodou. As duas não deixavam rastro.
+      #
+      # Agora o diário (`odds_coletas.jsonl`) sobe em qualquer desfecho: ok,
+      # bloqueado, rede fora, formato mudou. Os arquivos de ODDS continuam
+      # subindo só quando a leitura deu certo — dado ruim não entra.
       - name: Commitar
-        if: steps.coleta.outputs.rc == '0'
+        if: always() && steps.coleta.outputs.rc != ''
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add odds_pinnacle.json odds_pinnacle_historico.jsonl
-          if git diff --cached --quiet; then
-            echo "nenhum preço mudou — nada a commitar"
+          git add odds_coletas.jsonl || true
+          if [ "${{ steps.coleta.outputs.rc }}" = "0" ]; then
+            git add odds_pinnacle.json odds_pinnacle_historico.jsonl
+            MSG="Robô: odds da Pinnacle atualizadas"
           else
-            git commit -m "Robô: odds da Pinnacle atualizadas"
+            MSG="Robô: corrida de odds sem leitura (rc=${{ steps.coleta.outputs.rc }})"
+          fi
+          if git diff --cached --quiet; then
+            echo "nada mudou — nada a commitar"
+          else
+            git commit -m "$MSG"
             for i in 1 2 3; do
               if git push; then exit 0; fi
               echo "push recusado (concorrência) — rebase e retry $i/3"

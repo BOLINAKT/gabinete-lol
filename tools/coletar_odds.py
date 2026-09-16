@@ -67,6 +67,7 @@ from typing import Any, Dict, List, Optional
 RAIZ = Path(__file__).resolve().parents[1]
 AGORA_JSON = RAIZ / "odds_pinnacle.json"          # o retrato de agora
 HISTORICO = RAIZ / "odds_pinnacle_historico.jsonl"  # so o que mudou
+DIARIO = RAIZ / "odds_coletas.jsonl"              # TODA corrida, deu certo ou nao
 
 BASE = "https://guest.api.arcadia.pinnacle.com/0.1/"
 ESPORTE_ESPORTS = 12
@@ -111,6 +112,33 @@ RC_TEMPORARIO = 75
 HORAS_A_FRENTE = 8.0
 PAUSA_ENTRE_CHAMADAS = 1.2
 TETO_DE_CHAMADAS = 40
+
+
+def anotar_corrida(caminho: Path, **campos: Any) -> None:
+    """UMA LINHA POR CORRIDA, tenha ela dado certo ou nao.
+
+    POR QUE ISTO EXISTE (16/09/2026). Ele perguntou se tudo tinha funcionado
+    durante a noite. As odds deviam ser lidas as 21:25, 00:25, 03:25 e 06:25;
+    o historico tinha UMA leitura. E eu nao consegui dizer por que.
+
+    A culpa e de um desenho meu: quando a casa responde 403/429, o coletor
+    para em silencio e sai com rc=75 -- de proposito, para nao insistir num
+    bloqueio nem encher ele de e-mail por problema passageiro. So que o
+    efeito colateral e que UMA JANELA BLOQUEADA FICA IDENTICA A UMA JANELA
+    QUE NEM RODOU. E e justamente essa distincao que importa: se a casa
+    comecou a barrar, isso e grave e muda o que fazer; se o GitHub so
+    atrasou, nao e nada.
+
+    Agora toda corrida deixa rastro. A gravacao NUNCA derruba a coleta: um
+    diario que quebrasse o robo seria pior que nao ter diario.
+    """
+    try:
+        linha = {"quando": _agora_local().isoformat(timespec="seconds")}
+        linha.update(campos)
+        with open(str(caminho), "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(linha, ensure_ascii=False) + "\n")
+    except (OSError, TypeError, ValueError):
+        pass
 
 
 def _agora_local() -> datetime:
@@ -588,7 +616,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Coleta odds de LoL da Pinnacle.")
     ap.add_argument("--agora", default=str(AGORA_JSON))
     ap.add_argument("--historico", default=str(HISTORICO))
+    ap.add_argument("--diario", default=str(DIARIO))
     args = ap.parse_args()
+    diario = Path(str(args.diario)).expanduser()
 
     import requests
 
@@ -599,18 +629,26 @@ def main() -> int:
         if r1.status_code in (403, 429):
             print("[odds] a casa respondeu {} — parando na hora.".format(r1.status_code))
             print("[odds] nao insisto e nao tento contornar. Tenta na proxima janela.")
+            anotar_corrida(diario, resultado="bloqueado", rc=RC_TEMPORARIO,
+                           detalhe="HTTP {} na lista de confrontos".format(r1.status_code))
             return RC_TEMPORARIO
         r2 = requests.get("{}sports/{}/markets/straight".format(BASE, ESPORTE_ESPORTS),
                           headers=cab, timeout=30)
         if r2.status_code in (403, 429):
             print("[odds] a casa respondeu {} nos mercados — parando.".format(r2.status_code))
+            anotar_corrida(diario, resultado="bloqueado", rc=RC_TEMPORARIO,
+                           detalhe="HTTP {} nos mercados".format(r2.status_code))
             return RC_TEMPORARIO
     except requests.RequestException as e:
         print("[odds] rede fora do ar: {}".format(e))
+        anotar_corrida(diario, resultado="rede", rc=RC_TEMPORARIO,
+                       detalhe="{}: {}".format(type(e).__name__, str(e)[:120]))
         return RC_TEMPORARIO
 
     if r1.status_code != 200 or r2.status_code != 200:
         print("[odds] ERRO: HTTP {} e {}.".format(r1.status_code, r2.status_code))
+        anotar_corrida(diario, resultado="http_inesperado", rc=RC_ERRO,
+                       detalhe="HTTP {} e {}".format(r1.status_code, r2.status_code))
         return RC_ERRO
 
     # DERIVADOS: kills, torres, tempo. So dos jogos proximos, espacado, com
@@ -633,6 +671,8 @@ def main() -> int:
     except ValueError as e:
         print("[odds] ERRO DE FORMATO: {}".format(e))
         print("[odds] Nada foi escrito. O retrato anterior continua valendo.")
+        anotar_corrida(diario, resultado="formato_mudou", rc=RC_ERRO,
+                       detalhe=str(e)[:200])
         return RC_ERRO
 
     lido_em = _agora_local().isoformat(timespec="seconds")
@@ -671,6 +711,16 @@ def main() -> int:
     for j in dados["jogos"][:8]:
         print("    {:<14} {:<20} x {:<20} BO{}".format(
             j["liga"][:14], j["casa"][:20], j["fora"][:20], j["bo"]))
+
+    anotar_corrida(
+        diario, resultado="ok", rc=RC_OK,
+        jogos=len(dados["jogos"]), linhas=len(dados["linhas"]),
+        precos_novos=novas,
+        kills=sum(1 for l in dados["linhas"]
+                  if str(l.get("unidade") or "").lower() == "kills"),
+        derivados_chamadas=derivados["chamadas"],
+        derivados_parado=bool(derivados["parado"]),
+    )
     return RC_OK
 
 

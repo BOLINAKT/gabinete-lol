@@ -26,7 +26,12 @@ from html import escape
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Mapping, Optional
 
-from app_core.odds_coletadas_core import carregar_odds_coletadas
+from app_core.odds_coletadas_core import (
+    carregar_diario,
+    carregar_odds_coletadas,
+    houve_bloqueio,
+    resumo_da_corrida,
+)
 from app_core.oportunidades_core import (
     bo_bate,
     mesmo_confronto,
@@ -94,6 +99,7 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     else:
         st.caption(carimbo)
 
+    _mostrar_diario(st, raiz)
     _jogos_que_dao = _diagnostico_do_confronto(st, odds, confronto, resolver)
 
     _vencedor = _montar_prob_de_vencedor(st, confronto, resolver)
@@ -241,6 +247,29 @@ def _ordem_da_linha(a: Mapping[str, Any]):
         ponto = -1e9
     lado = str(a.get("lado") or "").lower()
     return (ponto, 0 if lado in ("over", "home") else 1)
+
+
+def _mostrar_diario(st: Any, raiz: Path) -> None:
+    """As ultimas corridas do robo, na tela.
+
+    ELE PERGUNTOU (16/09/2026) se tudo tinha funcionado durante a noite, e eu
+    nao soube responder: o coletor parava em SILENCIO quando a casa dizia
+    403/429, entao uma janela bloqueada ficava identica a uma que nem rodou.
+    Agora toda corrida deixa linha -- e ela aparece AQUI, porque diario que
+    exige abrir o GitHub para ler devolve o problema pela metade.
+    """
+    corridas = carregar_diario(raiz, ultimas=6)
+    if not corridas:
+        return
+    if houve_bloqueio(corridas):
+        st.warning(
+            "A casa barrou uma das ultimas leituras. Isso e diferente de "
+            "'a janela nao rodou' -- e grave, e pede espacar a coleta. "
+            "Veja o detalhe abaixo."
+        )
+    with st.expander("Ultimas corridas do robo ({})".format(len(corridas))):
+        for c in corridas:
+            st.caption("· {}".format(resumo_da_corrida(c)))
 
 
 def _diagnostico_do_confronto(st: Any, odds: Mapping[str, Any],

@@ -94,3 +94,72 @@ def times_da_coleta(odds: Dict[str, Any]) -> List[str]:
             if n and n not in vistos:
                 vistos.append(n)
     return vistos
+
+
+# --- O DIARIO DAS CORRIDAS (16/09/2026) ---
+#
+# Ele perguntou se tudo tinha funcionado durante a noite e eu nao soube
+# responder: o coletor parava em silencio quando a casa dizia 403/429, entao
+# UMA JANELA BLOQUEADA FICAVA IDENTICA A UMA QUE NEM RODOU. Agora toda
+# corrida deixa linha em `odds_coletas.jsonl`.
+#
+# Mostrar isso na TELA, e nao so no repositorio, e o que fecha o circuito:
+# diario que exige abrir o GitHub para ler devolve o problema pela metade.
+
+NOME_DO_DIARIO = "odds_coletas.jsonl"
+
+_EM_PORTUGUES = {
+    "ok": "leu",
+    "bloqueado": "a casa barrou",
+    "rede": "rede fora",
+    "formato_mudou": "a API mudou de formato",
+    "http_inesperado": "resposta estranha da casa",
+}
+
+
+def carregar_diario(raiz: Path, *, nome: str = NOME_DO_DIARIO,
+                    ultimas: int = 8) -> List[Dict[str, Any]]:
+    """As ultimas corridas do robo, da mais nova para a mais velha.
+
+    Lista vazia quer dizer "ainda nao ha diario" -- o arquivo so comeca a
+    existir da primeira corrida depois desta mudanca. Nao e erro.
+    """
+    alvo = Path(raiz) / str(nome)
+    if not alvo.exists():
+        return []
+    linhas: List[Dict[str, Any]] = []
+    try:
+        for bruta in alvo.read_text(encoding="utf-8").splitlines():
+            bruta = bruta.strip()
+            if not bruta:
+                continue
+            try:
+                d = json.loads(bruta)
+            except ValueError:
+                continue          # uma linha torta nao apaga o diario inteiro
+            if isinstance(d, dict):
+                linhas.append(d)
+    except OSError:
+        return []
+    return list(reversed(linhas))[:max(int(ultimas), 0)]
+
+
+def resumo_da_corrida(d: Dict[str, Any]) -> str:
+    """Uma corrida em uma linha, em portugues."""
+    quando = str(d.get("quando") or "")[:16].replace("T", " ")
+    res = str(d.get("resultado") or "?")
+    texto = _EM_PORTUGUES.get(res, res)
+    if res == "ok":
+        return "{} — {} {} jogo(s), {} preco(s) novo(s)".format(
+            quando, texto, d.get("jogos", "?"), d.get("precos_novos", "?"))
+    detalhe = str(d.get("detalhe") or "").strip()
+    return "{} — {}{}".format(quando, texto, (" ({})".format(detalhe[:60]) if detalhe else ""))
+
+
+def houve_bloqueio(corridas: List[Dict[str, Any]]) -> bool:
+    """Alguma corrida recente foi barrada pela casa?
+
+    E a pergunta que a ausencia de dados NAO respondia. Bloqueio e grave --
+    muda o que fazer; janela atrasada pelo GitHub nao e nada.
+    """
+    return any(str(c.get("resultado") or "") == "bloqueado" for c in (corridas or []))

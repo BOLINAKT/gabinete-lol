@@ -170,13 +170,26 @@ class TestSemRede(unittest.TestCase):
     """O app nunca vai a casa de apostas. Quem vai e o robo."""
 
     def test_o_modulo_nao_importa_requests(self):
+        """PROCURA REDE, NAO A PALAVRA "http".
+
+        A primeira versao deste teste procurava a substring "http" em
+        qualquer lugar do arquivo. Reprovou sozinha em 16/09/2026, quando o
+        modulo ganhou o rotulo `http_inesperado` -- um NOME DE MOTIVO, nada
+        a ver com ir a rede.
+
+        Teste grosseiro demais tem dois custos: reprova o que esta certo, e
+        quem se acostuma a ver esse tipo de falha passa a ignorar a proxima,
+        que pode ser de verdade. Agora a checagem e do que de fato leva a
+        rede: os imports e os enderecos.
+        """
         import inspect
 
         from app_core import odds_coletadas_core as m
         src = inspect.getsource(m)
-        self.assertNotIn("import requests", src)
-        self.assertNotIn("urlopen", src)
-        self.assertNotIn("http", src.lower().replace("https://guest", ""))
+        for proibido in ("import requests", "import urllib", "import socket",
+                         "import http.client", "urlopen", "http://", "https://"):
+            self.assertNotIn(proibido, src,
+                             "%s levaria o app a rede -- quem coleta e o robo" % proibido)
 
 
 if __name__ == "__main__":
