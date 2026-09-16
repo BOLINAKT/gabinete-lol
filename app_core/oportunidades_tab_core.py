@@ -191,8 +191,9 @@ def _linha_comparada(a: Mapping[str, Any]) -> str:
                    "font-size:0.72em;margin-left:6px;'>poucos jogos</span>")
     limite = a.get("limite")
     return (
-        "<div style='display:grid;grid-template-columns:minmax(120px,1.6fr) "
-        "repeat(3,minmax(72px,1fr));gap:8px;align-items:center;padding:7px 4px;"
+        "<div style='display:grid;grid-template-columns:minmax(110px,1.4fr) "
+        "repeat(3,minmax(64px,0.55fr));gap:10px;max-width:620px;"
+        "align-items:center;padding:7px 4px;"
         "border-top:1px solid rgba(255,255,255,0.07);'>"
         "<div><b>{lado}</b>{marcas}<div style='opacity:0.45;font-size:0.74em;'>"
         "limite {lim}</div></div>"
@@ -211,8 +212,9 @@ def _linha_comparada(a: Mapping[str, Any]) -> str:
 
 def _tabela_comparada(st: Any, titulo: str, linhas: List[Mapping[str, Any]]) -> None:
     cabeca = (
-        "<div style='display:grid;grid-template-columns:minmax(120px,1.6fr) "
-        "repeat(3,minmax(72px,1fr));gap:8px;padding:2px 4px;opacity:0.55;"
+        "<div style='display:grid;grid-template-columns:minmax(110px,1.4fr) "
+        "repeat(3,minmax(64px,0.55fr));gap:10px;max-width:620px;"
+        "padding:2px 4px;opacity:0.55;"
         "font-size:0.76em;text-transform:uppercase;letter-spacing:0.05em;'>"
         "<div>aposta</div>"
         "<div style='text-align:right;color:{cm};'>modelo</div>"
@@ -223,7 +225,7 @@ def _tabela_comparada(st: Any, titulo: str, linhas: List[Mapping[str, Any]]) -> 
     st.markdown(
         "<div style='background:rgba(255,255,255,0.025);border:1px solid "
         "rgba(255,255,255,0.09);border-top:3px solid {cm};border-radius:14px;"
-        "padding:12px 16px 10px;'>"
+        "padding:12px 16px 10px;max-width:680px;'>"
         "<div style='opacity:0.6;font-size:0.8em;text-transform:uppercase;"
         "letter-spacing:0.06em;margin-bottom:4px;'>{t}</div>"
         "{cab}{corpo}</div>".format(cm=_COR_MODELO, t=escape(titulo),
