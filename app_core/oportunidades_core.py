@@ -204,6 +204,26 @@ def motivo_de_nao_precificar(linha: Dict[str, Any]) -> str:
     return "o motor nao precifica este mercado"
 
 
+def _guardar(achados: List[Dict[str, Any]], achado: Dict[str, Any],
+             jogo: Dict[str, Any],
+             jogos_por_time: Optional[Callable[[str], int]]) -> None:
+    """Junta ao achado o que a tela precisa mostrar junto do numero."""
+    achado["liga"] = jogo.get("liga")
+    achado["casa"] = jogo.get("casa")
+    achado["fora"] = jogo.get("fora")
+    achado["inicio_utc"] = jogo.get("inicio_utc")
+    if jogos_por_time is not None:
+        try:
+            n = min(int(jogos_por_time(str(jogo.get("casa") or ""))),
+                    int(jogos_por_time(str(jogo.get("fora") or ""))))
+        except Exception:
+            n = -1
+        achado["jogos_no_historico"] = n
+        achado["dados_finos"] = bool(0 <= n < JOGOS_MINIMOS)
+    achado["suspeito"] = bool(achado["vantagem_pct"] > VANTAGEM_SUSPEITA_PCT)
+    achados.append(achado)
+
+
 def _somar_de_fora(acc: Dict[str, Dict[str, Any]], linha: Dict[str, Any],
                    motivo: str) -> None:
     """Agrupa pelo nome que a CASA da ao mercado.
@@ -223,6 +243,8 @@ def montar_oportunidades(
     prob_over: Callable[[Any, float], float],
     minimo_pct: float = VANTAGEM_MINIMA_PCT,
     jogos_por_time: Optional[Callable[[str], int]] = None,
+    prob_de_vencedor: Optional[Callable[[Dict[str, Any], Dict[str, Any]],
+                                        Optional[float]]] = None,
 ) -> Dict[str, Any]:
     """A lista do que vale a pena, e a lista honesta do que ficou de fora.
 
@@ -249,7 +271,38 @@ def montar_oportunidades(
             continue
         alvo = metrica_da_linha(l)
         if alvo is None:
-            _somar_de_fora(nao_precificados, l, motivo_de_nao_precificar(l))
+            # O MERCADO DE VENCEDOR vem de fora, do fluxo do confronto aberto
+            # -- e o mesmo numero do card, nao uma segunda conta.
+            _p = None
+            if prob_de_vencedor is not None:
+                try:
+                    _p = prob_de_vencedor(jogo, l)
+                except Exception:
+                    _p = None
+            if _p is None:
+                _somar_de_fora(nao_precificados, l, motivo_de_nao_precificar(l))
+                continue
+            _v = vantagem_pct(_p, l.get("odd"))
+            if _v is None:
+                _somar_de_fora(nao_precificados, l,
+                               "preco ilegivel para esta linha")
+                continue
+            achado = {
+                "jogo": l.get("jogo"),
+                "mercado": l.get("mercado"),
+                "lado": l.get("lado"),
+                "pontos": None,
+                "odd_casa": _num(l.get("odd")),
+                "odd_justa": odd_justa(_p),
+                "probabilidade": _p,
+                "vantagem_pct": _v,
+                "limite": l.get("limite"),
+                "margem_pct": l.get("margem_pct"),
+                "fecha_em": l.get("fecha_em"),
+                "metrica": "vencedor",
+                "mapa": "",
+            }
+            _guardar(achados, achado, jogo, jogos_por_time)
             continue
         _metrica, mapa = alvo
         chave = (jogo.get("id"), mapa)
@@ -271,20 +324,7 @@ def montar_oportunidades(
             _somar_de_fora(nao_precificados, l,
                            "o motor nao deu numero para este confronto")
             continue
-        achado["liga"] = jogo.get("liga")
-        achado["casa"] = jogo.get("casa")
-        achado["fora"] = jogo.get("fora")
-        achado["inicio_utc"] = jogo.get("inicio_utc")
-        if jogos_por_time is not None:
-            try:
-                n = min(int(jogos_por_time(str(jogo.get("casa") or ""))),
-                        int(jogos_por_time(str(jogo.get("fora") or ""))))
-            except Exception:
-                n = -1
-            achado["jogos_no_historico"] = n
-            achado["dados_finos"] = bool(0 <= n < JOGOS_MINIMOS)
-        achado["suspeito"] = bool(achado["vantagem_pct"] > VANTAGEM_SUSPEITA_PCT)
-        achados.append(achado)
+        _guardar(achados, achado, jogo, jogos_por_time)
 
     vale = [a for a in achados if a["vantagem_pct"] >= float(minimo_pct)]
     # Os suspeitos vao para o fim: a lista e para decidir, e um numero grande
@@ -299,3 +339,86 @@ def montar_oportunidades(
         "sem_modelo": sem_modelo,
         "lido_em": odds.get("lido_em"),
     }
+
+
+# ---------------------------------------------------------------------------
+# MERCADO DE VENCEDOR (16/09/2026)
+#
+# Ele olhou a aba mostrando ZERO e disse: "nao faz mt sentido". Tinha razao --
+# o numero JA EXISTE. O card do confronto mostra, por exemplo, MD5 1,66 x 2,51
+# (60,1% x 39,9%). E exatamente a odd justa que faltava aqui.
+#
+# O que NAO se faz: recalcular essa probabilidade dentro desta aba. O projeto
+# ja teve TRES implementacoes do pre-jogo com contagens diferentes, e existe um
+# modulo inteiro (mlcore/replay_pre_jogo.py) escrito por causa disso. Aqui o
+# numero e RECEBIDO do fluxo do confronto, o mesmo que ele ve na tela.
+#
+# Por isso este mercado so vale para o CONFRONTO ABERTO: e o unico para o qual
+# o app calculou o numero. Os outros jogos da lista aparecem como nao olhados,
+# com esse motivo dito.
+# ---------------------------------------------------------------------------
+
+
+def prob_do_vencedor(linha: Dict[str, Any], *, p_map: Any, p_series: Any,
+                     casa_e_time_a: bool) -> Optional[float]:
+    """A probabilidade do LADO desta linha de vencedor.
+
+    `p_map` e `p_series` sao do TIME 1 da tela (mesma orientacao do card).
+    `casa_e_time_a` diz se o mandante da casa de apostas e esse Time 1 --
+    sem isso, um confronto listado ao contrario faria a tela recomendar o
+    lado oposto do que o modelo quis dizer.
+    """
+    if str(linha.get("tipo") or "") != "moneyline":
+        return None
+    # "Vencedor - Kills" tambem e moneyline com lados casa/fora, mas pergunta
+    # quem faz mais KILLS -- outra coisa. A unidade separa os dois.
+    if str(linha.get("unidade") or "").strip():
+        return None
+    lado = str(linha.get("lado") or "").strip().lower()
+    if lado not in ("home", "away"):
+        return None          # placar exato tem lados com nome, nao casa/fora
+    try:
+        periodo = int(linha.get("periodo", 0) or 0)
+    except (TypeError, ValueError):
+        return None
+    base = _num(p_series) if periodo == 0 else _num(p_map)
+    if base is None or not (0.0 < base < 1.0):
+        return None
+    p_casa = base if casa_e_time_a else (1.0 - base)
+    return p_casa if lado == "home" else (1.0 - p_casa)
+
+
+def mesmo_confronto(jogo: Dict[str, Any], time_a: str, time_b: str,
+                    resolver: Callable[[str], str]) -> Optional[bool]:
+    """Este jogo da casa e o confronto aberto na tela?
+
+    Devolve True quando o mandante e o Time 1, False quando esta invertido, e
+    None quando nao e o mesmo confronto. Inverter silenciosamente seria o pior
+    desfecho: a tela recomendaria apostar no outro time.
+    """
+    try:
+        casa = resolver(str(jogo.get("casa") or ""))
+        fora = resolver(str(jogo.get("fora") or ""))
+    except Exception:
+        return None
+    if not casa or not fora:
+        return None
+    a, b = str(time_a or ""), str(time_b or "")
+    if casa == a and fora == b:
+        return True
+    if casa == b and fora == a:
+        return False
+    return None
+
+
+def bo_bate(jogo: Dict[str, Any], bo_da_tela: Any) -> bool:
+    """O BO da casa e o mesmo que o modelo usou?
+
+    Um BO5 precificado como BO3 muda a probabilidade da serie inteira. Quando
+    nao bater, a linha fica de fora COM o motivo, em vez de sair um numero
+    que parece certo.
+    """
+    try:
+        return int(jogo.get("bo") or 0) == int(bo_da_tela or 0)
+    except (TypeError, ValueError):
+        return False

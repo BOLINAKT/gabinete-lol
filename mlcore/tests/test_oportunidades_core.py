@@ -434,3 +434,175 @@ class TestSemRede(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestOMercadoDeVencedor(unittest.TestCase):
+    """ELE ESTRANHOU a aba mostrando zero: "nao faz mt sentido".
+
+    Tinha razao: o numero JA EXISTE. O card do confronto mostra, por exemplo,
+    MD5 1,66 x 2,51 (60,1% x 39,9%) -- exatamente a odd justa que faltava.
+
+    O QUE NAO SE FAZ AQUI: recalcular essa probabilidade. O projeto ja teve
+    TRES implementacoes do pre-jogo com contagens diferentes, e existe um
+    modulo inteiro escrito por causa disso. O numero e RECEBIDO do fluxo do
+    confronto -- o mesmo que ele ve na tela.
+    """
+
+    def _ml(self, **k):
+        base = {"jogo": 1, "tipo": "moneyline", "periodo": 0, "lado": "home",
+                "pontos": None, "odd": 2.84, "unidade": "",
+                "mercado": "Vencedor - serie"}
+        base.update(k)
+        return base
+
+    def test_a_serie_usa_p_series_e_o_mapa_usa_p_map(self):
+        from app_core.oportunidades_core import prob_do_vencedor
+        self.assertAlmostEqual(
+            prob_do_vencedor(self._ml(periodo=0), p_map=0.53, p_series=0.56,
+                             casa_e_time_a=True), 0.56, places=9)
+        self.assertAlmostEqual(
+            prob_do_vencedor(self._ml(periodo=1), p_map=0.53, p_series=0.56,
+                             casa_e_time_a=True), 0.53, places=9)
+
+    def test_o_lado_de_FORA_e_o_complemento(self):
+        from app_core.oportunidades_core import prob_do_vencedor
+        self.assertAlmostEqual(
+            prob_do_vencedor(self._ml(lado="away"), p_map=0.53, p_series=0.56,
+                             casa_e_time_a=True), 0.44, places=9)
+
+    def test_CONFRONTO_INVERTIDO_troca_o_lado(self):
+        """O PIOR ERRO POSSIVEL seria este passar batido.
+
+        A casa pode listar "A x B" e a tela ter "B x A". Sem inverter, o
+        painel recomendaria apostar no TIME ERRADO com toda a confianca.
+        """
+        from app_core.oportunidades_core import prob_do_vencedor
+        self.assertAlmostEqual(
+            prob_do_vencedor(self._ml(), p_map=0.53, p_series=0.56,
+                             casa_e_time_a=False), 0.44, places=9)
+
+    def test_quem_faz_mais_KILLS_nao_e_vencedor_da_partida(self):
+        """"Vencedor - Kills" tambem e moneyline com lados casa/fora, mas
+        pergunta outra coisa. Usar p_series ali seria precificar uma aposta
+        de kills com a probabilidade de ganhar a serie."""
+        from app_core.oportunidades_core import prob_do_vencedor
+        self.assertIsNone(prob_do_vencedor(self._ml(unidade="Kills", periodo=1),
+                                           p_map=0.53, p_series=0.56, casa_e_time_a=True))
+
+    def test_placar_exato_nao_entra_por_aqui(self):
+        from app_core.oportunidades_core import prob_do_vencedor
+        self.assertIsNone(prob_do_vencedor(self._ml(lado="Fuego 3, 9z 0", unidade="Maps"),
+                                           p_map=0.53, p_series=0.56, casa_e_time_a=True))
+
+    def test_sem_numero_do_modelo_NAO_inventa(self):
+        """PRINCIPIO IV: p_series NaN nao vira 0,5."""
+        from app_core.oportunidades_core import prob_do_vencedor
+        self.assertIsNone(prob_do_vencedor(self._ml(), p_map=0.53,
+                                           p_series=float("nan"), casa_e_time_a=True))
+        self.assertIsNone(prob_do_vencedor(self._ml(), p_map=0.53,
+                                           p_series=None, casa_e_time_a=True))
+
+
+class TestEOMESMOConfronto(unittest.TestCase):
+    """Comparar a odd de um jogo com o modelo de OUTRO seria desastre."""
+
+    def _jogo(self, casa="Natus Vincere", fora="Movistar KOI", bo=5):
+        return {"id": 1, "casa": casa, "fora": fora, "bo": bo}
+
+    def _id(self, n):
+        return n
+
+    def test_mesma_ordem_da_verdadeiro(self):
+        from app_core.oportunidades_core import mesmo_confronto
+        self.assertIs(mesmo_confronto(self._jogo(), "Natus Vincere", "Movistar KOI",
+                                      self._id), True)
+
+    def test_ordem_INVERTIDA_da_falso_e_nao_None(self):
+        """False quer dizer "e o mesmo jogo, mas de cabeca para baixo" --
+        informacao diferente de "nao e este jogo"."""
+        from app_core.oportunidades_core import mesmo_confronto
+        self.assertIs(mesmo_confronto(self._jogo(), "Movistar KOI", "Natus Vincere",
+                                      self._id), False)
+
+    def test_outro_confronto_da_None(self):
+        from app_core.oportunidades_core import mesmo_confronto
+        self.assertIsNone(mesmo_confronto(self._jogo(), "T1", "Gen.G", self._id))
+
+    def test_um_time_so_batendo_NAO_basta(self):
+        from app_core.oportunidades_core import mesmo_confronto
+        self.assertIsNone(mesmo_confronto(self._jogo(), "Natus Vincere", "T1", self._id))
+
+    def test_time_que_nao_resolve_da_None(self):
+        from app_core.oportunidades_core import mesmo_confronto
+        self.assertIsNone(mesmo_confronto(self._jogo(), "Natus Vincere", "Movistar KOI",
+                                          lambda n: ""))
+
+    def test_resolvedor_que_estoura_nao_derruba(self):
+        from app_core.oportunidades_core import mesmo_confronto
+
+        def _explode(n):
+            raise RuntimeError("sem CSV")
+        self.assertIsNone(mesmo_confronto(self._jogo(), "a", "b", _explode))
+
+
+class TestOBODaCasaTemQueBaterComOModelo(unittest.TestCase):
+    """UM BO5 PRECIFICADO COMO BO3 muda a probabilidade da serie inteira."""
+
+    def test_bo_igual_passa(self):
+        from app_core.oportunidades_core import bo_bate
+        self.assertTrue(bo_bate({"bo": 5}, 5))
+
+    def test_bo_diferente_NAO_passa(self):
+        from app_core.oportunidades_core import bo_bate
+        self.assertFalse(bo_bate({"bo": 5}, 3))
+
+    def test_bo_ausente_ou_ilegivel_NAO_passa(self):
+        """PRINCIPIO IV: sem saber o formato, nao se afirma que bate."""
+        from app_core.oportunidades_core import bo_bate
+        self.assertFalse(bo_bate({}, 5))
+        self.assertFalse(bo_bate({"bo": "cinco"}, 5))
+        self.assertFalse(bo_bate({"bo": 5}, None))
+
+
+class TestOVencedorEntraNaLista(unittest.TestCase):
+
+    def _totais(self, casa, fora, mapa):
+        return None      # sem totais: so o vencedor deve aparecer
+
+    def _linha_ml(self):
+        return {"jogo": 1, "tipo": "moneyline", "periodo": 0, "lado": "home",
+                "pontos": None, "odd": 2.84, "unidade": "",
+                "mercado": "Vencedor - serie"}
+
+    def test_a_linha_de_vencedor_vira_achado(self):
+        r = montar_oportunidades(
+            _odds([self._linha_ml()]), self._totais, prob_over=_prob_over_falso,
+            minimo_pct=0.0, prob_de_vencedor=lambda jogo, linha: 0.56)
+        self.assertEqual(len(r["achados"]), 1)
+        self.assertEqual(r["achados"][0]["metrica"], "vencedor")
+        self.assertAlmostEqual(r["achados"][0]["vantagem_pct"], 59.04, places=1)
+
+    def test_quando_o_modelo_nao_sabe_a_linha_e_CONTADA_de_fora(self):
+        r = montar_oportunidades(
+            _odds([self._linha_ml()]), self._totais, prob_over=_prob_over_falso,
+            prob_de_vencedor=lambda jogo, linha: None)
+        self.assertEqual(r["achados"], [])
+        self.assertEqual(sum(g["linhas"] for g in r["nao_precificados"]), 1)
+
+    def test_precificador_que_ESTOURA_nao_derruba_a_tela(self):
+        def _explode(jogo, linha):
+            raise RuntimeError("sem numero")
+        r = montar_oportunidades(
+            _odds([self._linha_ml()]), self._totais, prob_over=_prob_over_falso,
+            prob_de_vencedor=_explode)
+        self.assertEqual(r["achados"], [])
+        self.assertEqual(sum(g["linhas"] for g in r["nao_precificados"]), 1)
+
+    def test_vantagem_gigante_no_vencedor_tambem_vai_MARCADA(self):
+        """Foi o que apareceu no primeiro uso real: +59,65% num mercado com
+        5,36% de margem da casa. A conta estava certa; a leitura e que nao
+        pode ser "dinheiro de graca"."""
+        r = montar_oportunidades(
+            _odds([self._linha_ml()]), self._totais, prob_over=_prob_over_falso,
+            minimo_pct=0.0, prob_de_vencedor=lambda jogo, linha: 0.56)
+        self.assertTrue(r["achados"][0]["suspeito"])

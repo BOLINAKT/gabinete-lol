@@ -24,13 +24,16 @@ from __future__ import annotations
 
 from html import escape
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Mapping
+from typing import Any, Callable, Dict, List, Mapping, Optional
 
 from app_core.odds_coletadas_core import carregar_odds_coletadas
 from app_core.oportunidades_core import (
     JOGOS_MINIMOS,
     VANTAGEM_MINIMA_PCT,
+    bo_bate,
+    mesmo_confronto,
     montar_oportunidades,
+    prob_do_vencedor,
 )
 
 # Quanto de vantagem a tela oferece filtrar. Comeca em 1%: abaixo disso a
@@ -54,6 +57,10 @@ def _linha_do_jogo(a: Mapping[str, Any]) -> str:
 
 def _descricao_da_aposta(a: Mapping[str, Any]) -> str:
     """"kills do mapa 1 acima de 31,5" -- em vez do jargao da casa."""
+    if str(a.get("metrica") or "") == "vencedor":
+        lado = str(a.get("lado") or "").lower()
+        quem = a.get("casa") if lado == "home" else a.get("fora")
+        return "{} vencer ({})".format(quem, a.get("mercado") or "vencedor")
     lado = str(a.get("lado") or "").lower()
     palavra = "acima de" if lado == "over" else "abaixo de"
     metrica = {"kills": "kills", "towers": "torres", "dragons": "dragoes",
@@ -72,6 +79,8 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     prob_over: Callable[..., Any] = ctx["prob_over"]
     jogos_por_time = ctx.get("jogos_por_time")
     nao_casados: List[str] = list(ctx.get("times_nao_casados") or [])
+    confronto: Mapping[str, Any] = ctx.get("confronto") or {}
+    resolver: Optional[Callable[[str], str]] = ctx.get("resolver_time")
 
     st.markdown("### Onde a Pinnacle paga mais do que o modelo acha que vale")
 
@@ -100,8 +109,10 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         key="oportunidades_corte",
     )
 
+    _vencedor = _montar_prob_de_vencedor(st, confronto, resolver)
     r = montar_oportunidades(odds, calcular_totais, prob_over=prob_over,
-                             minimo_pct=float(corte), jogos_por_time=jogos_por_time)
+                             minimo_pct=float(corte), jogos_por_time=jogos_por_time,
+                             prob_de_vencedor=_vencedor)
 
     achados = r.get("achados") or []
     if achados:
@@ -113,6 +124,59 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
                 "este painel sabe precificar.".format(_fmt(corte, 0)))
 
     _o_que_ficou_de_fora(st, r, nao_casados)
+
+
+def _montar_prob_de_vencedor(st: Any, confronto: Mapping[str, Any],
+                             resolver: Optional[Callable[[str], str]]):
+    """A odd justa do VENCEDOR, vinda do confronto aberto na tela.
+
+    ELE ESTRANHOU a aba mostrando zero: "nao faz mt sentido". Tinha razao --
+    o numero ja existe. O card do confronto mostra, por exemplo, MD5 1,66 x
+    2,51. Faltava traze-lo ate aqui.
+
+    NAO SE RECALCULA NADA. O `p_map`/`p_series` sao os MESMOS que ele ve no
+    card; o projeto ja teve tres implementacoes do pre-jogo com contagens
+    diferentes, e nao vai ganhar uma quarta.
+
+    Por isso so vale para o confronto ABERTO -- e o unico para o qual o app
+    calculou o numero. Se nenhum jogo da casa for esse confronto, a tela diz
+    isso em vez de ficar calada.
+    """
+    if not confronto or resolver is None:
+        return None
+    time_a = str(confronto.get("teamA") or "")
+    time_b = str(confronto.get("teamB") or "")
+    p_map = confronto.get("p_map")
+    p_series = confronto.get("p_series")
+    bo_tela = confronto.get("bo")
+    if not (time_a and time_b):
+        return None
+
+    avisado = {"bo": False}
+
+    def _prob(jogo, linha):
+        lado_certo = mesmo_confronto(jogo, time_a, time_b, resolver)
+        if lado_certo is None:
+            return None
+        if not bo_bate(jogo, bo_tela):
+            # UM BO5 PRECIFICADO COMO BO3 muda a probabilidade da serie
+            # inteira. Fica de fora, e dito uma vez.
+            if not avisado["bo"]:
+                avisado["bo"] = True
+                st.warning(
+                    "A casa oferece este confronto em BO{} e a tela esta em "
+                    "BO{}. O mercado de vencedor da serie ficou de fora: o "
+                    "formato muda a probabilidade.".format(
+                        jogo.get("bo"), bo_tela))
+            try:
+                if int(linha.get("periodo", 0) or 0) == 0:
+                    return None
+            except (TypeError, ValueError):
+                return None
+        return prob_do_vencedor(linha, p_map=p_map, p_series=p_series,
+                                casa_e_time_a=bool(lado_certo))
+
+    return _prob
 
 
 def _cartao(st: Any, a: Mapping[str, Any]) -> None:

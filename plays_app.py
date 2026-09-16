@@ -2674,6 +2674,12 @@ _secondary_tab_renderers = {
             "prob_over": core_prob_over_from_total,
             "jogos_por_time": _oportunidades_jogos_por_time,
             "times_nao_casados": _oportunidades_times_nao_casados(),
+            "resolver_time": _oportunidades_resolver_time,
+            # O MESMO numero do card do confronto -- nao um recalculo.
+            "confronto": {
+                "teamA": teamA, "teamB": teamB, "bo": int(bo),
+                "p_map": p_map_cal, "p_series": p_series,
+            },
         },
     ),
     "Rankings": lambda: core_render_rankings_tab(
