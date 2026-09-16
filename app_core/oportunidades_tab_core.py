@@ -36,6 +36,7 @@ from app_core.oportunidades_core import (
     bo_bate,
     mesmo_confronto,
     montar_oportunidades,
+    nome_que_falta_casar,
     prob_do_vencedor,
 )
 
@@ -100,7 +101,9 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         st.caption(carimbo)
 
     _mostrar_diario(st, raiz)
-    _jogos_que_dao = _diagnostico_do_confronto(st, odds, confronto, resolver)
+    _jogos_que_dao = _diagnostico_do_confronto(
+        st, odds, confronto, resolver,
+        ctx.get("sugerir_times"), ctx.get("ensinar_apelido"))
 
     _vencedor = _montar_prob_de_vencedor(st, confronto, resolver)
     r = montar_oportunidades(odds, calcular_totais, prob_over=prob_over,
@@ -272,9 +275,52 @@ def _mostrar_diario(st: Any, raiz: Path) -> None:
             st.caption("· {}".format(resumo_da_corrida(c)))
 
 
+def _ensinar_apelido(st: Any, sugerir: Optional[Callable[[str], List[str]]],
+                     ensinar: Optional[Callable[[str, str], None]],
+                     cru: str) -> None:
+    """O conserto de um clique, no lugar onde o problema aparece.
+
+    Mesma maquina que a aba Jogos usa: o apelido fica salvo no arquivo dele e
+    serve os dois lugares. NAO SE ADIVINHA -- "Liquid" poderia ser outro time,
+    e analisar o confronto errado com toda a confianca e o pior desfecho
+    possivel (PRINCIPIO IV). Ele escolhe.
+    """
+    if sugerir is None or ensinar is None:
+        st.caption("Para casar o nome, use o mapeamento de apelidos na aba Jogos.")
+        return
+    try:
+        opcoes = list(sugerir(cru))[:12]
+    except Exception:
+        opcoes = []
+    if not opcoes:
+        st.caption("Nao achei palpite parecido para **{}** no CSV.".format(cru))
+        return
+    escolha = st.selectbox(
+        "Quem e **{}** no CSV?".format(cru), options=["", *opcoes],
+        key="oport_apelido_{}".format(cru.lower().replace(" ", "_")),
+    )
+    if escolha and st.button("Salvar e comparar",
+                             key="oport_apelido_btn_{}".format(cru.lower().replace(" ", "_"))):
+        try:
+            ensinar(cru, str(escolha))
+        except Exception:
+            st.error("Nao consegui salvar o apelido.")
+            return
+        st.success("Salvo: **{}** = **{}**.".format(cru, escolha))
+        _recarregar(st)
+
+
+def _recarregar(st: Any) -> None:
+    fn = getattr(st, "rerun", None) or getattr(st, "experimental_rerun", None)
+    if callable(fn):
+        fn()
+
+
 def _diagnostico_do_confronto(st: Any, odds: Mapping[str, Any],
                               confronto: Mapping[str, Any],
-                              resolver: Optional[Callable[[str], str]]) -> bool:
+                              resolver: Optional[Callable[[str], str]],
+                              ctx_sugerir: Optional[Callable[[str], List[str]]] = None,
+                              ctx_ensinar: Optional[Callable[[str, str], None]] = None) -> bool:
     """Diz POR QUE a tela pode estar vazia, em vez de deixar ele adivinhar.
 
     ELE PERGUNTOU DUAS VEZES (16/09/2026): "nao entendi, ate agora porque nao
@@ -311,6 +357,28 @@ def _diagnostico_do_confronto(st: Any, odds: Mapping[str, Any],
                 break
 
     if achou is None:
+        # "A CASA NAO TEM ESSE JOGO" e "A CASA TEM, MAS O NOME NAO CASOU" sao
+        # coisas diferentes e pedem acoes diferentes. Ele mandou print
+        # (16/09/2026) com a tela dizendo "nao esta na Pinnacle" e listando,
+        # tres linhas abaixo, o MESMO jogo: a casa escreve "Liquid" e o CSV
+        # tem "Team Liquid". A mensagem contradizia a lista embaixo dela.
+        quase = None
+        cru = ""
+        if resolver is not None:
+            for j in jogos:
+                faltando = nome_que_falta_casar(j, time_a, time_b, resolver)
+                if faltando:
+                    quase, cru = j, faltando
+                    break
+        if quase is not None:
+            st.warning(
+                "A Pinnacle TEM este confronto (**{} x {}**), mas o nome "
+                "**{}** que ela usa nao casa com nenhum time do CSV. Ensine "
+                "uma vez e nao volta mais.".format(
+                    quase.get("casa"), quase.get("fora"), cru))
+            _ensinar_apelido(st, ctx_sugerir, ctx_ensinar, cru)
+            return False
+
         st.warning(
             "O confronto aberto (**{} x {}**) nao esta na Pinnacle, entao nao "
             "ha odd dela para comparar. Ela cobre poucas ligas.".format(

@@ -2656,6 +2656,32 @@ def _oportunidades_jogos_por_time(nome: str) -> int:
         return -1
 
 
+def _oportunidades_sugerir_times(cru: str) -> list:
+    """Palpites de quem e esse nome da casa, com a LIGA do confronto na frente.
+
+    Mesma regra da aba Jogos (16/09/2026): nome parecido entre ligas costuma
+    ser o mesmo patrocinador em paises diferentes, nao o mesmo time.
+    """
+    try:
+        _ligas = st.session_state.get("_liga_por_time") or {}
+        _liga = str(_ligas.get(teamA, "") or "") or str(_ligas.get(teamB, "") or "")
+        _prior = [t for t in teams if _liga and str(_ligas.get(t, "")) == _liga]
+        try:
+            return list(core_suggest_schedule_teams(str(cru), list(teams), prioridade=_prior))
+        except TypeError:
+            return list(core_suggest_schedule_teams(str(cru), list(teams)))
+    except Exception:
+        return []
+
+
+def _oportunidades_ensinar_apelido(cru: str, escolhido: str) -> None:
+    """Guarda o apelido no arquivo DELE, que serve a agenda tambem."""
+    caminho = APP_ROOT / "user_team_aliases.json"
+    apelidos = core_load_schedule_aliases(st.session_state, caminho)
+    apelidos[core_normalize_schedule_team_key(str(cru))] = str(escolhido)
+    core_save_schedule_aliases(st.session_state, caminho, apelidos)
+
+
 def _oportunidades_times_nao_casados() -> list:
     from app_core.odds_coletadas_core import carregar_odds_coletadas, times_da_coleta
     try:
@@ -2675,6 +2701,8 @@ _secondary_tab_renderers = {
             "jogos_por_time": _oportunidades_jogos_por_time,
             "times_nao_casados": _oportunidades_times_nao_casados(),
             "resolver_time": _oportunidades_resolver_time,
+            "sugerir_times": _oportunidades_sugerir_times,
+            "ensinar_apelido": _oportunidades_ensinar_apelido,
             # O MESMO numero do card do confronto -- nao um recalculo, e nao
             # uma CAMADA ANTERIOR dele.
             #

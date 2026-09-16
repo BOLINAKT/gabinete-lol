@@ -198,3 +198,119 @@ class TestAAbaLeOMESMONumeroQueOCard(unittest.TestCase):
             alvo = expr.replace('"', "'")
             self.assertTrue(expr in app or alvo in app, "a aba nao usa %s" % expr)
             self.assertTrue(expr in card or alvo in card, "o card nao usa %s" % expr)
+
+
+class TestACasaTEMOJogoMasONomeNaoCasou(unittest.TestCase):
+    """ELE MANDOU PRINT (16/09/2026) com a tela se contradizendo.
+
+    Abriu FlyQuest x Team Liquid e leu:
+
+        "O confronto aberto (FlyQuest x Team Liquid) nao esta na Pinnacle"
+        · LCS — Liquid x FlyQuest (BO5)
+
+    O MESMO jogo, tres linhas abaixo da frase que dizia que ele nao existia.
+    A casa escreve "Liquid"; o CSV tem "Team Liquid". Um lado casou, o outro
+    nao, e eu tratei isso como "jogo inexistente".
+
+    "A casa nao tem esse jogo" e "a casa tem, mas o nome nao casou" pedem
+    ACOES DIFERENTES: a primeira e esperar, a segunda e ensinar um apelido
+    uma vez. Dar a noticia errada custa a acao certa.
+    """
+
+    def _jogo(self):
+        return {"id": 1, "liga": "LCS", "casa": "Liquid", "fora": "FlyQuest", "bo": 5}
+
+    def _resolver(self, n):
+        return {"FlyQuest": "FlyQuest", "Liquid": ""}.get(str(n), "")
+
+    def test_devolve_o_nome_CRU_que_falta_casar(self):
+        from app_core.oportunidades_core import nome_que_falta_casar
+        self.assertEqual(
+            nome_que_falta_casar(self._jogo(), "FlyQuest", "Team Liquid", self._resolver),
+            "Liquid")
+
+    def test_a_ORDEM_invertida_na_casa_nao_atrapalha(self):
+        """A tela tinha FlyQuest x Team Liquid; a casa, Liquid x FlyQuest."""
+        from app_core.oportunidades_core import nome_que_falta_casar
+        self.assertEqual(
+            nome_que_falta_casar(self._jogo(), "Team Liquid", "FlyQuest", self._resolver),
+            "Liquid")
+
+    def test_jogo_de_OUTRO_confronto_devolve_NADA(self):
+        from app_core.oportunidades_core import nome_que_falta_casar
+        self.assertIsNone(nome_que_falta_casar(
+            {"casa": "T1", "fora": "Gen.G"}, "FlyQuest", "Team Liquid", self._resolver))
+
+    def test_com_os_DOIS_lados_sem_casar_NAO_chuta(self):
+        """PRINCIPIO IV: com dois nomes soltos, qualquer jogo "poderia" ser o
+        confronto aberto. Adivinhar analisaria o jogo errado com toda a
+        confianca."""
+        from app_core.oportunidades_core import nome_que_falta_casar
+        self.assertIsNone(nome_que_falta_casar(
+            {"casa": "Liquid", "fora": "FLY"}, "FlyQuest", "Team Liquid",
+            lambda n: ""))
+
+    def test_com_os_dois_lados_casando_nao_e_caso_de_apelido(self):
+        """Ai e o confronto de verdade, tratado pelo caminho normal."""
+        from app_core.oportunidades_core import nome_que_falta_casar
+        self.assertIsNone(nome_que_falta_casar(
+            self._jogo(), "FlyQuest", "Team Liquid",
+            lambda n: {"Liquid": "Team Liquid", "FlyQuest": "FlyQuest"}.get(str(n), "")))
+
+    def test_a_tela_DIZ_que_a_casa_tem_o_jogo(self):
+        st = _StFalso()
+        ok = m._diagnostico_do_confronto(
+            st, {"jogos": [self._jogo()]},
+            {"teamA": "FlyQuest", "teamB": "Team Liquid"}, self._resolver)
+        self.assertFalse(ok)
+        self.assertIn("TEM este confronto", st.tudo())
+        self.assertIn("Liquid", st.tudo())
+
+    def test_a_tela_NAO_diz_mais_que_o_jogo_nao_existe(self):
+        """Era a frase que contradizia a lista logo abaixo dela."""
+        st = _StFalso()
+        m._diagnostico_do_confronto(
+            st, {"jogos": [self._jogo()]},
+            {"teamA": "FlyQuest", "teamB": "Team Liquid"}, self._resolver)
+        self.assertNotIn("nao esta na Pinnacle", st.tudo())
+
+    def test_quando_a_casa_REALMENTE_nao_tem_a_frase_antiga_volta(self):
+        st = _StFalso()
+        m._diagnostico_do_confronto(
+            st, {"jogos": [{"casa": "T1", "fora": "Gen.G", "bo": 5, "liga": "LCK"}]},
+            {"teamA": "FlyQuest", "teamB": "Team Liquid"}, self._resolver)
+        self.assertIn("nao esta na Pinnacle", st.tudo())
+
+
+class TestOConsertoDeUmClique(unittest.TestCase):
+    """Dar a noticia sem o conserto deixa ele sem saida."""
+
+    def test_oferece_os_palpites_e_o_botao(self):
+        vistos = {}
+
+        class _St(_StFalso):
+            def selectbox(self, rotulo, options=None, key=None, **k):
+                vistos["rotulo"] = rotulo
+                vistos["opcoes"] = list(options or [])
+                return "Team Liquid"
+
+            def button(self, rotulo, key=None, **k):
+                vistos["botao"] = rotulo
+                return False
+
+        st = _St()
+        m._ensinar_apelido(st, lambda cru: ["Team Liquid", "Disguised"],
+                           lambda cru, esc: None, "Liquid")
+        self.assertIn("Liquid", vistos["rotulo"])
+        self.assertIn("Team Liquid", vistos["opcoes"])
+        self.assertTrue(vistos["botao"])
+
+    def test_sem_palpite_parecido_DIZ_isso(self):
+        st = _StFalso()
+        m._ensinar_apelido(st, lambda cru: [], lambda cru, esc: None, "Liquid")
+        self.assertIn("Nao achei palpite", st.tudo())
+
+    def test_sem_a_maquina_de_apelidos_aponta_a_aba_Jogos(self):
+        st = _StFalso()
+        m._ensinar_apelido(st, None, None, "Liquid")
+        self.assertIn("aba Jogos", st.tudo())

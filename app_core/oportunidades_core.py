@@ -427,3 +427,43 @@ def bo_bate(jogo: Dict[str, Any], bo_da_tela: Any) -> bool:
         return int(jogo.get("bo") or 0) == int(bo_da_tela or 0)
     except (TypeError, ValueError):
         return False
+
+
+def nome_que_falta_casar(jogo: Dict[str, Any], time_a: str, time_b: str,
+                         resolver: Callable[[str], str]) -> Optional[str]:
+    """O jogo da casa E o confronto aberto, mas um nome nao casou. Qual?
+
+    DEFEITO RELATADO POR ELE (16/09/2026, com print). Ele abriu FlyQuest x
+    Team Liquid e a tela disse "o confronto aberto nao esta na Pinnacle" --
+    e listou, tres linhas abaixo, "LCS — Liquid x FlyQuest (BO5)". O MESMO
+    jogo. A mensagem contradizia a lista logo embaixo dela.
+
+    A casa escreve "Liquid"; o CSV tem "Team Liquid". Um lado casou, o outro
+    nao, e eu tratei isso como "jogo inexistente".
+
+    "A casa nao tem esse jogo" e "a casa tem, mas o nome nao casou" pedem
+    ACOES DIFERENTES: a primeira e esperar; a segunda e ensinar um apelido,
+    uma vez, e nao volta mais. Devolver o nome cru e o que permite oferecer
+    o conserto em vez de so dar a noticia ruim.
+
+    None quer dizer "este jogo nao tem nada a ver com o confronto aberto".
+    """
+    alvos = {str(time_a or "").strip(), str(time_b or "").strip()}
+    alvos.discard("")
+    if len(alvos) < 2:
+        return None
+    try:
+        lados = [(str(jogo.get("casa") or ""), resolver(str(jogo.get("casa") or ""))),
+                 (str(jogo.get("fora") or ""), resolver(str(jogo.get("fora") or "")))]
+    except Exception:
+        return None
+
+    casaram = [cru for cru, res in lados if res and res in alvos]
+    faltaram = [cru for cru, res in lados if not res]
+    # Exatamente um lado reconhecido e exatamente um sem nome casado: e o
+    # padrao de "mesmo jogo, apelido faltando". Dois sem casar seria chute --
+    # qualquer jogo da lista "poderia" ser, e adivinhar aqui analisaria o
+    # confronto errado com toda a confianca (PRINCIPIO IV).
+    if len(casaram) == 1 and len(faltaram) == 1:
+        return faltaram[0]
+    return None
