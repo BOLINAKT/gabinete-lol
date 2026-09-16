@@ -299,3 +299,81 @@ class TestOInstanteEXATOEGuardado(unittest.TestCase):
             }), encoding="utf-8")
             r = carregar_agenda_coletada(Path(d))
         self.assertEqual(r["jogos"][0]["inicio_utc"], "")
+
+
+class TestOsAntigosSAEMDaLista(unittest.TestCase):
+    """ELE RECLAMOU DUAS VEZES, e na segunda eu entendi.
+
+    Primeiro: "a ordem so e meio cagada" -- eu ordenei e MARQUEI os antigos
+    com "JA PASSOU". Ele olhou o resultado e disse: "aqui, ainda esta o
+    mesmo".
+
+    Estava certo. Marcar nao resolve: nao existe nada a fazer com um jogo de
+    quatro meses atras numa tela de escolher confronto para apostar. Ele so
+    ocupa espaco na frente dos jogos de amanha. Meu conserto tinha tratado o
+    sintoma (a ordem) e deixado a causa (eles nao deveriam estar la).
+
+    ESCONDIDO, NUNCA APAGADO: sao jogos DELE, podem ter linha digitada junto.
+    """
+
+    def test_a_tela_esconde_o_que_ja_passou(self):
+        import inspect
+
+        from app_core import matchup_selection_core as m
+        src = inspect.getsource(m.render_matchup_selection)
+        self.assertIn("_ja_passou", src)
+        self.assertIn("main_saved_game_ver_passados", src)
+
+    def test_a_tela_DIZ_quantos_escondeu(self):
+        """Sumir em silencio trocaria um incomodo por uma duvida."""
+        import inspect
+
+        from app_core import matchup_selection_core as m
+        src = inspect.getsource(m.render_matchup_selection)
+        self.assertIn("ja aconteceram", src)
+
+    def test_o_interruptor_traz_de_volta(self):
+        import inspect
+
+        from app_core import matchup_selection_core as m
+        src = inspect.getsource(m.render_matchup_selection)
+        self.assertIn("st.checkbox", src)
+
+    def test_o_indice_guardado_e_limpo_quando_a_lista_encolhe(self):
+        """Sem isto o Streamlit estoura.
+
+        A lista encolhe quando os antigos somem; um indice salvo de antes
+        apontaria para fora dela, e o Streamlit levanta erro quando o valor
+        guardado nao esta mais entre as opcoes.
+        """
+        import inspect
+
+        from app_core import matchup_selection_core as m
+        src = inspect.getsource(m.render_matchup_selection)
+        self.assertIn("main_saved_game_idx", src)
+        self.assertIn(">= len(labels)", src)
+
+    def test_ja_passou_separa_certo_os_dois_casos(self):
+        from datetime import datetime, timezone
+
+        from app_core.agenda_coletada_core import ja_passou
+        agora = datetime(2026, 9, 16, 12, 0, tzinfo=timezone.utc)
+        self.assertTrue(ja_passou({"date": "15/05", "time": "13:00"}, agora))
+        self.assertFalse(ja_passou({"inicio_utc": "2026-09-20T17:00:00Z"}, agora))
+
+    def test_jogo_que_comecou_ha_pouco_NAO_conta_como_passado(self):
+        """Serie de BO5 dura horas; sumir no meio dela seria perder o jogo."""
+        from datetime import datetime, timezone
+
+        from app_core.agenda_coletada_core import ja_passou
+        agora = datetime(2026, 9, 16, 12, 0, tzinfo=timezone.utc)
+        self.assertFalse(ja_passou({"inicio_utc": "2026-09-16T10:00:00Z"}, agora))
+
+    def test_jogo_sem_data_NAO_e_tratado_como_passado(self):
+        """PRINCIPIO IV: "nao sei quando e" nao vira "ja foi", que sumiria
+        com ele da lista sem ninguem poder conferir."""
+        from datetime import datetime, timezone
+
+        from app_core.agenda_coletada_core import ja_passou
+        agora = datetime(2026, 9, 16, 12, 0, tzinfo=timezone.utc)
+        self.assertFalse(ja_passou({"date": "", "time": ""}, agora))

@@ -11,6 +11,7 @@ BO_OPTIONS: List[int] = [1, 3, 5]
 
 from app_core.agenda_coletada_core import (
     ORIGEM_COLETADO as _ORIGEM_COLETADO,
+    ja_passou as _ja_passou,
     rotulo_do_jogo as _rotulo_do_jogo,
 )
 from app_core.flow_runtime_core import (
@@ -136,6 +137,31 @@ def render_matchup_selection(
         games = _jogos_do_seletor(session_state)
         if isinstance(games, list) and games:
             with st.expander("Selecionar jogo salvo (Agenda)", expanded=False):
+                # JOGO QUE JA ACONTECEU SAI DA LISTA (16/09/2026).
+                #
+                # Ele reclamou duas vezes. Na primeira eu ORDENEI e marquei os
+                # antigos com "JA PASSOU"; ele olhou e disse "aqui, ainda esta
+                # o mesmo". Estava certo: marcar nao resolve. Nao existe nada
+                # a fazer com um jogo de quatro meses atras numa tela de
+                # escolher confronto para apostar -- ele so ocupa espaco na
+                # frente dos jogos de amanha.
+                #
+                # ESCONDIDO, NUNCA APAGADO: sao jogos DELE, e podem ter linha
+                # digitada junto. O interruptor traz de volta, e a contagem
+                # diz que existem -- sumir em silencio seria trocar um
+                # incomodo por uma duvida.
+                _passados = [g for g in games if _ja_passou(g)]
+                _ver_passados = False
+                if _passados:
+                    _ver_passados = bool(st.checkbox(
+                        "Mostrar tambem os {} jogo(s) que ja aconteceram".format(
+                            len(_passados)),
+                        value=False,
+                        key="main_saved_game_ver_passados",
+                    ))
+                if not _ver_passados:
+                    games = [g for g in games if not _ja_passou(g)]
+
                 labels: list[str] = [_rotulo_do_jogo(g) for g in games]
                 _n_coletados = sum(
                     1 for g in games
@@ -145,6 +171,18 @@ def render_matchup_selection(
                         "{} jogo(s) vieram do calendario sozinhos, marcados com "
                         "**do calendario**. Nao precisa importar nada."
                         .format(_n_coletados))
+                if not labels:
+                    st.caption("Nenhum jogo por vir na lista.")
+
+                # A lista encolhe quando os antigos somem. Um indice guardado
+                # de antes apontaria para fora dela -- e o Streamlit estoura
+                # quando o valor salvo nao esta mais entre as opcoes.
+                _guardado = session_state.get("main_saved_game_idx")
+                try:
+                    if int(_guardado) >= len(labels):
+                        session_state["main_saved_game_idx"] = -1
+                except (TypeError, ValueError):
+                    pass
 
                 pick = st.selectbox(
                     "Jogo salvo",
