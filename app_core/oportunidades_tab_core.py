@@ -28,8 +28,10 @@ from typing import Any, Callable, Dict, List, Mapping, Optional
 
 from app_core.odds_coletadas_core import (
     carregar_diario,
+    carregar_movimento,
     carregar_odds_coletadas,
     houve_bloqueio,
+    movimento_da_linha,
     resumo_da_corrida,
 )
 from app_core.oportunidades_core import (
@@ -111,6 +113,13 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
                              prob_de_vencedor=_vencedor)
 
     todas = list(r.get("todas") or [])
+    # DE ONDE CADA PRECO VEIO. Nao e a abertura -- e o primeiro que NOS vimos.
+    _mov = carregar_movimento(raiz)
+    _por_chave = {str(l.get("chave") or ""): l for l in (odds.get("linhas") or [])
+                  if isinstance(l, dict)}
+    for _a in todas:
+        _crua = _por_chave.get(_chave_do_achado(_a, _por_chave))
+        _a["_movimento"] = movimento_da_linha(_crua or {}, _mov)
     if todas:
         # O MERCADO PRIMEIRO, a aposta depois. Foi o que ele pediu: "eu
         # selecionaria por exemplo, Vencedor e voce me mostraria a tela com a
@@ -182,6 +191,28 @@ def _nome_do_lado(a: Mapping[str, Any]) -> str:
     return lado or "?"
 
 
+def _texto_do_movimento(a: Mapping[str, Any]) -> str:
+    """De onde este preco veio, sem chamar de "abertura".
+
+    ELE OBSERVOU (16/09/2026): "voce pode estar pegando algo que ja mudou de
+    odd ja tem um tempo... ate porque voce nao pega a abertura". Certissimo: o
+    robo le de 3 em 3 horas, entao o primeiro preco que vemos e o que estava
+    la quando ele passou.
+
+    Entao a tela diz "visto desde", nunca "abriu em". O nome errado
+    transformaria uma limitacao conhecida numa afirmacao falsa. E uma leitura
+    so NAO vira "0% de movimento": foto nao e serie.
+    """
+    m = a.get("_movimento") or {}
+    if not m.get("sabido"):
+        if m.get("leituras"):
+            return "visto 1x"
+        return ""
+    v = float(m.get("variacao_pct") or 0.0)
+    seta = "sobe" if v > 0 else "cai"
+    return "{} {:+.1f}% desde {}".format(seta, v, str(m.get("quando") or "")[5:16].replace("T", " "))
+
+
 def _linha_comparada(a: Mapping[str, Any]) -> str:
     v = a.get("vantagem_pct")
     try:
@@ -207,7 +238,8 @@ def _linha_comparada(a: Mapping[str, Any]) -> str:
         "<div><b>{lado}</b>{marcas}<div style='opacity:0.45;font-size:0.74em;'>"
         "limite {lim}</div></div>"
         "<div style='text-align:right;color:{cm};font-weight:700;'>{justa}</div>"
-        "<div style='text-align:right;color:{cc};font-weight:700;'>{casa}</div>"
+        "<div style='text-align:right;color:{cc};font-weight:700;'>{casa}"
+        "<div style='opacity:0.45;font-size:0.7em;font-weight:400;'>{mov}</div></div>"
         "<div style='text-align:right;color:{cv};font-weight:800;'>{vant}</div>"
         "</div>"
     ).format(
@@ -215,6 +247,7 @@ def _linha_comparada(a: Mapping[str, Any]) -> str:
         lim=(limite if limite is not None else "—"),
         cm=_COR_MODELO, justa=_fmt(a.get("odd_justa")),
         cc=_COR_CASA, casa=_fmt(a.get("odd_casa")),
+        mov=escape(_texto_do_movimento(a)),
         cv=cor_v, vant=("{:+.2f}%".format(vf) if vf == vf else "—"),
     )
 
@@ -401,6 +434,23 @@ def _listar_o_que_a_casa_tem(st: Any, jogos: List[Mapping[str, Any]]) -> None:
     for j in jogos:
         st.caption("· {} — {} x {} (BO{})".format(
             j.get("liga"), j.get("casa"), j.get("fora"), j.get("bo")))
+
+
+def _chave_do_achado(achado: Mapping[str, Any], por_chave: Mapping[str, Any]) -> str:
+    """Acha a linha CRUA que deu origem a este achado.
+
+    O achado perde a chave no caminho (ele e montado pelo nucleo, que nao
+    precisa dela). Em vez de remontar a chave aqui -- o que seria uma segunda
+    implementacao da identidade da aposta, e elas divergem -- procura-se a
+    linha crua que bate em jogo, mercado, lado e pontos.
+    """
+    alvo = (achado.get("jogo"), str(achado.get("mercado") or ""),
+            str(achado.get("lado") or ""), achado.get("pontos"))
+    for chave, crua in (por_chave or {}).items():
+        if (crua.get("jogo"), str(crua.get("mercado") or ""),
+                str(crua.get("lado") or ""), crua.get("pontos")) == alvo:
+            return chave
+    return ""
 
 
 def _montar_prob_de_vencedor(st: Any, confronto: Mapping[str, Any],

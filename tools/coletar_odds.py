@@ -393,6 +393,16 @@ def normalizar(matchups: Any, mercados: Any, *, so_lol: bool = True,
                     # Maps - serie"... -- o que distingue uma linha de kills
                     # de uma de mapas.
                     "mercado": rotulo,
+                    # A IDENTIDADE DA APOSTA, no proprio retrato.
+                    #
+                    # ELE OBSERVOU (16/09/2026): "voce pode estar pegando algo
+                    # que na realidade ja mudou de odd ja tem um tempo, ele nao
+                    # necessariamente abriu nessa odd ai... ate porque voce nao
+                    # pega a abertura". Esta certo. Com a chave aqui, a tela
+                    # consegue cruzar cada linha com o historico e mostrar
+                    # DESDE QUANDO aquele preco esta ali e para onde ele andou.
+                    # Nao e a abertura -- e o primeiro preco que NOS vimos, e a
+                    # tela diz isso com essas palavras.
                     # A UNIDADE como campo proprio, nao so dentro do texto.
                     # Quem for comparar com a odd justa do modelo precisa
                     # saber se a linha e de kills, de torre ou de mapas; ler
@@ -402,6 +412,7 @@ def normalizar(matchups: Any, mercados: Any, *, so_lol: bool = True,
                     # nomeia unidade nenhuma.
                     "unidade": unidade,
                 })
+                linhas[-1]["chave"] = chave_da_linha(linhas[-1])
 
     # PRIMEIRA PASSADA: as partidas de verdade.
     #

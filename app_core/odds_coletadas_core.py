@@ -163,3 +163,88 @@ def houve_bloqueio(corridas: List[Dict[str, Any]]) -> bool:
     muda o que fazer; janela atrasada pelo GitHub nao e nada.
     """
     return any(str(c.get("resultado") or "") == "bloqueado" for c in (corridas or []))
+
+
+# --- O MOVIMENTO DO PRECO (16/09/2026) ---
+#
+# ELE OBSERVOU, e estava certo: "voce pode estar pegando algo que na realidade
+# ja mudou de odd ja tem um tempo, ele nao necessariamente abriu nessa odd ai
+# que voce esta pegando, ate porque voce nao pega a abertura".
+#
+# E verdade e nao tem como ser diferente: o robo le de 3 em 3 horas, entao o
+# primeiro preco que vemos e o que estava la quando ele passou -- nao o que a
+# casa abriu. Entre a abertura e a nossa primeira leitura pode ter entrado
+# dinheiro e movido a linha.
+#
+# O que DA para fazer, e o que fazemos: mostrar desde quando aquele preco esta
+# sendo visto e para onde andou. E chamar isso de "primeiro preco que vimos",
+# nunca de "abertura" -- o nome errado transformaria uma limitacao conhecida
+# numa afirmacao falsa.
+#
+# Por que o movimento importa: a linha andando CONTRA o seu lado quer dizer
+# que o dinheiro esta indo para o outro lado. Nao prova nada sozinho, mas e
+# informacao que nenhuma tela dava ate aqui.
+
+NOME_DO_HISTORICO = "odds_pinnacle_historico.jsonl"
+
+
+def carregar_movimento(raiz: Path, *, nome: str = NOME_DO_HISTORICO) -> Dict[str, Any]:
+    """chave da aposta -> o que ja foi visto dela, em ordem de leitura.
+
+    Devolve, por chave: o primeiro preco visto, quando, e quantas leituras.
+    Dicionario vazio quer dizer "ainda nao ha historico" -- nao e erro.
+    """
+    alvo = Path(raiz) / str(nome)
+    if not alvo.exists():
+        return {}
+    fora: Dict[str, Any] = {}
+    try:
+        for bruta in alvo.read_text(encoding="utf-8").splitlines():
+            bruta = bruta.strip()
+            if not bruta:
+                continue
+            try:
+                d = json.loads(bruta)
+            except ValueError:
+                continue
+            chave = str(d.get("chave") or "")
+            odd = d.get("odd")
+            quando = str(d.get("lido_em") or "")
+            if not chave or odd is None:
+                continue
+            reg = fora.setdefault(chave, {"primeiro": None, "quando": "", "leituras": 0})
+            if reg["primeiro"] is None:
+                reg["primeiro"] = float(odd)
+                reg["quando"] = quando
+            reg["leituras"] += 1
+    except OSError:
+        return {}
+    return fora
+
+
+def movimento_da_linha(linha: Dict[str, Any], movimento: Dict[str, Any]) -> Dict[str, Any]:
+    """Quanto esta aposta andou desde a primeira vez que a vimos.
+
+    PRINCIPIO IV: sem historico, devolve "nao sei" -- e nao "nao andou".
+    Zero de movimento e uma AFIRMACAO, e afirmar isso sobre uma linha que
+    vimos uma vez so seria inventar estabilidade que ninguem observou.
+    """
+    vazio = {"sabido": False, "primeiro": None, "quando": "", "leituras": 0,
+             "variacao_pct": None}
+    chave = str((linha or {}).get("chave") or "")
+    reg = (movimento or {}).get(chave)
+    if not chave or not isinstance(reg, dict) or reg.get("primeiro") is None:
+        return vazio
+    try:
+        agora = float(linha.get("odd"))
+        antes = float(reg["primeiro"])
+    except (TypeError, ValueError):
+        return vazio
+    if antes <= 0 or int(reg.get("leituras") or 0) < 2:
+        # Uma leitura so nao e movimento: e uma foto. Dizer "0%" daria a
+        # impressao de linha estavel sem ninguem ter visto duas vezes.
+        return {**vazio, "primeiro": antes, "quando": reg.get("quando", ""),
+                "leituras": int(reg.get("leituras") or 0)}
+    return {"sabido": True, "primeiro": antes, "quando": str(reg.get("quando") or ""),
+            "leituras": int(reg.get("leituras") or 0),
+            "variacao_pct": 100.0 * (agora - antes) / antes}

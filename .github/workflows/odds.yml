@@ -16,9 +16,11 @@
 # O risco NÃO é a conta de aposta dele: nada aqui usa login. É bloqueio de IP,
 # que tiraria o acesso ao site de onde ele aposta. Por isso a educação é parte
 # do desenho, não enfeite:
-#   - DUAS requisições por corrida para o retrato geral, de 3 em 3 horas,
-#     mais uma varredura dos jogos que estão para começar, com TETO de 40
-#     chamadas e pausa entre elas. No pior caso 42 por corrida.
+#   - DUAS requisições por corrida para o retrato geral, mais uma varredura
+#     dos jogos que estão para começar, com TETO de 40 chamadas e pausa entre
+#     elas. No pior caso 42 por corrida. Na prática são ~4: medido em
+#     16/09/2026, uma corrida leu 10 séries e 322 linhas com quatro pedidos.
+#   - 21 corridas por dia: 8 da base (de 3 em 3h) + 13 perto do apito.
 #   - User-Agent que diz quem é e para quê.
 #   - 403/429 PARA na hora e sai com rc=75. Não insiste, não tenta contornar,
 #     não troca de identidade. Se eles não quiserem, a resposta é parar.
@@ -44,7 +46,35 @@ name: Odds (preço da Pinnacle)
 
 on:
   schedule:
+    # BASE, de 3 em 3 horas: constroi o histórico de movimento do preço.
     - cron: "25 0,3,6,9,12,15,18,21 * * *"
+    # PERTO DO APITO, aos :50 de cada hora entre 08h e 20h UTC.
+    #
+    # POR QUE (16/09/2026). Ele observou: "você pode estar pegando algo que na
+    # realidade já mudou de odd já tem um tempo... até porque você não pega a
+    # abertura". Está certo — e a pesquisa que ele mandou fazer mostrou que o
+    # buraco de verdade é OUTRO:
+    #
+    #   · o CLV só precisa do preço que ele pegou e do FECHAMENTO —
+    #     "Opening odds are irrelevant to calculating CLV";
+    #   · o fechamento é MAIS afiado que a abertura, não o contrário;
+    #   · e a abertura da Pinnacle já é quase tão eficiente quanto o
+    #     fechamento dela: "almost no difference in market efficiency between
+    #     Pinnacle's opening and closing prices", em 147.629 jogos
+    #     (football-data.co.uk/blog/opening_price_wisdom.php).
+    #
+    # Ou seja: não pegar a abertura não quebra a régua. Não pegar o FECHAMENTO
+    # quebra. E com o cron antigo a última leitura antes de um jogo podia
+    # ficar 2h35 atrás dele.
+    #
+    # MEDIDO na agenda: os jogos de LoL começam na HORA CHEIA (09, 10, 12, 14,
+    # 15, 16 e 20 UTC). Lendo aos :50, a última leitura fica ~10 minutos antes
+    # do apito — isso é linha de fechamento de verdade, não aproximação.
+    #
+    # Os :50 e não :55 de propósito: o agendador do GitHub atrasa, e uma
+    # leitura que chega depois do apito não pega nada (o mercado pré-jogo
+    # some, e o coletor descarta o que está ao vivo).
+    - cron: "50 8-20 * * *"
   workflow_dispatch: {}
 
 permissions:
