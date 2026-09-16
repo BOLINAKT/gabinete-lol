@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-09-16T10:42:38-03:00",
+  "gerado_em": "2026-09-16T15:24:12-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 38,
     "passados": 0,
-    "indefinidos": 23,
+    "indefinidos": 25,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "16/09",
-      "time": "11:00",
-      "league": "Hitpoint Masters",
-      "teamA_raw": "eSuba",
-      "teamB_raw": "UP2U Meavedron",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-16T14:00:00Z"
-    },
     {
       "date": "16/09",
       "time": "13:00",
@@ -27,17 +17,17 @@
       "teamA_raw": "Pyramid IV Esports",
       "teamB_raw": "JSK Gamefy",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-16T16:00:00Z"
     },
     {
       "date": "16/09",
       "time": "13:00",
       "league": "NLC",
-      "teamA_raw": "Verdant",
-      "teamB_raw": "Ruddy Corporation",
+      "teamA_raw": "Ruddy Corporation",
+      "teamB_raw": "Verdant",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-16T16:00:00Z"
     },
     {
@@ -49,6 +39,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-09-17T09:00:00Z"
+    },
+    {
+      "date": "17/09",
+      "time": "11:00",
+      "league": "Hitpoint Masters",
+      "teamA_raw": "eSuba",
+      "teamB_raw": "CITA Kaizen",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-17T14:00:00Z"
     },
     {
       "date": "17/09",
