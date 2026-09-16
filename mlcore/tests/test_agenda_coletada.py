@@ -124,12 +124,23 @@ class TestAIdadeVemJunto(_ComPasta):
         self.assertIsNone(carregar_agenda_coletada(self.raiz)["idade_horas"])
 
     def test_a_tela_avisa_quando_a_coleta_esta_velha(self):
+        """O aviso MUDOU DE LUGAR em 16/09/2026, e quase se perdeu.
+
+        Ele vivia no painel de importar jogos. Quando esse painel encolheu (a
+        pedido dele: "isso aqui nao precisa mais, ate porque voce ja pega"), o
+        aviso sumiu junto -- e foi ESTE TESTE que acusou. Sem ele, uma coleta
+        travada ofereceria os jogos de ontem com toda a confianca do mundo, e
+        o sintoma apareceria como "esse jogo nao existe".
+
+        O aviso passou para o SELETOR DE CONFRONTO, que e onde os jogos
+        coletados aparecem agora.
+        """
         import inspect
 
-        from app_core import schedule_agenda_ui_core as m
-        src = inspect.getsource(m.render_schedule_agenda_expander)
+        from app_core import matchup_selection_core as m
+        src = inspect.getsource(m.render_matchup_selection)
         self.assertIn("idade_horas", src)
-        self.assertIn("velha", src.lower())
+        self.assertIn("coleta do calendario tem", src.lower())
 
 
 class TestOBODeCadaJogoVence(unittest.TestCase):
@@ -156,12 +167,19 @@ class TestOBODeCadaJogoVence(unittest.TestCase):
         self.assertEqual(bo_do_jogo("texto", 5), 5)
 
     def test_a_tela_usa_o_bo_por_jogo(self):
+        """O BO de CADA jogo vence o plano B.
+
+        O segundo argumento deixou de ser o seletor "BO padrao" da tela (que
+        saiu em 16/09/2026 junto com a importacao por texto) e passou a ser um
+        3 fixo: o plano B agora vale so quando NINGUEM disse qual e o formato,
+        em vez de um seletor global carimbando todos os jogos iguais.
+        """
         import inspect
 
         from app_core import schedule_agenda_ui_core as m
         src = inspect.getsource(m.render_schedule_agenda_expander)
-        self.assertIn("_bo_do_jogo(g, default_bo)", src)
-        self.assertNotIn('"bo": int(default_bo)', src)
+        self.assertIn("_bo_do_jogo(g, ", src)
+        self.assertNotIn("default_bo", src)
 
 
 class TestOAppNaoVaiARede(unittest.TestCase):

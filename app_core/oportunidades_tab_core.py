@@ -101,6 +101,8 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     else:
         st.caption(carimbo)
 
+    _jogos_que_dao = _diagnostico_do_confronto(st, odds, confronto, resolver)
+
     corte = st.selectbox(
         "Mostrar a partir de qual vantagem",
         OPCOES_DE_CORTE,
@@ -119,11 +121,74 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         st.markdown("#### {} aposta(s) com vantagem".format(len(achados)))
         for a in achados:
             _cartao(st, a)
-    else:
+    elif _jogos_que_dao:
         st.info("Nenhuma aposta com vantagem de {}% ou mais nas linhas que "
                 "este painel sabe precificar.".format(_fmt(corte, 0)))
 
     _o_que_ficou_de_fora(st, r, nao_casados)
+
+
+def _diagnostico_do_confronto(st: Any, odds: Mapping[str, Any],
+                              confronto: Mapping[str, Any],
+                              resolver: Optional[Callable[[str], str]]) -> bool:
+    """Diz POR QUE a tela pode estar vazia, em vez de deixar ele adivinhar.
+
+    ELE PERGUNTOU DUAS VEZES (16/09/2026): "nao entendi, ate agora porque nao
+    esta mostrando nada, voce nao disse que ja estava conseguindo pegar pelo
+    menos as odds dos ml's?".
+
+    A resposta era simples e a tela nao dava: o confronto que ele tinha aberto
+    era eSuba x Meavedron, do Hitpoint Masters -- e a Pinnacle NAO OFERECE
+    Hitpoint Masters. Nao havia o que comparar.
+
+    So que a tela dizia "nenhuma aposta com vantagem", que soa como "procurei
+    e nao achei nada bom". Sao coisas MUITO diferentes para quem vai apostar,
+    e viraram a mesma frase. Agora ela diz qual e o confronto aberto, se a
+    casa tem esse jogo, e QUAIS jogos ela tem -- que e a informacao que
+    resolve: basta abrir um deles.
+
+    Devolve True quando havia como precificar alguma coisa.
+    """
+    jogos = [j for j in (odds.get("jogos") or []) if isinstance(j, dict)]
+    time_a = str((confronto or {}).get("teamA") or "")
+    time_b = str((confronto or {}).get("teamB") or "")
+
+    if not (time_a and time_b):
+        st.info("Escolha um confronto e clique em **Analisar Confronto**. "
+                "O mercado de vencedor e comparado para o confronto aberto.")
+        _listar_o_que_a_casa_tem(st, jogos)
+        return False
+
+    achou = None
+    if resolver is not None:
+        for j in jogos:
+            if mesmo_confronto(j, time_a, time_b, resolver) is not None:
+                achou = j
+                break
+
+    if achou is None:
+        st.warning(
+            "O confronto aberto (**{} x {}**) nao esta na Pinnacle, entao nao "
+            "ha odd dela para comparar. Ela cobre poucas ligas.".format(
+                time_a, time_b))
+        _listar_o_que_a_casa_tem(st, jogos)
+        return False
+
+    st.caption("Comparando o confronto aberto: **{} x {}** (BO{} na casa).".format(
+        achou.get("casa"), achou.get("fora"), achou.get("bo")))
+    return True
+
+
+def _listar_o_que_a_casa_tem(st: Any, jogos: List[Mapping[str, Any]]) -> None:
+    """Os jogos que a casa oferece. Abrir um deles e o que resolve."""
+    if not jogos:
+        st.caption("A ultima coleta nao trouxe jogo nenhum da Pinnacle.")
+        return
+    st.caption("Jogos que a Pinnacle oferece nesta leitura -- abra um deles "
+               "para o painel ter o que comparar:")
+    for j in jogos:
+        st.caption("· {} — {} x {} (BO{})".format(
+            j.get("liga"), j.get("casa"), j.get("fora"), j.get("bo")))
 
 
 def _montar_prob_de_vencedor(st: Any, confronto: Mapping[str, Any],

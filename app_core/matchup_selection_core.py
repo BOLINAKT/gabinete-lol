@@ -88,7 +88,8 @@ def _resolver_time_salvo(session_state: Any, cru: str, times: Sequence[str]) -> 
         return ""
 
 
-def _jogos_do_seletor(session_state: dict[str, Any]) -> list[dict[str, Any]]:
+def _jogos_do_seletor(session_state: dict[str, Any]) -> tuple[list[dict[str, Any]],
+                                                              dict[str, Any]]:
     """Os jogos salvos DELE mais os que o robo coletou, numa lista so.
 
     ELE RELATOU com print (16/09/2026): abriu o seletor e so viu tres jogos de
@@ -113,10 +114,10 @@ def _jogos_do_seletor(session_state: dict[str, Any]) -> list[dict[str, Any]]:
             juntar_para_escolher,
         )
         raiz = Path(__file__).resolve().parents[1]
-        coletados = carregar_agenda_coletada(raiz).get("jogos") or []
-        return juntar_para_escolher(salvos, coletados)
+        coleta = carregar_agenda_coletada(raiz)
+        return juntar_para_escolher(salvos, coleta.get("jogos") or []), coleta
     except Exception:
-        return list(salvos)
+        return list(salvos), {}
 
 
 def render_matchup_selection(
@@ -134,7 +135,7 @@ def render_matchup_selection(
     st.subheader("Confronto")
 
     if flow_stage == "select":
-        games = _jogos_do_seletor(session_state)
+        games, _coleta = _jogos_do_seletor(session_state)
         if isinstance(games, list) and games:
             with st.expander("Selecionar jogo salvo (Agenda)", expanded=False):
                 # JOGO QUE JA ACONTECEU SAI DA LISTA (16/09/2026).
@@ -166,11 +167,28 @@ def render_matchup_selection(
                 _n_coletados = sum(
                     1 for g in games
                     if str(g.get("origem") or "") == _ORIGEM_COLETADO)
+                # A IDADE DA COLETA, aqui, porque e AQUI que os jogos
+                # aparecem agora. Ela vivia no painel de importacao; quando
+                # esse painel encolheu (16/09/2026, a pedido dele), o aviso
+                # sumiu junto -- e sem ele uma coleta travada oferece os jogos
+                # de ontem com toda a confianca do mundo. O sintoma apareceria
+                # como "esse jogo nao existe", que nao aponta para a causa.
+                _idade = _coleta.get("idade_horas")
                 if _n_coletados:
+                    _selo = ("coletados ha {:.0f}h".format(_idade)
+                             if isinstance(_idade, (int, float))
+                             else "sem data de coleta")
                     st.caption(
-                        "{} jogo(s) vieram do calendario sozinhos, marcados com "
-                        "**do calendario**. Nao precisa importar nada."
-                        .format(_n_coletados))
+                        "{} jogo(s) vieram do calendario sozinhos ({}), "
+                        "marcados com **do calendario**. Nao precisa importar "
+                        "nada.".format(_n_coletados, _selo))
+                if isinstance(_idade, (int, float)) and _idade > 24.0:
+                    st.warning(
+                        "A coleta do calendario tem {:.0f} horas. O robo roda "
+                        "de 3 em 3 -- se esta velha, alguma corrida falhou, e "
+                        "pode faltar jogo novo aqui.".format(_idade))
+                elif _coleta.get("motivo"):
+                    st.caption("Calendario indisponivel: {}".format(_coleta["motivo"]))
                 if not labels:
                     st.caption("Nenhum jogo por vir na lista.")
 

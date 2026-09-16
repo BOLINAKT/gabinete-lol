@@ -45,61 +45,37 @@ def render_schedule_agenda_expander(
     app_root: Path,
     teams: Sequence[str],
 ) -> None:
-    with st.expander("Jogos (agenda) - colar / adicionar", expanded=False):
-        st.caption("Cole aqui um bloco de jogos (data, hora, time A, time B). O app tenta inferir a liga pelos cabeçalhos e te pede para mapear times desconhecidos.")
+    with st.expander("Agenda - jogo manual e limpeza", expanded=False):
+        # O QUE SAIU DAQUI, E POR QUE (16/09/2026).
+        #
+        # Ele olhou este painel e disse: "isso aqui nao precisa mais eu acho,
+        # ate porque voce ja pega". Tinha razao na maior parte. Sairam:
+        #   - a caixa de COLAR jogos e o "Processar texto";
+        #   - o "BO padrao (para os jogos importados)";
+        #   - o botao "Trazer os jogos coletados".
+        #
+        # O robo baixa a agenda de 3 em 3 horas e os jogos entram DIRETO no
+        # seletor de confronto, marcados "do calendario". Importar virou um
+        # passo que nao leva a lugar nenhum.
+        #
+        # O QUE FICOU, porque nao tem substituto em lugar nenhum do app:
+        #   - LIMPAR A AGENDA: unico jeito de apagar jogos salvos antigos;
+        #   - ADICIONAR 1 JOGO MANUAL: para o que o calendario da Riot nao
+        #     tiver (chave que so definiu tarde, liga fora da cobertura).
+        st.caption("Os jogos do calendario entram sozinhos no seletor de "
+                   "confronto, marcados **do calendario** — nao e preciso "
+                   "importar nada aqui. Este painel serve para o que o "
+                   "calendario nao traz, e para limpar a lista.")
 
         _alias_path = app_root / "user_team_aliases.json"
-
-        # ---- UI de importação ----
-        session_state.setdefault("plays_schedule_default_bo", 3)
-        default_bo = st.selectbox("BO padrão (para os jogos importados)", [1, 3, 5], key="plays_schedule_default_bo")
-
-        txt = st.text_area(
-            "Cole os jogos aqui (formato livre)",
-            height=220,
-            key="plays_schedule_text",
-            placeholder="Ex.:\\nLeague IconLCKFlag Icon\\n22/01\\n05:00\\nBRION\\nHanwha Life Esports\\n-\\n-\\n..."
-        )
         persist_schedule_runtime_state(session_state)
+        txt = ""
+        parse_clicked = False
 
-        # ---- AGENDA COLETADA SOZINHA (15/09/2026) ----
-        # O robo baixa a agenda e grava agenda_coletada.json. Aqui ela so
-        # entra na MESMA previa que o texto colado alimenta — mapeamento de
-        # times, apelidos aprendidos e "Adicionar a agenda" continuam iguais.
-        # O app NAO vai a rede: quem coleta e o robo, e o app so le o arquivo.
-        _agenda_auto = carregar_agenda_coletada(app_root)
-        if _agenda_auto.get("jogos"):
-            _idade = _agenda_auto.get("idade_horas")
-            _selo = ("coletada ha {:.0f}h".format(_idade)
-                     if isinstance(_idade, (int, float)) else "sem data de coleta")
-            _velha = isinstance(_idade, (int, float)) and _idade > 24.0
-            st.caption("{} jogo(s) disponiveis da coleta automatica ({}).{}".format(
-                len(_agenda_auto["jogos"]), _selo,
-                "  **A coleta esta velha — confira antes de usar.**" if _velha else ""))
-            if st.button("Trazer os jogos coletados", width='stretch',
-                         key="plays_schedule_auto_btn"):
-                save_pending_schedule_import(session_state, _agenda_auto["jogos"])
-                st.success("{} jogo(s) na previa. Confira o mapeamento e clique "
-                           "em **Adicionar a agenda**.".format(len(_agenda_auto["jogos"])))
-                st.rerun()
-        elif _agenda_auto.get("motivo"):
-            # Dizer POR QUE nao ha coleta vale mais que esconder o botao: sem
-            # isso, "nao tem jogo" e "nao consegui coletar" ficam iguais.
-            st.caption("Coleta automatica indisponivel: {}".format(_agenda_auto["motivo"]))
-
-        cA, cB, cC = st.columns([1, 1, 2])
-        with cA:
-            parse_clicked = st.button("Processar texto", width='stretch', key="plays_schedule_parse_btn")
-        with cB:
-            clear_clicked = st.button("Limpar texto", width='stretch', key="plays_schedule_clear_btn")
-        with cC:
-            if st.button("Limpar agenda (lista atual)", width='stretch', key="plays_schedule_clear_list"):
-                clear_schedule_games(session_state)
-                st.success("Agenda limpa.")
-
-        if clear_clicked:
-            clear_schedule_text(session_state)
-            st.rerun()
+        if st.button("Limpar agenda (lista atual)", width='stretch',
+                     key="plays_schedule_clear_list"):
+            clear_schedule_games(session_state)
+            st.success("Agenda limpa.")
 
         with st.expander("Adicionar 1 jogo manual", expanded=False):
             session_state.setdefault("plays_manual_date", "")
@@ -122,10 +98,13 @@ def render_schedule_agenda_expander(
             with cM5:
                 m_teamB = st.text_input("Time B (como você tem)", key="plays_manual_teamB", placeholder="Hanwha Life Esports")
             with cM6:
-                # widget renderiza o seletor; o valor não é lido (o BO dos
-                # jogos importados vem do default_bo acima) — herdado do bloco
-                # original do plays_app.
-                st.selectbox("BO", [1, 3, 5], key="plays_manual_bo")
+                # ESTE VALOR ERA DESENHADO E NUNCA LIDO. O comentario antigo
+                # dizia isso em voz alta: o BO vinha do "BO padrao" la de
+                # cima, igual para todos. Era o mesmo defeito que ele relatou
+                # no seletor de confronto -- um BO5 tratado como BO3 muda a
+                # odd da serie inteira. Com o "BO padrao" removido, agora o
+                # numero escolhido aqui e o que vale.
+                m_bo = st.selectbox("BO", [1, 3, 5], key="plays_manual_bo")
 
             if st.button("Adicionar (vai pedir mapeamento se precisar)", width='stretch', key="plays_manual_add"):
                 # valida mínimo
@@ -139,6 +118,7 @@ def render_schedule_agenda_expander(
                         "league": m_league.strip(),
                         "teamA_raw": m_teamA.strip(),
                         "teamB_raw": m_teamB.strip(),
+                        "bo": int(m_bo),
                     })
                     save_pending_schedule_import(session_state, pending_now)
                     st.success("Adicionado à prévia. Agora mapeie (se necessário) e clique em **Adicionar à agenda**.")
@@ -226,7 +206,10 @@ def render_schedule_agenda_expander(
                         # seletor de BO padrao vira so o plano B — antes ele
                         # carimbava o mesmo formato em todos os jogos, e um
                         # BO5 lido como BO3 muda a odd da serie inteira.
-                        "bo": _bo_do_jogo(g, default_bo),
+                        # O BO do proprio jogo. Cai em 3 so quando ninguem
+                        # disse qual e -- e nao mais num seletor global que
+                        # carimbava o mesmo formato em todos.
+                        "bo": _bo_do_jogo(g, 3),
                         "lines": "",
                     })
 

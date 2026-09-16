@@ -166,8 +166,9 @@ class TestATelaUSAOJuntador(unittest.TestCase):
 
         est = _EstadoQueSoTemOsSalvos()
         est["games_list"] = [_salvo()]
-        saida = m._jogos_do_seletor(est)
+        saida, coleta = m._jogos_do_seletor(est)
         self.assertTrue(any(j.get("teamA") == "Barcząca Esports" for j in saida))
+        self.assertIsInstance(coleta, dict)
 
 
 class TestSemRede(unittest.TestCase):
