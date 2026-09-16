@@ -159,3 +159,42 @@ class TestATelaCHAMAODiagnostico(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestAAbaLeOMESMONumeroQueOCard(unittest.TestCase):
+    """DOIS NUMEROS PARA A MESMA PERGUNTA -- relatado por ele em 16/09/2026.
+
+    Ele mandou dois prints do MESMO confronto:
+        aba Oportunidades:  eSuba 1.85   Meavedron 2.18
+        card Visao Geral:   eSuba 1.71   Meavedron 2.40
+    e escreveu: "esta pegando uma odd do modelo que nao existe".
+
+    Tinha razao. O card (e a Analise de Linha, e o entre-mapas) leem
+    `_p_map_used`/`_p_series_used` -- o FIM do caminho, depois das camadas de
+    escalacao e do ajuste de serie. Eu estava passando `p_map_cal`/`p_series`,
+    que sao o MEIO. Mesma pergunta, duas respostas.
+
+    E a doenca que este projeto passou a sessao inteira combatendo: existe um
+    modulo (mlcore/replay_pre_jogo) escrito porque ja houve TRES
+    implementacoes da probabilidade pre-jogo.
+    """
+
+    def test_a_aba_recebe_o_numero_do_FIM_do_caminho(self):
+        from pathlib import Path
+        raiz = Path(__file__).resolve().parents[2]
+        src = (raiz / "plays_app.py").read_text(encoding="utf-8")
+        corte = src.split("TAB_OPORTUNIDADES: lambda:", 1)[1][:2000]
+        self.assertIn('_p_map_used', corte)
+        self.assertIn('_p_series_used', corte)
+
+    def test_a_expressao_e_a_MESMA_que_o_card_usa(self):
+        """Letra por letra: se as duas divergirem de novo, os numeros
+        divergem junto, e o sintoma volta a ser um print dele."""
+        from pathlib import Path
+        raiz = Path(__file__).resolve().parents[2]
+        app = (raiz / "plays_app.py").read_text(encoding="utf-8")
+        card = (raiz / "app_core" / "visao_tab_core.py").read_text(encoding="utf-8")
+        for expr in ('get("_p_map_used", p_map_cal)', 'get("_p_series_used", p_series)'):
+            alvo = expr.replace('"', "'")
+            self.assertTrue(expr in app or alvo in app, "a aba nao usa %s" % expr)
+            self.assertTrue(expr in card or alvo in card, "o card nao usa %s" % expr)

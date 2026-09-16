@@ -378,3 +378,45 @@ class TestOsAntigosSAEMDaLista(unittest.TestCase):
         from app_core.agenda_coletada_core import ja_passou
         agora = datetime(2026, 9, 16, 12, 0, tzinfo=timezone.utc)
         self.assertFalse(ja_passou({"date": "", "time": ""}, agora))
+
+
+class TestOInstanteEXATOSobreviveAJuncao(unittest.TestCase):
+    """DEFEITO MEU, pego pela suite um dia depois (16/09/2026).
+
+    Eu guardei o `inicio_utc` na leitura da agenda -- justamente para a ordem
+    parar de depender de adivinhar o ano de um "15/05" solto -- e o DESCARTEI
+    tres linhas depois, ao juntar as listas.
+
+    A ordem continuou parecendo certa porque sobrava o palpite por "dd/mm". So
+    que o palpite trata a hora do rotulo, que e LOCAL, como se fosse UTC: erro
+    de tres horas, que marca jogo como "ja passou" cedo demais. Um BO5 que
+    comeca as 10:00 sumia da lista as 07:00.
+
+    Foi preciso o relogio andar um dia para a suite reprovar. Teste que
+    depende da hora e incomodo -- e foi ele que pegou.
+    """
+
+    def test_o_inicio_utc_do_coletado_atravessa(self):
+        r = juntar_para_escolher([], [_coletado(inicio_utc="2026-09-20T17:00:00Z")])
+        self.assertEqual(r[0]["inicio_utc"], "2026-09-20T17:00:00Z")
+
+    def test_e_e_ELE_que_manda_na_ordem(self):
+        """Com o instante presente, o rotulo "dd/mm" nao decide mais nada."""
+        from app_core.agenda_coletada_core import quando_do_jogo
+        j = juntar_para_escolher([], [_coletado(date="01/01", time="00:00",
+                                                inicio_utc="2026-09-20T17:00:00Z")])[0]
+        q = quando_do_jogo(j)
+        self.assertEqual((q.year, q.month, q.day, q.hour), (2026, 9, 20, 17))
+
+    def test_jogo_do_futuro_distante_nunca_e_dado_como_passado(self):
+        """O caso que reprovou: sem o instante, o "dd/mm" de hoje mandava."""
+        r = juntar_para_escolher([], [_coletado(date="16/09", time="10:00",
+                                                inicio_utc="2099-01-01T00:00:00Z")])
+        self.assertNotIn("JA PASSOU", rotulo_do_jogo(r[0]))
+
+    def test_coletado_SEM_instante_nao_estoura(self):
+        """Agenda antiga, gravada antes do campo existir."""
+        cru = _coletado()
+        cru.pop("inicio_utc", None)
+        r = juntar_para_escolher([], [cru])
+        self.assertEqual(r[0]["inicio_utc"], "")

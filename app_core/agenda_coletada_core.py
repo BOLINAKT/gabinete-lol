@@ -247,6 +247,18 @@ def juntar_para_escolher(salvos: Any, coletados: Any) -> List[Dict[str, Any]]:
             "teamA": str(j.get("teamA") or j.get("teamA_raw") or ""),
             "teamB": str(j.get("teamB") or j.get("teamB_raw") or ""),
             "bo": j.get("bo", 3),
+            # O INSTANTE EXATO TEM DE VIAJAR JUNTO.
+            #
+            # Eu o guardei na leitura (16/09/2026) e o descartei AQUI, tres
+            # linhas depois. A ordem continuou parecendo certa porque sobrava
+            # o palpite por "dd/mm" -- e o palpite trata a hora do rotulo, que
+            # e LOCAL, como se fosse UTC: erro de tres horas, que marca jogo
+            # como "ja passou" cedo demais.
+            #
+            # A suite so acusou no dia seguinte, quando o relogio andou o
+            # bastante para o palpite errar. Teste que depende da hora e
+            # incomodo, mas foi ele que pegou.
+            "inicio_utc": str(j.get("inicio_utc") or ""),
             "origem": ORIGEM_COLETADO,
         })
     for j in salvos_ok:
