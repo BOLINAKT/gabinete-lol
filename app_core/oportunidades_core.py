@@ -333,6 +333,11 @@ def montar_oportunidades(
     vale.sort(key=lambda a: (a["suspeito"], -a["vantagem_pct"]))
     return {
         "achados": vale,
+        # TODAS as avaliadas, e nao so as que passaram do corte. A tela de
+        # comparacao (pedido dele em 16/09/2026) mostra os DOIS lados de cada
+        # linha -- e o lado sem vantagem e metade da informacao: e olhando o
+        # par que se ve se a discordancia e do mercado ou do modelo.
+        "todas": sorted(achados, key=lambda a: -a["vantagem_pct"]),
         "avaliadas": len(achados),
         "nao_precificados": sorted(nao_precificados.values(),
                                    key=lambda d: (-d["linhas"], d["mercado"])),

@@ -28,18 +28,11 @@ from typing import Any, Callable, Dict, List, Mapping, Optional
 
 from app_core.odds_coletadas_core import carregar_odds_coletadas
 from app_core.oportunidades_core import (
-    JOGOS_MINIMOS,
-    VANTAGEM_MINIMA_PCT,
     bo_bate,
     mesmo_confronto,
     montar_oportunidades,
     prob_do_vencedor,
 )
-
-# Quanto de vantagem a tela oferece filtrar. Comeca em 1%: abaixo disso a
-# diferenca cabe dentro do erro do proprio modelo.
-OPCOES_DE_CORTE = (0.0, 1.0, 3.0, 5.0, 10.0)
-
 
 def _fmt(v: Any, casas: int = 2, sufixo: str = "") -> str:
     try:
@@ -103,29 +96,149 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
 
     _jogos_que_dao = _diagnostico_do_confronto(st, odds, confronto, resolver)
 
-    corte = st.selectbox(
-        "Mostrar a partir de qual vantagem",
-        OPCOES_DE_CORTE,
-        index=list(OPCOES_DE_CORTE).index(VANTAGEM_MINIMA_PCT),
-        format_func=lambda v: "tudo" if v <= 0 else "+{:.0f}% ou mais".format(v),
-        key="oportunidades_corte",
-    )
-
     _vencedor = _montar_prob_de_vencedor(st, confronto, resolver)
     r = montar_oportunidades(odds, calcular_totais, prob_over=prob_over,
-                             minimo_pct=float(corte), jogos_por_time=jogos_por_time,
+                             minimo_pct=0.0, jogos_por_time=jogos_por_time,
                              prob_de_vencedor=_vencedor)
 
-    achados = r.get("achados") or []
-    if achados:
-        st.markdown("#### {} aposta(s) com vantagem".format(len(achados)))
-        for a in achados:
-            _cartao(st, a)
+    todas = list(r.get("todas") or [])
+    if todas:
+        # O MERCADO PRIMEIRO, a aposta depois. Foi o que ele pediu: "eu
+        # selecionaria por exemplo, Vencedor e voce me mostraria a tela com a
+        # odd do modelo e ao lado a odd da casa".
+        por_mercado: Dict[str, List[Mapping[str, Any]]] = {}
+        for a in todas:
+            por_mercado.setdefault(str(a.get("mercado") or "?"), []).append(a)
+        nomes = sorted(por_mercado, key=lambda k: (-max(
+            (x.get("vantagem_pct") or -999) for x in por_mercado[k]), k))
+
+        escolhido = st.selectbox(
+            "Qual mercado voce quer comparar",
+            nomes,
+            format_func=lambda k: "{}  (melhor: {:+.1f}%)".format(
+                k, max((x.get("vantagem_pct") or 0.0) for x in por_mercado[k])),
+            key="oportunidades_mercado",
+        )
+        linhas = sorted(por_mercado.get(escolhido) or [], key=_ordem_da_linha)
+        _tabela_comparada(st, escolhido, linhas)
+        st.caption(
+            "**Modelo** e a odd que o confronto aberto calcula; **casa** e a "
+            "que a Pinnacle esta pagando. Vantagem positiva quer dizer que a "
+            "casa paga mais do que o modelo acha que vale."
+            "  ·  entra quando a casa paga acima da odd do modelo.")
     elif _jogos_que_dao:
-        st.info("Nenhuma aposta com vantagem de {}% ou mais nas linhas que "
-                "este painel sabe precificar.".format(_fmt(corte, 0)))
+        st.info("Este painel nao conseguiu precificar nenhuma linha deste "
+                "confronto.")
 
     _o_que_ficou_de_fora(st, r, nao_casados)
+
+
+# ---------------------------------------------------------------------------
+# A TELA DE COMPARACAO (16/09/2026)
+#
+# Ele pediu, olhando a lista de cartoes com aviso: "acho que e melhor fazer
+# uma tela comparada, a linha da casa de uma cor, com a linha do modelo de
+# outra, talvez ao lado... eu selecionaria por exemplo, Vencedor e voce me
+# mostraria a 'tela' da visao geral, com a odd do modelo e ao lado a odd da
+# casa junto com a vantagem".
+#
+# A lista antiga tinha um problema alem do visual: so mostrava o lado COM
+# vantagem. O lado sem vantagem e metade da informacao -- e olhando o PAR que
+# se ve se a discordancia e do mercado ou do modelo. Se o modelo da 56% e a
+# casa da 33%, o buraco aparece nos dois lados ao mesmo tempo.
+#
+# Um unico bloco HTML, como o card da Visao Geral: elimina por construcao o
+# desalinhamento de colunas do Streamlit.
+# ---------------------------------------------------------------------------
+
+_COR_MODELO = "#2daac4"   # ciano — o mesmo accent do app
+_COR_CASA = "#d9a441"     # ambar — a casa; sem semantica de bom/ruim
+_COR_BOA = "#3fb950"
+_COR_RUIM = "#c9736a"
+
+
+def _nome_do_lado(a: Mapping[str, Any]) -> str:
+    """Como chamar este lado da aposta, em portugues."""
+    lado = str(a.get("lado") or "").strip()
+    baixo = lado.lower()
+    if baixo == "home":
+        return str(a.get("casa") or "Casa")
+    if baixo == "away":
+        return str(a.get("fora") or "Fora")
+    ponto = _fmt(a.get("pontos"), 1).replace(".", ",")
+    if baixo == "over":
+        return "acima de {}".format(ponto)
+    if baixo == "under":
+        return "abaixo de {}".format(ponto)
+    return lado or "?"
+
+
+def _linha_comparada(a: Mapping[str, Any]) -> str:
+    v = a.get("vantagem_pct")
+    try:
+        vf = float(v)
+    except (TypeError, ValueError):
+        vf = float("nan")
+    cor_v = _COR_BOA if vf > 0 else _COR_RUIM
+    marcas = ""
+    if a.get("suspeito"):
+        marcas += ("<span style='background:rgba(217,164,65,0.18);border:1px solid "
+                   "rgba(217,164,65,0.55);border-radius:8px;padding:1px 7px;"
+                   "font-size:0.72em;margin-left:8px;'>grande demais</span>")
+    if a.get("dados_finos"):
+        marcas += ("<span style='background:rgba(201,115,106,0.16);border:1px solid "
+                   "rgba(201,115,106,0.5);border-radius:8px;padding:1px 7px;"
+                   "font-size:0.72em;margin-left:6px;'>poucos jogos</span>")
+    limite = a.get("limite")
+    return (
+        "<div style='display:grid;grid-template-columns:minmax(120px,1.6fr) "
+        "repeat(3,minmax(72px,1fr));gap:8px;align-items:center;padding:7px 4px;"
+        "border-top:1px solid rgba(255,255,255,0.07);'>"
+        "<div><b>{lado}</b>{marcas}<div style='opacity:0.45;font-size:0.74em;'>"
+        "limite {lim}</div></div>"
+        "<div style='text-align:right;color:{cm};font-weight:700;'>{justa}</div>"
+        "<div style='text-align:right;color:{cc};font-weight:700;'>{casa}</div>"
+        "<div style='text-align:right;color:{cv};font-weight:800;'>{vant}</div>"
+        "</div>"
+    ).format(
+        lado=escape(_nome_do_lado(a)), marcas=marcas,
+        lim=(limite if limite is not None else "—"),
+        cm=_COR_MODELO, justa=_fmt(a.get("odd_justa")),
+        cc=_COR_CASA, casa=_fmt(a.get("odd_casa")),
+        cv=cor_v, vant=("{:+.2f}%".format(vf) if vf == vf else "—"),
+    )
+
+
+def _tabela_comparada(st: Any, titulo: str, linhas: List[Mapping[str, Any]]) -> None:
+    cabeca = (
+        "<div style='display:grid;grid-template-columns:minmax(120px,1.6fr) "
+        "repeat(3,minmax(72px,1fr));gap:8px;padding:2px 4px;opacity:0.55;"
+        "font-size:0.76em;text-transform:uppercase;letter-spacing:0.05em;'>"
+        "<div>aposta</div>"
+        "<div style='text-align:right;color:{cm};'>modelo</div>"
+        "<div style='text-align:right;color:{cc};'>casa</div>"
+        "<div style='text-align:right;'>vantagem</div></div>"
+    ).format(cm=_COR_MODELO, cc=_COR_CASA)
+    corpo = "".join(_linha_comparada(a) for a in linhas)
+    st.markdown(
+        "<div style='background:rgba(255,255,255,0.025);border:1px solid "
+        "rgba(255,255,255,0.09);border-top:3px solid {cm};border-radius:14px;"
+        "padding:12px 16px 10px;'>"
+        "<div style='opacity:0.6;font-size:0.8em;text-transform:uppercase;"
+        "letter-spacing:0.06em;margin-bottom:4px;'>{t}</div>"
+        "{cab}{corpo}</div>".format(cm=_COR_MODELO, t=escape(titulo),
+                                    cab=cabeca, corpo=corpo),
+        unsafe_allow_html=True)
+
+
+def _ordem_da_linha(a: Mapping[str, Any]):
+    """Os dois lados da mesma linha ficam juntos, e em ordem de numero."""
+    try:
+        ponto = float(a.get("pontos"))
+    except (TypeError, ValueError):
+        ponto = -1e9
+    lado = str(a.get("lado") or "").lower()
+    return (ponto, 0 if lado in ("over", "home") else 1)
 
 
 def _diagnostico_do_confronto(st: Any, odds: Mapping[str, Any],
@@ -242,29 +355,6 @@ def _montar_prob_de_vencedor(st: Any, confronto: Mapping[str, Any],
                                 casa_e_time_a=bool(lado_certo))
 
     return _prob
-
-
-def _cartao(st: Any, a: Mapping[str, Any]) -> None:
-    """Um achado. O aviso vem ANTES do numero, nao depois."""
-    avisos = []
-    if a.get("suspeito"):
-        avisos.append("vantagem grande demais para ser verdade — a Pinnacle abre "
-                      "com ~5% de margem; desconfie do modelo antes da casa")
-    if a.get("dados_finos"):
-        avisos.append("poucos jogos no historico ({}) — conta fina".format(
-            a.get("jogos_no_historico")))
-
-    st.markdown(
-        "**{:+.2f}%**  ·  {}  ·  _{}_".format(
-            float(a.get("vantagem_pct") or 0.0),
-            escape(_descricao_da_aposta(a)),
-            escape(_linha_do_jogo(a))))
-    st.caption("casa paga {} · justa {} · limite {} · margem da casa {}".format(
-        _fmt(a.get("odd_casa")), _fmt(a.get("odd_justa")),
-        a.get("limite") if a.get("limite") is not None else "—",
-        _fmt(a.get("margem_pct"), 2, "%")))
-    for av in avisos:
-        st.warning(av)
 
 
 def _o_que_ficou_de_fora(st: Any, r: Mapping[str, Any], nao_casados: List[str]) -> None:
