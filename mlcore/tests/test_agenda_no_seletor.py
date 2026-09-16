@@ -182,3 +182,120 @@ class TestSemRede(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestAOrdemDaLista(unittest.TestCase):
+    """ELE RELATOU (16/09/2026): "a ordem so e meio cagada".
+
+    A lista ia 16/09, 17/09, 18/09... 20/09 e entao caia para 15/05, sem nada
+    explicando: eram os tres jogos que ele tinha salvo em maio. Data andando
+    PARA TRAS no fim parece lista quebrada, nao "secao de jogos antigos".
+
+    A causa era eu ter descartado `inicio_utc` na leitura. Sem o instante
+    exato, ordenar dependia de adivinhar o ano de um "15/05" solto.
+    """
+
+    def _agora(self):
+        from datetime import datetime, timezone
+        return datetime(2026, 9, 16, 12, 0, tzinfo=timezone.utc)
+
+    def test_o_mais_PROXIMO_vem_primeiro(self):
+        r = juntar_para_escolher([], [
+            _coletado(date="20/09", inicio_utc="2026-09-20T17:00:00Z", teamA_raw="depois"),
+            _coletado(date="16/09", inicio_utc="2026-09-16T14:00:00Z", teamA_raw="antes"),
+        ])
+        self.assertEqual([j["teamA"] for j in r], ["antes", "depois"])
+
+    def test_o_que_JA_PASSOU_vai_para_o_fim(self):
+        r = juntar_para_escolher(
+            [_salvo(date="15/05", time="13:00", teamA="velho")],
+            [_coletado(date="20/09", inicio_utc="2026-09-20T17:00:00Z", teamA_raw="novo")])
+        self.assertEqual(r[-1]["teamA"], "velho")
+
+    def test_e_vem_MARCADO_em_vez_de_sumir(self):
+        """Esconder o jogo dele seria pior: ele pode ter linha salva ali."""
+        r = juntar_para_escolher([_salvo(date="15/05", time="13:00")], [])
+        self.assertIn("JA PASSOU", rotulo_do_jogo(r[0]))
+
+    def test_jogo_por_vir_NAO_e_marcado_como_passado(self):
+        r = juntar_para_escolher([], [_coletado(inicio_utc="2099-01-01T00:00:00Z")])
+        self.assertNotIn("JA PASSOU", rotulo_do_jogo(r[0]))
+
+
+class TestDeQueANOEUmaDataSemAno(unittest.TestCase):
+    """"15/05" visto em setembro e maio DESTE ano, que ja passou.
+
+    Escolher o ano errado inverteria a lista inteira: o jogo de maio passaria
+    a valer como maio do ANO QUE VEM e subiria para o topo, na frente dos
+    jogos de amanha.
+    """
+
+    def _agora(self):
+        from datetime import datetime, timezone
+        return datetime(2026, 9, 16, 12, 0, tzinfo=timezone.utc)
+
+    def test_data_de_meses_atras_e_deste_ano(self):
+        from app_core.agenda_coletada_core import quando_do_jogo
+        q = quando_do_jogo({"date": "15/05", "time": "13:00"}, self._agora())
+        self.assertEqual((q.year, q.month, q.day), (2026, 5, 15))
+
+    def test_data_de_dezembro_vista_em_janeiro_e_do_ano_ANTERIOR(self):
+        from datetime import datetime, timezone
+
+        from app_core.agenda_coletada_core import quando_do_jogo
+        jan = datetime(2026, 1, 5, 12, 0, tzinfo=timezone.utc)
+        q = quando_do_jogo({"date": "28/12", "time": "20:00"}, jan)
+        self.assertEqual((q.year, q.month), (2025, 12))
+
+    def test_o_instante_EXATO_tem_preferencia_sobre_o_palpite(self):
+        from app_core.agenda_coletada_core import quando_do_jogo
+        q = quando_do_jogo({"date": "01/01", "time": "00:00",
+                            "inicio_utc": "2026-09-20T17:00:00Z"}, self._agora())
+        self.assertEqual((q.year, q.month, q.day), (2026, 9, 20))
+
+    def test_data_impossivel_devolve_NADA_em_vez_de_inventar(self):
+        """PRINCIPIO IV: sem data legivel, None -- e None vai para o fim."""
+        from app_core.agenda_coletada_core import quando_do_jogo
+        self.assertIsNone(quando_do_jogo({"date": "", "time": ""}, self._agora()))
+        self.assertIsNone(quando_do_jogo({"date": "amanha"}, self._agora()))
+        self.assertIsNone(quando_do_jogo({"date": "99/99", "time": "13:00"}, self._agora()))
+
+    def test_jogo_sem_data_vai_para_o_FIM_e_nao_derruba(self):
+        r = juntar_para_escolher([_salvo(date="", time="")],
+                                 [_coletado(inicio_utc="2099-01-01T00:00:00Z")])
+        self.assertEqual(r[-1]["teamA"], "Barcząca Esports")
+
+
+class TestOInstanteEXATOEGuardado(unittest.TestCase):
+    """Eu vinha descartando `inicio_utc` ao ler a agenda. Era a causa."""
+
+    def test_a_leitura_guarda_o_inicio_utc(self):
+        import json
+        import tempfile
+        from pathlib import Path
+
+        from app_core.agenda_coletada_core import carregar_agenda_coletada
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "agenda_coletada.json").write_text(json.dumps({
+                "gerado_em": "2026-09-16T09:00:00-03:00",
+                "jogos": [{"date": "16/09", "time": "11:00", "league": "LEC",
+                           "teamA_raw": "A", "teamB_raw": "B", "bo": 5,
+                           "inicio_utc": "2026-09-16T14:00:00Z"}],
+            }), encoding="utf-8")
+            r = carregar_agenda_coletada(Path(d))
+        self.assertEqual(r["jogos"][0]["inicio_utc"], "2026-09-16T14:00:00Z")
+
+    def test_agenda_sem_inicio_utc_nao_estoura(self):
+        import json
+        import tempfile
+        from pathlib import Path
+
+        from app_core.agenda_coletada_core import carregar_agenda_coletada
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "agenda_coletada.json").write_text(json.dumps({
+                "gerado_em": "2026-09-16T09:00:00-03:00",
+                "jogos": [{"date": "16/09", "time": "11:00", "league": "LEC",
+                           "teamA_raw": "A", "teamB_raw": "B", "bo": 5}],
+            }), encoding="utf-8")
+            r = carregar_agenda_coletada(Path(d))
+        self.assertEqual(r["jogos"][0]["inicio_utc"], "")

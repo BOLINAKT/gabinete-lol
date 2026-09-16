@@ -17,7 +17,7 @@ aponta para a causa. Mesma licao que a linha de nota por liga ja aplicava.
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -26,6 +26,10 @@ NOME_DO_ARQUIVO = "agenda_coletada.json"
 # Campos que a previa do app consome. Extras (bo, estado, inicio_utc) viajam
 # junto e sao usados por quem souber o que fazer com eles.
 CAMPOS = ("date", "time", "league", "teamA_raw", "teamB_raw")
+
+# Distancia maxima, em dias, para decidir de que ANO e uma data "dd/mm" sem
+# ano. Escolhe-se o ano que deixa a data mais perto de hoje.
+_MEIO_ANO = 183
 
 
 def _idade_em_horas(carimbo: Any) -> float | None:
@@ -77,6 +81,10 @@ def carregar_agenda_coletada(raiz: Path, *, nome: str = NOME_DO_ARQUIVO) -> Dict
             bo = 0
         linha["bo"] = bo if bo in (1, 3, 5) else 0
         linha["estado"] = str(j.get("estado", "") or "")
+        # O INSTANTE EXATO, que eu vinha jogando fora. Sem ele, ordenar a
+        # lista dependeria de adivinhar o ano a partir de "16/09" -- e a
+        # ordem saia com os jogos de maio caindo depois dos de setembro.
+        linha["inicio_utc"] = str(j.get("inicio_utc", "") or "")
         jogos.append(linha)
 
     return {
@@ -139,6 +147,80 @@ def _chave_do_jogo(j: Dict[str, Any]) -> tuple:
             _t("teamB", "teamB_raw"))
 
 
+def quando_do_jogo(j: Dict[str, Any], agora: Any = None) -> Any:
+    """O instante do jogo, ou None quando nao da para saber.
+
+    Prefere `inicio_utc`, que vem exato do calendario. Sem ele, monta a partir
+    de "dd/mm" + "hh:mm" escolhendo o ANO que deixa a data mais perto de hoje
+    -- e por isso que "15/05", visto em setembro, e entendido como MAIO DESTE
+    ANO (que ja passou) e nao como maio do ano que vem.
+
+    PRINCIPIO IV: data que nao da para montar devolve None, e None vai para o
+    fim da lista em vez de virar uma data inventada.
+    """
+    bruto = str(j.get("inicio_utc") or "").strip()
+    if bruto:
+        try:
+            q = datetime.fromisoformat(bruto.replace("Z", "+00:00"))
+            return q if q.tzinfo else q.replace(tzinfo=timezone.utc)
+        except (TypeError, ValueError):
+            pass
+
+    data = str(j.get("date") or "").strip()
+    hora = str(j.get("time") or "").strip() or "00:00"
+    partes = data.replace("-", "/").split("/")
+    if len(partes) < 2:
+        return None
+    try:
+        dia, mes = int(partes[0]), int(partes[1])
+        hh, mm = (int(x) for x in (hora.split(":") + ["0"])[:2])
+    except (TypeError, ValueError):
+        return None
+
+    base = agora or datetime.now(timezone.utc)
+    if base.tzinfo is None:
+        base = base.replace(tzinfo=timezone.utc)
+    melhor = None
+    for ano in (base.year - 1, base.year, base.year + 1):
+        try:
+            cand = datetime(ano, mes, dia, hh, mm, tzinfo=timezone.utc)
+        except ValueError:
+            continue          # 29/02 em ano que nao tem
+        dist = abs((cand - base).total_seconds())
+        if melhor is None or dist < melhor[0]:
+            melhor = (dist, cand)
+    return melhor[1] if melhor else None
+
+
+def _ordem_na_lista(j: Dict[str, Any], agora: Any) -> tuple:
+    """Os que vem primeiro sao os PROXIMOS. Depois os que ja passaram.
+
+    ELE RELATOU (16/09/2026): "a ordem so e meio cagada". A lista ia
+    16/09, 17/09... 20/09 e entao caia para 15/05 sem nada explicando -- os
+    tres jogos velhos que ele tinha salvos em maio. Datas andando para tras no
+    fim parecem lista quebrada, e nao "secao de jogos antigos".
+
+    Agora: por vir em ordem crescente (o mais proximo no topo), depois os que
+    ja passaram do mais recente para o mais velho, e por ultimo o que nao tem
+    data legivel.
+    """
+    q = quando_do_jogo(j, agora)
+    if q is None:
+        return (2, 0.0)
+    delta = (q - agora).total_seconds()
+    if delta >= -4 * 3600:        # ate 4h depois do inicio ainda conta como do dia
+        return (0, delta)
+    return (1, -delta)
+
+
+def ja_passou(j: Dict[str, Any], agora: Any = None) -> bool:
+    """Jogo que ja aconteceu. Aparece marcado, nunca escondido em silencio."""
+    base = agora or datetime.now(timezone.utc)
+    if base.tzinfo is None:
+        base = base.replace(tzinfo=timezone.utc)
+    return _ordem_na_lista(j, base)[0] == 1
+
+
 def juntar_para_escolher(salvos: Any, coletados: Any) -> List[Dict[str, Any]]:
     """Uma lista so para o seletor: primeiro os coletados, depois os dele.
 
@@ -171,6 +253,9 @@ def juntar_para_escolher(salvos: Any, coletados: Any) -> List[Dict[str, Any]]:
         item = dict(j)
         item["origem"] = ORIGEM_SALVO
         saida.append(item)
+
+    agora = datetime.now(timezone.utc)
+    saida.sort(key=lambda j: _ordem_na_lista(j, agora))
     return saida
 
 
@@ -192,5 +277,7 @@ def rotulo_do_jogo(j: Dict[str, Any]) -> str:
         bo = 3
     partes.append("BO{}".format(bo))
     if str(j.get("origem") or "") == ORIGEM_COLETADO:
-        partes.append("· do calendario")
+        partes.append("do calendario")
+    if ja_passou(j):
+        partes.append("JA PASSOU")
     return " | ".join(partes)
