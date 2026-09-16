@@ -869,6 +869,34 @@ def _list_teams(csv_sig: Tuple[str, int, int]) -> List[str]:
 
 
 @st.cache_data(show_spinner=False)
+def _liga_por_time(csv_sig: Tuple[str, int, int]) -> Dict[str, str]:
+    """Time -> liga em que ele joga nesta season.
+
+    POR QUE (16/09/2026): a agenda trouxe "UP2U Meavedron" num jogo do
+    Hitpoint Masters, e a lista de palpites ofereceu em PRIMEIRO "UP2UMEDIA
+    Cebulaki" -- time POLONES, de outra liga, com 4 jogos de historico. Ele
+    escolheu, e a analise saiu inteira sobre o time errado. Nome parecido
+    entre ligas nao e coincidencia: e o mesmo patrocinador em paises
+    diferentes. A liga desempata.
+
+    Quando um time aparece em mais de uma liga fica a que ele mais jogou.
+    """
+    csv_path, _size, _mtime = csv_sig
+    rows = load_team_rows(csv_path)
+    fora: Dict[str, str] = {}
+    try:
+        contagem = rows.groupby(["teamname", "league"]).size().reset_index(name="n")
+        contagem = contagem.sort_values("n", ascending=False)
+        for _, linha in contagem.iterrows():
+            nome = str(linha["teamname"])
+            if nome and nome not in fora:
+                fora[nome] = str(linha["league"])
+    except (KeyError, ValueError, TypeError):
+        return {}
+    return fora
+
+
+@st.cache_data(show_spinner=False)
 def _load_player_rows(csv_sig: Tuple[str, int, int]) -> pd.DataFrame:
     """Carrega rows de players (participantid 1..10) do OracleElixir."""
     csv_path, _size, _mtime = csv_sig
@@ -1792,6 +1820,14 @@ try:
 except (OSError, TypeError, ValueError, pd.errors.EmptyDataError, pd.errors.ParserError) as e:
     st.error(f"Falha ao ler CSV para listar times: {e}")
     st.stop()
+
+# A liga de cada time viaja pelo estado, e nao por parametro novo: assinatura
+# que muda entre o app e um modulo derrubou o site inteiro em 13/09/2026.
+# Quem le usa `.get` e continua funcionando se a chave nao existir.
+try:
+    st.session_state["_liga_por_time"] = _liga_por_time(csv_sig)
+except Exception:
+    st.session_state["_liga_por_time"] = {}
 
 # Normaliza grafias (ex.: "Dplus Kia" vs "Dplus KIA") para evitar cair na liga errada no modo auto.
 core_normalize_matchup_selection_teams(

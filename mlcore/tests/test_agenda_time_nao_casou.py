@@ -195,3 +195,83 @@ class TestOBOSobreviveAoEnsinarOApelido(unittest.TestCase):
         self.assertLess(src.index("core_apply_pending_load(st.session_state"),
                         src.index("core_render_matchup_selection("),
                         "a fila passou a ser aplicada depois dos widgets")
+
+
+class TestALigaDesempataOPalpite(unittest.TestCase):
+    """O CASO REAL (16/09/2026). Ele estranhou uma analise e o motivo era este.
+
+    Jogo do Hitpoint Masters (Tchequia): eSuba x "UP2U Meavedron". A lista de
+    palpites ofereceu em PRIMEIRO:
+
+        UP2UMEDIA Cebulaki  -- time POLONES, Rift Legends,  4 jogos
+        Meavedron           -- o certo,     Hitpoint,      63 jogos
+
+    Ele escolheu o primeiro, o apelido ficou salvo, e a analise inteira saiu
+    sobre o time errado -- com 4 jogos de historico, de outro pais.
+
+    Nome parecido entre ligas NAO e coincidencia: e o mesmo patrocinador
+    (UP2U) em paises diferentes. Sem a liga, o "parecido" e uma armadilha.
+    """
+
+    TIMES = ["Meavedron", "UP2UMEDIA Cebulaki", "Gity Meavedronu", "eSuba"]
+    LIGAS = {"Meavedron": "HM", "eSuba": "HM",
+             "UP2UMEDIA Cebulaki": "RL", "Gity Meavedronu": "HW"}
+
+    def test_SEM_a_liga_o_errado_vinha_primeiro(self):
+        """Guarda a armadilha: e assim que ela se parece."""
+        from app_core.schedule_import_core import suggest_schedule_teams
+        sug = suggest_schedule_teams("UP2U Meavedron", self.TIMES)
+        self.assertEqual(sug[0], "UP2UMEDIA Cebulaki")
+
+    def test_COM_a_liga_o_certo_vem_primeiro(self):
+        from app_core.schedule_import_core import suggest_schedule_teams
+        da_liga = [t for t, lg in self.LIGAS.items() if lg == "HM"]
+        sug = suggest_schedule_teams("UP2U Meavedron", self.TIMES, prioridade=da_liga)
+        self.assertEqual(sug[0], "Meavedron")
+
+    def test_o_de_outra_liga_NAO_some_da_lista(self):
+        """So muda a ordem. Quem decide e ele -- pode ser um time novo que
+        de fato mudou de liga, e esconder tiraria a opcao."""
+        from app_core.schedule_import_core import suggest_schedule_teams
+        da_liga = [t for t, lg in self.LIGAS.items() if lg == "HM"]
+        sug = suggest_schedule_teams("UP2U Meavedron", self.TIMES, prioridade=da_liga)
+        self.assertIn("UP2UMEDIA Cebulaki", sug)
+
+    def test_sem_saber_a_liga_a_ordem_fica_como_era(self):
+        """Nao ter o mapa nao pode quebrar nada."""
+        from app_core.schedule_import_core import suggest_schedule_teams
+        self.assertEqual(suggest_schedule_teams("UP2U Meavedron", self.TIMES, prioridade=[]),
+                         suggest_schedule_teams("UP2U Meavedron", self.TIMES))
+        self.assertEqual(suggest_schedule_teams("UP2U Meavedron", self.TIMES, prioridade=None),
+                         suggest_schedule_teams("UP2U Meavedron", self.TIMES))
+
+    def test_a_tela_usa_a_liga_do_time_que_JA_casou(self):
+        """Nao existe tabela de nome de liga no projeto, e uma tabela dessas
+        envelheceria. O companheiro de confronto ja diz a liga."""
+        import inspect
+
+        from app_core import matchup_selection_core as m
+        src = inspect.getsource(m.render_matchup_selection)
+        self.assertIn("_liga_por_time", src)
+        self.assertIn("prioridade=", src)
+
+    def test_a_tela_AVISA_quando_o_time_e_de_outra_liga(self):
+        """Ordenar nao basta: ele pode escolher o de baixo assim mesmo."""
+        import inspect
+
+        from app_core import matchup_selection_core as m
+        src = inspect.getsource(m.render_matchup_selection)
+        self.assertIn("joga na liga", src)
+
+    def test_modulo_antigo_no_servidor_nao_derruba_a_tela(self):
+        """A nuvem nao recarrega modulo importado so com o push.
+
+        Se o schedule_import_core do servidor for o velho, passar `prioridade`
+        levanta TypeError. A tela cai para a ordem antiga em vez de quebrar --
+        foi assinatura incompativel que derrubou o site em 13/09/2026.
+        """
+        import inspect
+
+        from app_core import matchup_selection_core as m
+        src = inspect.getsource(m.render_matchup_selection)
+        self.assertIn("except TypeError:", src)

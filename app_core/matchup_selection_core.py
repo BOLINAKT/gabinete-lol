@@ -371,11 +371,42 @@ def render_matchup_selection(
         for _rot, _cru in _nao_casou:
             st.warning("**{}** ficou vazio: a agenda tem *{}*, que nao existe "
                        "com esse nome no CSV.".format(_rot, _cru))
-            _sug = _sugerir(_cru, list(teams))
+
+            # A LIGA DESEMPATA (16/09/2026). Ele estranhou uma analise e o
+            # motivo era este: num jogo do Hitpoint Masters, "UP2U Meavedron"
+            # recebeu como primeiro palpite "UP2UMEDIA Cebulaki" -- time
+            # POLONES, da Rift Legends, com 4 jogos de historico. O certo,
+            # "Meavedron", com 63, ficou embaixo. Nome parecido entre ligas
+            # nao e acaso: e o mesmo patrocinador em paises diferentes.
+            #
+            # A liga vem do time que JA casou neste confronto, e nao de uma
+            # tabela de nomes de liga (que nao existe e envelheceria).
+            _ligas = session_state.get("_liga_por_time") or {}
+            _companheiro = str(session_state.get(
+                "teamB" if _rot == "Time 1" else "teamA", "") or "")
+            _liga_do_jogo = str(_ligas.get(_companheiro, "") or "")
+            _mesma_liga = [t for t in teams
+                           if _liga_do_jogo and str(_ligas.get(t, "")) == _liga_do_jogo]
+            try:
+                _sug = _sugerir(_cru, list(teams), prioridade=_mesma_liga)
+            except TypeError:
+                # Modulo antigo no servidor: a ordem volta a ser a de antes,
+                # mas a tela continua de pe.
+                _sug = _sugerir(_cru, list(teams))
+            if _liga_do_jogo:
+                st.caption("Os times de **{}** (a liga de {}) vem primeiro na "
+                           "lista.".format(_liga_do_jogo, _companheiro))
             _pick = st.selectbox(
                 "Esse time e qual? (fica salvo)", options=["", *_sug],
                 key="agenda_fix_{}".format(_chave_apelido(_cru)),
             )
+            if _pick and _liga_do_jogo and str(_ligas.get(str(_pick), "")) != _liga_do_jogo:
+                st.error(
+                    "**{}** joga na liga **{}**, e este confronto e da **{}**. "
+                    "Confira se e mesmo o time certo: nomes parecidos entre "
+                    "ligas costumam ser o mesmo patrocinador em paises "
+                    "diferentes, nao o mesmo time.".format(
+                        _pick, _ligas.get(str(_pick), "?"), _liga_do_jogo))
             if _pick and st.button("Salvar e usar",
                                    key="agenda_fix_btn_{}".format(_chave_apelido(_cru))):
                 _ap = _carregar_apelidos(session_state, _arq_apelidos)
