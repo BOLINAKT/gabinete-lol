@@ -198,6 +198,17 @@ def periodo_legivel(n: Any) -> str:
     return "serie" if n == 0 else "mapa {}".format(n)
 
 
+def unidade_da_aposta(m: Dict[str, Any]) -> str:
+    """Em que se conta esta aposta: "Kills", "Maps", "Rounds"...
+
+    Campo proprio, e nao um pedaco do rotulo, porque e por ele que se decide
+    se o modelo sabe precificar a linha. "Regular" nao e unidade -- e o nome
+    que a casa da ao confronto principal --, entao vira vazio.
+    """
+    u = str(m.get("units") or "").strip()
+    return "" if u.lower() == "regular" else u
+
+
 def rotulo_da_linha(m: Dict[str, Any], mk: Dict[str, Any]) -> str:
     """Como chamar esta aposta na tela.
 
@@ -325,6 +336,7 @@ def normalizar(matchups: Any, mercados: Any, *, so_lol: bool = True,
             lim = (mk.get("limits") or [{}])
             limite = lim[0].get("amount") if isinstance(lim[0], dict) else None
             rotulo = rotulo_da_linha(m, mk)
+            unidade = unidade_da_aposta(m)
             for x in precos:
                 if not isinstance(x, dict):
                     continue
@@ -353,6 +365,14 @@ def normalizar(matchups: Any, mercados: Any, *, so_lol: bool = True,
                     # Maps - serie"... -- o que distingue uma linha de kills
                     # de uma de mapas.
                     "mercado": rotulo,
+                    # A UNIDADE como campo proprio, nao so dentro do texto.
+                    # Quem for comparar com a odd justa do modelo precisa
+                    # saber se a linha e de kills, de torre ou de mapas; ler
+                    # isso de dentro de um rotulo escrito para humano seria
+                    # frageis por natureza -- bastaria a casa mudar uma
+                    # palavra. "Regular" vira vazio: na serie, "Regular" nao
+                    # nomeia unidade nenhuma.
+                    "unidade": unidade,
                 })
 
     # PRIMEIRA PASSADA: as partidas de verdade.

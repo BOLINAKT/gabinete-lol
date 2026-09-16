@@ -77,6 +77,7 @@ from app_core.tab_dispatcher import (
     TAB_VISAO,
     TAB_CONS,
     TAB_LINE_ANALYSIS,
+    TAB_OPORTUNIDADES,
     SECONDARY_TAB_ORDER,
     desenhar_aba as _desenhar_aba,
     dispatch_secondary_tabs,
@@ -315,6 +316,8 @@ from app_core.schedule_tab_core import render_schedule_tab as core_render_schedu
 from app_core.series_tab_core import render_series_tab as core_render_series_tab
 from app_core.statscamps_tab_core import render_statscamps_tab as core_render_statscamps_tab
 from app_core.line_analysis_tab_core import render_line_analysis_tab as core_render_line_analysis_tab
+from app_core.oportunidades_tab_core import render_oportunidades_tab as core_render_oportunidades_tab
+from mlcore.lines_engine import prob_over_from_total as core_prob_over_from_total
 from app_core.players_tab_core import render_players_tab as core_render_players_tab
 from app_core.champions_tab_core import render_champions_tab as core_render_champions_tab
 from app_core.resumo_tab_core import render_resumo_tab as core_render_resumo_tab
@@ -2557,7 +2560,86 @@ _desenhar_aba(st, tab_refs.get(_TAB_CONS), _TAB_CONS, lambda: _render_consistenc
 # -----------------------------
 # Secondary tabs extracted from plays_app
 # -----------------------------
+def _oportunidades_calcular_totais(casa: str, fora: str, mapa: str):
+    """Os totais do confronto, pelo MESMO caminho da tela de analise.
+
+    build_profile + _expected_totals_dc, com as regulagens que ele tem na
+    barra lateral neste momento. PRINCIPIO V: nao existe uma segunda conta
+    aqui -- se existisse, o mesmo confronto daria dois numeros e nenhum dos
+    dois mereceria confianca.
+
+    Devolve None quando nao da (nome de time que nao casa com o CSV, ou jogos
+    de menos). None chega a tela como "nao consegui", com o nome dos times --
+    nunca como lista vazia calada.
+    """
+    a_csv = _oportunidades_resolver_time(casa)
+    b_csv = _oportunidades_resolver_time(fora)
+    if not a_csv or not b_csv:
+        return None
+    _pA = build_profile(team_games, team=a_csv, filters=filters, league_mode=league_mode,
+                        map_mode=mapa, half_life_days=half_life_days, max_games=max_games)
+    _pB = build_profile(team_games, team=b_csv, filters=filters, league_mode=league_mode,
+                        map_mode=mapa, half_life_days=half_life_days, max_games=max_games)
+    if _pA.n_games == 0 or _pB.n_games == 0:
+        return None
+    return _expected_totals_dc(team_games, _pA, _pB)
+
+
+def _oportunidades_resolver_time(nome: str) -> str:
+    """O nome da casa -> o nome do CSV, usando os apelidos JA APRENDIDOS.
+
+    A Pinnacle escreve "Liquid", "9z", "Invictus"; o CSV tem "Team Liquid",
+    "9z Globant", "Invictus Gaming". NAO se adivinha: o mesmo resolvedor da
+    aba Jogos decide, e o que ele nao casar aparece na tela pelo nome, para
+    ele ensinar uma vez. Adivinhar aqui seria analisar o time errado com toda
+    a confianca do mundo.
+    """
+    try:
+        achado, ok = core_resolve_schedule_team(str(nome), list(teams),
+                                           _oportunidades_apelidos())
+    except Exception:
+        return ""
+    return str(achado) if ok else ""
+
+
+def _oportunidades_apelidos():
+    try:
+        return core_load_schedule_aliases(st.session_state, APP_ROOT / "user_team_aliases.json")
+    except Exception:
+        return {}
+
+
+def _oportunidades_jogos_por_time(nome: str) -> int:
+    """Quantos jogos o CSV tem desse time. Conta fina tem de aparecer."""
+    alvo = _oportunidades_resolver_time(nome)
+    if not alvo:
+        return -1
+    try:
+        return int((team_games["team"].astype(str) == alvo).sum())
+    except Exception:
+        return -1
+
+
+def _oportunidades_times_nao_casados() -> list:
+    from app_core.odds_coletadas_core import carregar_odds_coletadas, times_da_coleta
+    try:
+        _odds = carregar_odds_coletadas(APP_ROOT)
+    except Exception:
+        return []
+    return [n for n in times_da_coleta(_odds) if not _oportunidades_resolver_time(n)]
+
+
 _secondary_tab_renderers = {
+    TAB_OPORTUNIDADES: lambda: core_render_oportunidades_tab(
+        st=st,
+        ctx={
+            "raiz": APP_ROOT,
+            "calcular_totais": _oportunidades_calcular_totais,
+            "prob_over": core_prob_over_from_total,
+            "jogos_por_time": _oportunidades_jogos_por_time,
+            "times_nao_casados": _oportunidades_times_nao_casados(),
+        },
+    ),
     "Rankings": lambda: core_render_rankings_tab(
         st=st,
         team_games=team_games,

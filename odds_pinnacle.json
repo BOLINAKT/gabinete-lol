@@ -1,44 +1,8 @@
 {
-  "lido_em": "2026-09-15T20:37:31-03:00",
+  "lido_em": "2026-09-15T20:41:20-03:00",
   "fonte": "https://guest.api.arcadia.pinnacle.com/0.1/",
   "fuso": "America/Sao_Paulo",
   "jogos": [
-    {
-      "id": 1636498770,
-      "liga": "WSCI America Qualifiers",
-      "casa": "Fuego",
-      "fora": "9z",
-      "bo": 5,
-      "tem_mercado_no_mapa": false,
-      "inicio_utc": "2026-09-16T23:00:00Z"
-    },
-    {
-      "id": 1636572898,
-      "liga": "LEC",
-      "casa": "Natus Vincere",
-      "fora": "Movistar KOI",
-      "bo": 5,
-      "tem_mercado_no_mapa": false,
-      "inicio_utc": "2026-09-18T15:00:00Z"
-    },
-    {
-      "id": 1636486467,
-      "liga": "CBLOL",
-      "casa": "RED Canids",
-      "fora": "Vivo Keyd Stars",
-      "bo": 5,
-      "tem_mercado_no_mapa": false,
-      "inicio_utc": "2026-09-19T16:00:00Z"
-    },
-    {
-      "id": 1636498148,
-      "liga": "LPL",
-      "casa": "Top Esports",
-      "fora": "Invictus",
-      "bo": 5,
-      "tem_mercado_no_mapa": false,
-      "inicio_utc": "2026-09-17T09:00:00Z"
-    },
     {
       "id": 1636598064,
       "liga": "LCS",
@@ -67,6 +31,24 @@
       "inicio_utc": "2026-09-18T20:00:00Z"
     },
     {
+      "id": 1636572898,
+      "liga": "LEC",
+      "casa": "Natus Vincere",
+      "fora": "Movistar KOI",
+      "bo": 5,
+      "tem_mercado_no_mapa": false,
+      "inicio_utc": "2026-09-18T15:00:00Z"
+    },
+    {
+      "id": 1636498148,
+      "liga": "LPL",
+      "casa": "Top Esports",
+      "fora": "Invictus",
+      "bo": 5,
+      "tem_mercado_no_mapa": false,
+      "inicio_utc": "2026-09-17T09:00:00Z"
+    },
+    {
       "id": 1636311214,
       "liga": "LPL",
       "casa": "Team WE",
@@ -83,1045 +65,27 @@
       "bo": 5,
       "tem_mercado_no_mapa": false,
       "inicio_utc": "2026-09-19T20:00:00Z"
+    },
+    {
+      "id": 1636486467,
+      "liga": "CBLOL",
+      "casa": "RED Canids",
+      "fora": "Vivo Keyd Stars",
+      "bo": 5,
+      "tem_mercado_no_mapa": false,
+      "inicio_utc": "2026-09-19T16:00:00Z"
+    },
+    {
+      "id": 1636498770,
+      "liga": "WSCI America Qualifiers",
+      "casa": "Fuego",
+      "fora": "9z",
+      "bo": 5,
+      "tem_mercado_no_mapa": false,
+      "inicio_utc": "2026-09-16T23:00:00Z"
     }
   ],
   "linhas": [
-    {
-      "jogo": 1636498770,
-      "tipo": "moneyline",
-      "periodo": 1,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 1.2488,
-      "americana": -402,
-      "limite": 100,
-      "margem_pct": 13.98,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "moneyline",
-      "periodo": 1,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 2.95,
-      "americana": 195,
-      "limite": 100,
-      "margem_pct": 13.98,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "moneyline",
-      "periodo": 2,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 1.2488,
-      "americana": -402,
-      "limite": 100,
-      "margem_pct": 13.98,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "moneyline",
-      "periodo": 2,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 2.95,
-      "americana": 195,
-      "limite": 100,
-      "margem_pct": 13.98,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "moneyline",
-      "periodo": 3,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 1.2488,
-      "americana": -402,
-      "limite": 100,
-      "margem_pct": 13.98,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "moneyline",
-      "periodo": 3,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 2.95,
-      "americana": 195,
-      "limite": 100,
-      "margem_pct": 13.98,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 1.07,
-      "americana": -1429,
-      "limite": 100,
-      "margem_pct": 16.82,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Vencedor - serie"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 4.28,
-      "americana": 328,
-      "limite": 100,
-      "margem_pct": 16.82,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Vencedor - serie"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": -2.5,
-      "odd": 2.08,
-      "americana": 108,
-      "limite": 100,
-      "margem_pct": 11.58,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": 2.5,
-      "odd": 1.5747,
-      "americana": -174,
-      "limite": 100,
-      "margem_pct": 11.58,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "home",
-      "pontos": -1.5,
-      "odd": 1.2646,
-      "americana": -378,
-      "limite": 100,
-      "margem_pct": 14.79,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "away",
-      "pontos": 1.5,
-      "odd": 2.8,
-      "americana": 180,
-      "limite": 100,
-      "margem_pct": 14.79,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "over",
-      "pontos": 3.5,
-      "odd": 1.6329,
-      "americana": -158,
-      "limite": 100,
-      "margem_pct": 11.24,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "under",
-      "pontos": 3.5,
-      "odd": 2.0,
-      "americana": 100,
-      "limite": 100,
-      "margem_pct": 11.24,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "over",
-      "pontos": 4.5,
-      "odd": 3.23,
-      "americana": 223,
-      "limite": 100,
-      "margem_pct": 16.28,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "under",
-      "pontos": 4.5,
-      "odd": 1.1721,
-      "americana": -581,
-      "limite": 100,
-      "margem_pct": 16.28,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "moneyline",
-      "periodo": 1,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.36,
-      "americana": 136,
-      "limite": 625,
-      "margem_pct": 4.92,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "moneyline",
-      "periodo": 1,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.5988,
-      "americana": -167,
-      "limite": 625,
-      "margem_pct": 4.92,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "moneyline",
-      "periodo": 2,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.36,
-      "americana": 136,
-      "limite": 625,
-      "margem_pct": 4.92,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "moneyline",
-      "periodo": 2,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.5988,
-      "americana": -167,
-      "limite": 625,
-      "margem_pct": 4.92,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "moneyline",
-      "periodo": 3,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.36,
-      "americana": 136,
-      "limite": 625,
-      "margem_pct": 4.92,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "moneyline",
-      "periodo": 3,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.5988,
-      "americana": -167,
-      "limite": 625,
-      "margem_pct": 4.92,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.84,
-      "americana": 184,
-      "limite": 1250,
-      "margem_pct": 5.36,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Vencedor - serie"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.4255,
-      "americana": -235,
-      "limite": 1250,
-      "margem_pct": 5.36,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Vencedor - serie"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": 1.5,
-      "odd": 1.8475,
-      "americana": -118,
-      "limite": 1250,
-      "margem_pct": 4.87,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": -1.5,
-      "odd": 1.9709,
-      "americana": -103,
-      "limite": 1250,
-      "margem_pct": 4.87,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "home",
-      "pontos": -1.5,
-      "odd": 4.21,
-      "americana": 321,
-      "limite": 1250,
-      "margem_pct": 8.1,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "away",
-      "pontos": 1.5,
-      "odd": 1.1855,
-      "americana": -539,
-      "limite": 1250,
-      "margem_pct": 8.1,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "home",
-      "pontos": 2.5,
-      "odd": 1.2463,
-      "americana": -406,
-      "limite": 1250,
-      "margem_pct": 7.79,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "away",
-      "pontos": -2.5,
-      "odd": 3.63,
-      "americana": 263,
-      "limite": 1250,
-      "margem_pct": 7.79,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "over",
-      "pontos": 4.5,
-      "odd": 2.7,
-      "americana": 170,
-      "limite": 200,
-      "margem_pct": 7.88,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "under",
-      "pontos": 4.5,
-      "odd": 1.4115,
-      "americana": -243,
-      "limite": 200,
-      "margem_pct": 7.88,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "over",
-      "pontos": 3.5,
-      "odd": 1.3484,
-      "americana": -287,
-      "limite": 200,
-      "margem_pct": 9.62,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636572898,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "under",
-      "pontos": 3.5,
-      "odd": 2.82,
-      "americana": 182,
-      "limite": 200,
-      "margem_pct": 9.62,
-      "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.35,
-      "americana": 135,
-      "limite": 250,
-      "margem_pct": 4.96,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Vencedor - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.6024,
-      "americana": -166,
-      "limite": 250,
-      "margem_pct": 4.96,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Vencedor - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": 1.5,
-      "odd": 1.6329,
-      "americana": -158,
-      "limite": 250,
-      "margem_pct": 4.91,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": -1.5,
-      "odd": 2.29,
-      "americana": 129,
-      "limite": 250,
-      "margem_pct": 4.91,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "home",
-      "pontos": -2.5,
-      "odd": 6.65,
-      "americana": 565,
-      "limite": 250,
-      "margem_pct": 8.33,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "away",
-      "pontos": 2.5,
-      "odd": 1.0719,
-      "americana": -1391,
-      "limite": 250,
-      "margem_pct": 8.33,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "home",
-      "pontos": -1.5,
-      "odd": 3.48,
-      "americana": 248,
-      "limite": 250,
-      "margem_pct": 7.64,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "away",
-      "pontos": 1.5,
-      "odd": 1.2674,
-      "americana": -374,
-      "limite": 250,
-      "margem_pct": 7.64,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "home",
-      "pontos": 2.5,
-      "odd": 1.1821,
-      "americana": -549,
-      "limite": 250,
-      "margem_pct": 8.12,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "away",
-      "pontos": -2.5,
-      "odd": 4.25,
-      "americana": 325,
-      "limite": 250,
-      "margem_pct": 8.12,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "over",
-      "pontos": 4.5,
-      "odd": 2.6,
-      "americana": 160,
-      "limite": 200,
-      "margem_pct": 7.69,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "under",
-      "pontos": 4.5,
-      "odd": 1.4444,
-      "americana": -225,
-      "limite": 200,
-      "margem_pct": 7.69,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "over",
-      "pontos": 3.5,
-      "odd": 1.3135,
-      "americana": -319,
-      "limite": 200,
-      "margem_pct": 9.92,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "under",
-      "pontos": 3.5,
-      "odd": 2.96,
-      "americana": 196,
-      "limite": 200,
-      "margem_pct": 9.92,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "moneyline",
-      "periodo": 1,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.15,
-      "americana": 115,
-      "limite": 125,
-      "margem_pct": 4.84,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "moneyline",
-      "periodo": 1,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.7143,
-      "americana": -140,
-      "limite": 125,
-      "margem_pct": 4.84,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "moneyline",
-      "periodo": 2,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.15,
-      "americana": 115,
-      "limite": 125,
-      "margem_pct": 4.84,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "moneyline",
-      "periodo": 2,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.7143,
-      "americana": -140,
-      "limite": 125,
-      "margem_pct": 4.84,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "moneyline",
-      "periodo": 3,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.15,
-      "americana": 115,
-      "limite": 125,
-      "margem_pct": 4.84,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
-    },
-    {
-      "jogo": 1636486467,
-      "tipo": "moneyline",
-      "periodo": 3,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.7143,
-      "americana": -140,
-      "limite": 125,
-      "margem_pct": 4.84,
-      "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "moneyline",
-      "periodo": 1,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 1.9709,
-      "americana": -103,
-      "limite": 1000,
-      "margem_pct": 4.87,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "moneyline",
-      "periodo": 1,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.8475,
-      "americana": -118,
-      "limite": 1000,
-      "margem_pct": 4.87,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "moneyline",
-      "periodo": 2,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.08,
-      "americana": 108,
-      "limite": 1000,
-      "margem_pct": 4.79,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "moneyline",
-      "periodo": 2,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.7634,
-      "americana": -131,
-      "limite": 1000,
-      "margem_pct": 4.79,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "moneyline",
-      "periodo": 3,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.08,
-      "americana": 108,
-      "limite": 1000,
-      "margem_pct": 4.79,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "moneyline",
-      "periodo": 3,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.7634,
-      "americana": -131,
-      "limite": 1000,
-      "margem_pct": 4.79,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.15,
-      "americana": 115,
-      "limite": 2000,
-      "margem_pct": 4.84,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Vencedor - serie"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.7143,
-      "americana": -140,
-      "limite": 2000,
-      "margem_pct": 4.84,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Vencedor - serie"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": 1.5,
-      "odd": 1.5405,
-      "americana": -185,
-      "limite": 2000,
-      "margem_pct": 5.07,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": -1.5,
-      "odd": 2.49,
-      "americana": 149,
-      "limite": 2000,
-      "margem_pct": 5.07,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "home",
-      "pontos": -2.5,
-      "odd": 6.08,
-      "americana": 508,
-      "limite": 2000,
-      "margem_pct": 8.42,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "away",
-      "pontos": 2.5,
-      "odd": 1.0873,
-      "americana": -1145,
-      "limite": 2000,
-      "margem_pct": 8.42,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "home",
-      "pontos": -1.5,
-      "odd": 3.17,
-      "americana": 217,
-      "limite": 2000,
-      "margem_pct": 7.33,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "away",
-      "pontos": 1.5,
-      "odd": 1.3195,
-      "americana": -313,
-      "limite": 2000,
-      "margem_pct": 7.33,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "home",
-      "pontos": 2.5,
-      "odd": 1.1508,
-      "americana": -663,
-      "limite": 2000,
-      "margem_pct": 8.31,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "spread",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "away",
-      "pontos": -2.5,
-      "odd": 4.67,
-      "americana": 367,
-      "limite": 2000,
-      "margem_pct": 8.31,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Handicap - serie"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "over",
-      "pontos": 4.5,
-      "odd": 2.62,
-      "americana": 162,
-      "limite": 2000,
-      "margem_pct": 6.12,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "under",
-      "pontos": 4.5,
-      "odd": 1.4717,
-      "americana": -212,
-      "limite": 2000,
-      "margem_pct": 6.12,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "over",
-      "pontos": 3.5,
-      "odd": 1.3096,
-      "americana": -323,
-      "limite": 2000,
-      "margem_pct": 8.41,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "total",
-      "periodo": 0,
-      "alternativa": true,
-      "lado": "under",
-      "pontos": 3.5,
-      "odd": 3.12,
-      "americana": 212,
-      "limite": 2000,
-      "margem_pct": 8.41,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Total - serie"
-    },
     {
       "jogo": 1636598064,
       "tipo": "moneyline",
@@ -1134,7 +98,8 @@
       "limite": 500,
       "margem_pct": 6.16,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Vencedor - serie"
+      "mercado": "Vencedor - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1148,7 +113,8 @@
       "limite": 500,
       "margem_pct": 6.16,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Vencedor - serie"
+      "mercado": "Vencedor - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1162,7 +128,8 @@
       "limite": 500,
       "margem_pct": 5.09,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1176,7 +143,8 @@
       "limite": 500,
       "margem_pct": 5.09,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1190,7 +158,8 @@
       "limite": 500,
       "margem_pct": 6.94,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1204,7 +173,8 @@
       "limite": 500,
       "margem_pct": 6.94,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1218,7 +188,8 @@
       "limite": 500,
       "margem_pct": 8.4,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1232,7 +203,8 @@
       "limite": 500,
       "margem_pct": 8.4,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1246,7 +218,8 @@
       "limite": 250,
       "margem_pct": 7.59,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1260,7 +233,8 @@
       "limite": 250,
       "margem_pct": 7.59,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1274,7 +248,8 @@
       "limite": 250,
       "margem_pct": 10.01,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1288,7 +263,8 @@
       "limite": 250,
       "margem_pct": 10.01,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1302,7 +278,8 @@
       "limite": 250,
       "margem_pct": 5.33,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1316,7 +293,8 @@
       "limite": 250,
       "margem_pct": 5.33,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1330,7 +308,8 @@
       "limite": 250,
       "margem_pct": 5.33,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1344,7 +323,8 @@
       "limite": 250,
       "margem_pct": 5.33,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1358,7 +338,8 @@
       "limite": 250,
       "margem_pct": 5.33,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
     },
     {
       "jogo": 1636598064,
@@ -1372,7 +353,8 @@
       "limite": 250,
       "margem_pct": 5.33,
       "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1386,7 +368,8 @@
       "limite": 100,
       "margem_pct": 7.02,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1400,7 +383,8 @@
       "limite": 100,
       "margem_pct": 7.02,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1414,7 +398,8 @@
       "limite": 100,
       "margem_pct": 7.02,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1428,7 +413,8 @@
       "limite": 100,
       "margem_pct": 7.02,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1442,7 +428,8 @@
       "limite": 100,
       "margem_pct": 7.02,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1456,7 +443,8 @@
       "limite": 100,
       "margem_pct": 7.02,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1470,7 +458,8 @@
       "limite": 100,
       "margem_pct": 6.88,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Vencedor - serie"
+      "mercado": "Vencedor - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1484,7 +473,8 @@
       "limite": 100,
       "margem_pct": 6.88,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Vencedor - serie"
+      "mercado": "Vencedor - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1498,7 +488,8 @@
       "limite": 100,
       "margem_pct": 7.48,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1512,7 +503,8 @@
       "limite": 100,
       "margem_pct": 7.48,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1526,7 +518,8 @@
       "limite": 100,
       "margem_pct": 10.88,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1540,7 +533,8 @@
       "limite": 100,
       "margem_pct": 10.88,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1554,7 +548,8 @@
       "limite": 100,
       "margem_pct": 9.41,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1568,7 +563,8 @@
       "limite": 100,
       "margem_pct": 9.41,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1582,7 +578,8 @@
       "limite": 100,
       "margem_pct": 9.9,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1596,7 +593,8 @@
       "limite": 100,
       "margem_pct": 9.9,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1610,7 +608,8 @@
       "limite": 100,
       "margem_pct": 12.19,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636298870,
@@ -1624,7 +623,8 @@
       "limite": 100,
       "margem_pct": 12.19,
       "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1638,7 +638,8 @@
       "limite": 1000,
       "margem_pct": 5.08,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1652,7 +653,8 @@
       "limite": 1000,
       "margem_pct": 5.08,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1666,7 +668,8 @@
       "limite": 1000,
       "margem_pct": 5.08,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1680,7 +683,8 @@
       "limite": 1000,
       "margem_pct": 5.08,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1694,7 +698,8 @@
       "limite": 1000,
       "margem_pct": 5.08,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1708,7 +713,8 @@
       "limite": 1000,
       "margem_pct": 5.08,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1722,7 +728,8 @@
       "limite": 2000,
       "margem_pct": 5.33,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Vencedor - serie"
+      "mercado": "Vencedor - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1736,7 +743,8 @@
       "limite": 2000,
       "margem_pct": 5.33,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Vencedor - serie"
+      "mercado": "Vencedor - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1750,7 +758,8 @@
       "limite": 2000,
       "margem_pct": 4.73,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1764,7 +773,8 @@
       "limite": 2000,
       "margem_pct": 4.73,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1778,7 +788,8 @@
       "limite": 2000,
       "margem_pct": 8.14,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1792,7 +803,8 @@
       "limite": 2000,
       "margem_pct": 8.14,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1806,7 +818,8 @@
       "limite": 2000,
       "margem_pct": 7.64,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1820,7 +833,8 @@
       "limite": 2000,
       "margem_pct": 7.64,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1834,7 +848,8 @@
       "limite": 2000,
       "margem_pct": 7.95,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1848,7 +863,8 @@
       "limite": 2000,
       "margem_pct": 7.95,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1862,7 +878,8 @@
       "limite": 2000,
       "margem_pct": 9.6,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636612016,
@@ -1876,7 +893,668 @@
       "limite": 2000,
       "margem_pct": 9.6,
       "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "moneyline",
+      "periodo": 1,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": null,
+      "odd": 2.36,
+      "americana": 136,
+      "limite": 625,
+      "margem_pct": 4.92,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "moneyline",
+      "periodo": 1,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": null,
+      "odd": 1.5988,
+      "americana": -167,
+      "limite": 625,
+      "margem_pct": 4.92,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "moneyline",
+      "periodo": 2,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": null,
+      "odd": 2.36,
+      "americana": 136,
+      "limite": 625,
+      "margem_pct": 4.92,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "moneyline",
+      "periodo": 2,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": null,
+      "odd": 1.5988,
+      "americana": -167,
+      "limite": 625,
+      "margem_pct": 4.92,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "moneyline",
+      "periodo": 3,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": null,
+      "odd": 2.36,
+      "americana": 136,
+      "limite": 625,
+      "margem_pct": 4.92,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "moneyline",
+      "periodo": 3,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": null,
+      "odd": 1.5988,
+      "americana": -167,
+      "limite": 625,
+      "margem_pct": 4.92,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": null,
+      "odd": 2.84,
+      "americana": 184,
+      "limite": 1250,
+      "margem_pct": 5.36,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Vencedor - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": null,
+      "odd": 1.4255,
+      "americana": -235,
+      "limite": 1250,
+      "margem_pct": 5.36,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Vencedor - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": 1.5,
+      "odd": 1.8475,
+      "americana": -118,
+      "limite": 1250,
+      "margem_pct": 4.87,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": -1.5,
+      "odd": 1.9709,
+      "americana": -103,
+      "limite": 1250,
+      "margem_pct": 4.87,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "home",
+      "pontos": -1.5,
+      "odd": 4.21,
+      "americana": 321,
+      "limite": 1250,
+      "margem_pct": 8.1,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "away",
+      "pontos": 1.5,
+      "odd": 1.1855,
+      "americana": -539,
+      "limite": 1250,
+      "margem_pct": 8.1,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "home",
+      "pontos": 2.5,
+      "odd": 1.2463,
+      "americana": -406,
+      "limite": 1250,
+      "margem_pct": 7.79,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "away",
+      "pontos": -2.5,
+      "odd": 3.63,
+      "americana": 263,
+      "limite": 1250,
+      "margem_pct": 7.79,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "total",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "over",
+      "pontos": 4.5,
+      "odd": 2.7,
+      "americana": 170,
+      "limite": 200,
+      "margem_pct": 7.88,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "total",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "under",
+      "pontos": 4.5,
+      "odd": 1.4115,
+      "americana": -243,
+      "limite": 200,
+      "margem_pct": 7.88,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "total",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "over",
+      "pontos": 3.5,
+      "odd": 1.3484,
+      "americana": -287,
+      "limite": 200,
+      "margem_pct": 9.62,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636572898,
+      "tipo": "total",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "under",
+      "pontos": 3.5,
+      "odd": 2.82,
+      "americana": 182,
+      "limite": 200,
+      "margem_pct": 9.62,
+      "fecha_em": "2026-09-18T15:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "moneyline",
+      "periodo": 1,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": null,
+      "odd": 2.0,
+      "americana": 100,
+      "limite": 1000,
+      "margem_pct": 4.95,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "moneyline",
+      "periodo": 1,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": null,
+      "odd": 1.8197,
+      "americana": -122,
+      "limite": 1000,
+      "margem_pct": 4.95,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "moneyline",
+      "periodo": 2,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": null,
+      "odd": 2.11,
+      "americana": 111,
+      "limite": 1000,
+      "margem_pct": 4.84,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "moneyline",
+      "periodo": 2,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": null,
+      "odd": 1.7407,
+      "americana": -135,
+      "limite": 1000,
+      "margem_pct": 4.84,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "moneyline",
+      "periodo": 3,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": null,
+      "odd": 2.11,
+      "americana": 111,
+      "limite": 1000,
+      "margem_pct": 4.84,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "moneyline",
+      "periodo": 3,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": null,
+      "odd": 1.7407,
+      "americana": -135,
+      "limite": 1000,
+      "margem_pct": 4.84,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": null,
+      "odd": 2.22,
+      "americana": 122,
+      "limite": 2000,
+      "margem_pct": 4.88,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Vencedor - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": null,
+      "odd": 1.6711,
+      "americana": -149,
+      "limite": 2000,
+      "margem_pct": 4.88,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Vencedor - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": 1.5,
+      "odd": 1.5747,
+      "americana": -174,
+      "limite": 2000,
+      "margem_pct": 5.0,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": -1.5,
+      "odd": 2.41,
+      "americana": 141,
+      "limite": 2000,
+      "margem_pct": 5.0,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "home",
+      "pontos": -2.5,
+      "odd": 6.28,
+      "americana": 528,
+      "limite": 2000,
+      "margem_pct": 8.38,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "away",
+      "pontos": 2.5,
+      "odd": 1.0816,
+      "americana": -1225,
+      "limite": 2000,
+      "margem_pct": 8.38,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "home",
+      "pontos": -1.5,
+      "odd": 3.28,
+      "americana": 228,
+      "limite": 2000,
+      "margem_pct": 7.39,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "away",
+      "pontos": 1.5,
+      "odd": 1.3003,
+      "americana": -333,
+      "limite": 2000,
+      "margem_pct": 7.39,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "home",
+      "pontos": 2.5,
+      "odd": 1.1605,
+      "americana": -623,
+      "limite": 2000,
+      "margem_pct": 8.24,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "away",
+      "pontos": -2.5,
+      "odd": 4.53,
+      "americana": 353,
+      "limite": 2000,
+      "margem_pct": 8.24,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "total",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "over",
+      "pontos": 4.5,
+      "odd": 2.63,
+      "americana": 163,
+      "limite": 2000,
+      "margem_pct": 6.28,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "total",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "under",
+      "pontos": 4.5,
+      "odd": 1.4651,
+      "americana": -215,
+      "limite": 2000,
+      "margem_pct": 6.28,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "total",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "over",
+      "pontos": 3.5,
+      "odd": 1.3135,
+      "americana": -319,
+      "limite": 2000,
+      "margem_pct": 8.39,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498148,
+      "tipo": "total",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "under",
+      "pontos": 3.5,
+      "odd": 3.1,
+      "americana": 210,
+      "limite": 2000,
+      "margem_pct": 8.39,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636311214,
+      "tipo": "moneyline",
+      "periodo": 1,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": null,
+      "odd": 2.09,
+      "americana": 109,
+      "limite": 1000,
+      "margem_pct": 4.74,
+      "fecha_em": "2026-09-18T09:00:00+00:00",
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636311214,
+      "tipo": "moneyline",
+      "periodo": 1,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": null,
+      "odd": 1.7576,
+      "americana": -132,
+      "limite": 1000,
+      "margem_pct": 4.74,
+      "fecha_em": "2026-09-18T09:00:00+00:00",
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636311214,
+      "tipo": "moneyline",
+      "periodo": 2,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": null,
+      "odd": 2.09,
+      "americana": 109,
+      "limite": 1000,
+      "margem_pct": 4.74,
+      "fecha_em": "2026-09-18T09:00:00+00:00",
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636311214,
+      "tipo": "moneyline",
+      "periodo": 2,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": null,
+      "odd": 1.7576,
+      "americana": -132,
+      "limite": 1000,
+      "margem_pct": 4.74,
+      "fecha_em": "2026-09-18T09:00:00+00:00",
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636311214,
+      "tipo": "moneyline",
+      "periodo": 3,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": null,
+      "odd": 2.09,
+      "americana": 109,
+      "limite": 1000,
+      "margem_pct": 4.74,
+      "fecha_em": "2026-09-18T09:00:00+00:00",
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636311214,
+      "tipo": "moneyline",
+      "periodo": 3,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": null,
+      "odd": 1.7576,
+      "americana": -132,
+      "limite": 1000,
+      "margem_pct": 4.74,
+      "fecha_em": "2026-09-18T09:00:00+00:00",
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
     },
     {
       "jogo": 1636311214,
@@ -1885,12 +1563,13 @@
       "alternativa": false,
       "lado": "home",
       "pontos": null,
-      "odd": 2.34,
-      "americana": 134,
+      "odd": 2.21,
+      "americana": 121,
       "limite": 2000,
-      "margem_pct": 5.0,
+      "margem_pct": 4.93,
       "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Vencedor - serie"
+      "mercado": "Vencedor - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636311214,
@@ -1899,12 +1578,13 @@
       "alternativa": false,
       "lado": "away",
       "pontos": null,
-      "odd": 1.6061,
-      "americana": -165,
+      "odd": 1.6757,
+      "americana": -148,
       "limite": 2000,
-      "margem_pct": 5.0,
+      "margem_pct": 4.93,
       "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Vencedor - serie"
+      "mercado": "Vencedor - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636311214,
@@ -1913,12 +1593,13 @@
       "alternativa": false,
       "lado": "home",
       "pontos": 1.5,
-      "odd": 1.6329,
-      "americana": -158,
+      "odd": 1.5747,
+      "americana": -174,
       "limite": 2000,
-      "margem_pct": 4.91,
+      "margem_pct": 5.0,
       "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636311214,
@@ -1927,12 +1608,13 @@
       "alternativa": false,
       "lado": "away",
       "pontos": -1.5,
-      "odd": 2.29,
-      "americana": 129,
+      "odd": 2.41,
+      "americana": 141,
       "limite": 2000,
-      "margem_pct": 4.91,
+      "margem_pct": 5.0,
       "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636311214,
@@ -1941,12 +1623,13 @@
       "alternativa": true,
       "lado": "home",
       "pontos": -2.5,
-      "odd": 6.65,
-      "americana": 565,
+      "odd": 6.29,
+      "americana": 529,
       "limite": 2000,
-      "margem_pct": 8.34,
+      "margem_pct": 8.37,
       "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636311214,
@@ -1955,12 +1638,13 @@
       "alternativa": true,
       "lado": "away",
       "pontos": 2.5,
-      "odd": 1.0718,
-      "americana": -1393,
+      "odd": 1.0814,
+      "americana": -1229,
       "limite": 2000,
-      "margem_pct": 8.34,
+      "margem_pct": 8.37,
       "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636311214,
@@ -1969,12 +1653,13 @@
       "alternativa": true,
       "lado": "home",
       "pontos": -1.5,
-      "odd": 3.48,
-      "americana": 248,
+      "odd": 3.27,
+      "americana": 227,
       "limite": 2000,
-      "margem_pct": 7.59,
+      "margem_pct": 7.49,
       "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636311214,
@@ -1983,12 +1668,13 @@
       "alternativa": true,
       "lado": "away",
       "pontos": 1.5,
-      "odd": 1.2681,
-      "americana": -373,
+      "odd": 1.3003,
+      "americana": -333,
       "limite": 2000,
-      "margem_pct": 7.59,
+      "margem_pct": 7.49,
       "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636311214,
@@ -1997,12 +1683,13 @@
       "alternativa": true,
       "lado": "home",
       "pontos": 2.5,
-      "odd": 1.1805,
-      "americana": -554,
+      "odd": 1.1626,
+      "americana": -615,
       "limite": 2000,
-      "margem_pct": 8.13,
+      "margem_pct": 8.24,
       "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636311214,
@@ -2011,12 +1698,13 @@
       "alternativa": true,
       "lado": "away",
       "pontos": -2.5,
-      "odd": 4.27,
-      "americana": 327,
+      "odd": 4.5,
+      "americana": 350,
       "limite": 2000,
-      "margem_pct": 8.13,
+      "margem_pct": 8.24,
       "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636311214,
@@ -2025,12 +1713,13 @@
       "alternativa": false,
       "lado": "over",
       "pontos": 4.5,
-      "odd": 2.65,
-      "americana": 165,
+      "odd": 2.63,
+      "americana": 163,
       "limite": 2000,
-      "margem_pct": 6.29,
+      "margem_pct": 6.28,
       "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636311214,
@@ -2039,12 +1728,13 @@
       "alternativa": false,
       "lado": "under",
       "pontos": 4.5,
-      "odd": 1.4587,
-      "americana": -218,
+      "odd": 1.4651,
+      "americana": -215,
       "limite": 2000,
-      "margem_pct": 6.29,
+      "margem_pct": 6.28,
       "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636311214,
@@ -2053,12 +1743,13 @@
       "alternativa": true,
       "lado": "over",
       "pontos": 3.5,
-      "odd": 1.3226,
-      "americana": -310,
+      "odd": 1.3155,
+      "americana": -317,
       "limite": 2000,
-      "margem_pct": 8.4,
+      "margem_pct": 8.38,
       "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636311214,
@@ -2067,96 +1758,13 @@
       "alternativa": true,
       "lado": "under",
       "pontos": 3.5,
-      "odd": 3.05,
-      "americana": 205,
+      "odd": 3.09,
+      "americana": 209,
       "limite": 2000,
-      "margem_pct": 8.4,
+      "margem_pct": 8.38,
       "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Total - serie"
-    },
-    {
-      "jogo": 1636311214,
-      "tipo": "moneyline",
-      "periodo": 3,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.15,
-      "americana": 115,
-      "limite": 1000,
-      "margem_pct": 4.84,
-      "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
-    },
-    {
-      "jogo": 1636311214,
-      "tipo": "moneyline",
-      "periodo": 3,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.7143,
-      "americana": -140,
-      "limite": 1000,
-      "margem_pct": 4.84,
-      "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
-    },
-    {
-      "jogo": 1636311214,
-      "tipo": "moneyline",
-      "periodo": 2,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.15,
-      "americana": 115,
-      "limite": 1000,
-      "margem_pct": 4.84,
-      "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
-    },
-    {
-      "jogo": 1636311214,
-      "tipo": "moneyline",
-      "periodo": 2,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.7143,
-      "americana": -140,
-      "limite": 1000,
-      "margem_pct": 4.84,
-      "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
-    },
-    {
-      "jogo": 1636311214,
-      "tipo": "moneyline",
-      "periodo": 1,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.15,
-      "americana": 115,
-      "limite": 1000,
-      "margem_pct": 4.84,
-      "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
-    },
-    {
-      "jogo": 1636311214,
-      "tipo": "moneyline",
-      "periodo": 1,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.7143,
-      "americana": -140,
-      "limite": 1000,
-      "margem_pct": 4.84,
-      "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2170,7 +1778,8 @@
       "limite": 250,
       "margem_pct": 5.13,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2184,7 +1793,8 @@
       "limite": 250,
       "margem_pct": 5.13,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Vencedor - mapa 1"
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2198,7 +1808,8 @@
       "limite": 250,
       "margem_pct": 5.13,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2212,7 +1823,8 @@
       "limite": 250,
       "margem_pct": 5.13,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Vencedor - mapa 2"
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2226,7 +1838,8 @@
       "limite": 250,
       "margem_pct": 5.13,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2240,7 +1853,8 @@
       "limite": 250,
       "margem_pct": 5.13,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Vencedor - mapa 3"
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2254,7 +1868,8 @@
       "limite": 500,
       "margem_pct": 5.96,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Vencedor - serie"
+      "mercado": "Vencedor - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2268,7 +1883,8 @@
       "limite": 500,
       "margem_pct": 5.96,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Vencedor - serie"
+      "mercado": "Vencedor - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2282,7 +1898,8 @@
       "limite": 500,
       "margem_pct": 4.97,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2296,7 +1913,8 @@
       "limite": 500,
       "margem_pct": 4.97,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2310,7 +1928,8 @@
       "limite": 500,
       "margem_pct": 7.23,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2324,7 +1943,8 @@
       "limite": 500,
       "margem_pct": 7.23,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2338,7 +1958,8 @@
       "limite": 500,
       "margem_pct": 8.39,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2352,7 +1973,8 @@
       "limite": 500,
       "margem_pct": 8.39,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Handicap - serie"
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2366,7 +1988,8 @@
       "limite": 250,
       "margem_pct": 7.74,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2380,7 +2003,8 @@
       "limite": 250,
       "margem_pct": 7.74,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2394,7 +2018,8 @@
       "limite": 250,
       "margem_pct": 9.71,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2408,427 +2033,548 @@
       "limite": 250,
       "margem_pct": 9.71,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Total - serie"
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636598064,
+      "jogo": 1636486467,
       "tipo": "moneyline",
       "periodo": 0,
       "alternativa": false,
-      "lado": "Liquid 0, FlyQuest 3",
+      "lado": "home",
       "pontos": null,
-      "odd": 11.25,
-      "americana": 1025,
-      "limite": 100,
-      "margem_pct": 26.43,
-      "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Correct Score"
+      "odd": 2.35,
+      "americana": 135,
+      "limite": 250,
+      "margem_pct": 4.96,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Vencedor - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636598064,
+      "jogo": 1636486467,
       "tipo": "moneyline",
       "periodo": 0,
       "alternativa": false,
-      "lado": "Liquid 1, FlyQuest 3",
+      "lado": "away",
       "pontos": null,
-      "odd": 8.07,
-      "americana": 707,
-      "limite": 100,
-      "margem_pct": 26.43,
-      "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Correct Score"
+      "odd": 1.6024,
+      "americana": -166,
+      "limite": 250,
+      "margem_pct": 4.96,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Vencedor - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636598064,
-      "tipo": "moneyline",
+      "jogo": 1636486467,
+      "tipo": "spread",
       "periodo": 0,
       "alternativa": false,
-      "lado": "Liquid 2, FlyQuest 3",
-      "pontos": null,
-      "odd": 7.04,
-      "americana": 604,
-      "limite": 100,
-      "margem_pct": 26.43,
-      "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Correct Score"
+      "lado": "home",
+      "pontos": 1.5,
+      "odd": 1.6329,
+      "americana": -158,
+      "limite": 250,
+      "margem_pct": 4.91,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636598064,
-      "tipo": "moneyline",
+      "jogo": 1636486467,
+      "tipo": "spread",
       "periodo": 0,
       "alternativa": false,
-      "lado": "Liquid 3, FlyQuest 0",
-      "pontos": null,
-      "odd": 2.81,
-      "americana": 181,
-      "limite": 100,
-      "margem_pct": 26.43,
-      "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Correct Score"
+      "lado": "away",
+      "pontos": -1.5,
+      "odd": 2.29,
+      "americana": 129,
+      "limite": 250,
+      "margem_pct": 4.91,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636598064,
-      "tipo": "moneyline",
+      "jogo": 1636486467,
+      "tipo": "spread",
       "periodo": 0,
-      "alternativa": false,
-      "lado": "Liquid 3, FlyQuest 1",
-      "pontos": null,
-      "odd": 3.05,
-      "americana": 205,
-      "limite": 100,
-      "margem_pct": 26.43,
-      "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Correct Score"
+      "alternativa": true,
+      "lado": "home",
+      "pontos": -2.5,
+      "odd": 6.65,
+      "americana": 565,
+      "limite": 250,
+      "margem_pct": 8.33,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636598064,
-      "tipo": "moneyline",
+      "jogo": 1636486467,
+      "tipo": "spread",
       "periodo": 0,
-      "alternativa": false,
-      "lado": "Liquid 3, FlyQuest 2",
-      "pontos": null,
-      "odd": 4.43,
-      "americana": 343,
-      "limite": 100,
-      "margem_pct": 26.43,
-      "fecha_em": "2026-09-20T01:00:00+00:00",
-      "mercado": "Correct Score"
+      "alternativa": true,
+      "lado": "away",
+      "pontos": 2.5,
+      "odd": 1.0719,
+      "americana": -1391,
+      "limite": 250,
+      "margem_pct": 8.33,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636612016,
-      "tipo": "moneyline",
+      "jogo": 1636486467,
+      "tipo": "spread",
       "periodo": 0,
-      "alternativa": false,
-      "lado": "Shopify Rebellion 0, Sentinels 3",
-      "pontos": null,
-      "odd": 3.59,
-      "americana": 259,
-      "limite": 100,
-      "margem_pct": 27.04,
-      "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Correct Score"
+      "alternativa": true,
+      "lado": "home",
+      "pontos": -1.5,
+      "odd": 3.48,
+      "americana": 248,
+      "limite": 250,
+      "margem_pct": 7.64,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636612016,
-      "tipo": "moneyline",
+      "jogo": 1636486467,
+      "tipo": "spread",
       "periodo": 0,
-      "alternativa": false,
-      "lado": "Shopify Rebellion 1, Sentinels 3",
-      "pontos": null,
-      "odd": 3.42,
-      "americana": 242,
-      "limite": 100,
-      "margem_pct": 27.04,
-      "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Correct Score"
+      "alternativa": true,
+      "lado": "away",
+      "pontos": 1.5,
+      "odd": 1.2674,
+      "americana": -374,
+      "limite": 250,
+      "margem_pct": 7.64,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636612016,
-      "tipo": "moneyline",
+      "jogo": 1636486467,
+      "tipo": "spread",
       "periodo": 0,
-      "alternativa": false,
-      "lado": "Shopify Rebellion 2, Sentinels 3",
-      "pontos": null,
-      "odd": 4.24,
-      "americana": 324,
-      "limite": 100,
-      "margem_pct": 27.04,
-      "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Correct Score"
+      "alternativa": true,
+      "lado": "home",
+      "pontos": 2.5,
+      "odd": 1.1821,
+      "americana": -549,
+      "limite": 250,
+      "margem_pct": 8.12,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636612016,
-      "tipo": "moneyline",
+      "jogo": 1636486467,
+      "tipo": "spread",
       "periodo": 0,
-      "alternativa": false,
-      "lado": "Shopify Rebellion 3, Sentinels 0",
-      "pontos": null,
-      "odd": 8.49,
-      "americana": 749,
-      "limite": 100,
-      "margem_pct": 27.04,
-      "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Correct Score"
+      "alternativa": true,
+      "lado": "away",
+      "pontos": -2.5,
+      "odd": 4.25,
+      "americana": 325,
+      "limite": 250,
+      "margem_pct": 8.12,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636612016,
-      "tipo": "moneyline",
+      "jogo": 1636486467,
+      "tipo": "total",
       "periodo": 0,
       "alternativa": false,
-      "lado": "Shopify Rebellion 3, Sentinels 1",
-      "pontos": null,
-      "odd": 6.06,
-      "americana": 506,
-      "limite": 100,
-      "margem_pct": 27.04,
-      "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Correct Score"
+      "lado": "over",
+      "pontos": 4.5,
+      "odd": 2.6,
+      "americana": 160,
+      "limite": 200,
+      "margem_pct": 7.69,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636612016,
-      "tipo": "moneyline",
+      "jogo": 1636486467,
+      "tipo": "total",
       "periodo": 0,
       "alternativa": false,
-      "lado": "Shopify Rebellion 3, Sentinels 2",
-      "pontos": null,
-      "odd": 5.53,
-      "americana": 453,
-      "limite": 100,
-      "margem_pct": 27.04,
-      "fecha_em": "2026-09-18T20:00:00+00:00",
-      "mercado": "Correct Score"
+      "lado": "under",
+      "pontos": 4.5,
+      "odd": 1.4444,
+      "americana": -225,
+      "limite": 200,
+      "margem_pct": 7.69,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636311214,
-      "tipo": "moneyline",
+      "jogo": 1636486467,
+      "tipo": "total",
       "periodo": 0,
-      "alternativa": false,
-      "lado": "Team WE 0, JD Gaming 3",
-      "pontos": null,
-      "odd": 4.33,
-      "americana": 333,
-      "limite": 100,
-      "margem_pct": 27.31,
-      "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Correct Score"
+      "alternativa": true,
+      "lado": "over",
+      "pontos": 3.5,
+      "odd": 1.3135,
+      "americana": -319,
+      "limite": 200,
+      "margem_pct": 9.92,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636311214,
-      "tipo": "moneyline",
+      "jogo": 1636486467,
+      "tipo": "total",
       "periodo": 0,
-      "alternativa": false,
-      "lado": "Team WE 1, JD Gaming 3",
-      "pontos": null,
-      "odd": 3.75,
-      "americana": 275,
-      "limite": 100,
-      "margem_pct": 27.31,
-      "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Correct Score"
+      "alternativa": true,
+      "lado": "under",
+      "pontos": 3.5,
+      "odd": 2.96,
+      "americana": 196,
+      "limite": 200,
+      "margem_pct": 9.92,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
-      "jogo": 1636311214,
+      "jogo": 1636486467,
       "tipo": "moneyline",
-      "periodo": 0,
+      "periodo": 1,
       "alternativa": false,
-      "lado": "Team WE 2, JD Gaming 3",
+      "lado": "home",
       "pontos": null,
-      "odd": 4.33,
-      "americana": 333,
-      "limite": 100,
-      "margem_pct": 27.31,
-      "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Correct Score"
+      "odd": 2.15,
+      "americana": 115,
+      "limite": 125,
+      "margem_pct": 4.84,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
     },
     {
-      "jogo": 1636311214,
+      "jogo": 1636486467,
       "tipo": "moneyline",
-      "periodo": 0,
+      "periodo": 1,
       "alternativa": false,
-      "lado": "Team WE 3, JD Gaming 0",
+      "lado": "away",
       "pontos": null,
-      "odd": 6.91,
-      "americana": 591,
-      "limite": 100,
-      "margem_pct": 27.31,
-      "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Correct Score"
+      "odd": 1.7143,
+      "americana": -140,
+      "limite": 125,
+      "margem_pct": 4.84,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
     },
     {
-      "jogo": 1636311214,
+      "jogo": 1636486467,
       "tipo": "moneyline",
-      "periodo": 0,
+      "periodo": 2,
       "alternativa": false,
-      "lado": "Team WE 3, JD Gaming 1",
+      "lado": "home",
       "pontos": null,
-      "odd": 5.11,
-      "americana": 411,
-      "limite": 100,
-      "margem_pct": 27.31,
-      "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Correct Score"
+      "odd": 2.15,
+      "americana": 115,
+      "limite": 125,
+      "margem_pct": 4.84,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
     },
     {
-      "jogo": 1636311214,
+      "jogo": 1636486467,
       "tipo": "moneyline",
-      "periodo": 0,
+      "periodo": 2,
       "alternativa": false,
-      "lado": "Team WE 3, JD Gaming 2",
+      "lado": "away",
       "pontos": null,
-      "odd": 4.9,
-      "americana": 390,
+      "odd": 1.7143,
+      "americana": -140,
+      "limite": 125,
+      "margem_pct": 4.84,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636486467,
+      "tipo": "moneyline",
+      "periodo": 3,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": null,
+      "odd": 2.15,
+      "americana": 115,
+      "limite": 125,
+      "margem_pct": 4.84,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636486467,
+      "tipo": "moneyline",
+      "periodo": 3,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": null,
+      "odd": 1.7143,
+      "americana": -140,
+      "limite": 125,
+      "margem_pct": 4.84,
+      "fecha_em": "2026-09-19T16:00:00+00:00",
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "moneyline",
+      "periodo": 1,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": null,
+      "odd": 1.2488,
+      "americana": -402,
       "limite": 100,
-      "margem_pct": 27.31,
-      "fecha_em": "2026-09-18T09:00:00+00:00",
-      "mercado": "Correct Score"
+      "margem_pct": 13.98,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "moneyline",
+      "periodo": 1,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": null,
+      "odd": 2.95,
+      "americana": 195,
+      "limite": 100,
+      "margem_pct": 13.98,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Vencedor - mapa 1",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "moneyline",
+      "periodo": 2,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": null,
+      "odd": 1.2488,
+      "americana": -402,
+      "limite": 100,
+      "margem_pct": 13.98,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "moneyline",
+      "periodo": 2,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": null,
+      "odd": 2.95,
+      "americana": 195,
+      "limite": 100,
+      "margem_pct": 13.98,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Vencedor - mapa 2",
+      "unidade": ""
     },
     {
       "jogo": 1636498770,
       "tipo": "moneyline",
       "periodo": 0,
       "alternativa": false,
-      "lado": "Fuego 0, 9z 3",
+      "lado": "home",
       "pontos": null,
-      "odd": 4.38,
-      "americana": 338,
+      "odd": 1.07,
+      "americana": -1429,
       "limite": 100,
-      "margem_pct": 79.72,
+      "margem_pct": 16.82,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Vencedor - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636498770,
       "tipo": "moneyline",
       "periodo": 0,
       "alternativa": false,
-      "lado": "Fuego 1, 9z 3",
+      "lado": "away",
       "pontos": null,
-      "odd": 4.68,
-      "americana": 368,
+      "odd": 4.28,
+      "americana": 328,
       "limite": 100,
-      "margem_pct": 79.72,
+      "margem_pct": 16.82,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Vencedor - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "home",
+      "pontos": -2.5,
+      "odd": 2.08,
+      "americana": 108,
+      "limite": 100,
+      "margem_pct": 11.58,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "away",
+      "pontos": 2.5,
+      "odd": 1.5747,
+      "americana": -174,
+      "limite": 100,
+      "margem_pct": 11.58,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "home",
+      "pontos": -1.5,
+      "odd": 1.2646,
+      "americana": -378,
+      "limite": 100,
+      "margem_pct": 14.79,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "spread",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "away",
+      "pontos": 1.5,
+      "odd": 2.8,
+      "americana": 180,
+      "limite": 100,
+      "margem_pct": 14.79,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Handicap - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "total",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "over",
+      "pontos": 3.5,
+      "odd": 1.6329,
+      "americana": -158,
+      "limite": 100,
+      "margem_pct": 11.24,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "total",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "under",
+      "pontos": 3.5,
+      "odd": 2.0,
+      "americana": 100,
+      "limite": 100,
+      "margem_pct": 11.24,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "total",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "over",
+      "pontos": 4.5,
+      "odd": 3.23,
+      "americana": 223,
+      "limite": 100,
+      "margem_pct": 16.28,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "total",
+      "periodo": 0,
+      "alternativa": true,
+      "lado": "under",
+      "pontos": 4.5,
+      "odd": 1.1721,
+      "americana": -581,
+      "limite": 100,
+      "margem_pct": 16.28,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Total - serie",
+      "unidade": ""
     },
     {
       "jogo": 1636498770,
       "tipo": "moneyline",
-      "periodo": 0,
+      "periodo": 3,
       "alternativa": false,
-      "lado": "Fuego 2, 9z 3",
+      "lado": "home",
       "pontos": null,
-      "odd": 4.65,
-      "americana": 365,
+      "odd": 1.2538,
+      "americana": -394,
       "limite": 100,
-      "margem_pct": 79.72,
+      "margem_pct": 13.89,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
     },
     {
       "jogo": 1636498770,
       "tipo": "moneyline",
-      "periodo": 0,
+      "periodo": 3,
       "alternativa": false,
-      "lado": "Fuego 3, 9z 0",
+      "lado": "away",
       "pontos": null,
-      "odd": 2.07,
-      "americana": 107,
+      "odd": 2.93,
+      "americana": 193,
       "limite": 100,
-      "margem_pct": 79.72,
+      "margem_pct": 13.89,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Correct Score"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "Fuego 3, 9z 1",
-      "pontos": null,
-      "odd": 2.59,
-      "americana": 159,
-      "limite": 100,
-      "margem_pct": 79.72,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Correct Score"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "Fuego 3, 9z 2",
-      "pontos": null,
-      "odd": 3.69,
-      "americana": 269,
-      "limite": 100,
-      "margem_pct": 79.72,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Correct Score"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "Top Esports 0, Invictus 3",
-      "pontos": null,
-      "odd": 4.77,
-      "americana": 377,
-      "limite": 100,
-      "margem_pct": 27.38,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Correct Score"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "Top Esports 1, Invictus 3",
-      "pontos": null,
-      "odd": 3.93,
-      "americana": 293,
-      "limite": 100,
-      "margem_pct": 27.38,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Correct Score"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "Top Esports 2, Invictus 3",
-      "pontos": null,
-      "odd": 4.39,
-      "americana": 339,
-      "limite": 100,
-      "margem_pct": 27.38,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Correct Score"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "Top Esports 3, Invictus 0",
-      "pontos": null,
-      "odd": 6.27,
-      "americana": 527,
-      "limite": 100,
-      "margem_pct": 27.38,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Correct Score"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "Top Esports 3, Invictus 1",
-      "pontos": null,
-      "odd": 4.75,
-      "americana": 375,
-      "limite": 100,
-      "margem_pct": 27.38,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Correct Score"
-    },
-    {
-      "jogo": 1636498148,
-      "tipo": "moneyline",
-      "periodo": 0,
-      "alternativa": false,
-      "lado": "Top Esports 3, Invictus 2",
-      "pontos": null,
-      "odd": 4.72,
-      "americana": 372,
-      "limite": 100,
-      "margem_pct": 27.38,
-      "fecha_em": "2026-09-17T09:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Vencedor - mapa 3",
+      "unidade": ""
     },
     {
       "jogo": 1636537476,
@@ -2842,7 +2588,8 @@
       "limite": 100,
       "margem_pct": 26.73,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636537476,
@@ -2856,7 +2603,8 @@
       "limite": 100,
       "margem_pct": 26.73,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636537476,
@@ -2870,7 +2618,8 @@
       "limite": 100,
       "margem_pct": 26.73,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636537476,
@@ -2884,7 +2633,8 @@
       "limite": 100,
       "margem_pct": 26.73,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636537476,
@@ -2898,7 +2648,8 @@
       "limite": 100,
       "margem_pct": 26.73,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636537476,
@@ -2912,91 +2663,98 @@
       "limite": 100,
       "margem_pct": 26.73,
       "fecha_em": "2026-09-19T20:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
-      "jogo": 1636298870,
+      "jogo": 1636498148,
       "tipo": "moneyline",
       "periodo": 0,
       "alternativa": false,
-      "lado": "Forsaken 0, BOMBA 3",
+      "lado": "Top Esports 3, Invictus 1",
       "pontos": null,
-      "odd": 5.33,
-      "americana": 433,
+      "odd": 4.87,
+      "americana": 387,
       "limite": 100,
-      "margem_pct": 40.08,
-      "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Correct Score"
+      "margem_pct": 27.45,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
-      "jogo": 1636298870,
+      "jogo": 1636498148,
       "tipo": "moneyline",
       "periodo": 0,
       "alternativa": false,
-      "lado": "Forsaken 1, BOMBA 3",
+      "lado": "Top Esports 3, Invictus 2",
       "pontos": null,
-      "odd": 4.26,
-      "americana": 326,
+      "odd": 4.8,
+      "americana": 380,
       "limite": 100,
-      "margem_pct": 40.08,
-      "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Correct Score"
+      "margem_pct": 27.45,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
-      "jogo": 1636298870,
+      "jogo": 1636498148,
       "tipo": "moneyline",
       "periodo": 0,
       "alternativa": false,
-      "lado": "Forsaken 2, BOMBA 3",
+      "lado": "Top Esports 0, Invictus 3",
       "pontos": null,
-      "odd": 4.25,
-      "americana": 325,
+      "odd": 4.62,
+      "americana": 362,
       "limite": 100,
-      "margem_pct": 40.08,
-      "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Correct Score"
+      "margem_pct": 27.45,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
-      "jogo": 1636298870,
+      "jogo": 1636498148,
       "tipo": "moneyline",
       "periodo": 0,
       "alternativa": false,
-      "lado": "Forsaken 3, BOMBA 0",
+      "lado": "Top Esports 1, Invictus 3",
       "pontos": null,
-      "odd": 4.38,
-      "americana": 338,
+      "odd": 3.84,
+      "americana": 284,
       "limite": 100,
-      "margem_pct": 40.08,
-      "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Correct Score"
+      "margem_pct": 27.45,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
-      "jogo": 1636298870,
+      "jogo": 1636498148,
       "tipo": "moneyline",
       "periodo": 0,
       "alternativa": false,
-      "lado": "Forsaken 3, BOMBA 1",
+      "lado": "Top Esports 2, Invictus 3",
       "pontos": null,
-      "odd": 3.75,
-      "americana": 275,
+      "odd": 4.36,
+      "americana": 336,
       "limite": 100,
-      "margem_pct": 40.08,
-      "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Correct Score"
+      "margem_pct": 27.45,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
-      "jogo": 1636298870,
+      "jogo": 1636498148,
       "tipo": "moneyline",
       "periodo": 0,
       "alternativa": false,
-      "lado": "Forsaken 3, BOMBA 2",
+      "lado": "Top Esports 3, Invictus 0",
       "pontos": null,
-      "odd": 4.03,
-      "americana": 303,
+      "odd": 6.47,
+      "americana": 547,
       "limite": 100,
-      "margem_pct": 40.08,
-      "fecha_em": "2026-09-19T15:00:00+00:00",
-      "mercado": "Correct Score"
+      "margem_pct": 27.45,
+      "fecha_em": "2026-09-17T09:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636498770,
@@ -3010,7 +2768,8 @@
       "limite": 100,
       "margem_pct": 14.06,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Vencedor - Kills - mapa 1"
+      "mercado": "Vencedor - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3024,7 +2783,8 @@
       "limite": 100,
       "margem_pct": 14.06,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Vencedor - Kills - mapa 1"
+      "mercado": "Vencedor - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3038,7 +2798,8 @@
       "limite": 100,
       "margem_pct": 11.15,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total do time - Kills - mapa 1"
+      "mercado": "Total do time - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3052,7 +2813,8 @@
       "limite": 100,
       "margem_pct": 11.15,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total do time - Kills - mapa 1"
+      "mercado": "Total do time - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3066,7 +2828,8 @@
       "limite": 100,
       "margem_pct": 6.97,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total do time - Kills - mapa 1"
+      "mercado": "Total do time - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3080,7 +2843,8 @@
       "limite": 100,
       "margem_pct": 6.97,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total do time - Kills - mapa 1"
+      "mercado": "Total do time - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3094,7 +2858,8 @@
       "limite": 100,
       "margem_pct": 11.18,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 1"
+      "mercado": "Handicap - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3108,7 +2873,8 @@
       "limite": 100,
       "margem_pct": 11.18,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 1"
+      "mercado": "Handicap - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3122,7 +2888,8 @@
       "limite": 100,
       "margem_pct": 12.18,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 1"
+      "mercado": "Handicap - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3136,7 +2903,8 @@
       "limite": 100,
       "margem_pct": 12.18,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 1"
+      "mercado": "Handicap - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3150,7 +2918,8 @@
       "limite": 100,
       "margem_pct": 11.76,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 1"
+      "mercado": "Handicap - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3164,7 +2933,8 @@
       "limite": 100,
       "margem_pct": 11.76,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 1"
+      "mercado": "Handicap - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3178,7 +2948,8 @@
       "limite": 100,
       "margem_pct": 11.84,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 1"
+      "mercado": "Handicap - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3192,7 +2963,8 @@
       "limite": 100,
       "margem_pct": 11.84,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 1"
+      "mercado": "Handicap - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3206,7 +2978,8 @@
       "limite": 100,
       "margem_pct": 12.18,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 1"
+      "mercado": "Handicap - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3220,7 +2993,8 @@
       "limite": 100,
       "margem_pct": 12.18,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 1"
+      "mercado": "Handicap - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3234,7 +3008,8 @@
       "limite": 100,
       "margem_pct": 11.11,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 1"
+      "mercado": "Total - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3248,7 +3023,8 @@
       "limite": 100,
       "margem_pct": 11.11,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 1"
+      "mercado": "Total - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3262,7 +3038,8 @@
       "limite": 100,
       "margem_pct": 11.75,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 1"
+      "mercado": "Total - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3276,7 +3053,8 @@
       "limite": 100,
       "margem_pct": 11.75,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 1"
+      "mercado": "Total - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3290,7 +3068,8 @@
       "limite": 100,
       "margem_pct": 11.53,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 1"
+      "mercado": "Total - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3304,7 +3083,8 @@
       "limite": 100,
       "margem_pct": 11.53,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 1"
+      "mercado": "Total - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3318,7 +3098,8 @@
       "limite": 100,
       "margem_pct": 11.76,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 1"
+      "mercado": "Total - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3332,7 +3113,8 @@
       "limite": 100,
       "margem_pct": 11.76,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 1"
+      "mercado": "Total - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3346,7 +3128,8 @@
       "limite": 100,
       "margem_pct": 11.81,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 1"
+      "mercado": "Total - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3360,7 +3143,8 @@
       "limite": 100,
       "margem_pct": 11.81,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 1"
+      "mercado": "Total - Kills - mapa 1",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3374,7 +3158,8 @@
       "limite": 100,
       "margem_pct": 14.06,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Vencedor - Kills - mapa 2"
+      "mercado": "Vencedor - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3388,7 +3173,8 @@
       "limite": 100,
       "margem_pct": 14.06,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Vencedor - Kills - mapa 2"
+      "mercado": "Vencedor - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3402,7 +3188,8 @@
       "limite": 100,
       "margem_pct": 11.15,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total do time - Kills - mapa 2"
+      "mercado": "Total do time - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3416,7 +3203,8 @@
       "limite": 100,
       "margem_pct": 11.15,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total do time - Kills - mapa 2"
+      "mercado": "Total do time - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3430,7 +3218,8 @@
       "limite": 100,
       "margem_pct": 6.97,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total do time - Kills - mapa 2"
+      "mercado": "Total do time - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3444,7 +3233,8 @@
       "limite": 100,
       "margem_pct": 6.97,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total do time - Kills - mapa 2"
+      "mercado": "Total do time - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3458,7 +3248,8 @@
       "limite": 100,
       "margem_pct": 11.18,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 2"
+      "mercado": "Handicap - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3472,7 +3263,8 @@
       "limite": 100,
       "margem_pct": 11.18,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 2"
+      "mercado": "Handicap - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3486,7 +3278,8 @@
       "limite": 100,
       "margem_pct": 12.18,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 2"
+      "mercado": "Handicap - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3500,7 +3293,8 @@
       "limite": 100,
       "margem_pct": 12.18,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 2"
+      "mercado": "Handicap - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3514,7 +3308,8 @@
       "limite": 100,
       "margem_pct": 11.76,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 2"
+      "mercado": "Handicap - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3528,7 +3323,8 @@
       "limite": 100,
       "margem_pct": 11.76,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 2"
+      "mercado": "Handicap - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3542,7 +3338,8 @@
       "limite": 100,
       "margem_pct": 11.84,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 2"
+      "mercado": "Handicap - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3556,7 +3353,8 @@
       "limite": 100,
       "margem_pct": 11.84,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 2"
+      "mercado": "Handicap - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3570,7 +3368,8 @@
       "limite": 100,
       "margem_pct": 12.18,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 2"
+      "mercado": "Handicap - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3584,7 +3383,8 @@
       "limite": 100,
       "margem_pct": 12.18,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 2"
+      "mercado": "Handicap - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3598,7 +3398,8 @@
       "limite": 100,
       "margem_pct": 11.11,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 2"
+      "mercado": "Total - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3612,7 +3413,8 @@
       "limite": 100,
       "margem_pct": 11.11,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 2"
+      "mercado": "Total - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3626,7 +3428,8 @@
       "limite": 100,
       "margem_pct": 11.75,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 2"
+      "mercado": "Total - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3640,7 +3443,8 @@
       "limite": 100,
       "margem_pct": 11.75,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 2"
+      "mercado": "Total - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3654,7 +3458,8 @@
       "limite": 100,
       "margem_pct": 11.53,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 2"
+      "mercado": "Total - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3668,7 +3473,8 @@
       "limite": 100,
       "margem_pct": 11.53,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 2"
+      "mercado": "Total - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3682,7 +3488,8 @@
       "limite": 100,
       "margem_pct": 11.76,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 2"
+      "mercado": "Total - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3696,7 +3503,8 @@
       "limite": 100,
       "margem_pct": 11.76,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 2"
+      "mercado": "Total - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3710,7 +3518,8 @@
       "limite": 100,
       "margem_pct": 11.81,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 2"
+      "mercado": "Total - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3724,7 +3533,8 @@
       "limite": 100,
       "margem_pct": 11.81,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 2"
+      "mercado": "Total - Kills - mapa 2",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3733,12 +3543,13 @@
       "alternativa": false,
       "lado": "home",
       "pontos": null,
-      "odd": 1.2457,
-      "americana": -407,
+      "odd": 1.2506,
+      "americana": -399,
       "limite": 100,
-      "margem_pct": 14.06,
+      "margem_pct": 13.97,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Vencedor - Kills - mapa 3"
+      "mercado": "Vencedor - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3747,12 +3558,13 @@
       "alternativa": false,
       "lado": "away",
       "pontos": null,
-      "odd": 2.96,
-      "americana": 196,
+      "odd": 2.94,
+      "americana": 194,
       "limite": 100,
-      "margem_pct": 14.06,
+      "margem_pct": 13.97,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Vencedor - Kills - mapa 3"
+      "mercado": "Vencedor - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3761,12 +3573,13 @@
       "alternativa": false,
       "lado": "over",
       "pontos": 20.5,
-      "odd": 1.7407,
-      "americana": -135,
+      "odd": 1.7463,
+      "americana": -134,
       "limite": 100,
-      "margem_pct": 11.15,
+      "margem_pct": 11.18,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total do time - Kills - mapa 3"
+      "mercado": "Total do time - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3775,26 +3588,28 @@
       "alternativa": false,
       "lado": "under",
       "pontos": 20.5,
-      "odd": 1.8621,
-      "americana": -116,
-      "limite": 100,
-      "margem_pct": 11.15,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total do time - Kills - mapa 3"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "team_total",
-      "periodo": 3,
-      "alternativa": false,
-      "lado": "over",
-      "pontos": 12.5,
       "odd": 1.8547,
       "americana": -117,
       "limite": 100,
-      "margem_pct": 6.97,
+      "margem_pct": 11.18,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total do time - Kills - mapa 3"
+      "mercado": "Total do time - Kills - mapa 3",
+      "unidade": "Kills"
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "team_total",
+      "periodo": 3,
+      "alternativa": false,
+      "lado": "over",
+      "pontos": 12.5,
+      "odd": 1.7812,
+      "americana": -128,
+      "limite": 100,
+      "margem_pct": 11.1,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Total do time - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3803,12 +3618,13 @@
       "alternativa": false,
       "lado": "under",
       "pontos": 12.5,
-      "odd": 1.885,
-      "americana": -113,
+      "odd": 1.8197,
+      "americana": -122,
       "limite": 100,
-      "margem_pct": 6.97,
+      "margem_pct": 11.1,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total do time - Kills - mapa 3"
+      "mercado": "Total do time - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3817,12 +3633,13 @@
       "alternativa": false,
       "lado": "home",
       "pontos": -9.5,
-      "odd": 1.7463,
-      "americana": -134,
+      "odd": 1.7519,
+      "americana": -133,
       "limite": 100,
-      "margem_pct": 11.18,
+      "margem_pct": 11.21,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 3"
+      "mercado": "Handicap - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3831,12 +3648,13 @@
       "alternativa": false,
       "lado": "away",
       "pontos": 9.5,
-      "odd": 1.8547,
-      "americana": -117,
+      "odd": 1.8475,
+      "americana": -118,
       "limite": 100,
-      "margem_pct": 11.18,
+      "margem_pct": 11.21,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 3"
+      "mercado": "Handicap - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3845,12 +3663,13 @@
       "alternativa": true,
       "lado": "home",
       "pontos": -11.5,
-      "odd": 2.17,
-      "americana": 117,
+      "odd": 2.19,
+      "americana": 119,
       "limite": 100,
-      "margem_pct": 12.18,
+      "margem_pct": 12.11,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 3"
+      "mercado": "Handicap - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3859,12 +3678,13 @@
       "alternativa": true,
       "lado": "away",
       "pontos": 11.5,
-      "odd": 1.5128,
-      "americana": -195,
+      "odd": 1.5051,
+      "americana": -198,
       "limite": 100,
-      "margem_pct": 12.18,
+      "margem_pct": 12.11,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 3"
+      "mercado": "Handicap - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3873,12 +3693,13 @@
       "alternativa": true,
       "lado": "home",
       "pontos": -10.5,
-      "odd": 1.9259,
-      "americana": -108,
+      "odd": 1.9434,
+      "americana": -106,
       "limite": 100,
-      "margem_pct": 11.76,
+      "margem_pct": 11.62,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 3"
+      "mercado": "Handicap - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3887,12 +3708,13 @@
       "alternativa": true,
       "lado": "away",
       "pontos": 10.5,
-      "odd": 1.6711,
-      "americana": -149,
+      "odd": 1.6623,
+      "americana": -151,
       "limite": 100,
-      "margem_pct": 11.76,
+      "margem_pct": 11.62,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 3"
+      "mercado": "Handicap - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3901,12 +3723,13 @@
       "alternativa": true,
       "lado": "home",
       "pontos": -8.5,
-      "odd": 1.5917,
-      "americana": -169,
+      "odd": 1.5988,
+      "americana": -167,
       "limite": 100,
-      "margem_pct": 11.84,
+      "margem_pct": 11.81,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 3"
+      "mercado": "Handicap - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3915,12 +3738,13 @@
       "alternativa": true,
       "lado": "away",
       "pontos": 8.5,
-      "odd": 2.04,
-      "americana": 104,
+      "odd": 2.03,
+      "americana": 103,
       "limite": 100,
-      "margem_pct": 11.84,
+      "margem_pct": 11.81,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 3"
+      "mercado": "Handicap - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3929,12 +3753,13 @@
       "alternativa": true,
       "lado": "home",
       "pontos": -7.5,
-      "odd": 1.4808,
-      "americana": -208,
+      "odd": 1.4926,
+      "americana": -203,
       "limite": 100,
-      "margem_pct": 12.18,
+      "margem_pct": 12.25,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 3"
+      "mercado": "Handicap - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3943,12 +3768,13 @@
       "alternativa": true,
       "lado": "away",
       "pontos": 7.5,
-      "odd": 2.24,
-      "americana": 124,
+      "odd": 2.21,
+      "americana": 121,
       "limite": 100,
-      "margem_pct": 12.18,
+      "margem_pct": 12.25,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Handicap - Kills - mapa 3"
+      "mercado": "Handicap - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3962,7 +3788,8 @@
       "limite": 100,
       "margem_pct": 11.11,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 3"
+      "mercado": "Total - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3976,7 +3803,8 @@
       "limite": 100,
       "margem_pct": 11.11,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 3"
+      "mercado": "Total - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3985,12 +3813,13 @@
       "alternativa": true,
       "lado": "over",
       "pontos": 31.5,
-      "odd": 1.565,
-      "americana": -177,
+      "odd": 1.5682,
+      "americana": -176,
       "limite": 100,
-      "margem_pct": 11.75,
+      "margem_pct": 11.85,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 3"
+      "mercado": "Total - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -3999,12 +3828,13 @@
       "alternativa": true,
       "lado": "under",
       "pontos": 31.5,
-      "odd": 2.09,
-      "americana": 109,
+      "odd": 2.08,
+      "americana": 108,
       "limite": 100,
-      "margem_pct": 11.75,
+      "margem_pct": 11.85,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 3"
+      "mercado": "Total - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -4013,12 +3843,13 @@
       "alternativa": true,
       "lado": "over",
       "pontos": 32.5,
-      "odd": 1.6711,
-      "americana": -149,
+      "odd": 1.6757,
+      "americana": -148,
       "limite": 100,
-      "margem_pct": 11.53,
+      "margem_pct": 11.6,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 3"
+      "mercado": "Total - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -4027,26 +3858,28 @@
       "alternativa": true,
       "lado": "under",
       "pontos": 32.5,
+      "odd": 1.9259,
+      "americana": -108,
+      "limite": 100,
+      "margem_pct": 11.6,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Total - Kills - mapa 3",
+      "unidade": "Kills"
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "total",
+      "periodo": 3,
+      "alternativa": true,
+      "lado": "over",
+      "pontos": 34.5,
       "odd": 1.9346,
       "americana": -107,
       "limite": 100,
       "margem_pct": 11.53,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 3"
-    },
-    {
-      "jogo": 1636498770,
-      "tipo": "total",
-      "periodo": 3,
-      "alternativa": true,
-      "lado": "over",
-      "pontos": 34.5,
-      "odd": 1.9259,
-      "americana": -108,
-      "limite": 100,
-      "margem_pct": 11.76,
-      "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 3"
+      "mercado": "Total - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -4058,9 +3891,10 @@
       "odd": 1.6711,
       "americana": -149,
       "limite": 100,
-      "margem_pct": 11.76,
+      "margem_pct": 11.53,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 3"
+      "mercado": "Total - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -4069,12 +3903,13 @@
       "alternativa": true,
       "lado": "over",
       "pontos": 35.5,
-      "odd": 2.07,
-      "americana": 107,
+      "odd": 2.08,
+      "americana": 108,
       "limite": 100,
-      "margem_pct": 11.81,
+      "margem_pct": 11.98,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 3"
+      "mercado": "Total - Kills - mapa 3",
+      "unidade": "Kills"
     },
     {
       "jogo": 1636498770,
@@ -4083,12 +3918,103 @@
       "alternativa": true,
       "lado": "under",
       "pontos": 35.5,
-      "odd": 1.5747,
-      "americana": -174,
+      "odd": 1.565,
+      "americana": -177,
       "limite": 100,
-      "margem_pct": 11.81,
+      "margem_pct": 11.98,
       "fecha_em": "2026-09-16T23:00:00+00:00",
-      "mercado": "Total - Kills - mapa 3"
+      "mercado": "Total - Kills - mapa 3",
+      "unidade": "Kills"
+    },
+    {
+      "jogo": 1636612016,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Shopify Rebellion 0, Sentinels 3",
+      "pontos": null,
+      "odd": 3.59,
+      "americana": 259,
+      "limite": 100,
+      "margem_pct": 27.04,
+      "fecha_em": "2026-09-18T20:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636612016,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Shopify Rebellion 1, Sentinels 3",
+      "pontos": null,
+      "odd": 3.42,
+      "americana": 242,
+      "limite": 100,
+      "margem_pct": 27.04,
+      "fecha_em": "2026-09-18T20:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636612016,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Shopify Rebellion 2, Sentinels 3",
+      "pontos": null,
+      "odd": 4.24,
+      "americana": 324,
+      "limite": 100,
+      "margem_pct": 27.04,
+      "fecha_em": "2026-09-18T20:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636612016,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Shopify Rebellion 3, Sentinels 0",
+      "pontos": null,
+      "odd": 8.49,
+      "americana": 749,
+      "limite": 100,
+      "margem_pct": 27.04,
+      "fecha_em": "2026-09-18T20:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636612016,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Shopify Rebellion 3, Sentinels 1",
+      "pontos": null,
+      "odd": 6.06,
+      "americana": 506,
+      "limite": 100,
+      "margem_pct": 27.04,
+      "fecha_em": "2026-09-18T20:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636612016,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Shopify Rebellion 3, Sentinels 2",
+      "pontos": null,
+      "odd": 5.53,
+      "americana": 453,
+      "limite": 100,
+      "margem_pct": 27.04,
+      "fecha_em": "2026-09-18T20:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636486467,
@@ -4102,7 +4028,8 @@
       "limite": 100,
       "margem_pct": 27.41,
       "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636486467,
@@ -4116,7 +4043,8 @@
       "limite": 100,
       "margem_pct": 27.41,
       "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636486467,
@@ -4130,7 +4058,8 @@
       "limite": 100,
       "margem_pct": 27.41,
       "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636486467,
@@ -4144,7 +4073,8 @@
       "limite": 100,
       "margem_pct": 27.41,
       "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636486467,
@@ -4158,7 +4088,8 @@
       "limite": 100,
       "margem_pct": 27.41,
       "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636486467,
@@ -4172,7 +4103,98 @@
       "limite": 100,
       "margem_pct": 27.41,
       "fecha_em": "2026-09-19T16:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Fuego 0, 9z 3",
+      "pontos": null,
+      "odd": 4.38,
+      "americana": 338,
+      "limite": 100,
+      "margem_pct": 79.72,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Fuego 1, 9z 3",
+      "pontos": null,
+      "odd": 4.68,
+      "americana": 368,
+      "limite": 100,
+      "margem_pct": 79.72,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Fuego 2, 9z 3",
+      "pontos": null,
+      "odd": 4.65,
+      "americana": 365,
+      "limite": 100,
+      "margem_pct": 79.72,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Fuego 3, 9z 0",
+      "pontos": null,
+      "odd": 2.07,
+      "americana": 107,
+      "limite": 100,
+      "margem_pct": 79.72,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Fuego 3, 9z 1",
+      "pontos": null,
+      "odd": 2.59,
+      "americana": 159,
+      "limite": 100,
+      "margem_pct": 79.72,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636498770,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Fuego 3, 9z 2",
+      "pontos": null,
+      "odd": 3.69,
+      "americana": 269,
+      "limite": 100,
+      "margem_pct": 79.72,
+      "fecha_em": "2026-09-16T23:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636572898,
@@ -4186,7 +4208,8 @@
       "limite": 100,
       "margem_pct": 27.15,
       "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636572898,
@@ -4200,7 +4223,8 @@
       "limite": 100,
       "margem_pct": 27.15,
       "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636572898,
@@ -4214,7 +4238,8 @@
       "limite": 100,
       "margem_pct": 27.15,
       "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636572898,
@@ -4228,7 +4253,8 @@
       "limite": 100,
       "margem_pct": 27.15,
       "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636572898,
@@ -4242,7 +4268,8 @@
       "limite": 100,
       "margem_pct": 27.15,
       "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     },
     {
       "jogo": 1636572898,
@@ -4256,14 +4283,285 @@
       "limite": 100,
       "margem_pct": 27.15,
       "fecha_em": "2026-09-18T15:00:00+00:00",
-      "mercado": "Correct Score"
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636298870,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Forsaken 0, BOMBA 3",
+      "pontos": null,
+      "odd": 5.33,
+      "americana": 433,
+      "limite": 100,
+      "margem_pct": 40.08,
+      "fecha_em": "2026-09-19T15:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636298870,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Forsaken 1, BOMBA 3",
+      "pontos": null,
+      "odd": 4.26,
+      "americana": 326,
+      "limite": 100,
+      "margem_pct": 40.08,
+      "fecha_em": "2026-09-19T15:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636298870,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Forsaken 2, BOMBA 3",
+      "pontos": null,
+      "odd": 4.25,
+      "americana": 325,
+      "limite": 100,
+      "margem_pct": 40.08,
+      "fecha_em": "2026-09-19T15:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636298870,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Forsaken 3, BOMBA 0",
+      "pontos": null,
+      "odd": 4.38,
+      "americana": 338,
+      "limite": 100,
+      "margem_pct": 40.08,
+      "fecha_em": "2026-09-19T15:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636298870,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Forsaken 3, BOMBA 1",
+      "pontos": null,
+      "odd": 3.75,
+      "americana": 275,
+      "limite": 100,
+      "margem_pct": 40.08,
+      "fecha_em": "2026-09-19T15:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636298870,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Forsaken 3, BOMBA 2",
+      "pontos": null,
+      "odd": 4.03,
+      "americana": 303,
+      "limite": 100,
+      "margem_pct": 40.08,
+      "fecha_em": "2026-09-19T15:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636311214,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Team WE 0, JD Gaming 3",
+      "pontos": null,
+      "odd": 4.59,
+      "americana": 359,
+      "limite": 100,
+      "margem_pct": 27.42,
+      "fecha_em": "2026-09-18T09:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636311214,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Team WE 1, JD Gaming 3",
+      "pontos": null,
+      "odd": 3.87,
+      "americana": 287,
+      "limite": 100,
+      "margem_pct": 27.42,
+      "fecha_em": "2026-09-18T09:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636311214,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Team WE 2, JD Gaming 3",
+      "pontos": null,
+      "odd": 4.39,
+      "americana": 339,
+      "limite": 100,
+      "margem_pct": 27.42,
+      "fecha_em": "2026-09-18T09:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636311214,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Team WE 3, JD Gaming 0",
+      "pontos": null,
+      "odd": 6.48,
+      "americana": 548,
+      "limite": 100,
+      "margem_pct": 27.42,
+      "fecha_em": "2026-09-18T09:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636311214,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Team WE 3, JD Gaming 1",
+      "pontos": null,
+      "odd": 4.86,
+      "americana": 386,
+      "limite": 100,
+      "margem_pct": 27.42,
+      "fecha_em": "2026-09-18T09:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636311214,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Team WE 3, JD Gaming 2",
+      "pontos": null,
+      "odd": 4.76,
+      "americana": 376,
+      "limite": 100,
+      "margem_pct": 27.42,
+      "fecha_em": "2026-09-18T09:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636598064,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Liquid 0, FlyQuest 3",
+      "pontos": null,
+      "odd": 11.25,
+      "americana": 1025,
+      "limite": 100,
+      "margem_pct": 26.43,
+      "fecha_em": "2026-09-20T01:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636598064,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Liquid 1, FlyQuest 3",
+      "pontos": null,
+      "odd": 8.07,
+      "americana": 707,
+      "limite": 100,
+      "margem_pct": 26.43,
+      "fecha_em": "2026-09-20T01:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636598064,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Liquid 2, FlyQuest 3",
+      "pontos": null,
+      "odd": 7.04,
+      "americana": 604,
+      "limite": 100,
+      "margem_pct": 26.43,
+      "fecha_em": "2026-09-20T01:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636598064,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Liquid 3, FlyQuest 0",
+      "pontos": null,
+      "odd": 2.81,
+      "americana": 181,
+      "limite": 100,
+      "margem_pct": 26.43,
+      "fecha_em": "2026-09-20T01:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636598064,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Liquid 3, FlyQuest 1",
+      "pontos": null,
+      "odd": 3.05,
+      "americana": 205,
+      "limite": 100,
+      "margem_pct": 26.43,
+      "fecha_em": "2026-09-20T01:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
+    },
+    {
+      "jogo": 1636598064,
+      "tipo": "moneyline",
+      "periodo": 0,
+      "alternativa": false,
+      "lado": "Liquid 3, FlyQuest 2",
+      "pontos": null,
+      "odd": 4.43,
+      "americana": 343,
+      "limite": 100,
+      "margem_pct": 26.43,
+      "fecha_em": "2026-09-20T01:00:00+00:00",
+      "mercado": "Correct Score",
+      "unidade": "Maps"
     }
   ],
   "descartes": {
     "ao_vivo": 0,
     "filho": 0,
     "sem_mercado": 0,
-    "outro_jogo": 219,
+    "outro_jogo": 220,
     "sem_lados": 0
   }
 }

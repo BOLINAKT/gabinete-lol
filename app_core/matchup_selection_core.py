@@ -9,6 +9,10 @@ import streamlit as st
 # outros hosts (o Gabinete Dota inclui BO2; o LoL segue 1/3/5).
 BO_OPTIONS: List[int] = [1, 3, 5]
 
+from app_core.agenda_coletada_core import (
+    ORIGEM_COLETADO as _ORIGEM_COLETADO,
+    rotulo_do_jogo as _rotulo_do_jogo,
+)
 from app_core.flow_runtime_core import (
     apply_flow_line_values,
     consume_pending_auto_analyze,
@@ -83,6 +87,37 @@ def _resolver_time_salvo(session_state: Any, cru: str, times: Sequence[str]) -> 
         return ""
 
 
+def _jogos_do_seletor(session_state: dict[str, Any]) -> list[dict[str, Any]]:
+    """Os jogos salvos DELE mais os que o robo coletou, numa lista so.
+
+    ELE RELATOU com print (16/09/2026): abriu o seletor e so viu tres jogos de
+    15/05 -- os antigos dele. Os 15 do calendario nao estavam la, porque eu
+    tinha ligado a coleta a uma IMPORTACAO em outra aba: ir na aba Jogos,
+    "Trazer os jogos coletados", conferir, "Adicionar a agenda". Tres cliques.
+
+    Mas o pedido era: "esse jogos (agenda) e onde eu quero que fiquem os jogos
+    que voce pegar do calendario, PARA QUE EU NAO PRECISE FICAR INDO ATRAS DE
+    JOGOS". Coleta que exige ir atras dela nao resolve isso.
+
+    Se a leitura do arquivo falhar, a lista dele continua igual: este seletor
+    nunca fica pior do que ja era.
+    """
+    salvos = get_schedule_games(session_state)
+    salvos = salvos if isinstance(salvos, list) else []
+    try:
+        from pathlib import Path
+
+        from app_core.agenda_coletada_core import (
+            carregar_agenda_coletada,
+            juntar_para_escolher,
+        )
+        raiz = Path(__file__).resolve().parents[1]
+        coletados = carregar_agenda_coletada(raiz).get("jogos") or []
+        return juntar_para_escolher(salvos, coletados)
+    except Exception:
+        return list(salvos)
+
+
 def render_matchup_selection(
     session_state: dict[str, Any],
     *,
@@ -98,29 +133,18 @@ def render_matchup_selection(
     st.subheader("Confronto")
 
     if flow_stage == "select":
-        games = get_schedule_games(session_state)
+        games = _jogos_do_seletor(session_state)
         if isinstance(games, list) and games:
             with st.expander("Selecionar jogo salvo (Agenda)", expanded=False):
-                labels: list[str] = []
-                for game in games:
-                    try:
-                        d = str(game.get("date", "") or "").strip()
-                        t = str(game.get("time", "") or "").strip()
-                        dt = (d + (" " + t if t else "")).strip()
-                        league = str(game.get("league", "") or "").strip()
-                        ta = str(game.get("teamA", "") or "").strip()
-                        tb = str(game.get("teamB", "") or "").strip()
-                        bo_g = game.get("bo", 3)
-                    except Exception:
-                        dt, league, ta, tb, bo_g = "", "", "", "", 3
-                    parts: list[str] = []
-                    if dt:
-                        parts.append(dt)
-                    if league:
-                        parts.append(league)
-                    parts.append(f"{ta} x {tb}")
-                    parts.append(f"BO{bo_g}")
-                    labels.append(" | ".join(parts))
+                labels: list[str] = [_rotulo_do_jogo(g) for g in games]
+                _n_coletados = sum(
+                    1 for g in games
+                    if str(g.get("origem") or "") == _ORIGEM_COLETADO)
+                if _n_coletados:
+                    st.caption(
+                        "{} jogo(s) vieram do calendario sozinhos, marcados com "
+                        "**do calendario**. Nao precisa importar nada."
+                        .format(_n_coletados))
 
                 pick = st.selectbox(
                     "Jogo salvo",

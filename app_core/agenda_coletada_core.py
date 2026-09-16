@@ -104,3 +104,93 @@ def bo_do_jogo(jogo: Any, padrao: Any) -> int:
     except (TypeError, ValueError):
         p = 3
     return p if p in (1, 3, 5) else 3
+
+
+# --- OS JOGOS COLETADOS NO SELETOR DE CONFRONTO (16/09/2026) ---
+#
+# ELE RELATOU, com print: abriu "Selecionar jogo salvo (Agenda)" e so viu tres
+# jogos de 15/05 -- os antigos dele. Os 15 jogos que o robo coletou nao
+# estavam la.
+#
+# ERRO MEU DE DESENHO. Eu liguei a coleta a uma IMPORTACAO: ir na aba Jogos,
+# clicar em "Trazer os jogos coletados", conferir o mapeamento, clicar em
+# "Adicionar a agenda". Tres cliques e duas telas. Mas o que ele pediu foi:
+#
+#     "esse jogos (agenda) e onde eu quero que fiquem os jogos que voce pegar
+#      do calendario, PARA QUE EU NAO PRECISE FICAR INDO ATRAS DE JOGOS"
+#
+# Coleta que exige ir atras dela nao resolve o problema que ele descreveu.
+# Agora os coletados aparecem direto na lista, marcados, e o mapeamento de
+# nome continua sendo resolvido na hora de usar -- com aviso e "Salvar e usar"
+# quando nao casar, que e a parte que NAO pode ser automatica.
+
+ORIGEM_SALVO = "salvo"
+ORIGEM_COLETADO = "calendario"
+
+
+def _chave_do_jogo(j: Dict[str, Any]) -> tuple:
+    """Mesma partida, venha de onde vier."""
+    def _t(k1: str, k2: str) -> str:
+        v = str(j.get(k1) or j.get(k2) or "").strip().lower()
+        return v
+    return (str(j.get("date") or "").strip(),
+            str(j.get("time") or "").strip(),
+            _t("teamA", "teamA_raw"),
+            _t("teamB", "teamB_raw"))
+
+
+def juntar_para_escolher(salvos: Any, coletados: Any) -> List[Dict[str, Any]]:
+    """Uma lista so para o seletor: primeiro os coletados, depois os dele.
+
+    OS COLETADOS VEM PRIMEIRO de proposito: sao os jogos que estao POR VIR, e
+    e por eles que ele abre a lista. Os salvos dele ficam logo abaixo, sem
+    perder nada -- inclusive as linhas que ele ja tinha digitado neles.
+
+    Partida que esta nas duas listas aparece UMA vez, e fica a versao SALVA:
+    e a dele, pode ter linha digitada junto, e perder isso seria apagar
+    trabalho dele.
+    """
+    saida: List[Dict[str, Any]] = []
+    salvos_ok = [j for j in (salvos or []) if isinstance(j, dict)]
+    coletados_ok = [j for j in (coletados or []) if isinstance(j, dict)]
+    ja_salvas = {_chave_do_jogo(j) for j in salvos_ok}
+
+    for j in coletados_ok:
+        if _chave_do_jogo(j) in ja_salvas:
+            continue
+        saida.append({
+            "date": str(j.get("date") or ""),
+            "time": str(j.get("time") or ""),
+            "league": str(j.get("league") or ""),
+            "teamA": str(j.get("teamA") or j.get("teamA_raw") or ""),
+            "teamB": str(j.get("teamB") or j.get("teamB_raw") or ""),
+            "bo": j.get("bo", 3),
+            "origem": ORIGEM_COLETADO,
+        })
+    for j in salvos_ok:
+        item = dict(j)
+        item["origem"] = ORIGEM_SALVO
+        saida.append(item)
+    return saida
+
+
+def rotulo_do_jogo(j: Dict[str, Any]) -> str:
+    """O texto de uma linha do seletor.
+
+    A origem aparece: sem isso ele nao saberia se aquele jogo foi ele que
+    salvou (podendo ter linha digitada junto) ou se veio do calendario.
+    """
+    d = str(j.get("date") or "").strip()
+    t = str(j.get("time") or "").strip()
+    quando = (d + (" " + t if t else "")).strip()
+    partes = [p for p in (quando, str(j.get("league") or "").strip()) if p]
+    partes.append("{} x {}".format(str(j.get("teamA") or "").strip(),
+                                   str(j.get("teamB") or "").strip()))
+    try:
+        bo = int(j.get("bo", 3) or 3)
+    except (TypeError, ValueError):
+        bo = 3
+    partes.append("BO{}".format(bo))
+    if str(j.get("origem") or "") == ORIGEM_COLETADO:
+        partes.append("· do calendario")
+    return " | ".join(partes)
