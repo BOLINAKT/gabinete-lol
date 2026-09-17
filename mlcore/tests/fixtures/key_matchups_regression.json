@@ -1,19 +1,19 @@
 {
-  "artifact_sha256": "0464787fee59f471d50079dda83c352e106c62eb906b98cce3451545625f6631",
+  "artifact_sha256": "7e45a05eabf55f08a0ab82c3b106ad17f813ff0f4d498b0192cea9bb42613d8e",
   "matchups": [
     {
       "team_a": "Team WE",
       "team_b": "Top Esports",
-      "p_raw": 0.48994287011963267,
-      "p_map": 0.489450126244246,
-      "odd_map_a": 2.043109085849901,
-      "odd_map_b": 1.9586725046932396,
-      "p_bo3": 0.4841775377648122,
-      "odd_bo3_a": 2.065358101114032,
-      "odd_bo3_b": 1.938651519103588,
-      "p_bo5": 0.48022485691994027,
-      "odd_bo5_a": 2.0823578488081322,
-      "odd_bo5_b": 1.923908854267724
+      "p_raw": 0.43625114437826895,
+      "p_map": 0.43316238653759886,
+      "odd_map_a": 2.308603034518555,
+      "odd_map_b": 1.7641736826385304,
+      "p_bo3": 0.4003407426793243,
+      "odd_bo3_a": 2.497872170859729,
+      "odd_bo3_b": 1.6676137119404741,
+      "p_bo5": 0.37616437888308984,
+      "odd_bo5_a": 2.6584122690436764,
+      "odd_bo5_b": 1.602986373573231
     },
     {
       "team_a": "LNG Esports",
@@ -45,7 +45,7 @@
     }
   ],
   "artifact_file": "ml_artifact.json",
-  "generated_at": "2026-09-17T19:35:25",
+  "generated_at": "2026-09-17T20:45:57",
   "method": "avg_forward_reverse_calibrated",
   "snapshots": {
     "36d24831cfb57a9bb768e9c5c85afb2b3bcef61b30e71ea6f6481048903b98ff": {
@@ -5047,8 +5047,58 @@
           "odd_bo5_b": 5.2241351201908
         }
       ]
+    },
+    "7e45a05eabf55f08a0ab82c3b106ad17f813ff0f4d498b0192cea9bb42613d8e": {
+      "artifact_file": "ml_artifact.json",
+      "artifact_sha256": "7e45a05eabf55f08a0ab82c3b106ad17f813ff0f4d498b0192cea9bb42613d8e",
+      "generated_at": "2026-09-17T20:45:57",
+      "method": "avg_forward_reverse_calibrated",
+      "matchups": [
+        {
+          "team_a": "Team WE",
+          "team_b": "Top Esports",
+          "p_raw": 0.43625114437826895,
+          "p_map": 0.43316238653759886,
+          "odd_map_a": 2.308603034518555,
+          "odd_map_b": 1.7641736826385304,
+          "p_bo3": 0.4003407426793243,
+          "odd_bo3_a": 2.497872170859729,
+          "odd_bo3_b": 1.6676137119404741,
+          "p_bo5": 0.37616437888308984,
+          "odd_bo5_a": 2.6584122690436764,
+          "odd_bo5_b": 1.602986373573231
+        },
+        {
+          "team_a": "LNG Esports",
+          "team_b": "ThunderTalk Gaming",
+          "p_raw": 0.5517376897400638,
+          "p_map": 0.5542543262812587,
+          "odd_map_a": 1.8042258807602807,
+          "odd_map_b": 2.2434317570763116,
+          "p_bo3": 0.5810620907394488,
+          "odd_bo3_a": 1.7209864762084524,
+          "odd_bo3_b": 2.3869885677451723,
+          "p_bo5": 0.6009311855519129,
+          "odd_bo5_a": 1.664084048295098,
+          "odd_bo5_b": 2.505833489853127
+        },
+        {
+          "team_a": "Gen.G",
+          "team_b": "T1",
+          "p_raw": 0.6716649128721948,
+          "p_map": 0.6793720069180555,
+          "odd_map_a": 1.471947607226946,
+          "odd_map_b": 3.118879266865589,
+          "p_bo3": 0.7575156668022074,
+          "odd_bo3_a": 1.3201047104694497,
+          "odd_bo3_b": 4.123977771315674,
+          "p_bo5": 0.8085807550928206,
+          "odd_bo5_a": 1.2367348514066545,
+          "odd_bo5_b": 5.2241351201908
+        }
+      ]
     }
   },
   "fixture_schema": "artifact_snapshot_v1",
-  "latest_artifact_sha256": "0464787fee59f471d50079dda83c352e106c62eb906b98cce3451545625f6631"
+  "latest_artifact_sha256": "7e45a05eabf55f08a0ab82c3b106ad17f813ff0f4d498b0192cea9bb42613d8e"
 }
