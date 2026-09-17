@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-09-17T04:58:01-03:00",
+  "gerado_em": "2026-09-17T10:45:41-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
     "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 24,
+    "indefinidos": 25,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "17/09",
-      "time": "06:00",
-      "league": "LPL",
-      "teamA_raw": "TOP ESPORTS",
-      "teamB_raw": "Invictus Gaming",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-17T09:00:00Z"
-    },
     {
       "date": "17/09",
       "time": "11:00",
