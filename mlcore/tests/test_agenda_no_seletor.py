@@ -201,21 +201,41 @@ class TestAOrdemDaLista(unittest.TestCase):
         return datetime(2026, 9, 16, 12, 0, tzinfo=timezone.utc)
 
     def test_o_mais_PROXIMO_vem_primeiro(self):
+        """PRAZOS RELATIVOS A AGORA, e nao datas fixas.
+
+        A primeira versao usava "16/09" e "20/09" cravados. Passou no dia em
+        que foi escrita e REPROVOU no dia seguinte, quando 16/09 virou
+        passado e foi para o fim da lista -- que e o comportamento CERTO.
+
+        Teste com data cravada mede o calendario, nao o codigo. O segundo
+        dia seguido em que isso me pegou.
+        """
+        from datetime import datetime, timedelta, timezone
+        agora = datetime.now(timezone.utc)
+        def _em(horas):
+            return (agora + timedelta(hours=horas)).strftime("%Y-%m-%dT%H:%M:%SZ")
         r = juntar_para_escolher([], [
-            _coletado(date="20/09", inicio_utc="2026-09-20T17:00:00Z", teamA_raw="depois"),
-            _coletado(date="16/09", inicio_utc="2026-09-16T14:00:00Z", teamA_raw="antes"),
+            _coletado(inicio_utc=_em(96), teamA_raw="depois"),
+            _coletado(inicio_utc=_em(3), teamA_raw="antes"),
         ])
         self.assertEqual([j["teamA"] for j in r], ["antes", "depois"])
 
     def test_o_que_JA_PASSOU_vai_para_o_fim(self):
+        from datetime import datetime, timedelta, timezone
+        agora = datetime.now(timezone.utc)
+        futuro = (agora + timedelta(hours=96)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        passado = agora - timedelta(days=90)
         r = juntar_para_escolher(
-            [_salvo(date="15/05", time="13:00", teamA="velho")],
-            [_coletado(date="20/09", inicio_utc="2026-09-20T17:00:00Z", teamA_raw="novo")])
+            [_salvo(date=passado.strftime("%d/%m"), time="13:00", teamA="velho")],
+            [_coletado(inicio_utc=futuro, teamA_raw="novo")])
         self.assertEqual(r[-1]["teamA"], "velho")
 
     def test_e_vem_MARCADO_em_vez_de_sumir(self):
         """Esconder o jogo dele seria pior: ele pode ter linha salva ali."""
-        r = juntar_para_escolher([_salvo(date="15/05", time="13:00")], [])
+        from datetime import datetime, timedelta, timezone
+        passado = datetime.now(timezone.utc) - timedelta(days=90)
+        r = juntar_para_escolher(
+            [_salvo(date=passado.strftime("%d/%m"), time="13:00")], [])
         self.assertIn("JA PASSOU", rotulo_do_jogo(r[0]))
 
     def test_jogo_por_vir_NAO_e_marcado_como_passado(self):

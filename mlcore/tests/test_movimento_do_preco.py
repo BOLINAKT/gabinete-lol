@@ -164,21 +164,36 @@ class TestALeituraPertoDoApito(unittest.TestCase):
         return [c["cron"] for c in d[True]["schedule"]]
 
     def _minutos_das_leituras(self):
+        """Todos os instantes de leitura do dia, em minutos desde 00:00 UTC.
+
+        O campo de MINUTO tambem aceita lista ("43,53") desde 17/09/2026 --
+        sao duas tentativas por hora, porque o GitHub derrubou 67% das
+        janelas com uma so.
+        """
         minutos = []
         for c in self._crons():
             partes = c.split()
-            m, h = partes[0], partes[1]
-            if "-" in h:
-                a, b = h.split("-")
+            campo_m, campo_h = partes[0], partes[1]
+            if "-" in campo_h:
+                a, b = campo_h.split("-")
                 horas = list(range(int(a), int(b) + 1))
             else:
-                horas = [int(x) for x in h.split(",")]
-            minutos.extend(x * 60 + int(m) for x in horas)
+                horas = [int(x) for x in campo_h.split(",")]
+            for m in (int(x) for x in campo_m.split(",")):
+                minutos.extend(x * 60 + m for x in horas)
         return sorted(minutos)
 
     def test_existe_a_janela_perto_do_apito(self):
-        self.assertTrue(any(c.startswith("50 ") for c in self._crons()),
-                        "sumiu a leitura de fechamento")
+        """A REGRA, nao o minuto: existe leitura na faixa de horario de jogo.
+
+        A primeira versao deste teste travava o literal ":50". Quando o
+        minuto mudou para :43/:53 -- porque o :50 caia na hora cheia, que a
+        propria documentacao do GitHub chama de "high load times" -- o teste
+        reprovou um conserto certo. Teste que guarda o literal em vez da
+        regra atrapalha quem vem depois.
+        """
+        faixa = [c for c in self._crons() if "8-20" in c]
+        self.assertTrue(faixa, "sumiu a leitura da faixa de jogos")
 
     def test_a_base_de_3_em_3_horas_continua(self):
         """Ela e quem constroi o historico de MOVIMENTO do preco."""
@@ -195,9 +210,41 @@ class TestALeituraPertoDoApito(unittest.TestCase):
                                  "jogo as %02d:00 UTC fica %d min sem leitura" % (hora, gap))
 
     def test_a_leitura_NAO_e_depois_do_apito(self):
-        """O agendador do GitHub atrasa. Ler aos :55 correria o risco de
-        chegar depois do inicio -- e ai o mercado pre-jogo ja sumiu."""
+        """Toda leitura da faixa de jogos cai ANTES da hora cheia.
+
+        O agendador do GitHub atrasa; uma leitura marcada perto demais do
+        apito chega depois dele, e ai o mercado pre-jogo ja sumiu -- o
+        coletor descarta o que esta ao vivo.
+        """
         for c in self._crons():
-            if c.startswith("50 ") or c.startswith("55 "):
-                self.assertTrue(c.startswith("50 "),
-                                "os :55 nao deixam folga para o atraso do GitHub")
+            if "8-20" not in c:
+                continue
+            for m in (int(x) for x in c.split()[0].split(",")):
+                self.assertLessEqual(m, 55, "leitura marcada quase na hora cheia")
+                self.assertGreaterEqual(60 - m, 5, "menos de 5 min de folga")
+
+    def test_ha_MAIS_DE_UMA_tentativa_por_hora(self):
+        """MEDIDO em 17/09/2026: com uma tentativa so, 14 de 21 janelas nao
+        aconteceram (67%). Nenhum bloqueio da casa, nenhum erro -- elas
+        simplesmente nao dispararam.
+
+        A documentacao do GitHub diz que sob carga "some queued jobs may be
+        dropped", e que a carga alta inclui o comeco de cada hora. Duas
+        tentativas em minutos diferentes dao a segunda chance.
+        """
+        for c in self._crons():
+            if "8-20" in c:
+                minutos = c.split()[0].split(",")
+                self.assertGreaterEqual(len(minutos), 2,
+                                        "uma tentativa so ja perdeu 67% das janelas")
+                return
+        self.fail("nao ha janela na faixa de jogos")
+
+    def test_os_minutos_fogem_dos_MAIS_DISPUTADOS(self):
+        """:00, :15, :30 e :45 sao os minutos que todo mundo usa."""
+        for c in self._crons():
+            if "8-20" not in c:
+                continue
+            for m in (int(x) for x in c.split()[0].split(",")):
+                self.assertNotIn(m, (0, 15, 30, 45),
+                                 "minuto %d e dos mais disputados" % m)
