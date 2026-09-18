@@ -1,12 +1,12 @@
 {
-  "gerado_em": "2026-09-18T10:08:12-03:00",
+  "gerado_em": "2026-09-18T14:50:44-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 38,
     "passados": 0,
-    "indefinidos": 11,
+    "indefinidos": 12,
     "sem_dois_times": 0
   },
   "jogos": [
@@ -17,7 +17,7 @@
       "teamA_raw": "Movistar KOI",
       "teamB_raw": "Natus Vincere",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-18T15:00:00Z"
     },
     {
@@ -27,15 +27,15 @@
       "teamA_raw": "Colossal Gaming",
       "teamB_raw": "TEAM AQUA",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-18T16:00:00Z"
     },
     {
       "date": "18/09",
       "time": "17:00",
       "league": "LCS",
-      "teamA_raw": "Sentinels",
-      "teamB_raw": "Shopify Rebellion",
+      "teamA_raw": "Shopify Rebellion",
+      "teamB_raw": "Sentinels",
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-09-18T20:00:00Z"
@@ -299,6 +299,16 @@
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-21T13:00:00Z"
+    },
+    {
+      "date": "22/09",
+      "time": "03:00",
+      "league": "WSCI",
+      "teamA_raw": "Movistar KOI Fénix",
+      "teamB_raw": "Bilibili Gaming Junior",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-22T06:00:00Z"
     }
   ]
 }
