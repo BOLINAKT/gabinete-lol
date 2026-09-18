@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-18T04:36:08-03:00",
+  "gerado_em": "2026-09-18T10:08:12-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
@@ -10,16 +10,6 @@
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "18/09",
-      "time": "06:00",
-      "league": "LPL",
-      "teamA_raw": "Xi'an Team WE",
-      "teamB_raw": "Beijing JDG Esports",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-18T09:00:00Z"
-    },
     {
       "date": "18/09",
       "time": "12:00",
@@ -57,6 +47,16 @@
       "teamA_raw": "Saigon MVKE Academy",
       "teamB_raw": "Saigon 1TAP DINO",
       "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-19T09:00:00Z"
+    },
+    {
+      "date": "19/09",
+      "time": "06:00",
+      "league": "LPL",
+      "teamA_raw": "Beijing JDG Esports",
+      "teamB_raw": "Invictus Gaming",
+      "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-09-19T09:00:00Z"
     },
