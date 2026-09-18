@@ -1,12 +1,12 @@
 {
-  "gerado_em": "2026-09-17T22:26:29-03:00",
+  "gerado_em": "2026-09-18T04:36:08-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
     "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 27,
+    "indefinidos": 11,
     "sem_dois_times": 0
   },
   "jogos": [
@@ -102,6 +102,36 @@
     },
     {
       "date": "20/09",
+      "time": "03:00",
+      "league": "WSCI",
+      "teamA_raw": "Edward Gaming Youth Team",
+      "teamB_raw": "T1 Esports Academy",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-20T06:00:00Z"
+    },
+    {
+      "date": "20/09",
+      "time": "04:00",
+      "league": "WSCI",
+      "teamA_raw": "FUEGO",
+      "teamB_raw": "DNS Challengers",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-20T07:00:00Z"
+    },
+    {
+      "date": "20/09",
+      "time": "05:00",
+      "league": "WSCI",
+      "teamA_raw": "kt Challengers",
+      "teamB_raw": "Bilibili Gaming Junior",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-20T08:00:00Z"
+    },
+    {
+      "date": "20/09",
       "time": "06:00",
       "league": "VCS",
       "teamA_raw": "Saigon MVKE Academy",
@@ -109,6 +139,26 @@
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-20T09:00:00Z"
+    },
+    {
+      "date": "20/09",
+      "time": "06:00",
+      "league": "WSCI",
+      "teamA_raw": "Movistar KOI Fénix",
+      "teamB_raw": "CTBC Flying Oyster Academy",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-20T09:00:00Z"
+    },
+    {
+      "date": "20/09",
+      "time": "07:00",
+      "league": "WSCI",
+      "teamA_raw": "DNS Challengers",
+      "teamB_raw": "T1 Esports Academy",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-20T10:00:00Z"
     },
     {
       "date": "20/09",
@@ -122,6 +172,16 @@
     },
     {
       "date": "20/09",
+      "time": "08:00",
+      "league": "WSCI",
+      "teamA_raw": "FUEGO",
+      "teamB_raw": "Edward Gaming Youth Team",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-20T11:00:00Z"
+    },
+    {
+      "date": "20/09",
       "time": "09:00",
       "league": "VCS",
       "teamA_raw": "Saigon 9Gaming Esports",
@@ -132,6 +192,26 @@
     },
     {
       "date": "20/09",
+      "time": "09:00",
+      "league": "WSCI",
+      "teamA_raw": "CTBC Flying Oyster Academy",
+      "teamB_raw": "Bilibili Gaming Junior",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-20T12:00:00Z"
+    },
+    {
+      "date": "20/09",
+      "time": "10:00",
+      "league": "WSCI",
+      "teamA_raw": "Movistar KOI Fénix",
+      "teamB_raw": "kt Challengers",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-20T13:00:00Z"
+    },
+    {
+      "date": "20/09",
       "time": "17:00",
       "league": "LCS",
       "teamA_raw": "FlyQuest",
@@ -139,6 +219,86 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-09-20T20:00:00Z"
+    },
+    {
+      "date": "21/09",
+      "time": "03:00",
+      "league": "WSCI",
+      "teamA_raw": "Vivo Keyd Stars Academy",
+      "teamB_raw": "Dplus KIA",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-21T06:00:00Z"
+    },
+    {
+      "date": "21/09",
+      "time": "04:00",
+      "league": "WSCI",
+      "teamA_raw": "FENNEL",
+      "teamB_raw": "Cupid Esports",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-21T07:00:00Z"
+    },
+    {
+      "date": "21/09",
+      "time": "05:00",
+      "league": "WSCI",
+      "teamA_raw": "Galions",
+      "teamB_raw": "Saigon Warrior",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-21T08:00:00Z"
+    },
+    {
+      "date": "21/09",
+      "time": "06:00",
+      "league": "WSCI",
+      "teamA_raw": "Solary",
+      "teamB_raw": "ZSK",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-21T09:00:00Z"
+    },
+    {
+      "date": "21/09",
+      "time": "07:00",
+      "league": "WSCI",
+      "teamA_raw": "Cupid Esports",
+      "teamB_raw": "Dplus KIA",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-21T10:00:00Z"
+    },
+    {
+      "date": "21/09",
+      "time": "08:00",
+      "league": "WSCI",
+      "teamA_raw": "FENNEL",
+      "teamB_raw": "Vivo Keyd Stars Academy",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-21T11:00:00Z"
+    },
+    {
+      "date": "21/09",
+      "time": "09:00",
+      "league": "WSCI",
+      "teamA_raw": "ZSK",
+      "teamB_raw": "Saigon Warrior",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-21T12:00:00Z"
+    },
+    {
+      "date": "21/09",
+      "time": "10:00",
+      "league": "WSCI",
+      "teamA_raw": "Solary",
+      "teamB_raw": "Galions",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-21T13:00:00Z"
     }
   ]
 }
