@@ -1,10 +1,10 @@
 {
-  "gerado_em": "2026-09-19T04:31:33-03:00",
+  "gerado_em": "2026-09-19T09:40:37-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 37,
     "passados": 0,
     "indefinidos": 2,
     "sem_dois_times": 0
@@ -14,19 +14,9 @@
       "date": "19/09",
       "time": "06:00",
       "league": "VCS",
-      "teamA_raw": "Saigon MVKE Academy",
-      "teamB_raw": "Saigon 1TAP DINO",
+      "teamA_raw": "Saigon 1TAP DINO",
+      "teamB_raw": "Saigon MVKE Academy",
       "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-19T09:00:00Z"
-    },
-    {
-      "date": "19/09",
-      "time": "06:00",
-      "league": "LPL",
-      "teamA_raw": "Beijing JDG Esports",
-      "teamB_raw": "Invictus Gaming",
-      "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-09-19T09:00:00Z"
     },
@@ -37,7 +27,7 @@
       "teamA_raw": "BOMBA Team",
       "teamB_raw": "Forsaken",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-19T10:00:00Z"
     },
     {
@@ -389,6 +379,46 @@
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-23T07:00:00Z"
+    },
+    {
+      "date": "23/09",
+      "time": "05:00",
+      "league": "WSCI",
+      "teamA_raw": "FENNEL",
+      "teamB_raw": "Dplus KIA",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-23T08:00:00Z"
+    },
+    {
+      "date": "23/09",
+      "time": "06:00",
+      "league": "WSCI",
+      "teamA_raw": "Cupid Esports",
+      "teamB_raw": "Vivo Keyd Stars Academy",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-23T09:00:00Z"
+    },
+    {
+      "date": "23/09",
+      "time": "07:00",
+      "league": "WSCI",
+      "teamA_raw": "Galions",
+      "teamB_raw": "Saigon Warrior",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-23T10:00:00Z"
+    },
+    {
+      "date": "23/09",
+      "time": "08:00",
+      "league": "WSCI",
+      "teamA_raw": "Solary",
+      "teamB_raw": "ZSK",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-23T11:00:00Z"
     }
   ]
 }
