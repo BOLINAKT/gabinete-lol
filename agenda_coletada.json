@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-09-18T19:47:51-03:00",
+  "gerado_em": "2026-09-18T22:31:21-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 39,
+    "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 10,
+    "indefinidos": 2,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "18/09",
-      "time": "17:00",
-      "league": "LCS",
-      "teamA_raw": "Shopify Rebellion",
-      "teamB_raw": "Sentinels",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-09-18T20:00:00Z"
-    },
     {
       "date": "19/09",
       "time": "06:00",
@@ -319,6 +309,86 @@
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-22T07:00:00Z"
+    },
+    {
+      "date": "22/09",
+      "time": "05:00",
+      "league": "WSCI",
+      "teamA_raw": "FUEGO",
+      "teamB_raw": "T1 Esports Academy",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-22T08:00:00Z"
+    },
+    {
+      "date": "22/09",
+      "time": "06:00",
+      "league": "WSCI",
+      "teamA_raw": "DNS Challengers",
+      "teamB_raw": "Edward Gaming Youth Team",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-22T09:00:00Z"
+    },
+    {
+      "date": "22/09",
+      "time": "07:00",
+      "league": "WSCI",
+      "teamA_raw": "kt Challengers",
+      "teamB_raw": "Bilibili Gaming Junior",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-22T10:00:00Z"
+    },
+    {
+      "date": "22/09",
+      "time": "08:00",
+      "league": "WSCI",
+      "teamA_raw": "Movistar KOI Fénix",
+      "teamB_raw": "CTBC Flying Oyster Academy",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-22T11:00:00Z"
+    },
+    {
+      "date": "22/09",
+      "time": "09:00",
+      "league": "WSCI",
+      "teamA_raw": "Edward Gaming Youth Team",
+      "teamB_raw": "T1 Esports Academy",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-22T12:00:00Z"
+    },
+    {
+      "date": "22/09",
+      "time": "10:00",
+      "league": "WSCI",
+      "teamA_raw": "FUEGO",
+      "teamB_raw": "DNS Challengers",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-22T13:00:00Z"
+    },
+    {
+      "date": "23/09",
+      "time": "03:00",
+      "league": "WSCI",
+      "teamA_raw": "Solary",
+      "teamB_raw": "Saigon Warrior",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-23T06:00:00Z"
+    },
+    {
+      "date": "23/09",
+      "time": "04:00",
+      "league": "WSCI",
+      "teamA_raw": "ZSK",
+      "teamB_raw": "Galions",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-23T07:00:00Z"
     }
   ]
 }
