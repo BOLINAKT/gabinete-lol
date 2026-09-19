@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-19T16:33:53-03:00",
+  "gerado_em": "2026-09-19T19:28:04-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
@@ -7,17 +7,17 @@
     "ja_jogados": 37,
     "passados": 2,
     "indefinidos": 0,
-    "sem_dois_times": 1
+    "sem_dois_times": 0
   },
   "jogos": [
     {
       "date": "19/09",
       "time": "17:00",
       "league": "LCS",
-      "teamA_raw": "Cloud9 Kia",
-      "teamB_raw": "LYON",
+      "teamA_raw": "LYON",
+      "teamB_raw": "Cloud9 Kia",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-19T20:00:00Z"
     },
     {
@@ -409,6 +409,16 @@
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-24T06:00:00Z"
+    },
+    {
+      "date": "24/09",
+      "time": "04:00",
+      "league": "WSCI",
+      "teamA_raw": "FUEGO",
+      "teamB_raw": "Edward Gaming Youth Team",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-24T07:00:00Z"
     }
   ]
 }
