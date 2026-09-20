@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-20T16:42:51-03:00",
+  "gerado_em": "2026-09-20T19:41:07-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
@@ -7,7 +7,7 @@
     "ja_jogados": 35,
     "passados": 4,
     "indefinidos": 8,
-    "sem_dois_times": 1
+    "sem_dois_times": 0
   },
   "jogos": [
     {
@@ -17,7 +17,7 @@
       "teamA_raw": "Team Liquid Alienware",
       "teamB_raw": "FlyQuest",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-20T20:00:00Z"
     },
     {
@@ -329,6 +329,16 @@
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-23T12:00:00Z"
+    },
+    {
+      "date": "23/09",
+      "time": "10:00",
+      "league": "WSCI",
+      "teamA_raw": "FENNEL",
+      "teamB_raw": "Cupid Esports",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-23T13:00:00Z"
     }
   ]
 }
