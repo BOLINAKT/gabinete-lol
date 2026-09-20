@@ -1,10 +1,10 @@
 {
-  "gerado_em": "2026-09-19T22:33:35-03:00",
+  "gerado_em": "2026-09-20T04:55:08-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 38,
+    "ja_jogados": 37,
     "passados": 2,
     "indefinidos": 0,
     "sem_dois_times": 0
@@ -12,22 +12,12 @@
   "jogos": [
     {
       "date": "20/09",
-      "time": "03:00",
-      "league": "WSCI",
-      "teamA_raw": "Edward Gaming Youth Team",
-      "teamB_raw": "T1 Esports Academy",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-20T06:00:00Z"
-    },
-    {
-      "date": "20/09",
       "time": "04:00",
       "league": "WSCI",
-      "teamA_raw": "FUEGO",
-      "teamB_raw": "DNS Challengers",
+      "teamA_raw": "DNS Challengers",
+      "teamB_raw": "FUEGO",
       "bo": 1,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-20T07:00:00Z"
     },
     {
@@ -409,6 +399,26 @@
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-24T07:00:00Z"
+    },
+    {
+      "date": "24/09",
+      "time": "05:00",
+      "league": "WSCI",
+      "teamA_raw": "CTBC Flying Oyster Academy",
+      "teamB_raw": "Bilibili Gaming Junior",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-24T08:00:00Z"
+    },
+    {
+      "date": "24/09",
+      "time": "06:00",
+      "league": "WSCI",
+      "teamA_raw": "Movistar KOI Fénix",
+      "teamB_raw": "kt Challengers",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-24T09:00:00Z"
     }
   ]
 }
