@@ -744,6 +744,12 @@ def _stage_hybrid_blend(
                 knee_games=float(hy_knee),
                 momentum_games=int(ss.get("ml_hybrid_momentum_games", 10) or 10),
                 beta_prior=float(ss.get("ml_hybrid_beta", 2.0) or 2.0),
+                # 1.0 = o comportamento de sempre. Ver a explicacao em
+                # mlcore.fusion_core.hybrid_momentum_blend: a forma so
+                # acrescenta onde DISCORDA do modelo, e e justo ali que a
+                # formula de hoje a cala. O botao existe para medir isso.
+                agree_damp=float(ss.get("ml_hybrid_agree_damp", 1.0)
+                                 if ss.get("ml_hybrid_agree_damp") is not None else 1.0),
             )
             if isinstance(hy, dict):
                 trace_hybrid_info = dict(hy)

@@ -555,6 +555,7 @@ def pontuar_janela_prequencial(art_path: Path, ply_path: Path, jogos: pd.DataFra
     # de amostras diferentes jogaria fora a informacao de que sao OS MESMOS
     # jogos, e alargaria o intervalo sem necessidade.
     por_jogo = []
+    antes_hybrid = []       # o preco que ENTRA no ultimo estagio, por jogo
     para_ajuste = []   # (logito, sinal, y) para ajustar o peso das PROXIMAS dobras
     for r in janela.itertuples(index=False):
         try:
@@ -693,6 +694,19 @@ def pontuar_janela_prequencial(art_path: Path, ply_path: Path, jogos: pd.DataFra
             if bl != rl:   # mesmo amortecimento interregional do app
                 _w *= max(0.0, min(1.0, float(_ss.get("ml_interregional_hybrid_max_weight_mult", 0.18) or 0.18)))
                 _k *= max(1.0, float(_ss.get("ml_interregional_hybrid_knee_mult", 1.8) or 1.8))
+            # O ENTRADO deste estagio, gravado para poder reaplicar SO ele com
+            # outras configuracoes sem retreinar o modelo (uma dobra leva mais
+            # de 20 minutos; a reaplicacao leva segundos). Ficam guardados os
+            # pesos JA amortecidos, para que a reaplicacao nao precise repetir
+            # a conta do interregional -- repetir seria uma segunda
+            # implementacao, e elas divergem.
+            antes_hybrid.append({
+                "gameid": str(r.gameid), "p": float(fundido), "y": int(y),
+                "blue": str(blue), "red": str(red), "date": str(r.date),
+                "w": float(_w), "k": float(_k), "inter": bool(bl != rl),
+                "mom": int(_ss.get("ml_hybrid_momentum_games", 10) or 10),
+                "beta": float(_ss.get("ml_hybrid_beta", 2.0) or 2.0),
+            })
             _hy = hybrid_momentum_blend(
                 p_model=float(fundido),
                 df_team_a=historico.antes_de(blue, r.date),
@@ -700,6 +714,8 @@ def pontuar_janela_prequencial(art_path: Path, ply_path: Path, jogos: pd.DataFra
                 enabled=True, max_weight=_w, knee_games=_k,
                 momentum_games=int(_ss.get("ml_hybrid_momentum_games", 10) or 10),
                 beta_prior=float(_ss.get("ml_hybrid_beta", 2.0) or 2.0),
+                agree_damp=float(_ss.get("ml_hybrid_agree_damp", 1.0)
+                                 if _ss.get("ml_hybrid_agree_damp") is not None else 1.0),
             )
             _pb = _hy.get("p_blended") if isinstance(_hy, dict) else None
             if _hy.get("applied") and _pb is not None and math.isfinite(float(_pb)):
@@ -724,7 +740,8 @@ def pontuar_janela_prequencial(art_path: Path, ply_path: Path, jogos: pd.DataFra
                          blue_tier=bt, red_tier=rt)
 
     return {"inter": inter, "same": same, "n_delta": 0, "w_lineup": w_lineup,
-            "por_jogo": por_jogo, "para_ajuste": para_ajuste}
+            "por_jogo": por_jogo, "para_ajuste": para_ajuste,
+            "antes_hybrid": antes_hybrid}
 
 
 def nota_de(inter: list, same: list) -> float:
@@ -769,6 +786,12 @@ def main() -> int:
     ap.add_argument("--com-form", action="store_true",
                     help="Aplica o season_form_blend com a config ajustada (best_form). "
                          "Serve para MEDIR se o vazamento de 18/07 infla o ganho.")
+    ap.add_argument("--agree-damp", type=float, default=None,
+                    help="Quanto a CONCORDANCIA com o modelo aumenta o peso dado a "
+                         "forma no hybrid_blend. 1.0 = como e hoje; 0.0 = desliga "
+                         "esse efeito. Medido em 21/09/2026: o sinal que sobra esta "
+                         "concentrado onde a forma DISCORDA do modelo (+0,037 contra "
+                         "+0,004), que e exatamente onde a formula de hoje a cala.")
     ap.add_argument("--com-hybrid", action="store_true",
                     help="Aplica o hybrid_blend de producao (o maior movedor da odd) "
                          "com historicos point-in-time. So faz sentido com --cadencia diaria.")
@@ -818,12 +841,17 @@ def main() -> int:
         historico = HistoricoPorTime(pd.concat(quadros, ignore_index=True))
         ss_app = estado_do_app()
         print("[hybrid] historico point-in-time montado; usando as configuracoes do app")
+        if args.agree_damp is not None:
+            ss_app = dict(ss_app)
+            ss_app["ml_hybrid_agree_damp"] = float(args.agree_damp)
+            print("[hybrid] agree_damp = %.2f (1.0 e o de hoje)" % float(args.agree_damp))
 
     print(f"dados ate {data_max.date()} | {args.dobras} dobras de {args.passo} dias "
           f"| variante '{args.marca}' {' '.join(extra) if extra else '(producao)'}\n")
 
     todos_inter, todos_same, linhas = [], [], []
     todos_por_jogo = []
+    todos_antes_hybrid = []
     acumulado = []        # (logito, sinal, y) das dobras JA pontuadas (mais antigas)
     w_jog = 0.0
 
@@ -893,6 +921,7 @@ def main() -> int:
                   f"(de {len(acumulado)} jogos anteriores)", flush=True)
             w_jog = w_novo
         todos_por_jogo += list(res.get("por_jogo") or [])
+        todos_antes_hybrid += list(res.get("antes_hybrid") or [])
         todos_inter += res["inter"]
         todos_same += res["same"]
         linhas.append((f"{ini.date()}..{fim.date()}", n, nt))
@@ -949,6 +978,7 @@ def main() -> int:
         "dobras": [{"janela": j, "n": n, "nota": nt} for j, n, nt in linhas],
         "inter": _metrics(todos_inter), "same": _metrics(todos_same),
         "por_jogo": todos_por_jogo,
+        "antes_hybrid": todos_antes_hybrid,
     }, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"  gravado em {saida.relative_to(ROOT)}")
     return 0
