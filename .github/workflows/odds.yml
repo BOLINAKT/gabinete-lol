@@ -20,8 +20,27 @@
 #     dos jogos que estão para começar, com TETO de 40 chamadas e pausa entre
 #     elas. No pior caso 42 por corrida. Na prática são ~4: medido em
 #     16/09/2026, uma corrida leu 10 séries e 322 linhas com quatro pedidos.
-#   - ate 34 corridas por dia: 8 da base + 26 perto do apito (duas
-#     tentativas por hora). Na pratica menos: o GitHub derruba parte.
+#   - PEDIMOS 34 janelas por dia. O GITHUB ENTREGA ~9. Medido no diario ao
+#     longo de 4,1 dias: 142 esperadas, 34 aconteceram — 76% perdidas.
+#
+#     E pedir mais quase nao ajuda: com 21 janelas/dia vinham ~7 leituras;
+#     dobrando para 34, vieram ~9. Duas leituras a mais por dobrar o pedido.
+#
+#     A causa nao e o minuto escolhido (essa foi a minha primeira aposta, e
+#     estava errada): e COTA. O GitHub aloca prioridade de agendamento por
+#     idade de conta e historico do repositorio, e poe conta nova numa fila
+#     de baixa prioridade. Pagar NAO resolve — nao ha evidencia de que Pro
+#     ou Team mudem isso; a limitacao e da plataforma.
+#
+#     DECISAO DELE (21/09/2026), sabendo disso: fica assim. O contorno seria
+#     trocar `schedule` por `workflow_dispatch` chamado por um cron externo,
+#     e ele preferiu nao criar essa dependencia.
+#
+#     CONSEQUENCIA HONESTA, para quem for medir CLV depois: a ultima leitura
+#     antes de um jogo cai a uma distancia VARIAVEL do apito — as vezes 10
+#     minutos, as vezes 2 horas. Nao trate a ultima leitura como "fechamento"
+#     sem olhar quanto tempo antes ela foi. O historico tem a hora de cada
+#     uma; a distancia e calculavel, e precisa entrar na conta.
 #   - User-Agent que diz quem é e para quê.
 #   - 403/429 PARA na hora e sai com rc=75. Não insiste, não tenta contornar,
 #     não troca de identidade. Se eles não quiserem, a resposta é parar.
