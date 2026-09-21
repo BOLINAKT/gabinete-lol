@@ -111,6 +111,58 @@ def main() -> int:
             damp, n, len(inter), len(same), n - base,
             "<- como e hoje" if damp == 1.0 else ""))
 
+    # ---------------------------------------------------------------
+    # POR PERIODO. Uma media boa pode esconder um ganho que so existe numa
+    # epoca -- e epoca passa. Se o ganho nao aparece na maioria dos blocos,
+    # nao e para mexer no preco servido por causa dele.
+    # ---------------------------------------------------------------
+    cache.sort(key=lambda t: str(t[0]["date"]))
+    blocos = 8
+    tam = max(1, len(cache) // blocos)
+    print()
+    print("O MESMO, por periodo (a media pode esconder epoca)")
+    cab = "%-12s %6s" % ("ate", "n")
+    for damp in VALORES:
+        cab += " %8s" % ("%.2f" % damp)
+    print(cab)
+    vitorias = {d: 0 for d in VALORES if d != 1.0}
+    for k in range(blocos):
+        parte = cache[k * tam:(k + 1) * tam] if k < blocos - 1 else cache[k * tam:]
+        if len(parte) < 50:
+            continue
+        linha = "%-12s %6d" % (str(parte[-1][0]["date"])[:10], len(parte))
+        base_b = None
+        for damp in VALORES:
+            inter, same = [], []
+            for x, dfa, dfb in parte:
+                p = float(x["p"])
+                hy = hybrid_momentum_blend(
+                    p_model=p, df_team_a=dfa, df_team_b=dfb, enabled=True,
+                    max_weight=float(x["w"]), knee_games=float(x["k"]),
+                    momentum_games=int(x["mom"]), beta_prior=float(x["beta"]),
+                    agree_damp=float(damp))
+                pb = hy.get("p_blended")
+                if hy.get("applied") and pb is not None and math.isfinite(float(pb)):
+                    p = float(pb)
+                (inter if x["inter"] else same).append((p, int(x["y"])))
+            # Um bloco pode nao ter nenhum jogo interregional; ai a mistura
+            # 45/55 nao existe e o honesto e pontuar so o que ha.
+            n = nota_de(inter, same)
+            if not math.isfinite(float(n)):
+                from tools.ml_quality_scorecard import _grade_from_logloss, _metrics
+                lado = inter if inter and not same else same
+                n = _grade_from_logloss(_metrics(lado)["logloss"]) if lado else float("nan")
+            if base_b is None:
+                base_b = n
+            elif math.isfinite(n) and math.isfinite(base_b) and n > base_b:
+                vitorias[damp] = vitorias.get(damp, 0) + 1
+            linha += " %8.3f" % n
+        print(linha)
+    print()
+    print("blocos em que cada valor bateu o de hoje:")
+    for damp, v in vitorias.items():
+        print("  agree_damp %.2f -> %d de %d" % (damp, v, blocos))
+
     print()
     print("agree_damp 1.00 = o comportamento de sempre. 0.00 = a concordancia")
     print("deixa de aumentar o peso dado a forma.")
