@@ -40,8 +40,24 @@ DUAS COISAS QUE EU SUPUS E MEDI, E AS DUAS ESTAVAM ERRADAS:
 Por isso a diferenca aqui NAO sai de uma formula bonita: sai da FORMA
 EMPIRICA, medida no historico, com media e largura vindas do confronto.
 
+ONDE EU ERREI A MEDICAO (e o erro durou varias rodadas)
+
+Eu media a calibracao MARGINAL: a media das probabilidades previstas contra a
+frequencia observada, em cada linha. E conclui coisas erradas com ela --
+inclusive que o Dixon-Coles, que preve melhor (correlacao 0,348 contra 0,307 e
+erro menor), era pior, porque sua calibracao marginal dava 5,6pp contra 3,2pp.
+
+A media marginal PUNE o modelo melhor. P(dif > linha) e uma funcao curva da
+media prevista; espalhar as medias previstas -- que e exatamente o que um
+modelo mais informativo faz -- desloca a MEDIA dessas probabilidades, mesmo
+com cada previsao individual certa. E desigualdade de Jensen, nao defeito.
+
+O teste certo e a calibracao CONDICIONAL: separar os jogos por probabilidade
+prevista e, dentro de cada faixa, comparar previsto com o que aconteceu. E
+esse o numero que diz se a aposta paga.
+
 O QUE ESTE ARQUIVO FAZ: mede. Nenhum preco chega a tela antes de a calibracao
-sair daqui, fora da amostra e ponto-no-tempo.
+CONDICIONAL sair daqui, fora da amostra e ponto-no-tempo.
 
 Uso: python tools/handicap_de_abates.py
 """
@@ -69,6 +85,18 @@ LINHAS_TIPICAS = (-7.5, -5.5, -3.5, -1.5, 1.5, 3.5, 5.5, 7.5)
 # teste, nao para ser ligada no escuro.
 GANHO_LIGADO = False
 
+# Multiplicador da largura. MEDIDO: NAO FAZ NADA -- 5,6pp em 1.00, 1.05,
+# 1.10, 1.15, 1.20 e 1.30, identico ate a primeira casa.
+#
+# E nao e defeito: e aritmetica. A forma empirica e montada dividindo os
+# residuos POR ESTA MESMA LARGURA, e `prob_acima` volta a dividir por ela.
+# Multiplicar por k encolhe a forma por k e o fator cancela. Neste desenho a
+# largura NAO tem efeito nenhum; quem manda sao a media e a forma.
+#
+# Fica aqui, inerte e documentado, porque descobrir isso mudou a leitura de
+# toda a medicao (ver ONDE EU ERREI A MEDICAO, no cabecalho).
+LARGURA_X = 1.00
+
 
 def forma_empirica(difs, larguras):
     """A FORMA da diferenca, padronizada, sem supor curva nenhuma.
@@ -84,6 +112,52 @@ def forma_empirica(difs, larguras):
             z.append(float(d) / float(s))
     z.sort()
     return z
+
+
+def calibrador(pares):
+    """Corrige a probabilidade crua usando o que ela deu no passado.
+
+    POR QUE (21/09/2026): a calibracao condicional mostrou o modelo bem no
+    meio (erro abaixo de 1pp entre 35% e 75%) e torto nas pontas -- ele diz
+    16,5% onde acontece 22,6%. E o padrao classico do azarao: o modelo o faz
+    mais azarao do que ele e.
+
+    A correcao e uma tabela por faixa, montada SO com jogos anteriores, e
+    interpolada entre os pontos. Monotona de proposito: uma correcao que
+    inverte a ordem das apostas conserta a conta e estraga a escolha.
+    """
+    pontos = []
+    faixas = [(0.0, .15), (.15, .25), (.25, .35), (.35, .45), (.45, .55),
+              (.55, .65), (.65, .75), (.75, .85), (.85, 1.01)]
+    for lo, hi in faixas:
+        sub = [(pp, yy) for pp, yy in pares if lo <= pp < hi]
+        if len(sub) < 150:
+            continue
+        pontos.append((sum(x for x, _ in sub) / len(sub),
+                       sum(y for _, y in sub) / len(sub)))
+    if len(pontos) < 3:
+        return lambda x: x          # sem base, nao corrige nada
+    pontos.sort()
+    # forca a subir: taxa observada que cai com a previsao e ruido de amostra
+    saida = []
+    ultimo = 0.0
+    for x, y in pontos:
+        ultimo = max(ultimo, y)
+        saida.append((x, ultimo))
+
+    def _aplicar(v):
+        v = float(v)
+        if v <= saida[0][0]:
+            return saida[0][1]
+        if v >= saida[-1][0]:
+            return saida[-1][1]
+        for i in range(len(saida) - 1):
+            x0, y0 = saida[i]
+            x1, y1 = saida[i + 1]
+            if x0 <= v <= x1 and x1 > x0:
+                return y0 + (y1 - y0) * (v - x0) / (x1 - x0)
+        return v
+    return _aplicar
 
 
 def prob_acima(linha, media, largura, forma):
@@ -120,25 +194,61 @@ def main() -> int:
     jogos = jogos.dropna(subset=["a", "c"])
     print("[handicap] %d jogos com abates dos dois lados" % len(jogos))
 
-    # --- expectativa PONTO-NO-TEMPO de cada time, sem olhar o proprio jogo ---
-    # Media movel simples dos ultimos N jogos: e o mesmo espirito do
-    # TeamProfile de producao, mas aqui precisa rodar 29 mil vezes, e o
-    # build_profile refaz o filtro inteiro a cada chamada.
-    JANELA = 20
-    feitos = {}      # time -> [(abates feitos, abates sofridos)]
+    # --- expectativa PONTO-NO-TEMPO de cada time ---
+    #
+    # A PRIMEIRA VERSAO usava media movel de 20 jogos. MEDIDO contra o
+    # Dixon-Coles de producao (mlcore.lines_engine), em 10.994 jogos fora da
+    # amostra:
+    #
+    #     previsao                 correlacao   inclinacao   erro medio
+    #     media movel (20 jogos)        0,307         1,34        10,74
+    #     Dixon-Coles (producao)        0,348         0,82        10,30
+    #
+    # O DC ganha porque AJUSTA PELO ADVERSARIO: att(A) x def(B) / nivel da
+    # liga. A media movel mistura oponente facil com dificil, e por isso sai
+    # timida (inclinacao 1,34).
+    #
+    # Ele ja calcula as duas metades e devolve so a soma. Aqui elas sao usadas
+    # separadas -- e isso, e so isso, e o mercado de handicap.
+    from mlcore.lines_engine import DC_BLEND_HL_DAYS, DC_BLEND_MIN_EFF, _dc_decayed
+
+    HL = DC_BLEND_HL_DAYS
+    # O NIVEL DA LIGA decaido, calculado de forma incremental: chamar
+    # `_dc_decayed` sobre as 29 mil linhas a cada jogo levaria horas. A conta
+    # e a MESMA (decaimento exponencial e recursivo), e o teste
+    # `test_o_nivel_incremental_bate_com_a_funcao_de_producao` prova isso
+    # jogo a jogo contra a funcao de verdade.
+    soma = peso = 0.0
+    ultima = None
+    hist = {}        # time -> quadro com (data, abates feitos, abates sofridos)
     linhas = []
     for r in jogos.itertuples(index=False):
-        azul, verm = str(r.team), str(r.opponent)
-        ha, hb = feitos.get(azul) or [], feitos.get(verm) or []
-        if len(ha) >= 8 and len(hb) >= 8:
-            ua, ub = ha[-JANELA:], hb[-JANELA:]
-            # a mesma mistura do lines_engine: o que A faz e o que B sofre
-            ea = (sum(x for x, _ in ua) / len(ua) + sum(y for _, y in ub) / len(ub)) / 2
-            eb = (sum(x for x, _ in ub) / len(ub) + sum(y for _, y in ua) / len(ua)) / 2
-            linhas.append({"date": r.date, "media": ea - eb, "total": ea + eb,
-                           "dif": float(r.a) - float(r.c)})
-        feitos.setdefault(azul, []).append((float(r.a), float(r.c)))
-        feitos.setdefault(verm, []).append((float(r.c), float(r.a)))
+        azul, verm, quando = str(r.team), str(r.opponent), r.date
+        if ultima is not None:
+            _f = 0.5 ** (max((quando - ultima).total_seconds() / 86400.0, 0.0) / HL)
+            soma *= _f
+            peso *= _f
+        ultima = quando
+        nivel = (soma / peso) if peso > 1e-9 else float("nan")
+
+        ha, hb = hist.get(azul), hist.get(verm)
+        if ha is not None and hb is not None and nivel == nivel and nivel > 0:
+            att_a, na1 = _dc_decayed(ha["d"], ha["f"], quando, HL)
+            def_a, na2 = _dc_decayed(ha["d"], ha["g"], quando, HL)
+            att_b, nb1 = _dc_decayed(hb["d"], hb["f"], quando, HL)
+            def_b, nb2 = _dc_decayed(hb["d"], hb["g"], quando, HL)
+            if (min(na1, na2, nb1, nb2) >= DC_BLEND_MIN_EFF
+                    and all(x == x for x in (att_a, def_a, att_b, def_b))):
+                ea = att_a * def_b / nivel
+                eb = att_b * def_a / nivel
+                linhas.append({"date": quando, "media": ea - eb, "total": ea + eb,
+                               "dif": float(r.a) - float(r.c)})
+        for t, f_, g_ in ((azul, float(r.a), float(r.c)), (verm, float(r.c), float(r.a))):
+            d = hist.get(t)
+            nova = pd.DataFrame({"d": [quando], "f": [f_], "g": [g_]})
+            hist[t] = nova if d is None else pd.concat([d, nova], ignore_index=True)
+        soma += float(r.a) + float(r.c)
+        peso += 2.0
 
     print("[handicap] %d jogos com historico suficiente dos dois times" % len(linhas))
     if len(linhas) < 2000:
@@ -220,7 +330,7 @@ def main() -> int:
             inc, base = np.polyfit([x for x, _ in pontos], [y for _, y in pontos], 1)
         else:
             inc, base = 0.0, float(np.std(resto))
-        return ganho, vies, (lambda x: max(1.0, inc * float(x) + base))
+        return ganho, vies, (lambda x: max(1.0, (inc * float(x) + base) * LARGURA_X))
 
     ganho_tr, vies_tr, largura_tr = _ajustar(treino[-JANELA_AJUSTE:])
     print("[handicap] ganho da previsao: %.2f | vies do lado azul: %+.2f abates"
@@ -235,32 +345,58 @@ def main() -> int:
         g, v, larg = _ajustar(passado)
         fm = forma_empirica([t["dif"] - g * t["media"] - v for t in passado],
                             [larg(t["total"]) for t in passado])
+        # O calibrador tambem sai SO do passado: as probabilidades cruas que
+        # aquele mesmo modelo teria dado nos jogos ja acontecidos.
+        cru = []
+        for t in passado:
+            for L in LINHAS_TIPICAS:
+                pp = prob_acima(L, g * t["media"] + v, larg(t["total"]), fm)
+                if pp is not None:
+                    cru.append((pp, 1.0 if t["dif"] > L else 0.0))
+        cal = calibrador(cru)
         for k, t in enumerate(teste[ini:ini + PASSO]):
-            previsto[ini + k] = (g * t["media"] + v, larg(t["total"]), fm)
+            previsto[ini + k] = (g * t["media"] + v, larg(t["total"]), fm, cal)
 
-    print()
-    print("ESTA CALIBRADO? (o que o modelo diz x o que aconteceu, fora da amostra)")
-    print("%-8s %8s %12s %12s %9s" % ("linha", "jogos", "modelo diz", "aconteceu", "erro"))
-    pior = 0.0
+    # --- CALIBRACAO CONDICIONAL: o teste que vale ---
+    # Junta TODAS as linhas num so conjunto de (probabilidade prevista, deu
+    # ou nao), separa por faixa de probabilidade e compara dentro da faixa.
+    todos = []
     for L in LINHAS_TIPICAS:
-        ps, ys = [], []
         for i, t in enumerate(teste):
-            m, larg, fm = previsto[i]
+            m, larg, fm, cal = previsto[i]
             p = prob_acima(L, m, larg, fm)
             if p is None:
                 continue
-            ps.append(p)
-            ys.append(1.0 if t["dif"] > L else 0.0)
-        if len(ps) < 200:
-            continue
-        pm, real = float(np.mean(ps)), float(np.mean(ys))
-        pior = max(pior, abs(pm - real))
-        print("%-8.1f %8d %11.1f%% %11.1f%% %+8.1fpp"
-              % (L, len(ps), 100 * pm, 100 * real, 100 * (pm - real)))
+            todos.append((cal(p), 1.0 if t["dif"] > L else 0.0))
+    if not todos:
+        print("[handicap] nenhuma aposta pontuavel.")
+        return 1
 
     print()
-    print("maior erro de calibracao: %.1f pontos percentuais" % (100 * pior))
-    print("(acima de ~2pp a margem da casa, de 8,41%%, come qualquer vantagem)")
+    print("CALIBRACAO CONDICIONAL (o teste que decide)")
+    print("%-16s %8s %12s %12s %9s" % ("faixa prevista", "apostas", "modelo diz",
+                                       "aconteceu", "erro"))
+    faixas = [(0.0, .25), (.25, .35), (.35, .45), (.45, .55),
+              (.55, .65), (.65, .75), (.75, 1.01)]
+    ece = n_tot = 0.0
+    pior = 0.0
+    for lo, hi in faixas:
+        sub = [(p, y) for p, y in todos if lo <= p < hi]
+        if len(sub) < 200:
+            continue
+        pm = sum(p for p, _ in sub) / len(sub)
+        real = sum(y for _, y in sub) / len(sub)
+        ece += len(sub) * abs(pm - real)
+        n_tot += len(sub)
+        pior = max(pior, abs(pm - real))
+        print("%-16s %8d %11.1f%% %11.1f%% %+8.1fpp"
+              % ("%.0f%% a %.0f%%" % (100 * lo, 100 * hi), len(sub),
+                 100 * pm, 100 * real, 100 * (pm - real)))
+    print()
+    print("erro medio de calibracao (ECE): %.2f pontos percentuais" % (100 * ece / max(n_tot, 1)))
+    print("pior faixa: %.1f pp" % (100 * pior))
+    print("(a margem da casa e 8,41%%, ou ~4,2pp por lado -- o erro precisa")
+    print(" ficar bem abaixo disso para sobrar vantagem)")
 
     # A comparacao que fecha a conta: a forma empirica ganha da normal?
     from statistics import NormalDist
@@ -271,7 +407,7 @@ def main() -> int:
     for L in LINHAS_TIPICAS:
         pe, pn, ys = [], [], []
         for i, t in enumerate(teste):
-            m, larg, fm = previsto[i]
+            m, larg, fm, _cal = previsto[i]
             p1 = prob_acima(L, m, larg, fm)
             if p1 is None:
                 continue
