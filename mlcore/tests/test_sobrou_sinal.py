@@ -89,16 +89,105 @@ class TestOAjusteConverge(unittest.TestCase):
 
 
 class TestNaoOlhaOFuturo(unittest.TestCase):
-    """O historico de cada jogo so pode ter o que veio ANTES dele."""
+    """O historico de cada jogo so pode ter o que veio ANTES dele.
+
+    ESTE TESTE NASCEU DE UM VAZAMENTO QUE PASSOU (21/09/2026).
+
+    A versao anterior aqui LIA O CODIGO: conferia que `dados.append` vinha
+    antes de `historico.setdefault`. Passou -- e o vazamento estava la do
+    mesmo jeito.
+
+    Por que a leitura nao bastou: cada jogo ocupa DUAS linhas no CSV, uma por
+    time, com a MESMA data. O laco percorria linha a linha e so punha no
+    historico a linha ja usada. Correto para o time da linha; errado para o
+    ADVERSARIO, cuja linha do mesmo jogo podia ter sido processada antes --
+    a ordenacao do pandas nao desempata datas iguais. MEDIDO: a linha
+    vermelha vinha primeiro em 46,6% dos jogos.
+
+    Nesses, a "forma recente do adversario" ja continha o resultado DESTE
+    jogo. Numa janela de 10 mapas, isso e sinal quase perfeito, e foi o que
+    apareceu como descoberta:
+
+        antes (com vazamento) .... forma +0,018   h2h +0,009
+        depois (corrigido) ....... forma +0,004   h2h +0,001
+
+    Quatro vezes menor, e o h2h sumiu. No mapa 1 o ganho foi de +0,013 para
+    +0,0009, com o intervalo cruzando zero -- ou seja, nada.
+
+    Agora o teste ALIMENTA dados onde o vazamento seria gritante e olha o
+    numero que sai. Teste que le codigo so pega o erro que voce ja imaginou.
+    """
 
     def setUp(self):
         self.fonte = ARQ.read_text(encoding="utf-8")
 
-    def test_o_jogo_entra_no_historico_DEPOIS_de_virar_linha(self):
+    def _caso_montado(self, vermelho_primeiro=True):
+        """Um caso onde a resposta certa e UM numero so.
+
+        A venceu 3 jogos. B perdeu 3. Entao A (azul) enfrenta B, e B VENCE.
+
+            sem vazamento:  forma(A)=1.0, forma(B)=0.0  ->  forma = +1.000
+            com vazamento:  B ja carrega a vitoria DESTE jogo,
+                            forma(B)=1/4=0.25           ->  forma = +0.750
+
+        A primeira tentativa deste teste era estatistica -- 400 jogos de
+        cara-ou-coroa, reprovando se a forma acertasse demais. Nao pegou o
+        bug: com janela de 10 mapas, um jogo contaminado move pouco, e o
+        ruido cobriu (51,9% com o bug contra 44,5% sem). Teste frouxo da
+        sensacao de seguranca sem a seguranca. Este aqui da 0,750 ou 1,000.
+        """
+        import pandas as pd
+        L, t0 = [], pd.Timestamp("2026-01-01")
+
+        def jogo(gid, azul, verm, azul_venceu, h):
+            q = t0 + pd.Timedelta(hours=h)
+            a = {"gameid": gid, "date": q, "map_number": 1, "league": "L",
+                 "side": "Blue", "team": azul, "opponent": verm,
+                 "win": bool(azul_venceu)}
+            v = {"gameid": gid, "date": q, "map_number": 1, "league": "L",
+                 "side": "Red", "team": verm, "opponent": azul,
+                 "win": bool(not azul_venceu)}
+            return [v, a] if vermelho_primeiro else [a, v]
+
+        for i in range(3):
+            L += jogo("A%d" % i, "A", "D", True, i)
+            L += jogo("B%d" % i, "C", "B", True, i)
+        L += jogo("ALVO", "A", "B", False, 10)
+        return pd.DataFrame(L)
+
+    def test_a_forma_do_ADVERSARIO_nao_contem_o_jogo_atual(self):
+        """O teste que teria pego o vazamento no dia em que ele entrou."""
+        m = _carregar()
+        linhas = m.montar_linhas(self._caso_montado(vermelho_primeiro=True),
+                                 {"ALVO": (0.5, 0)})
+        self.assertEqual(len(linhas), 1)
+        self.assertAlmostEqual(
+            linhas[0]["forma"], 1.0, places=9,
+            msg="deu %.3f: o resultado do proprio jogo entrou na forma do "
+                "adversario (0.750 e a assinatura exata desse vazamento)"
+                % linhas[0]["forma"])
+
+    def test_a_ordem_das_DUAS_LINHAS_do_jogo_nao_muda_o_resultado(self):
+        """Se mudar, o laco depende de um desempate que ninguem garante --
+        e o pandas nao garante: medido, a linha vermelha vinha primeiro em
+        46,6% dos jogos de 2026."""
+        m = _carregar()
+        a = m.montar_linhas(self._caso_montado(True), {"ALVO": (0.5, 0)})
+        b = m.montar_linhas(self._caso_montado(False), {"ALVO": (0.5, 0)})
+        self.assertEqual(len(a), len(b))
+        for x, y in zip(a, b):
+            self.assertEqual(x["forma"], y["forma"])
+            self.assertEqual(x["h2h"], y["h2h"])
+
+    def test_percorre_JOGO_a_jogo_e_nao_linha_a_linha(self):
+        """A causa-raiz, travada tambem na forma."""
+        self.assertIn('side"].astype(str).str.lower() == "blue"', self.fonte)
+        self.assertIn('kind="mergesort"', self.fonte)
+
+    def test_os_DOIS_times_aprendem_depois_de_a_linha_ficar_pronta(self):
         i_monta = self.fonte.index('dados.append({')
-        i_aprende = self.fonte.index('historico.setdefault(time, []).append')
-        self.assertLess(i_monta, i_aprende,
-                        "o jogo entrou no historico antes de a linha ser montada")
+        self.assertLess(i_monta, self.fonte.index('historico.setdefault(blue, []).append'))
+        self.assertLess(i_monta, self.fonte.index('historico.setdefault(red, []).append'))
 
     def test_o_confronto_direto_tambem_so_aprende_depois(self):
         i_monta = self.fonte.index('dados.append({')

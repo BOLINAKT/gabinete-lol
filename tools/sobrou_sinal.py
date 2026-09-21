@@ -36,27 +36,35 @@ O QUE SERIA ARMADILHA, e esta evitado:
   - "significativo" com 7 mil jogos e facil. Por isso sai tambem o GANHO DE
     LOGLOSS, que e o que decide se vale mexer no modelo.
 
-O QUE SAIU (medido em 21/09/2026, contra a medicao com FORMATO DE PRODUCAO
--- hybrid + form + Platt ligados, 7.296 jogos fora da amostra):
+O QUE SAIU (21/09/2026, contra a medicao com FORMATO DE PRODUCAO -- hybrid +
+form + Platt, 7.296 jogos fora da amostra).
 
-  sinal          ganho de logloss (IC 95%)        veredito
-  forma          +0,0183 [+0,0131, +0,0238]       SOBROU SINAL
-  h2h            +0,0094 [+0,0032, +0,0153]       SOBROU SINAL
-  descanso       -0,0001 [-0,0004, +0,0002]       nada
-  experiencia    +0,0028 [-0,0013, +0,0066]       nao da para afirmar
+ATENCAO: a PRIMEIRA leitura destes numeros estava errada, e por vazamento do
+futuro meu. Os dois conjuntos, lado a lado:
 
-E a separacao que decide se isto SERVE:
+  sinal          com vazamento     CORRIGIDO
+  forma            +0,0183          +0,0044 [+0,0021, +0,0073]
+  h2h              +0,0094          +0,0005 [-0,0003, +0,0013]  nada
+  descanso         -0,0001          -0,0005                     nada
+  experiencia      +0,0028          +0,0025                     nada
 
-  mapa 2+ (serie em curso) .... +0,0264   verdadeiro, mas so com a serie andando
-  mapa 1 (jogo que nao comecou) +0,0130 [+0,0048, +0,0206]   REAL
+O vazamento: cada jogo ocupa DUAS linhas no CSV (uma por time) com a mesma
+data, e o laco percorria linha a linha. A linha do adversario podia ser
+processada antes -- medido, em 46,6% dos jogos --, e ai a "forma recente do
+adversario" ja continha o resultado DESTE jogo. Corrigido percorrendo JOGO a
+jogo. O teste `test_a_forma_do_ADVERSARIO_nao_contem_o_jogo_atual` pega isso
+num caso montado a mao, com resposta exata.
 
-O mapa 1 e o que importa: a aba de Oportunidades precifica partida que ainda
-nao comecou. +0,0130 de logloss ali vale +0,41 de NOTA (6,44 -> 6,85), com
-piso de +0,15 e teto de +0,65.
+E a separacao que decide se o que sobrou SERVE:
 
-Ou seja: o modelo TEM as camadas de forma (season_form_blend e
-hybrid_momentum_blend) e mesmo assim a forma crua ainda acrescenta. Ele nao
-esta ignorando forma -- esta pesando de menos.
+  mapa 1 (jogo que nao comecou) .. +0,0009 [-0,0020, +0,0037]   NADA
+  mapa 2+ (serie em curso) ....... +0,0076
+
+Ou seja: para precificar uma partida que ainda nao comecou -- que e o que a
+aba de Oportunidades faz -- forma recente NAO acrescenta nada ao modelo. O que
+sobra vive nos mapas seguintes de uma serie ja em andamento, e ali o sinal
+direto nao e "forma": e o PLACAR DA SERIE. Isso esta medido em
+tools/empurrao_de_forma.py.
 
 Uso: python tools/sobrou_sinal.py [arquivo_de_previsoes.json]
 """
@@ -172,7 +180,34 @@ def montar_dados(previsoes=None):
     tg["date"] = pd.to_datetime(tg["date"], errors="coerce")
     tg = tg.dropna(subset=["date"]).sort_values("date")
 
+    return montar_linhas(tg, prev)
+
+
+def montar_linhas(tg, prev):
+    """Os sinais de cada jogo, com o historico que existia ANTES dele.
+
+    Recebe o quadro e as previsoes em vez de le-los do disco: e o que permite
+    a um teste alimentar um caso onde o vazamento seria gritante.
+    """
+    import math
+
     # --- historico PONTO-NO-TEMPO: so o que aconteceu ANTES de cada jogo ---
+    #
+    # A PRIMEIRA VERSAO DISTO VAZOU O FUTURO, e vale registrar como.
+    #
+    # Cada jogo ocupa DUAS linhas no CSV (uma por time). Eu percorria linha a
+    # linha, montava os sinais na linha AZUL e so depois punha aquela linha no
+    # historico. Parece certo -- e e, para o time azul. Mas a linha VERMELHA do
+    # MESMO jogo podia ter sido processada antes: as duas tem a mesma data, e a
+    # ordenacao do pandas nao garante desempate. MEDIDO: a vermelha vinha
+    # primeiro em 46,6% dos jogos. Nesses, a "forma recente do adversario" ja
+    # continha o resultado DESTE jogo.
+    #
+    # Numa janela de 10 mapas, um deles ser o proprio jogo e sinal quase
+    # perfeito -- e foi isso que apareceu como "sobrou sinal".
+    #
+    # O conserto: percorrer JOGO a jogo, nunca linha a linha. O jogo vira
+    # numero primeiro; so depois os DOIS times aprendem com ele.
     historico = {}          # time -> lista de (data, venceu)
     confrontos = {}         # (a,b) ordenado -> lista de (data, venceu_a)
     descanso = {}           # time -> data do ultimo jogo
@@ -184,28 +219,29 @@ def montar_dados(previsoes=None):
         ult = h[-janela:]
         return sum(1 for _, v in ult if v) / len(ult)
 
-    dados = []
-    vistos = set()
-    for r in tg.itertuples(index=False):
-        gid = str(r.gameid)
-        time, adv, venceu, quando = str(r.team), str(r.opponent), bool(r.win), r.date
+    # Uma linha por JOGO: a do lado azul ja traz time, adversario e o
+    # resultado do azul. O desempate por gameid deixa a ordem deterministica.
+    jogos = tg[tg["side"].astype(str).str.lower() == "blue"].copy()
+    jogos = jogos.sort_values(["date", "gameid"], kind="mergesort")
 
-        # 1) ANTES de aprender com este jogo, se ele e um dos pontuados e
-        #    este e o lado azul, monta-se a linha com o que se sabia ATE aqui.
-        if gid in prev and gid not in vistos and str(r.side).lower() == "blue":
-            vistos.add(gid)
+    dados = []
+    for r in jogos.itertuples(index=False):
+        gid = str(r.gameid)
+        blue, red, venceu, quando = str(r.team), str(r.opponent), bool(r.win), r.date
+
+        if gid in prev:
             p, y = prev[gid]
-            f_a, f_b = _forma(time), _forma(adv)
-            ch = tuple(sorted((time, adv)))
+            f_a, f_b = _forma(blue), _forma(red)
+            ch = tuple(sorted((blue, red)))
             h2h = confrontos.get(ch) or []
             n_h2h = len(h2h)
             if n_h2h >= 3:
-                venc = sum(1 for _, v in h2h if (v if ch[0] == time else not v))
+                venc = sum(1 for _, v in h2h if (v if ch[0] == blue else not v))
                 taxa_h2h = venc / n_h2h
             else:
                 taxa_h2h = None
-            d_a = (quando - descanso[time]).days if time in descanso else None
-            d_b = (quando - descanso[adv]).days if adv in descanso else None
+            d_a = (quando - descanso[blue]).days if blue in descanso else None
+            d_b = (quando - descanso[red]).days if red in descanso else None
             dados.append({
                 "p": p, "y": y, "date": quando, "liga": str(r.league),
                 "mapa": int(getattr(r, "map_number", 1) or 1),
@@ -213,19 +249,22 @@ def montar_dados(previsoes=None):
                 "h2h": (taxa_h2h - 0.5) if taxa_h2h is not None else None,
                 "n_h2h": n_h2h,
                 "descanso": ((d_a - d_b) if (d_a is not None and d_b is not None) else None),
-                "experiencia": (math.log1p(len(historico.get(time) or []))
-                                - math.log1p(len(historico.get(adv) or []))),
+                "experiencia": (math.log1p(len(historico.get(blue) or []))
+                                - math.log1p(len(historico.get(red) or []))),
             })
 
-        # 2) SO ENTAO o jogo entra no historico.
-        historico.setdefault(time, []).append((quando, venceu))
-        descanso[time] = quando
-        ch = tuple(sorted((time, adv)))
-        if ch[0] == time:
-            confrontos.setdefault(ch, []).append((quando, venceu))
+        # SO ENTAO os DOIS times aprendem com este jogo.
+        historico.setdefault(blue, []).append((quando, venceu))
+        historico.setdefault(red, []).append((quando, not venceu))
+        descanso[blue] = quando
+        descanso[red] = quando
+        ch = tuple(sorted((blue, red)))
+        confrontos.setdefault(ch, []).append(
+            (quando, venceu if ch[0] == blue else (not venceu)))
 
     dados.sort(key=lambda x: x["date"])
     return dados
+
 
 
 def main() -> int:
