@@ -1,24 +1,24 @@
 {
   "version": "live_models_manifest_v1",
-  "last_trained_at": "2026-09-14T13:34:42+00:00",
+  "last_trained_at": "2026-09-21T13:32:11+00:00",
   "csv_signatures": [
     {
       "path": "/home/runner/work/gabinete-lol/gabinete-lol/CSV_HISTORICO/2024_LoL_esports_match_data_from_OraclesElixir.csv",
       "size": 78791971,
-      "mtime_ns": 1789391504525335307,
+      "mtime_ns": 1789996247157591730,
       "n_games": 10199
     },
     {
       "path": "/home/runner/work/gabinete-lol/gabinete-lol/CSV_HISTORICO/2025_LoL_esports_match_data_from_OraclesElixir.csv",
       "size": 78889037,
-      "mtime_ns": 1789391504839331828,
+      "mtime_ns": 1789996247382590088,
       "n_games": 10053
     },
     {
       "path": "/home/runner/work/gabinete-lol/gabinete-lol/CSV_DIARIO/2026_LoL_esports_match_data_from_OraclesElixir.csv",
-      "size": 69056788,
-      "mtime_ns": 1789391504216338730,
-      "n_games": 8610
+      "size": 70979596,
+      "mtime_ns": 1789996246931593380,
+      "n_games": 8851
     }
   ],
   "models_present": [
@@ -27,7 +27,7 @@
     "minute_20",
     "minute_25"
   ],
-  "n_games_at_train": 28862,
+  "n_games_at_train": 29103,
   "last_gate": {
     "phases": {
       "6": "ok",
