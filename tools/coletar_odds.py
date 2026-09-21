@@ -67,6 +67,14 @@ from typing import Any, Dict, List, Optional
 RAIZ = Path(__file__).resolve().parents[1]
 AGORA_JSON = RAIZ / "odds_pinnacle.json"          # o retrato de agora
 HISTORICO = RAIZ / "odds_pinnacle_historico.jsonl"  # so o que mudou
+# QUEM jogava em cada partida. O historico de precos guarda so o ID do jogo, e
+# `odds_pinnacle.json` (que tem os nomes) e sobrescrito a cada corrida.
+#
+# POR QUE ISTO EXISTE (21/09/2026): para comparar o modelo com o preco da casa
+# eu precisei dos nomes das partidas antigas, e so consegui escavando o
+# historico do git commit a commit. Funcionou por sorte -- o robo comita
+# aquele arquivo. Medicao que depende de arqueologia nao e medicao.
+PARTIDAS = RAIZ / "odds_pinnacle_partidas.jsonl"
 DIARIO = RAIZ / "odds_coletas.jsonl"              # TODA corrida, deu certo ou nao
 
 BASE = "https://guest.api.arcadia.pinnacle.com/0.1/"
@@ -718,7 +726,35 @@ def main() -> int:
         _por_mercado[l.get("mercado", "?")] = _por_mercado.get(l.get("mercado", "?"), 0) + 1
     for _m, _n in sorted(_por_mercado.items(), key=lambda kv: -kv[1])[:10]:
         print("    {:>4}  {}".format(_n, _m))
+    # PARTIDAS: quem jogava, uma vez por partida. O arquivo de precos so tem o
+    # ID; sem isto, saber quem era exige escavar o historico do git.
+    ja = set()
+    if PARTIDAS.exists():
+        try:
+            with open(str(PARTIDAS), "r", encoding="utf-8") as fh:
+                for linha in fh:
+                    try:
+                        ja.add(str(json.loads(linha).get("id")))
+                    except (ValueError, AttributeError):
+                        continue
+        except OSError:
+            pass
+    partidas_novas = 0
+    try:
+        with open(str(PARTIDAS), "a", encoding="utf-8") as fh:
+            for j in dados["jogos"]:
+                if str(j.get("id")) in ja:
+                    continue
+                fh.write(json.dumps({"visto_em": lido_em, **j},
+                                    ensure_ascii=False) + chr(10))
+                partidas_novas += 1
+    except OSError as e:
+        # Perder o registro de quem jogava nao pode derrubar a coleta de preco.
+        print("[odds] nao consegui gravar as partidas: {}".format(e))
+
     print("[odds] {} preco(s) mudaram e entraram no historico.".format(novas))
+    print("[odds] {} partida(s) novas registradas com os nomes dos times.".format(
+        partidas_novas))
     for j in dados["jogos"][:8]:
         print("    {:<14} {:<20} x {:<20} BO{}".format(
             j["liga"][:14], j["casa"][:20], j["fora"][:20], j["bo"]))

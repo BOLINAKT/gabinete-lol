@@ -31,6 +31,29 @@ Se isto tambem nao aparecer na nota, entao o ganho de logloss nao sobrevive a
 mistura 45/55 da nota e ao tamanho real do efeito, e o caminho morre aqui --
 o que e uma resposta, nao um fracasso.
 
+O QUE SAIU, E POR QUE O CAMINHO MORREU AQUI (21/09/2026)
+
+Com o vazamento corrigido (ver tools/sobrou_sinal.py), a nota sobre os jogos
+de cada recorte, com o peso ajustado SO no passado de cada bloco:
+
+  todos os mapas, por forma ......... 7,093 -> 7,113   (+0,021)
+  so o mapa 1, por forma ............ 7,280 -> 7,178   (-0,102)
+  so mapas 2+, por forma ............ 6,931 -> 7,085   (+0,154)
+  so mapas 2+, pelo PLACAR da serie . 6,931 -> 7,338   (+0,407)  6 blocos de 6
+
+O placar da serie e sinal de verdade. A taxa crua confere: 1-0 a frente ->
+65,6% no mapa seguinte (4.182 jogos); 0-1 atras -> 41,2% (5.477 jogos).
+
+E MESMO ASSIM NAO DA PARA USAR. Ele respondeu, quando eu perguntei se daria
+para informar o placar na tela: "ate pode ser, mas e complexo, durante o live
+ate pode ser, mas pre e impossivel". O placar so existe depois que a serie
+comecou, e nessa hora ele nao esta mais fazendo analise pre-jogo. O escopo e
+pre-live. Entao este ganho e verdadeiro e inutil para o uso que ele tem.
+
+Fica registrado para nao ser redescoberto. Se um dia o fluxo mudar -- se
+houver um momento entre mapas em que ele precifique --, o numero esta aqui e
+o caminho e curto.
+
 Uso: python tools/empurrao_de_forma.py
 """
 from __future__ import annotations

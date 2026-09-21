@@ -58,7 +58,10 @@
 #
 # O QUE ELE COMMITA
 # `odds_pinnacle.json` (o retrato de agora), `odds_pinnacle_historico.jsonl`
-# (só o que MUDOU) e `odds_coletas.jsonl` (o DIÁRIO: uma linha por corrida,
+# (só o que MUDOU), `odds_pinnacle_partidas.jsonl` (QUEM jogava em cada
+# partida — o histórico de preços só guarda o ID, e sem isto saber quem era
+# exige escavar o histórico do git, como precisei fazer em 21/09/2026)
+# e `odds_coletas.jsonl` (o DIÁRIO: uma linha por corrida,
 # tenha ela dado certo ou não — é o que permite distinguir "a casa bloqueou"
 # de "a janela nem rodou"). O histórico cresce devagar de propósito: guardar o retrato
 # inteiro a cada corrida daria ~9 MB/mês, e o que o CLV precisa é o movimento.
@@ -169,7 +172,7 @@ jobs:
           git config user.email "robo@gabinete.local"
           git add odds_coletas.jsonl || true
           if [ "${{ steps.coleta.outputs.rc }}" = "0" ]; then
-            git add odds_pinnacle.json odds_pinnacle_historico.jsonl
+            git add odds_pinnacle.json odds_pinnacle_historico.jsonl \n                    odds_pinnacle_partidas.jsonl
             MSG="Robô: odds da Pinnacle atualizadas"
           else
             MSG="Robô: corrida de odds sem leitura (rc=${{ steps.coleta.outputs.rc }})"

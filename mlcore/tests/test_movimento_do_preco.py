@@ -248,3 +248,68 @@ class TestALeituraPertoDoApito(unittest.TestCase):
             for m in (int(x) for x in c.split()[0].split(",")):
                 self.assertNotIn(m, (0, 15, 30, 45),
                                  "minuto %d e dos mais disputados" % m)
+
+
+class TestQuemJogavaFicaGravado(unittest.TestCase):
+    """O historico de precos guarda o ID da partida, nao os nomes.
+
+    EM 21/09/2026 isso me custou caro: para comparar o modelo com o preco da
+    casa, precisei dos nomes das partidas ja coletadas, e `odds_pinnacle.json`
+    (o unico arquivo com nomes) e SOBRESCRITO a cada corrida. So consegui
+    escavando o historico do git, commit a commit. Funcionou por sorte -- o
+    robo comita aquele arquivo. Medicao que depende de arqueologia nao e
+    medicao.
+
+    Entrou `odds_pinnacle_partidas.jsonl`: uma linha por partida, so na
+    primeira vez que ela e vista.
+    """
+
+    def test_o_coletor_grava_as_partidas_num_arquivo_proprio(self):
+        import inspect
+
+        from tools import coletar_odds as c
+        fonte = inspect.getsource(c)
+        self.assertIn("odds_pinnacle_partidas.jsonl", fonte)
+        self.assertIn('"visto_em": lido_em', fonte)
+
+    def test_nao_repete_partida_ja_registrada(self):
+        import inspect
+
+        from tools import coletar_odds as c
+        fonte = inspect.getsource(c)
+        self.assertIn('if str(j.get("id")) in ja:', fonte)
+
+    def test_falhar_ao_gravar_NAO_derruba_a_coleta_de_preco(self):
+        """O preco e o que nao da para recuperar depois; o nome da para."""
+        import inspect
+
+        from tools import coletar_odds as c
+        fonte = inspect.getsource(c)
+        i = fonte.index("partidas_novas = 0")
+        trecho = fonte[i:i + 1200]
+        self.assertIn("except OSError", trecho)
+        self.assertIn("nao consegui gravar as partidas", trecho)
+
+    def test_o_robo_COMITA_esse_arquivo(self):
+        """Gravar e nao subir daria no mesmo: a maquina dele fica desligada."""
+        from pathlib import Path
+        raiz = Path(__file__).resolve().parents[2]
+        yml = (raiz / ".github" / "workflows" / "odds.yml").read_text(encoding="utf-8")
+        self.assertIn("odds_pinnacle_partidas.jsonl", yml)
+
+    def test_o_arquivo_ja_tem_as_partidas_recuperadas(self):
+        """O passado foi preenchido a partir do git, uma vez so."""
+        import json
+        from pathlib import Path
+        raiz = Path(__file__).resolve().parents[2]
+        alvo = raiz / "odds_pinnacle_partidas.jsonl"
+        if not alvo.exists():
+            self.skipTest("o arquivo nao esta nesta maquina")
+        linhas = [json.loads(x) for x in alvo.read_text(encoding="utf-8").splitlines() if x.strip()]
+        self.assertGreater(len(linhas), 20)
+        for x in linhas:
+            self.assertIn("casa", x)
+            self.assertIn("fora", x)
+            self.assertIn("id", x)
+        ids = [x["id"] for x in linhas]
+        self.assertEqual(len(ids), len(set(ids)), "partida repetida no arquivo")
