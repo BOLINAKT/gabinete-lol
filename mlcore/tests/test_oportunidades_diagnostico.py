@@ -292,7 +292,8 @@ class TestOConsertoDeUmClique(unittest.TestCase):
             def selectbox(self, rotulo, options=None, key=None, **k):
                 vistos["rotulo"] = rotulo
                 vistos["opcoes"] = list(options or [])
-                return "Team Liquid"
+                # a tela devolve o ROTULO escolhido, nao o nome cru
+                return next(o for o in vistos["opcoes"] if "Team Liquid" in o)
 
             def button(self, rotulo, key=None, **k):
                 vistos["botao"] = rotulo
@@ -302,8 +303,41 @@ class TestOConsertoDeUmClique(unittest.TestCase):
         m._ensinar_apelido(st, lambda cru: ["Team Liquid", "Disguised"],
                            lambda cru, esc: None, "Liquid")
         self.assertIn("Liquid", vistos["rotulo"])
-        self.assertIn("Team Liquid", vistos["opcoes"])
+        # Desde 21/09/2026 a opcao carrega o aviso de quao velho e o dado
+        # daquele time, a pedido dele. O NOME continua la dentro.
+        self.assertTrue(any("Team Liquid" in o for o in vistos["opcoes"]),
+                        vistos["opcoes"])
         self.assertTrue(vistos["botao"])
+
+    def test_o_que_se_SALVA_e_o_NOME_e_nao_o_rotulo_com_a_data(self):
+        """O rotulo mostra "Team Liquid - dado mais recente: 20/09". Se ele
+        fosse gravado como apelido, nada casaria depois."""
+        salvos = []
+        rotulo_visto = {}
+
+        class _St(_StFalso):
+            def selectbox(self, rotulo, options=None, key=None, **k):
+                opcoes = list(options or [])
+                # escolhe a opcao do Team Liquid, com data e tudo
+                escolhida = next(o for o in opcoes if "Team Liquid" in o)
+                rotulo_visto["escolhida"] = escolhida
+                return escolhida
+
+            def button(self, rotulo, key=None, **k):
+                return True
+
+            def success(self, *a, **k):
+                pass
+
+            def rerun(self):
+                pass
+
+        st = _St()
+        m._ensinar_apelido(st, lambda cru: ["Team Liquid", "Disguised"],
+                           lambda cru, esc: salvos.append((cru, esc)), "Liquid")
+        self.assertNotEqual(rotulo_visto["escolhida"], "Team Liquid",
+                            "o rotulo devia trazer o aviso junto")
+        self.assertEqual(salvos, [("Liquid", "Team Liquid")])
 
     def test_sem_palpite_parecido_DIZ_isso(self):
         st = _StFalso()

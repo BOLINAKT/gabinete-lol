@@ -420,7 +420,25 @@ def normalizar(matchups: Any, mercados: Any, *, so_lol: bool = True,
                     # nomeia unidade nenhuma.
                     "unidade": unidade,
                 })
-                linhas[-1]["chave"] = chave_da_linha(linhas[-1])
+                # A TRADUCAO AO LADO (21/09/2026). O nome da casa fica intacto --
+            # e o que ele confere na tela da Pinnacle. Junto dele vao os
+            # campos que o programa entende (metrica, forma, mapa), senao
+            # mercado com nome ingles fica invisivel para a aba de
+            # Oportunidades. Foi o que aconteceu com TORRES, que e um dos
+            # dois mercados em que ele ganha dinheiro: 3.430 leituras
+            # coletadas e nenhuma usada.
+            try:
+                from app_core.mercado_pinnacle_core import entender_mercado
+                _e = entender_mercado(linhas[-1].get("mercado"))
+                linhas[-1]["metrica"] = _e.get("metrica")
+                linhas[-1]["forma"] = _e.get("forma")
+                linhas[-1]["mapa"] = _e.get("mapa")
+                linhas[-1]["nome_pt"] = _e.get("nome_pt")
+            except Exception:
+                # Traduzir e util; coletar o preco e essencial. Se a traducao
+                # falhar, a linha vai sem ela e ainda serve.
+                pass
+            linhas[-1]["chave"] = chave_da_linha(linhas[-1])
 
     # PRIMEIRA PASSADA: as partidas de verdade.
     #
@@ -759,8 +777,25 @@ def main() -> int:
         print("    {:<14} {:<20} x {:<20} BO{}".format(
             j["liga"][:14], j["casa"][:20], j["fora"][:20], j["bo"]))
 
+    # MERCADO NOVO NAO PODE SUMIR CALADO. Quando a Pinnacle inventa um
+    # mercado, o nome dele nao bate com nada e a linha vira dado morto. O
+    # diario passa a dizer quantos e quais, para virar uma linha de tabela na
+    # proxima vez -- nunca um chute.
+    _nao_lidos = {}
+    try:
+        from app_core.mercado_pinnacle_core import nao_entendidos
+        _nao_lidos = nao_entendidos([l.get("mercado") for l in dados["linhas"]])
+        if _nao_lidos:
+            print("[odds] {} mercado(s) que eu nao sei ler:".format(len(_nao_lidos)))
+            for _n, _q in sorted(_nao_lidos.items(), key=lambda kv: -kv[1])[:8]:
+                print("    {:>4}  {}".format(_q, _n or "(sem nome)"))
+    except Exception:
+        _nao_lidos = {}
+
     anotar_corrida(
         diario, resultado="ok", rc=RC_OK,
+        mercados_sem_ler=len(_nao_lidos),
+        nomes_sem_ler=sorted(_nao_lidos)[:10],
         jogos=len(dados["jogos"]), linhas=len(dados["linhas"]),
         precos_novos=novas,
         kills=sum(1 for l in dados["linhas"]

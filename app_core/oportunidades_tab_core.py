@@ -328,10 +328,31 @@ def _ensinar_apelido(st: Any, sugerir: Optional[Callable[[str], List[str]]],
     if not opcoes:
         st.caption("Nao achei palpite parecido para **{}** no CSV.".format(cru))
         return
-    escolha = st.selectbox(
-        "Quem e **{}** no CSV?".format(cru), options=["", *opcoes],
-        key="oport_apelido_{}".format(cru.lower().replace(" ", "_")),
+    # QUAO VELHO E O DADO de cada palpite, ao lado do nome. Um apelido certo
+    # com dado de um ano atras e um apelido certo com dado de ontem eram
+    # indistinguiveis aqui ate 21/09/2026.
+    from app_core.frescor_do_time_core import (
+        avisar_se_velho as _avisar_velho,
+        legenda as _legenda_frescor,
+        opcoes as _opcoes_frescor,
     )
+    _ultimos = {}
+    try:
+        _ultimos = getattr(st, "session_state", {}).get("_ultimo_jogo_por_time") or {}
+    except (AttributeError, TypeError):
+        _ultimos = {}
+    _rotulos, _de_volta = _opcoes_frescor(opcoes, _ultimos)
+    if _ultimos:
+        st.caption(_legenda_frescor())
+    # O rotulo carrega a data; o apelido tem de guardar o NOME do time.
+    escolha = _de_volta.get(st.selectbox(
+        "Quem e **{}** no CSV?".format(cru), options=["", *_rotulos],
+        key="oport_apelido_{}".format(cru.lower().replace(" ", "_")),
+    ), "")
+    if escolha:
+        _av = _avisar_velho(escolha, _ultimos)
+        if _av:
+            st.warning(_av)
     if escolha and st.button("Salvar e comparar",
                              key="oport_apelido_btn_{}".format(cru.lower().replace(" ", "_"))):
         try:

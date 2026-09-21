@@ -159,15 +159,28 @@ def render_schedule_agenda_expander(
             if unknowns:
                 st.markdown("#### Mapear times desconhecidos")
                 st.caption("Se o nome do site não bater com o nome do CSV, escolha o time correto aqui. Isso fica salvo (apelido -> time do CSV).")
+                from app_core.frescor_do_time_core import (
+                    avisar_se_velho as _avisar_velho,
+                    legenda as _legenda_frescor,
+                    opcoes as _opcoes_frescor,
+                )
+                _ultimos = session_state.get("_ultimo_jogo_por_time") or {}
+                st.caption(_legenda_frescor())
                 for raw in unknowns:
                     sug = suggest_schedule_teams(raw, teams)
-                    pick = st.selectbox(
+                    _rotulos, _de_volta = _opcoes_frescor(sug, _ultimos)
+                    _escolhido = st.selectbox(
                         f"Esse time '{raw}' seria qual",
-                        options=["", *sug],
+                        options=["", *_rotulos],
                         key=f"map_{normalize_schedule_team_key(raw)}",
                     )
+                    # O rotulo carrega a data; o apelido tem de guardar o NOME.
+                    pick = _de_volta.get(_escolhido, "")
                     if pick:
                         mapping[raw] = pick
+                        _av = _avisar_velho(pick, _ultimos)
+                        if _av:
+                            st.warning(_av)
 
             c1, c2 = st.columns([1, 1])
             with c1:

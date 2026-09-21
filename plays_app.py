@@ -897,6 +897,32 @@ def _liga_por_time(csv_sig: Tuple[str, int, int]) -> Dict[str, str]:
 
 
 @st.cache_data(show_spinner=False)
+def _ultimo_jogo_por_time(csv_sig: Tuple[str, int, int]) -> Dict[str, Any]:
+    """Time -> data do jogo mais recente dele no CSV.
+
+    POR QUE (21/09/2026). Depois de conferirmos 16 apelidos um a um contra a
+    Leaguepedia, ele pediu: "vao ter jogos que os dados vao ser bem velhos, e
+    seria legal avisar em algum lugar na mesma escolha mesmo ao lado assim
+    'dado mais recente - (e aqui a data)' e uma cor diferente".
+
+    O caso que motivou: "Bilibili Junior" da Pinnacle e mesmo o "Bilibili
+    Gaming Junior" do CSV -- a Leaguepedia confirma --, mas o ultimo jogo dele
+    la e de 08/10/2025. O apelido esta certo e a analise sai fraca, e as duas
+    coisas eram indistinguiveis na lista de escolha.
+
+    Viaja pelo estado, como `_liga_por_time`, e nao por parametro novo:
+    assinatura que muda entre o app e um modulo derrubou o site em 13/09/2026.
+    """
+    csv_path, _size, _mtime = csv_sig
+    from app_core.frescor_do_time_core import ultimo_jogo_por_time
+    from mlcore.stats_teams import build_team_games, load_team_rows
+    try:
+        return ultimo_jogo_por_time(build_team_games(load_team_rows(str(csv_path))))
+    except (OSError, KeyError, ValueError, TypeError):
+        return {}
+
+
+@st.cache_data(show_spinner=False)
 def _load_player_rows(csv_sig: Tuple[str, int, int]) -> pd.DataFrame:
     """Carrega rows de players (participantid 1..10) do OracleElixir."""
     csv_path, _size, _mtime = csv_sig
@@ -1828,6 +1854,11 @@ try:
     st.session_state["_liga_por_time"] = _liga_por_time(csv_sig)
 except Exception:
     st.session_state["_liga_por_time"] = {}
+
+try:
+    st.session_state["_ultimo_jogo_por_time"] = _ultimo_jogo_por_time(csv_sig)
+except Exception:
+    st.session_state["_ultimo_jogo_por_time"] = {}
 
 # Normaliza grafias (ex.: "Dplus Kia" vs "Dplus KIA") para evitar cair na liga errada no modo auto.
 core_normalize_matchup_selection_teams(

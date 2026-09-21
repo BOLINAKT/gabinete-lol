@@ -414,10 +414,29 @@ def render_matchup_selection(
             if _liga_do_jogo:
                 st.caption("Os times de **{}** (a liga de {}) vem primeiro na "
                            "lista.".format(_liga_do_jogo, _companheiro))
-            _pick = st.selectbox(
-                "Esse time e qual? (fica salvo)", options=["", *_sug],
+
+            # QUAO VELHO E O DADO DE CADA CANDIDATO, ao lado do nome.
+            # Pedido em 21/09/2026: apelido certo com dado de um ano atras e
+            # indistinguivel, na lista, de apelido certo com dado de ontem.
+            from app_core.frescor_do_time_core import (
+                avisar_se_velho as _avisar_velho,
+                legenda as _legenda_frescor,
+                opcoes as _opcoes_frescor,
+            )
+            _ultimos = session_state.get("_ultimo_jogo_por_time") or {}
+            _rotulos, _de_volta = _opcoes_frescor(list(_sug), _ultimos)
+            st.caption(_legenda_frescor())
+            _escolhido = st.selectbox(
+                "Esse time e qual? (fica salvo)", options=["", *_rotulos],
                 key="agenda_fix_{}".format(_chave_apelido(_cru)),
             )
+            # O rotulo NAO e o nome: gravar ele como apelido salvaria
+            # "Team Liquid - dado mais recente: ..." e nada casaria depois.
+            _pick = _de_volta.get(_escolhido, "")
+            if _pick:
+                _aviso = _avisar_velho(_pick, _ultimos)
+                if _aviso:
+                    st.warning(_aviso)
             if _pick and _liga_do_jogo and str(_ligas.get(str(_pick), "")) != _liga_do_jogo:
                 st.error(
                     "**{}** joga na liga **{}**, e este confronto e da **{}**. "
