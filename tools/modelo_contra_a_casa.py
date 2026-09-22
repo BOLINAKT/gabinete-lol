@@ -33,6 +33,10 @@ mais timido que o mercado -- exatamente o tipo de conclusao errada que este
 arquivo existe para nao produzir.
 
 Uso: python tools/modelo_contra_a_casa.py
+
+REFORCO SEMANAL (12 min, cobre os ultimos 30 dias):
+    python tools/nota_honesta.py --marca base_agree_SEMANA --dobras 1         --cadencia diaria --com-hybrid --com-form
+Esta regua junta sozinha todas as medicoes da familia.
 """
 from __future__ import annotations
 
@@ -52,8 +56,24 @@ if str(ROOT) not in sys.path:
 
 PARTIDAS = ROOT / "odds_pinnacle_partidas.jsonl"
 PRECOS = ROOT / "odds_pinnacle_historico.jsonl"
-REGUA = ROOT / "scratchpad" / "nota_honesta" / \
-    "nota_honesta_base_agree_diaria_hybrid_form_platt.json"
+# AS MEDICOES DA REGUA HONESTA, juntadas.
+#
+# POR QUE JUNTAR (22/09/2026). A nota honesta so pontua os jogos que existiam
+# quando ela rodou. Descobri isso quando a regua do vencedor travou em 20
+# partidas: 5 jogos novos estavam no CSV e apareciam como "sem nota do
+# modelo". Ou seja, esta regua PARA DE CRESCER sem um reforco periodico.
+#
+# Refazer as 8 dobras leva 1h40. Uma dobra so cobre os ultimos 30 dias e leva
+# ~12 minutos -- que e tudo de que o reforco precisa, porque os jogos antigos
+# ja estao pontuados. Entao a regua le TODAS as medicoes da mesma variante e
+# junta por jogo.
+#
+# Juntar e valido porque cada jogo foi pontuado por um modelo que nao o tinha
+# visto, em qualquer das rodadas. Quando o mesmo jogo aparece em duas, fica o
+# da primeira em ordem de nome, e a divergencia media e impressa -- se ela
+# crescer, alguma rodada deixou de ser comparavel com as outras.
+FAMILIA_REGUA = "nota_honesta_base_agree*_diaria_hybrid_form_platt.json"
+PASTA_REGUA = ROOT / "scratchpad" / "nota_honesta"
 MERCADO = "Vencedor - mapa 1"
 
 # Abaixo disto, nenhuma conclusao sai, tenha a conta dado o que tiver.
@@ -142,6 +162,31 @@ def _apelidos():
     return {str(k): str(v) for k, v in d.items()} if isinstance(d, dict) else {}
 
 
+def carregar_regua():
+    """{gameid: (p do modelo, resultado)} de TODAS as medicoes da variante.
+
+    Devolve tambem um resumo: quantos arquivos, quantos jogos, e o quanto as
+    rodadas divergem quando pontuam o mesmo jogo.
+    """
+    arquivos = sorted(PASTA_REGUA.glob(FAMILIA_REGUA))
+    modelo, repetidos = {}, []
+    for arq in arquivos:
+        try:
+            d = json.loads(arq.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        for g, p, y in (d.get("por_jogo") or []):
+            gid = str(g)
+            if gid in modelo:
+                repetidos.append(abs(float(p) - modelo[gid][0]))
+                continue        # fica a primeira, para ser deterministico
+            modelo[gid] = (float(p), int(y))
+    resumo = {"arquivos": [a.name for a in arquivos], "jogos": len(modelo),
+              "repetidos": len(repetidos),
+              "divergencia_media": (sum(repetidos) / len(repetidos)) if repetidos else 0.0}
+    return modelo, resumo
+
+
 def juntar():
     """As partidas com preco da casa E nota do modelo, do ponto de vista do azul."""
     import pandas as pd
@@ -152,10 +197,7 @@ def juntar():
 
     nomes = {x["id"]: x for x in _linhas(PARTIDAS) if x.get("id") is not None}
     precos = precos_do_vencedor()
-    modelo = {}
-    if REGUA.exists():
-        d = json.loads(REGUA.read_text(encoding="utf-8"))
-        modelo = {str(g): (float(p), int(y)) for g, p, y in (d.get("por_jogo") or [])}
+    modelo, _ = carregar_regua()
 
     tg = pd.concat([build_team_games(load_team_rows(str(c))) for c in default_csvs()],
                    ignore_index=True)
@@ -227,9 +269,17 @@ def main() -> int:
     if not PARTIDAS.exists():
         print("[casa] nao achei %s" % PARTIDAS)
         return 1
-    if not REGUA.exists():
-        print("[casa] nao achei a regua honesta em %s" % REGUA)
+    _, resumo = carregar_regua()
+    if not resumo["jogos"]:
+        print("[casa] nao achei nenhuma medicao da regua honesta em %s" % PASTA_REGUA)
+        print("[casa] rode: python tools/nota_honesta.py --marca base_agree "
+              "--dobras 8 --cadencia diaria --com-hybrid --com-form")
         return 1
+    print("[casa] regua honesta: %d jogos de %d medicao(oes)%s"
+          % (resumo["jogos"], len(resumo["arquivos"]),
+             ("; %d jogos repetidos, divergencia media %.4f"
+              % (resumo["repetidos"], resumo["divergencia_media"]))
+             if resumo["repetidos"] else ""))
 
     r = juntar()
     casos = r["casos"]

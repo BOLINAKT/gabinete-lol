@@ -212,3 +212,101 @@ class TestOLadoCertoDaAposta(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestAReguaJuntaAsMedicoes(unittest.TestCase):
+    """A regua do vencedor PARA DE CRESCER sem reforco -- e o reforco tem de
+    ser barato, senao ninguem faz.
+
+    DESCOBERTO EM 22/09/2026: ela travou em 20 partidas. Cinco jogos novos
+    estavam no CSV e apareciam como "sem nota do modelo", porque a nota
+    honesta so pontua os jogos que existiam quando ela rodou. Refazer as 8
+    dobras leva 1h40; uma dobra so cobre os ultimos 30 dias e leva ~12
+    minutos, que e tudo de que o reforco precisa.
+
+    Juntar e valido porque, em qualquer das rodadas, o jogo foi pontuado por
+    um modelo que nao o tinha visto. O risco e juntar rodadas de VARIANTES
+    diferentes do modelo -- "margem", "elo", "prod" sao modelos distintos, e
+    mistura-los mediria um Frankenstein. Por isso a familia e um prefixo fixo.
+    """
+
+    def _pasta(self, d, arquivos):
+        m = _carregar()
+        for nome, por_jogo in arquivos.items():
+            (Path(d) / nome).write_text(
+                json.dumps({"por_jogo": por_jogo}), encoding="utf-8")
+        m.PASTA_REGUA = Path(d)
+        return m
+
+    def test_junta_dois_arquivos_da_mesma_familia(self):
+        with tempfile.TemporaryDirectory() as d:
+            m = self._pasta(d, {
+                "nota_honesta_base_agree_diaria_hybrid_form_platt.json":
+                    [["G1", 0.6, 1], ["G2", 0.4, 0]],
+                "nota_honesta_base_agree_reforco_diaria_hybrid_form_platt.json":
+                    [["G3", 0.7, 1]]})
+            modelo, resumo = m.carregar_regua()
+            self.assertEqual(sorted(modelo), ["G1", "G2", "G3"])
+            self.assertEqual(resumo["jogos"], 3)
+
+    def test_NAO_mistura_outra_variante_do_modelo(self):
+        """"margem" e "elo" sao modelos diferentes. Junta-los mediria um
+        Frankenstein que nunca existiu."""
+        with tempfile.TemporaryDirectory() as d:
+            m = self._pasta(d, {
+                "nota_honesta_base_agree_diaria_hybrid_form_platt.json":
+                    [["G1", 0.6, 1]],
+                "nota_honesta_margem_diaria_hybrid_form_platt.json":
+                    [["G9", 0.9, 1]]})
+            modelo, _ = m.carregar_regua()
+            self.assertIn("G1", modelo)
+            self.assertNotIn("G9", modelo, "entrou jogo de outra variante")
+
+    def test_jogo_repetido_fica_com_UM_valor_so_e_deterministico(self):
+        with tempfile.TemporaryDirectory() as d:
+            m = self._pasta(d, {
+                "nota_honesta_base_agree_diaria_hybrid_form_platt.json":
+                    [["G1", 0.60, 1]],
+                "nota_honesta_base_agree_zz_diaria_hybrid_form_platt.json":
+                    [["G1", 0.64, 1]]})
+            a, resumo = m.carregar_regua()
+            b, _ = m.carregar_regua()
+            self.assertEqual(a["G1"], b["G1"], "o resultado mudou entre chamadas")
+            self.assertEqual(resumo["repetidos"], 1)
+
+    def test_DIZ_o_quanto_as_rodadas_divergem(self):
+        """Se duas rodadas discordarem muito sobre o mesmo jogo, alguma delas
+        deixou de ser comparavel -- e isso tem de aparecer, nao ser engolido."""
+        with tempfile.TemporaryDirectory() as d:
+            m = self._pasta(d, {
+                "nota_honesta_base_agree_diaria_hybrid_form_platt.json":
+                    [["G1", 0.60, 1]],
+                "nota_honesta_base_agree_zz_diaria_hybrid_form_platt.json":
+                    [["G1", 0.70, 1]]})
+            _, resumo = m.carregar_regua()
+            self.assertAlmostEqual(resumo["divergencia_media"], 0.10, places=6)
+
+    def test_arquivo_torto_nao_derruba_os_outros(self):
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "nota_honesta_base_agree_zz_diaria_hybrid_form_platt.json"
+             ).write_text("nao e json", encoding="utf-8")
+            m = self._pasta(d, {
+                "nota_honesta_base_agree_diaria_hybrid_form_platt.json":
+                    [["G1", 0.6, 1]]})
+            modelo, _ = m.carregar_regua()
+            self.assertEqual(sorted(modelo), ["G1"])
+
+    def test_pasta_vazia_devolve_vazio_e_diz_o_comando(self):
+        with tempfile.TemporaryDirectory() as d:
+            m = self._pasta(d, {})
+            modelo, resumo = m.carregar_regua()
+            self.assertEqual(modelo, {})
+            self.assertEqual(resumo["jogos"], 0)
+        fonte = ARQ.read_text(encoding="utf-8")
+        self.assertIn("python tools/nota_honesta.py --marca base_agree", fonte)
+
+    def test_o_comando_do_reforco_BARATO_esta_no_cabecalho(self):
+        """Se o reforco nao estiver escrito, ninguem lembra de fazer."""
+        fonte = ARQ.read_text(encoding="utf-8")
+        self.assertIn("REFORCO SEMANAL", fonte)
+        self.assertIn("--dobras 1", fonte)
