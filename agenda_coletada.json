@@ -1,95 +1,15 @@
 {
-  "gerado_em": "2026-09-22T15:15:31-03:00",
+  "gerado_em": "2026-09-22T20:14:16-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 31,
+    "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 13,
-    "sem_dois_times": 1
+    "indefinidos": 9,
+    "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "22/09",
-      "time": "12:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "LODIS",
-      "teamB_raw": "Skillcamp",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-22T15:00:00Z"
-    },
-    {
-      "date": "22/09",
-      "time": "12:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "CITA Kaizen",
-      "teamB_raw": "Unicorns of Love Sexy Edition",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-22T15:00:00Z"
-    },
-    {
-      "date": "22/09",
-      "time": "12:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "Avella SU Esports",
-      "teamB_raw": "UCAM Esports Club",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-22T15:00:00Z"
-    },
-    {
-      "date": "22/09",
-      "time": "12:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "Gamespace M.C.",
-      "teamB_raw": "Barça Esports",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-22T15:00:00Z"
-    },
-    {
-      "date": "22/09",
-      "time": "15:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "Pyramid IV Esports",
-      "teamB_raw": "Arctic Pandas",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-22T18:00:00Z"
-    },
-    {
-      "date": "22/09",
-      "time": "15:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "Otter Side",
-      "teamB_raw": "TEAM AQUA",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-22T18:00:00Z"
-    },
-    {
-      "date": "22/09",
-      "time": "15:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "mCon Esports",
-      "teamB_raw": "Verdant",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-22T18:00:00Z"
-    },
-    {
-      "date": "22/09",
-      "time": "15:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "Bubliki",
-      "teamB_raw": "ONLY THE FAMILY",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-22T18:00:00Z"
-    },
     {
       "date": "23/09",
       "time": "03:00",
@@ -169,6 +89,46 @@
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-23T13:00:00Z"
+    },
+    {
+      "date": "23/09",
+      "time": "14:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Pyramid IV Esports",
+      "teamB_raw": "Skillcamp",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-23T17:00:00Z"
+    },
+    {
+      "date": "23/09",
+      "time": "14:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Otter Side",
+      "teamB_raw": "CITA Kaizen",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-23T17:00:00Z"
+    },
+    {
+      "date": "23/09",
+      "time": "14:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Verdant",
+      "teamB_raw": "Avella SU Esports",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-23T17:00:00Z"
+    },
+    {
+      "date": "23/09",
+      "time": "14:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "ONLY THE FAMILY",
+      "teamB_raw": "Gamespace M.C.",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-23T17:00:00Z"
     },
     {
       "date": "24/09",
