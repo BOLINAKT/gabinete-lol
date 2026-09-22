@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-21T18:13:26-03:00",
+  "gerado_em": "2026-09-21T22:48:21-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
@@ -94,8 +94,8 @@
       "date": "22/09",
       "time": "12:00",
       "league": "EMEA Masters",
-      "teamA_raw": "LODIS",
-      "teamB_raw": "Skillcamp",
+      "teamA_raw": "Skillcamp",
+      "teamB_raw": "LODIS",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-22T15:00:00Z"
@@ -104,8 +104,8 @@
       "date": "22/09",
       "time": "12:00",
       "league": "EMEA Masters",
-      "teamA_raw": "CITA Kaizen",
-      "teamB_raw": "Unicorns of Love Sexy Edition",
+      "teamA_raw": "Unicorns of Love Sexy Edition",
+      "teamB_raw": "CITA Kaizen",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-22T15:00:00Z"
@@ -114,8 +114,8 @@
       "date": "22/09",
       "time": "12:00",
       "league": "EMEA Masters",
-      "teamA_raw": "UCAM Esports Club",
-      "teamB_raw": "Avella SU Esports",
+      "teamA_raw": "Avella SU Esports",
+      "teamB_raw": "UCAM Esports Club",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-22T15:00:00Z"
@@ -124,8 +124,8 @@
       "date": "22/09",
       "time": "12:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Gamespace M.C.",
-      "teamB_raw": "Barça Esports",
+      "teamA_raw": "Barça Esports",
+      "teamB_raw": "Gamespace M.C.",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-22T15:00:00Z"
