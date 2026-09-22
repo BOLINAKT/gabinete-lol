@@ -57,9 +57,29 @@ VANTAGEM_MINIMA_PCT = 1.0
 JOGOS_MINIMOS = 5
 
 # O que o motor sabe precificar hoje, por unidade da casa.
+# A UNIDADE COMO A CASA ESCREVE -> a metrica do motor.
+#
+# ELE PERGUNTOU (22/09/2026): "onde eu consigo ver as outras linhas, kill,
+# torre etc". Resposta medida: abates, dragoes e baroes ja apareciam; TORRES
+# nao, e sumiam em silencio.
+#
+# A causa e so o nome. A Pinnacle manda a unidade assim:
+#
+#     Kills    -> casa com "kills"    -> 3.674 linhas precificadas
+#     Dragons  -> casa com "dragons"  ->   242 linhas
+#     Barons   -> casa com "barons"   ->   239 linhas
+#     Turrets  -> NAO casava          ->   225 linhas PERDIDAS
+#
+# "towers" e o nome do motor; "turrets" e o nome da casa. Os dois precisam
+# estar aqui, e por isso a chave e a grafia DELA, nao a nossa.
+#
+# `inhibitors` fica: a casa hoje so oferece inibidor como "1st Inhibitor"
+# (moneyline), que nao e total e nao passa por aqui. Se um dia ela abrir o
+# total, ja esta pronto.
 UNIDADE_PARA_METRICA = {
     "kills": "kills",
     "towers": "towers",
+    "turrets": "towers",      # como a Pinnacle escreve
     "dragons": "dragons",
     "barons": "barons",
     "inhibitors": "inhibitors",
