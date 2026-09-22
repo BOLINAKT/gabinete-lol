@@ -1,21 +1,21 @@
 {
-  "gerado_em": "2026-09-22T10:38:50-03:00",
+  "gerado_em": "2026-09-22T15:15:31-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 31,
     "passados": 0,
-    "indefinidos": 6,
-    "sem_dois_times": 0
+    "indefinidos": 13,
+    "sem_dois_times": 1
   },
   "jogos": [
     {
       "date": "22/09",
       "time": "12:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Skillcamp",
-      "teamB_raw": "LODIS",
+      "teamA_raw": "LODIS",
+      "teamB_raw": "Skillcamp",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-22T15:00:00Z"
@@ -24,8 +24,8 @@
       "date": "22/09",
       "time": "12:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Unicorns of Love Sexy Edition",
-      "teamB_raw": "CITA Kaizen",
+      "teamA_raw": "CITA Kaizen",
+      "teamB_raw": "Unicorns of Love Sexy Edition",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-22T15:00:00Z"
@@ -44,8 +44,8 @@
       "date": "22/09",
       "time": "12:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Barça Esports",
-      "teamB_raw": "Gamespace M.C.",
+      "teamA_raw": "Gamespace M.C.",
+      "teamB_raw": "Barça Esports",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-22T15:00:00Z"
@@ -64,8 +64,8 @@
       "date": "22/09",
       "time": "15:00",
       "league": "EMEA Masters",
-      "teamA_raw": "TEAM AQUA",
-      "teamB_raw": "Otter Side",
+      "teamA_raw": "Otter Side",
+      "teamB_raw": "TEAM AQUA",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-22T18:00:00Z"
@@ -84,8 +84,8 @@
       "date": "22/09",
       "time": "15:00",
       "league": "EMEA Masters",
-      "teamA_raw": "ONLY THE FAMILY",
-      "teamB_raw": "Bubliki",
+      "teamA_raw": "Bubliki",
+      "teamB_raw": "ONLY THE FAMILY",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-22T18:00:00Z"
@@ -349,6 +349,16 @@
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-25T13:00:00Z"
+    },
+    {
+      "date": "26/09",
+      "time": "13:00",
+      "league": "CBLOL",
+      "teamA_raw": "RED Kalunga",
+      "teamB_raw": "FURIA",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-26T16:00:00Z"
     }
   ]
 }
