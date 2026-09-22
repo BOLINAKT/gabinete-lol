@@ -1,57 +1,14 @@
 {
-  "lido_em": "2026-09-22T17:30:55-03:00",
+  "lido_em": "2026-09-22T18:28:44-03:00",
   "fonte": "https://guest.api.arcadia.pinnacle.com/0.1/",
   "fuso": "America/Sao_Paulo",
-  "jogos": [
-    {
-      "id": 1637175406,
-      "liga": "EMEA Masters LCQ",
-      "casa": "Arctic Pandas",
-      "fora": "Pyramid IV",
-      "bo": 3,
-      "tem_mercado_no_mapa": false,
-      "inicio_utc": "2026-09-22T18:22:03Z"
-    }
-  ],
-  "linhas": [
-    {
-      "jogo": 1637175406,
-      "tipo": "moneyline",
-      "periodo": 3,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 1.346,
-      "americana": -289,
-      "limite": 100,
-      "margem_pct": 10.66,
-      "fecha_em": "2026-09-22T23:31:38.867000+00:00",
-      "mercado": "Vencedor - mapa 3",
-      "unidade": "",
-      "chave": "1637175406|Vencedor - mapa 3|moneyline|3|home|"
-    },
-    {
-      "jogo": 1637175406,
-      "tipo": "moneyline",
-      "periodo": 3,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 2.75,
-      "americana": 175,
-      "limite": 100,
-      "margem_pct": 10.66,
-      "fecha_em": "2026-09-22T23:31:38.867000+00:00",
-      "mercado": "Vencedor - mapa 3",
-      "unidade": "",
-      "chave": "1637175406|Vencedor - mapa 3|moneyline|3|away|"
-    }
-  ],
+  "jogos": [],
+  "linhas": [],
   "descartes": {
-    "ao_vivo": 1,
-    "filho": 1,
+    "ao_vivo": 0,
+    "filho": 0,
     "sem_mercado": 0,
-    "outro_jogo": 185,
+    "outro_jogo": 182,
     "sem_lados": 0
   }
 }
