@@ -1,43 +1,23 @@
 {
-  "gerado_em": "2026-09-22T22:43:48-03:00",
+  "gerado_em": "2026-09-23T04:57:12-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
     "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 8,
+    "indefinidos": 10,
     "sem_dois_times": 0
   },
   "jogos": [
     {
       "date": "23/09",
-      "time": "03:00",
-      "league": "WSCI",
-      "teamA_raw": "Solary",
-      "teamB_raw": "Saigon Warrior",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-23T06:00:00Z"
-    },
-    {
-      "date": "23/09",
-      "time": "04:00",
-      "league": "WSCI",
-      "teamA_raw": "ZSK",
-      "teamB_raw": "Galions",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-23T07:00:00Z"
-    },
-    {
-      "date": "23/09",
       "time": "05:00",
       "league": "WSCI",
-      "teamA_raw": "FENNEL",
-      "teamB_raw": "Dplus KIA",
+      "teamA_raw": "Dplus KIA",
+      "teamB_raw": "FENNEL",
       "bo": 1,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-23T08:00:00Z"
     },
     {
