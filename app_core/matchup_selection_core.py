@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import functools
+
 import re
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
@@ -576,6 +578,21 @@ def pick_team_name(candidates: List[str], patterns: List[str]) -> Optional[str]:
 
 
 def team_canon_maps(csv_sig: Tuple[str, int, int]) -> Dict[str, Any]:
+    """Mapas de nome de time, com cache pela ASSINATURA do arquivo.
+
+    POR QUE (23/09/2026): o perfil de um clique mostrou esta funcao RELENDO o
+    CSV do disco a cada clique -- 1,4 s. A assinatura (caminho, tamanho, data
+    de modificacao) ja vinha no argumento, justamente para isto: ela muda
+    sozinha quando ele atualiza o CSV, entao o cache nunca serve mapa velho.
+
+    Devolve COPIA: quem chama pode mexer nas listas, e o cache e compartilhado.
+    """
+    import copy
+    return copy.deepcopy(_team_canon_maps_em_cache(tuple(csv_sig)))
+
+
+@functools.lru_cache(maxsize=4)
+def _team_canon_maps_em_cache(csv_sig: Tuple[str, int, int]) -> Dict[str, Any]:
     """Build team name canonicalization maps from CSV (deduplication by frequency).
 
     Returns:
