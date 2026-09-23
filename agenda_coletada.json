@@ -1,75 +1,15 @@
 {
-  "gerado_em": "2026-09-23T04:57:12-03:00",
+  "gerado_em": "2026-09-23T10:50:06-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
     "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 10,
+    "indefinidos": 16,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "23/09",
-      "time": "05:00",
-      "league": "WSCI",
-      "teamA_raw": "Dplus KIA",
-      "teamB_raw": "FENNEL",
-      "bo": 1,
-      "estado": "inProgress",
-      "inicio_utc": "2026-09-23T08:00:00Z"
-    },
-    {
-      "date": "23/09",
-      "time": "06:00",
-      "league": "WSCI",
-      "teamA_raw": "Cupid Esports",
-      "teamB_raw": "Vivo Keyd Stars Academy",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-23T09:00:00Z"
-    },
-    {
-      "date": "23/09",
-      "time": "07:00",
-      "league": "WSCI",
-      "teamA_raw": "Galions",
-      "teamB_raw": "Saigon Warrior",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-23T10:00:00Z"
-    },
-    {
-      "date": "23/09",
-      "time": "08:00",
-      "league": "WSCI",
-      "teamA_raw": "Solary",
-      "teamB_raw": "ZSK",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-23T11:00:00Z"
-    },
-    {
-      "date": "23/09",
-      "time": "09:00",
-      "league": "WSCI",
-      "teamA_raw": "Vivo Keyd Stars Academy",
-      "teamB_raw": "Dplus KIA",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-23T12:00:00Z"
-    },
-    {
-      "date": "23/09",
-      "time": "10:00",
-      "league": "WSCI",
-      "teamA_raw": "FENNEL",
-      "teamB_raw": "Cupid Esports",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-23T13:00:00Z"
-    },
     {
       "date": "23/09",
       "time": "14:00",
