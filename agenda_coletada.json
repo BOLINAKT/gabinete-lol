@@ -1,12 +1,12 @@
 {
-  "gerado_em": "2026-09-22T20:14:16-03:00",
+  "gerado_em": "2026-09-22T22:43:48-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
     "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 9,
+    "indefinidos": 8,
     "sem_dois_times": 0
   },
   "jogos": [
@@ -94,8 +94,8 @@
       "date": "23/09",
       "time": "14:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Pyramid IV Esports",
-      "teamB_raw": "Skillcamp",
+      "teamA_raw": "Skillcamp",
+      "teamB_raw": "Pyramid IV Esports",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-23T17:00:00Z"
@@ -104,8 +104,8 @@
       "date": "23/09",
       "time": "14:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Otter Side",
-      "teamB_raw": "CITA Kaizen",
+      "teamA_raw": "CITA Kaizen",
+      "teamB_raw": "Otter Side",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-23T17:00:00Z"
@@ -114,8 +114,8 @@
       "date": "23/09",
       "time": "14:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Verdant",
-      "teamB_raw": "Avella SU Esports",
+      "teamA_raw": "Avella SU Esports",
+      "teamB_raw": "Verdant",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-23T17:00:00Z"
@@ -124,8 +124,8 @@
       "date": "23/09",
       "time": "14:00",
       "league": "EMEA Masters",
-      "teamA_raw": "ONLY THE FAMILY",
-      "teamB_raw": "Gamespace M.C.",
+      "teamA_raw": "Gamespace M.C.",
+      "teamB_raw": "ONLY THE FAMILY",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-23T17:00:00Z"
@@ -309,6 +309,16 @@
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-25T13:00:00Z"
+    },
+    {
+      "date": "25/09",
+      "time": "17:00",
+      "league": "LCS",
+      "teamA_raw": "Shopify Rebellion",
+      "teamB_raw": "FlyQuest",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-25T20:00:00Z"
     },
     {
       "date": "26/09",
