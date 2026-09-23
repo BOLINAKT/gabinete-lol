@@ -550,16 +550,26 @@ def _poisson_cdf(k: int, lam: float) -> float:
 #
 # ABATES NAO ENTRA. O ganho foi nulo (-0,00000) e o mercado e o que ele mais
 # aposta: trocar a conta de um mercado sem ganho medido seria mexer por mexer.
-# SO OS MERCADOS EM QUE O GATE MEDIU A MESMA MEDIA QUE A TELA USA.
+# OS MERCADOS QUE PASSARAM NO GATE PELO CAMINHO DA TELA.
 #
-# O gate usou a media V0 (`matchup_expected_totals`, sem ajuste). A tela usa
+# O primeiro gate usou a media V0 (`matchup_expected_totals`). A tela usa
 # `_expected_totals_dc`, que passa kills, dragoes e tempo pelo blend
-# Dixon-Coles (`_DC_BLEND_COLS`). Para torres, baroes e inibidores as duas
-# medias sao a MESMA -- o gate vale. Para dragoes e tempo, a forma foi medida
-# em volta de uma media que a tela nao usa; ligar assim seria medir uma coisa
-# e servir outra (PRINCIPIO V). Esses dois so entram depois de remedidos pelo
-# caminho servido.
-FORMA_EMPIRICA_MERCADOS = ("towers", "barons", "inhibitors")
+# Dixon-Coles. Por isso houve um SEGUNDO gate, pelo caminho servido
+# (`tools/eval_totais_forma_empirica.py --servido`), e o artefato foi gerado
+# dele. Avaliacao cega em 2026, 39.145 apostas, barra 0,0005:
+#
+#     mercado      hoje(tela)  com a forma   ganho
+#     torres        0,20438     0,18555     +0,0188
+#     dragoes       0,13249     0,11458     +0,0179
+#     baroes        0,07903     0,06772     +0,0113
+#     inibidores    0,09597     0,08716     +0,0088
+#     tempo         0,22773     0,22537     +0,0024
+#     abates        0,19801     0,19958     -0,0016  <- PIORARIA: fica de fora
+#
+# Torres, baroes e inibidores deram o MESMO numero nos dois gates, ate a 5a
+# casa -- a prova de que nao passam pelo blend. Abates piora pelo caminho da
+# tela; e o mercado que ele mais aposta, entao nao se mexe.
+FORMA_EMPIRICA_MERCADOS = ("towers", "dragons", "barons", "inhibitors", "time")
 _FORMA_CACHE: Dict[str, Any] = {}
 
 

@@ -46,7 +46,14 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-REGISTROS = ROOT / "scratchpad" / "gate_totais_registros.json"
+# A MEDICAO PELO CAMINHO SERVIDO (`_expected_totals_dc`), e nao a V0.
+#
+# Para torres, baroes e inibidores as duas dao o mesmo (esses mercados nao
+# passam pelo blend Dixon-Coles -- o Brier saiu identico ate a 5a casa).
+# Para dragoes e tempo NAO: o blend muda a media, e a forma tem de ser a dos
+# residuos em volta da media que a TELA usa. Gerar da V0 seria medir uma coisa
+# e servir outra. Uma fonte so, a servida, serve para todos.
+REGISTROS = ROOT / "scratchpad" / "gate_totais_registros_servido.json"
 SAIDA = ROOT / "totais_forma_empirica.json"
 
 # Quantis guardados. 201 pontos dao resolucao de 0,5% na probabilidade --
@@ -62,12 +69,13 @@ def main() -> int:
 
     if not REGISTROS.exists():
         print("[forma] nao achei %s" % REGISTROS)
-        print("[forma] rode antes: python tools/eval_totais_forma_empirica.py")
+        print("[forma] rode antes: python tools/eval_totais_forma_empirica.py --servido")
         return 1
     registros = json.loads(REGISTROS.read_text(encoding="utf-8"))
     print("[forma] %d registros lidos" % len(registros))
 
     fora = {"_gerado_em": "2026-09-23",
+            "_caminho": "servido (_expected_totals_dc)",
             "_anos_de_ajuste": list(ANOS_DE_AJUSTE),
             "_o_que_e": ("quantis do residuo (total real - total previsto) por "
                          "mercado; o motor usa isto no lugar da curva normal/Poisson"),

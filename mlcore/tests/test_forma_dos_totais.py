@@ -44,32 +44,29 @@ RAIZ = Path(__file__).resolve().parents[2]
 
 class TestSoEntraOndeOGateValeu(unittest.TestCase):
 
-    def test_torres_baroes_inibidores_entram(self):
-        for m in ("towers", "barons", "inhibitors"):
+    def test_os_cinco_que_passaram_entram(self):
+        for m in ("towers", "dragons", "barons", "inhibitors", "time"):
             self.assertIn(m, le.FORMA_EMPIRICA_MERCADOS)
 
-    def test_ABATES_nao_entra(self):
-        """Ganho medido: -0,00000. E o mercado que ele mais aposta; trocar a
-        conta sem ganho seria mexer por mexer."""
-        self.assertNotIn("kills", le.FORMA_EMPIRICA_MERCADOS)
-
-    def test_dragoes_e_tempo_esperam_a_remedicao_pelo_caminho_servido(self):
-        """O gate mediu a media V0; a tela usa a media com Dixon-Coles para
-        kills, dragoes e tempo. Ligar assim seria medir uma coisa e servir
-        outra (PRINCIPIO V)."""
-        for m in ("dragons", "time"):
-            if m in le.FORMA_EMPIRICA_MERCADOS:
-                # So pode entrar se o gate SERVIDO tiver rodado.
-                self.assertTrue(
-                    (RAIZ / "scratchpad" / "gate_totais_registros_servido.json").exists(),
-                    "%s entrou sem a remedicao pelo caminho da tela" % m)
-
-    def test_nenhum_mercado_com_dixon_coles_entra_sem_remedicao(self):
+    def test_mercados_com_dixon_coles_so_entram_com_forma_do_caminho_servido(self):
+        """O primeiro gate mediu a media V0; a tela usa a media com
+        Dixon-Coles para kills, dragoes e tempo. Um mercado desses so pode
+        usar a forma se ela foi medida pelo caminho da tela -- e o artefato
+        carrega essa marca (a pasta de rascunho nao vai para o GitHub, entao
+        o teste nao pode depender dela)."""
         comuns = set(le._DC_BLEND_COLS) & set(le.FORMA_EMPIRICA_MERCADOS)
-        if comuns:
-            self.assertTrue(
-                (RAIZ / "scratchpad" / "gate_totais_registros_servido.json").exists(),
-                "mercados com blend DC na forma sem gate servido: %s" % comuns)
+        if not comuns:
+            return
+        alvo = RAIZ / "totais_forma_empirica.json"
+        if not alvo.exists():
+            self.skipTest("artefato ausente")
+        d = json.loads(alvo.read_text(encoding="utf-8"))
+        self.assertIn("servido", str(d.get("_caminho") or ""),
+                      "%s usam forma que nao veio do caminho da tela" % sorted(comuns))
+
+    def test_abates_nao_entra_porque_PIORA_pelo_caminho_da_tela(self):
+        """Gate servido: -0,0016. E o mercado que ele mais aposta."""
+        self.assertNotIn("kills", le.FORMA_EMPIRICA_MERCADOS)
 
 
 class TestOTotalCarregaOProprioMercado(unittest.TestCase):
@@ -169,6 +166,24 @@ class TestSemOArtefatoNadaEstoura(unittest.TestCase):
     def test_media_invalida_nao_vira_numero(self):
         t = MatchupTotals(mean=float("nan"), sd=4.74, dist="normal", metric="towers")
         self.assertTrue(math.isnan(prob_over_from_total(t, 13.5)))
+
+
+class TestOArtefatoVemDoCaminhoDaTela(unittest.TestCase):
+    """A forma tem de ser a dos residuos em volta da media que a TELA usa.
+
+    Dragoes e tempo passam pelo blend Dixon-Coles; gerar a forma deles da
+    media V0 seria medir uma coisa e servir outra (PRINCIPIO V)."""
+
+    def test_o_artefato_foi_gerado_pelo_caminho_servido(self):
+        alvo = RAIZ / "totais_forma_empirica.json"
+        if not alvo.exists():
+            self.skipTest("artefato ausente")
+        d = json.loads(alvo.read_text(encoding="utf-8"))
+        self.assertIn("servido", str(d.get("_caminho") or ""))
+
+    def test_o_gerador_le_a_medicao_servida(self):
+        fonte = (RAIZ / "tools" / "gerar_forma_dos_totais.py").read_text(encoding="utf-8")
+        self.assertIn("gate_totais_registros_servido.json", fonte)
 
 
 class TestOArtefatoFoiMontadoSoComOPassado(unittest.TestCase):
