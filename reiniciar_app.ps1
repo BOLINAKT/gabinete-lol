@@ -18,6 +18,12 @@ Start-Sleep -Seconds 2
 $py = Join-Path $root ".venv\Scripts\python.exe"
 if (-not (Test-Path $py)) { $py = "python" }
 
+# Traz o que o robo publicou no GitHub antes de subir (tools\sincronizar.py).
+# Fica DEPOIS de parar o app antigo, para nenhum arquivo estar preso. Nunca
+# impede o app de abrir: qualquer problema vira so um aviso.
+Write-Host "Trazendo o que o robo publicou..."
+try { & $py (Join-Path $root "tools\sincronizar.py") } catch { Write-Host "(atualizacao pulada: $_)" }
+
 Write-Host "Subindo UMA instancia em http://localhost:8501 ..."
 Write-Host "(Deixe ESTE console aberto. Para parar o app: Ctrl+C aqui.)"
 & $py -m streamlit run "plays_app.py" --server.port 8501
