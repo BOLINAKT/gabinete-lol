@@ -172,7 +172,7 @@ jobs:
           git config user.email "robo@gabinete.local"
           git add odds_coletas.jsonl || true
           if [ "${{ steps.coleta.outputs.rc }}" = "0" ]; then
-            git add odds_pinnacle.json odds_pinnacle_historico.jsonl \n                    odds_pinnacle_partidas.jsonl
+            git add odds_pinnacle.json odds_pinnacle_historico.jsonl odds_pinnacle_partidas.jsonl
             MSG="Robô: odds da Pinnacle atualizadas"
           else
             MSG="Robô: corrida de odds sem leitura (rc=${{ steps.coleta.outputs.rc }})"
