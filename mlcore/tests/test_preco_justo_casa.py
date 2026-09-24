@@ -10,6 +10,7 @@ app_core/preco_justo_casa_core.py).
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
 from app_core.preco_justo_casa_core import anexar_preco_justo, chave_do_mercado, sem_margem
 
@@ -178,6 +179,25 @@ class TestOQuadroInteiro(unittest.TestCase):
             self.assertIn(c, t[0])
         over = [x for x in t if x["aposta"] == "acima de 27,5"][0]
         self.assertEqual(over["casa paga"], 1.72)
+
+
+class TestOJogoAntesDoMercado(unittest.TestCase):
+    """24/09/2026: com cinco jogos na tela, a tabela de um mercado misturava
+    os jogos. Agora o jogo e escolhido antes, e o aberto vem primeiro."""
+
+    def test_o_confronto_aberto_vem_primeiro(self):
+        from app_core.oportunidades_tab_core import ordem_dos_jogos
+        por_jogo = {
+            1: [{"vantagem_pct": 40.0}],
+            2: [{"vantagem_pct": 5.0, "com_vitoria": True}],
+            3: [{"vantagem_pct": 12.0}],
+        }
+        self.assertEqual(ordem_dos_jogos(por_jogo), [2, 1, 3])
+
+    def test_a_tabela_do_mercado_so_tem_um_jogo(self):
+        fonte = (Path(__file__).resolve().parents[2] / "app_core" /
+                 "oportunidades_tab_core.py").read_text(encoding="utf-8")
+        self.assertIn("por_jogo_cmp.get(jogo_cmp)", fonte)
 
 
 if __name__ == "__main__":
