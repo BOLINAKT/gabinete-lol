@@ -275,15 +275,22 @@ def montar_oportunidades(
     "sem_modelo" com o nome dos times. Nada de silencio.
     """
     jogos = {int(j.get("id", -1)): j for j in (odds.get("jogos") or [])}
-    linhas = odds.get("linhas") or []
+    # O PRECO JUSTO DA CASA em toda linha (23/09/2026): a Pinnacle e a
+    # referencia, e a comparacao que ele quer e modelo x justo dela, nao
+    # modelo x odd com margem. Ver app_core/preco_justo_casa_core.py.
+    from app_core.preco_justo_casa_core import anexar_preco_justo
+    linhas = anexar_preco_justo(odds.get("linhas") or [])
 
     achados: List[Dict[str, Any]] = []
     nao_precificados: Dict[str, Dict[str, Any]] = {}
     sem_modelo: List[Dict[str, Any]] = []
     cache: Dict[Tuple[Any, str], Any] = {}
     falhou: set = set()
+    # Achado de cada linha, pela posicao: o "mercado completo" junta o que o
+    # modelo disse a TODAS as linhas da casa, inclusive as que ele nao sabe.
+    achado_da_linha: Dict[int, Dict[str, Any]] = {}
 
-    for l in linhas:
+    for _i, l in enumerate(linhas):
         if not isinstance(l, dict):
             continue
         jogo = jogos.get(int(l.get("jogo", -1) or -1))
@@ -322,7 +329,9 @@ def montar_oportunidades(
                 "metrica": "vencedor",
                 "mapa": "",
             }
+            _com_a_casa(achado, l)
             _guardar(achados, achado, jogo, jogos_por_time)
+            achado_da_linha[_i] = achado
             continue
         _metrica, mapa = alvo
         chave = (jogo.get("id"), mapa)
@@ -344,7 +353,9 @@ def montar_oportunidades(
             _somar_de_fora(nao_precificados, l,
                            "o motor nao deu numero para este confronto")
             continue
+        _com_a_casa(achado, l)
         _guardar(achados, achado, jogo, jogos_por_time)
+        achado_da_linha[_i] = achado
 
     vale = [a for a in achados if a["vantagem_pct"] >= float(minimo_pct)]
     # Os suspeitos vao para o fim: a lista e para decidir, e um numero grande
@@ -362,8 +373,95 @@ def montar_oportunidades(
         "nao_precificados": sorted(nao_precificados.values(),
                                    key=lambda d: (-d["linhas"], d["mercado"])),
         "sem_modelo": sem_modelo,
+        "mercado_completo": _mercado_completo(linhas, jogos, achado_da_linha),
         "lido_em": odds.get("lido_em"),
     }
+
+
+def _com_a_casa(achado: Dict[str, Any], linha: Dict[str, Any]) -> None:
+    """O justo da casa ao lado do justo do modelo, e a distancia entre eles.
+
+    `diferenca_pp` em pontos percentuais: +8 quer dizer que o modelo da 8
+    pontos a MAIS de chance que a Pinnacle sem margem. E a medida de
+    discordancia; a vantagem (`vantagem_pct`) continua sendo contra a odd
+    que ele de fato consegue apostar.
+    """
+    pc = _num(linha.get("p_casa_justa"))
+    achado["p_casa_justa"] = pc
+    achado["odd_casa_justa"] = _num(linha.get("odd_casa_justa"))
+    pm = _num(achado.get("probabilidade"))
+    achado["diferenca_pp"] = ((pm - pc) * 100.0) if (pm is not None and pc is not None) else None
+    achado["time"] = linha.get("time")
+
+
+_MOTIVO_POR_FORMA = {
+    "par_impar": "par ou impar: o modelo nao calcula",
+    "primeiro": "quem faz primeiro: o modelo nao calcula",
+    "corrida": "quem chega primeiro a N kills: o modelo nao calcula",
+    "ambos": "os dois times fazem?: o modelo nao calcula",
+    "algum": "algum time faz?: o modelo nao calcula",
+}
+
+
+def _motivo_no_quadro(l: Dict[str, Any]) -> str:
+    """Um total que o motor SABE fazer, mas nao fez, nao e "nao precifica":
+    e o confronto que nao deu (time sem casar, jogos de menos). Dizer o
+    motivo errado mandaria ele esperar uma coisa que nunca vem."""
+    if metrica_da_linha(l) is not None:
+        return "o modelo nao conseguiu este confronto (time sem casar ou jogos de menos)"
+    # Pela FORMA da aposta, que a tabela de nomes da casa entende. Sem isto,
+    # "par ou impar de kills" caia em "o motor calcula o total, nao a
+    # diferenca" -- motivo de outro mercado (visto na tela do Dota, 23/09).
+    forma = l.get("forma")
+    if not forma:
+        try:
+            from app_core.mercado_pinnacle_core import entender_mercado
+            forma = entender_mercado(l.get("mercado")).get("forma")
+        except Exception:
+            forma = None
+    if forma in _MOTIVO_POR_FORMA:
+        return _MOTIVO_POR_FORMA[forma]
+    if str(l.get("tipo") or "") == "moneyline" and not str(l.get("unidade") or "").strip()             and str(l.get("lado") or "").strip().lower() in ("home", "away"):
+        return "vencedor: so para o confronto aberto na tela"
+    return motivo_de_nao_precificar(l)
+
+
+def _mercado_completo(linhas: List[Dict[str, Any]], jogos: Dict[int, Dict[str, Any]],
+                      achado_da_linha: Dict[int, Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """TODA linha da casa, com o justo dela e -- quando existe -- o do modelo.
+
+    Ele pediu a Pinnacle "de forma total, 100%". Este e o quadro inteiro:
+    linha que o modelo nao sabe precificar aparece com o preco justo da casa
+    e o motivo, nunca some (PRINCIPIO IV).
+    """
+    fora: List[Dict[str, Any]] = []
+    for i, l in enumerate(linhas):
+        if not isinstance(l, dict):
+            continue
+        jogo = jogos.get(int(l.get("jogo", -1) or -1))
+        if jogo is None:
+            continue
+        a = achado_da_linha.get(i)
+        fora.append({
+            "jogo": l.get("jogo"), "liga": jogo.get("liga"),
+            "casa": jogo.get("casa"), "fora": jogo.get("fora"),
+            "inicio_utc": jogo.get("inicio_utc"),
+            "mercado": l.get("mercado"), "nome_pt": l.get("nome_pt"),
+            "tipo": l.get("tipo"), "periodo": l.get("periodo"),
+            "lado": l.get("lado"), "time": l.get("time"),
+            "pontos": l.get("pontos"), "alternativa": l.get("alternativa"),
+            "odd_casa": _num(l.get("odd")), "margem_pct": l.get("margem_pct"),
+            "limite": l.get("limite"),
+            "p_casa_justa": _num(l.get("p_casa_justa")),
+            "odd_casa_justa": _num(l.get("odd_casa_justa")),
+            "p_modelo": (a or {}).get("probabilidade"),
+            "odd_modelo": (a or {}).get("odd_justa"),
+            "vantagem_pct": (a or {}).get("vantagem_pct"),
+            "diferenca_pp": (a or {}).get("diferenca_pp"),
+            "suspeito": (a or {}).get("suspeito"),
+            "motivo": None if a else _motivo_no_quadro(l),
+        })
+    return fora
 
 
 # ---------------------------------------------------------------------------

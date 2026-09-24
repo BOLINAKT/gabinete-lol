@@ -64,7 +64,42 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-RAIZ = Path(__file__).resolve().parents[1]
+def _achar_raiz() -> Path:
+    """A raiz do repositorio pelo git, nunca pela pasta do arquivo.
+
+    Este arquivo e IDENTICO no LoL e no Dota (regra de arquivo compartilhado),
+    e a pasta do arquivo ja fez uma ferramenta do Dota medir a pasta errada
+    por semanas. O `parents[1]` fica so de reserva, para quando nao ha git.
+    """
+    import subprocess
+    aqui = Path(__file__).resolve().parent
+    try:
+        r = subprocess.run(["git", "rev-parse", "--show-toplevel"], cwd=str(aqui),
+                           capture_output=True, text=True, timeout=20)
+        if r.returncode == 0 and r.stdout.strip():
+            return Path(r.stdout.strip())
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return aqui.parent
+
+
+RAIZ = _achar_raiz()
+# DEFEITO ACHADO EM 23/09/2026: o robo roda `python tools/coletar_odds.py`, e
+# o Python so enxerga a pasta tools/. O `from app_core...` falhava calado
+# (dentro de um try), e desde 21/09 nenhuma das 591 leituras do robo levou a
+# traducao do mercado -- nem o aviso de "mercado que eu nao sei ler", que
+# existia justamente para mercado novo nao sumir calado. As telas nao
+# perderam nada (traduzem ao ler), mas o vigia estava cego.
+if str(RAIZ) not in sys.path:
+    sys.path.insert(0, str(RAIZ))
+
+# QUAL JOGO. A leitura geral da Pinnacle traz TODOS os esports juntos; ate
+# 23/09/2026 o Dota vinha em toda corrida e era jogado fora. O repositorio do
+# Dota tem o `dota_paths.py`; e assim que este arquivo, identico nos dois,
+# sabe onde esta.
+JOGO_DO_REPOSITORIO = "dota" if (RAIZ / "dota_paths.py").exists() else "lol"
+PREFIXO_DA_LIGA = {"lol": "League of Legends - ", "dota": "Dota 2 - "}
+
 AGORA_JSON = RAIZ / "odds_pinnacle.json"          # o retrato de agora
 HISTORICO = RAIZ / "odds_pinnacle_historico.jsonl"  # so o que mudou
 # QUEM jogava em cada partida. O historico de precos guarda so o ID do jogo, e
@@ -82,8 +117,12 @@ ESPORTE_ESPORTS = 12
 # O User-Agent e uma declaracao, e declaracao que mente nao serve para nada.
 # Quando a varredura de derivados entrou, "8 requisicoes por dia" deixou de
 # ser verdade -- o numero aqui acompanha o TETO de verdade do programa.
-AGENTE = ("gabinete-lol/1.1 (leitura de odds para analise pessoal, "
-          "ate ~340 requisicoes por dia; sem login)")
+#
+# O NUMERO, MEDIDO NO DIARIO (23/09/2026): o dia mais cheio (18 a 20/09, WSCI)
+# teve ~270 requisicoes, com o teto batido em toda corrida. O teto por corrida
+# nao mudou; o que mudou e que ele agora cobre ~20 jogos em vez de 3 ou 4.
+AGENTE = ("gabinete-{}/1.2 (leitura de odds para analise pessoal, "
+          "ate ~300 requisicoes por dia; sem login)").format(JOGO_DO_REPOSITORIO)
 FUSO = "America/Sao_Paulo"
 
 RC_OK = 0
@@ -117,9 +156,39 @@ RC_TEMPORARIO = 75
 #
 # `tem_mercado_no_mapa` continua valendo para outra coisa: decidir se vale
 # gastar requisicao varrendo os derivados daquele jogo.
+#
+# DUAS CHAMADAS POR JOGO, NAO UMA POR MERCADO (23/09/2026). Ele pediu a
+# Pinnacle "de forma total, 100%", LoL e Dota. Do jeito antigo -- `related` e
+# depois um `markets/straight` para CADA derivado -- uma partida do Dota
+# custava ~11 chamadas, e o teto de 40 cobria 3 ou 4 jogos: 17 de 62 corridas
+# bateram nele e cortaram o resto da fila. `matchups/{id}/markets/related/
+# straight` traz os precos de TODOS os derivados de uma vez. Conferido ao vivo
+# no mesmo dia: Xtreme x Nemesis (Dota) -> 57 mercados de 11 confrontos numa
+# chamada, os mesmos 11 que o caminho antigo listava um a um.
 HORAS_A_FRENTE = 8.0
 PAUSA_ENTRE_CHAMADAS = 1.2
 TETO_DE_CHAMADAS = 40
+CHAMADAS_POR_JOGO = 2
+RECUSAS_401_PARA_PARAR = 2
+#
+# FONTES (pesquisado em 23/09/2026)
+#   - O endereco que traz todos os precos de uma vez, usado por um projeto
+#     aberto que le a mesma porta:
+#     github.com/pretrehr/Sports-betting/blob/master/sportsbetting/bookmakers/pinnacle.py
+#     (`matchups/{}/markets/related/straight` e `matchups/{}/related`).
+#     Esse projeto e o oddsR (rdrr.io/github/miken97/oddsR/src/R/pinnacle.R)
+#     mandam a CHAVE copiada do site (X-API-Key). Nos NAO mandamos: seria nos
+#     passar pelo site deles. Por isso um ou outro endereco pode responder 401.
+#   - A API OFICIAL fechou ao publico em 23/07/2025 e limita a "1 request per
+#     2 minutes, per endpoint, per sportId", com 429 para excesso:
+#     github.com/pinnacleapi/pinnacleapi-documentation. Nao e a porta que
+#     usamos, mas e o unico numero que a casa publicou. A leitura geral (2
+#     chamadas) cabe nele com folga; a varredura por jogo usa enderecos
+#     diferentes, espacados de PAUSA_ENTRE_CHAMADAS.
+#   - 401 pode ser freio de excesso disfarcado, e nao so falta de credencial
+#     (ha servidores que respondem assim: github.com/better-auth/better-auth/
+#     issues/9504). Nao da para saber qual e -- entao o 401 pula o jogo, e o
+#     segundo 401 na mesma corrida para tudo, como 403/429.
 
 
 def anotar_corrida(caminho: Path, **campos: Any) -> None:
@@ -316,7 +385,8 @@ def _sem_repetidos(matchups: List[Any]) -> List[Dict[str, Any]]:
 
 
 def normalizar(matchups: Any, mercados: Any, *, so_lol: bool = True,
-               matchups_extra: Any = None, mercados_extra: Any = None) -> Dict[str, Any]:
+               matchups_extra: Any = None, mercados_extra: Any = None,
+               jogo: Optional[str] = None) -> Dict[str, Any]:
     """As respostas -> uma lista plana de linhas de aposta.
 
     `matchups_extra`/`mercados_extra` trazem os DERIVADOS (kills, torres,
@@ -373,6 +443,16 @@ def normalizar(matchups: Any, mercados: Any, *, so_lol: bool = True,
             limite = lim[0].get("amount") if isinstance(lim[0], dict) else None
             rotulo = rotulo_da_linha(m, mk)
             unidade = unidade_da_aposta(m)
+            traducao: Dict[str, Any] = {}
+            try:
+                from app_core.mercado_pinnacle_core import entender_mercado
+                _e = entender_mercado(rotulo)
+                traducao = {"metrica": _e.get("metrica"), "forma": _e.get("forma"),
+                            "mapa": _e.get("mapa"), "nome_pt": _e.get("nome_pt")}
+            except Exception:
+                # Traduzir e util; coletar o preco e essencial. Se a traducao
+                # falhar, a linha vai sem ela e ainda serve.
+                traducao = {}
             for x in precos:
                 if not isinstance(x, dict):
                     continue
@@ -420,25 +500,26 @@ def normalizar(matchups: Any, mercados: Any, *, so_lol: bool = True,
                     # nomeia unidade nenhuma.
                     "unidade": unidade,
                 })
-                # A TRADUCAO AO LADO (21/09/2026). O nome da casa fica intacto --
-            # e o que ele confere na tela da Pinnacle. Junto dele vao os
-            # campos que o programa entende (metrica, forma, mapa), senao
-            # mercado com nome ingles fica invisivel para a aba de
-            # Oportunidades. Foi o que aconteceu com TORRES, que e um dos
-            # dois mercados em que ele ganha dinheiro: 3.430 leituras
-            # coletadas e nenhuma usada.
-            try:
-                from app_core.mercado_pinnacle_core import entender_mercado
-                _e = entender_mercado(linhas[-1].get("mercado"))
-                linhas[-1]["metrica"] = _e.get("metrica")
-                linhas[-1]["forma"] = _e.get("forma")
-                linhas[-1]["mapa"] = _e.get("mapa")
-                linhas[-1]["nome_pt"] = _e.get("nome_pt")
-            except Exception:
-                # Traduzir e util; coletar o preco e essencial. Se a traducao
-                # falhar, a linha vai sem ela e ainda serve.
-                pass
-            linhas[-1]["chave"] = chave_da_linha(linhas[-1])
+                # DE QUAL TIME, no total por time. A casa manda `side`
+                # ("home"/"away") no mercado; sem isto, "over 30,5" nao diz
+                # se e o total do mandante ou do visitante.
+                if str(mk.get("type") or "") == "team_total" and mk.get("side"):
+                    linhas[-1]["time"] = str(mk.get("side"))
+                # A TRADUCAO AO LADO (21/09/2026). O nome da casa fica intacto
+                # -- e o que ele confere na tela da Pinnacle. Junto dele vao os
+                # campos que o programa entende (metrica, forma, mapa), senao
+                # mercado com nome ingles fica invisivel para a aba de
+                # Oportunidades. Foi o que aconteceu com TORRES, que e um dos
+                # dois mercados em que ele ganha dinheiro: 3.430 leituras
+                # coletadas e nenhuma usada.
+                #
+                # DEFEITO ACHADO EM 23/09/2026, na primeira corrida em que a
+                # traducao de fato rodou: este bloco estava um nivel FORA do
+                # laco dos precos, e so o ULTIMO lado de cada mercado era
+                # traduzido (236 de 464 linhas sem). Num mercado sem preco
+                # legivel, pior: traduzia a linha do mercado ANTERIOR.
+                linhas[-1].update(traducao)
+                linhas[-1]["chave"] = chave_da_linha(linhas[-1])
 
     # PRIMEIRA PASSADA: as partidas de verdade.
     #
@@ -449,9 +530,13 @@ def normalizar(matchups: Any, mercados: Any, *, so_lol: bool = True,
     # uma aposta sem jogo. PRINCIPIO IV.
     aceitos: Dict[Any, Dict[str, str]] = {}
     filhos: List[Dict[str, Any]] = []
+    # `jogo` escolhe o esporte; sem ele vale o `so_lol` de sempre.
+    if jogo is None and so_lol:
+        jogo = "lol"
+    prefixo = PREFIXO_DA_LIGA.get(jogo or "", "")
     for m in matchups:
         liga = str((m.get("league") or {}).get("name") or "")
-        if so_lol and "LEAGUE OF LEGENDS" not in liga.upper():
+        if prefixo and prefixo.strip(" -").upper() not in liga.upper():
             descartes["outro_jogo"] += 1
             continue
         if _de_quem_e_filho(m) is not None:
@@ -472,7 +557,7 @@ def normalizar(matchups: Any, mercados: Any, *, so_lol: bool = True,
         aceitos[m.get("id")] = lados
         jogos.append({
             "id": ident,
-            "liga": liga.replace("League of Legends - ", ""),
+            "liga": liga.replace(prefixo, "") if prefixo else liga,
             "casa": lados["home"], "fora": lados["away"],
             "bo": m.get("bestOfX"),
             # A propria casa DIZ se ja existe aposta dentro do mapa. Medido em
@@ -506,6 +591,10 @@ class Bloqueado(Exception):
     """A casa pediu para parar (403/429). Nao e erro nosso; e um NAO."""
 
 
+class NaoAutorizado(Exception):
+    """401: aquele endereco exige algo que nao mandamos. Ver FONTES."""
+
+
 def _buscar(sessao: Any, url: str, cab: Dict[str, str]) -> Any:
     """Uma chamada, tratando o NAO da casa como NAO.
 
@@ -516,6 +605,8 @@ def _buscar(sessao: Any, url: str, cab: Dict[str, str]) -> Any:
     r = sessao.get(url, headers=cab, timeout=30)
     if r.status_code in (403, 429):
         raise Bloqueado("a casa respondeu {} em {}".format(r.status_code, url[-60:]))
+    if r.status_code == 401:
+        raise NaoAutorizado("a casa respondeu 401 em {}".format(url[-60:]))
     if r.status_code != 200:
         raise ValueError("HTTP {} em {}".format(r.status_code, url[-60:]))
     return r.json()
@@ -552,44 +643,57 @@ def buscar_derivados(sessao: Any, cab: Dict[str, str], jogos: List[Dict[str, Any
     alvos = [j for j in jogos
              if j.get("tem_mercado_no_mapa")
              or _comeca_em_breve(j.get("inicio_utc", ""), agora, HORAS_A_FRENTE)]
+    # O MAIS PERTO DO APITO PRIMEIRO. Se o teto cortar, corta o jogo que
+    # ainda tem outras corridas pela frente, nunca o que comeca agora.
+    alvos.sort(key=lambda j: str(j.get("inicio_utc") or "9999"))
     fora: Dict[str, Any] = {"matchups": [], "mercados": [], "chamadas": 0,
-                            "parado": False, "jogos_olhados": len(alvos)}
+                            "parado": False, "jogos_olhados": len(alvos),
+                            "jogos_lidos": 0, "recusas_401": 0}
     for j in alvos:
-        if fora["chamadas"] >= teto:
+        # Cada jogo custa DUAS chamadas; meio jogo nao serve para nada.
+        if fora["chamadas"] + CHAMADAS_POR_JOGO > teto:
             break
         try:
+            # 1) quais mercados existem, com o NOME de cada um ("(Map 1) 1st
+            #    Roshan"); os precos nao trazem nome.
             rel = _buscar(sessao, "{}matchups/{}/related".format(BASE, j["id"]), cab)
+            fora["chamadas"] += 1
+            _t.sleep(pausa)
+            # 2) os precos de TODOS eles de uma vez (ver FONTES no topo).
+            mks = _buscar(sessao, "{}matchups/{}/markets/related/straight".format(
+                BASE, j["id"]), cab)
             fora["chamadas"] += 1
             _t.sleep(pausa)
         except Bloqueado:
             fora["parado"] = True
             return fora
+        except NaoAutorizado:
+            # 401 nao e 403/429, mas tambem nao e "vai la de novo": pode ser
+            # mercado que exige a chave do site (que nao mandamos, de
+            # proposito) ou um freio disfarcado (FONTES). Pula o jogo; no
+            # segundo, para a corrida.
+            fora["recusas_401"] += 1
+            if fora["recusas_401"] >= RECUSAS_401_PARA_PARAR:
+                fora["parado"] = True
+                return fora
+            continue
         except (ValueError, KeyError):
             continue
+        fora["jogos_lidos"] += 1
         for r in (rel if isinstance(rel, list) else []):
             if not isinstance(r, dict):
                 continue
-            if fora["chamadas"] >= teto:
-                break
             rid = r.get("id")
             if rid is None or rid == j["id"]:
-                # O proprio confronto volta na lista de derivados. Os
-                # mercados dele ja vieram na leitura do esporte inteiro:
-                # buscar de novo seria uma requisicao a toa, e a marca de
+                # O proprio confronto volta na lista de derivados. A marca de
                 # pai apontando para si mesmo fazia o jogo sumir como se
                 # fosse filho de si proprio.
                 continue
-            try:
-                mks = _buscar(sessao, "{}matchups/{}/markets/straight".format(BASE, rid), cab)
-                fora["chamadas"] += 1
-                _t.sleep(pausa)
-            except Bloqueado:
-                fora["parado"] = True
-                return fora
-            except (ValueError, KeyError):
-                continue
             fora["matchups"].append({**r, "_paiId": j["id"]})
-            fora["mercados"].extend(mks if isinstance(mks, list) else [])
+        # Os precos do proprio jogo tambem voltam aqui; o `normalizar` ja
+        # descarta o repetido (mesmo mercado pelas duas portas conta uma vez).
+        fora["mercados"].extend(x for x in (mks if isinstance(mks, list) else [])
+                                if isinstance(x, dict))
     return fora
 
 
@@ -608,10 +712,19 @@ def rotulo_do_derivado(m: Dict[str, Any]) -> str:
 
 
 def chave_da_linha(l: Dict[str, Any]) -> str:
-    """Identidade de uma aposta, para saber se o preco dela mudou."""
-    return "{}|{}|{}|{}|{}|{}".format(
+    """Identidade de uma aposta, para saber se o preco dela mudou.
+
+    O TIME entra so quando existe (total por time). DEFEITO ACHADO EM
+    23/09/2026: sem ele, "over 28,5" do mandante e "over 28,5" do visitante
+    tinham a MESMA chave -- 49 vezes o historico misturou os dois numa mesma
+    leitura. As outras chaves ficam identicas, para o historico antigo
+    continuar casando.
+    """
+    base = "{}|{}|{}|{}|{}|{}".format(
         l.get("jogo"), l.get("mercado", ""), l.get("tipo"), l.get("periodo"),
         l.get("lado"), "" if l.get("pontos") is None else l.get("pontos"))
+    time = str(l.get("time") or "")
+    return base + "|" + time if time else base
 
 
 def _ultimas_odds(caminho: Path) -> Dict[str, float]:
@@ -650,12 +763,15 @@ def _gravar_atomico(caminho: Path, conteudo: Dict[str, Any]) -> None:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Coleta odds de LoL da Pinnacle.")
+    ap = argparse.ArgumentParser(description="Coleta odds de LoL ou Dota da Pinnacle.")
+    ap.add_argument("--jogo", choices=sorted(PREFIXO_DA_LIGA), default=JOGO_DO_REPOSITORIO)
     ap.add_argument("--agora", default=str(AGORA_JSON))
     ap.add_argument("--historico", default=str(HISTORICO))
     ap.add_argument("--diario", default=str(DIARIO))
+    ap.add_argument("--partidas", default=str(PARTIDAS))
     args = ap.parse_args()
     diario = Path(str(args.diario)).expanduser()
+    partidas = Path(str(args.partidas)).expanduser()
 
     import requests
 
@@ -693,7 +809,7 @@ def main() -> int:
     derivados = {"matchups": [], "mercados": [], "chamadas": 0, "parado": False,
                  "jogos_olhados": 0}
     try:
-        _pre = normalizar(r1.json(), r2.json())
+        _pre = normalizar(r1.json(), r2.json(), jogo=args.jogo)
         sessao = requests.Session()
         derivados = buscar_derivados(sessao, cab, _pre["jogos"])
     except ValueError:
@@ -704,7 +820,8 @@ def main() -> int:
     try:
         dados = normalizar(r1.json(), r2.json(),
                            matchups_extra=derivados["matchups"],
-                           mercados_extra=derivados["mercados"])
+                           mercados_extra=derivados["mercados"],
+                           jogo=args.jogo)
     except ValueError as e:
         print("[odds] ERRO DE FORMATO: {}".format(e))
         print("[odds] Nada foi escrito. O retrato anterior continua valendo.")
@@ -734,10 +851,10 @@ def main() -> int:
                                 ensure_ascii=False) + "\n")
             novas += 1
 
-    print("[odds] {} serie(s) de LoL, {} linha(s) de aposta lidas.".format(
-        len(dados["jogos"]), len(dados["linhas"])))
-    print("[odds] derivados: {} chamada(s) em {} jogo(s) proximo(s){}".format(
-        derivados["chamadas"], derivados["jogos_olhados"],
+    print("[odds] {} serie(s) de {}, {} linha(s) de aposta lidas.".format(
+        len(dados["jogos"]), args.jogo.upper(), len(dados["linhas"])))
+    print("[odds] derivados: {} chamada(s), {} de {} jogo(s) proximo(s) lidos{}".format(
+        derivados["chamadas"], derivados.get("jogos_lidos", 0), derivados["jogos_olhados"],
         " — PAREI no meio: a casa pediu para parar" if derivados["parado"] else ""))
     _por_mercado = {}
     for l in dados["linhas"]:
@@ -747,9 +864,9 @@ def main() -> int:
     # PARTIDAS: quem jogava, uma vez por partida. O arquivo de precos so tem o
     # ID; sem isto, saber quem era exige escavar o historico do git.
     ja = set()
-    if PARTIDAS.exists():
+    if partidas.exists():
         try:
-            with open(str(PARTIDAS), "r", encoding="utf-8") as fh:
+            with open(str(partidas), "r", encoding="utf-8") as fh:
                 for linha in fh:
                     try:
                         ja.add(str(json.loads(linha).get("id")))
@@ -759,7 +876,7 @@ def main() -> int:
             pass
     partidas_novas = 0
     try:
-        with open(str(PARTIDAS), "a", encoding="utf-8") as fh:
+        with open(str(partidas), "a", encoding="utf-8") as fh:
             for j in dados["jogos"]:
                 if str(j.get("id")) in ja:
                     continue
@@ -802,6 +919,12 @@ def main() -> int:
                   if str(l.get("unidade") or "").lower() == "kills"),
         derivados_chamadas=derivados["chamadas"],
         derivados_parado=bool(derivados["parado"]),
+        # Quantos jogos pediam varredura e quantos o teto deixou ler: e isto
+        # que diz se o teto ainda corta a fila.
+        derivados_jogos_olhados=derivados.get("jogos_olhados", 0),
+        derivados_jogos_lidos=derivados.get("jogos_lidos", 0),
+        recusas_401=derivados.get("recusas_401", 0),
+        jogo=args.jogo,
     )
     return RC_OK
 

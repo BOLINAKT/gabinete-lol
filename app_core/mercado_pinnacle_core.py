@@ -82,6 +82,12 @@ _TABELA = {
                                             "Os dois times derrubam inibidor?"),
     "will either team slay the elder dragon?": (ELDER, ALGUM,
                                                 "Algum time mata o Elder?"),
+    # DOTA (vistos ao vivo em 23/09/2026, PGL Wallachia). O motor do Dota e o
+    # mesmo do LoL e fala a lingua dele: Roshan mora em "barons" e barraca em
+    # "inhibitors" (ver dota_totals_scorecard.py no repositorio do Dota).
+    # Este arquivo e identico nos dois repositorios.
+    "1st roshan": (BARONS, PRIMEIRO, "Primeiro Roshan"),
+    "1st barracks": (INHIBITORS, PRIMEIRO, "Primeira barraca"),
 }
 
 # Os nomes que o PROPRIO coletor monta (ver tools/coletar_odds.rotulo_da_linha)

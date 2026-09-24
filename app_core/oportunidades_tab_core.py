@@ -143,14 +143,117 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         _tabela_comparada(st, escolhido, linhas)
         st.caption(
             "**Modelo** e a odd que o confronto aberto calcula; **casa** e a "
-            "que a Pinnacle esta pagando. Vantagem positiva quer dizer que a "
-            "casa paga mais do que o modelo acha que vale."
+            "que a Pinnacle esta pagando; **Pinnacle sem margem** e a odd dela "
+            "com a margem tirada -- o preco que ela acha justo. Embaixo dele, "
+            "quantos pontos de chance o modelo da a mais (+) ou a menos (-) "
+            "que ela. Vantagem positiva quer dizer que a casa paga mais do que "
+            "o modelo acha que vale."
             "  ·  entra quando a casa paga acima da odd do modelo.")
     elif _jogos_que_dao:
         st.info("Este painel nao conseguiu precificar nenhuma linha deste "
                 "confronto.")
 
+    _mostrar_mercado_completo(st, r)
     _o_que_ficou_de_fora(st, r, nao_casados)
+
+
+def _texto_da_diferenca(a: Mapping[str, Any]) -> str:
+    """"modelo +8 pts": quanto de chance o modelo da a mais que a Pinnacle."""
+    try:
+        d = float(a.get("diferenca_pp"))
+    except (TypeError, ValueError):
+        return ""
+    if d != d:
+        return ""
+    return "modelo {:+.0f} pts".format(d)
+
+
+def _aposta_no_quadro(x: Mapping[str, Any]) -> str:
+    """Nome curto do lado, para o quadro do mercado inteiro."""
+    lado = str(x.get("lado") or "").strip()
+    baixo = lado.lower()
+    time = str(x.get("time") or "").lower()
+    quem = x.get("casa") if time == "home" else (x.get("fora") if time == "away" else None)
+    ponto = x.get("pontos")
+    if baixo in ("home", "away"):
+        nome = str(x.get("casa") if baixo == "home" else x.get("fora"))
+        if ponto is not None and str(x.get("tipo") or "") == "spread":
+            nome += " {:+.1f}".format(float(ponto)).replace(".", ",")
+        return nome
+    if baixo in ("over", "under"):
+        txt = "{} {}".format("acima de" if baixo == "over" else "abaixo de",
+                             _fmt(ponto, 1).replace(".", ","))
+        return "{}: {}".format(quem, txt) if quem else txt
+    return lado or "?"
+
+
+def _ordem_no_quadro(x: Mapping[str, Any]):
+    v = x.get("vantagem_pct")
+    try:
+        p = float(x.get("pontos") or 0)
+    except (TypeError, ValueError):
+        p = 0.0
+    return (-(v if v is not None else -1e9),
+            str(x.get("nome_pt") or x.get("mercado") or ""), p)
+
+
+def _mostrar_mercado_completo(st: Any, r: Mapping[str, Any]) -> None:
+    """A Pinnacle INTEIRA, jogo por jogo (pedido dele em 23/09/2026: "de
+    forma total, 100%").
+
+    Toda linha que a casa oferece, com o preco justo dela. Onde o modelo sabe
+    precificar, o dele ao lado e a vantagem; onde nao sabe, o motivo -- nunca
+    um numero inventado.
+    """
+    completo = [x for x in (r.get("mercado_completo") or []) if isinstance(x, Mapping)]
+    if not completo:
+        return
+    por_jogo: Dict[Any, List[Mapping[str, Any]]] = {}
+    for x in completo:
+        por_jogo.setdefault(x.get("jogo"), []).append(x)
+    ordem = sorted(por_jogo, key=lambda j: str(por_jogo[j][0].get("inicio_utc") or ""))
+    with st.expander("O mercado inteiro da Pinnacle, jogo por jogo ({} jogos, {} linhas)".format(
+            len(ordem), len(completo)), expanded=False):
+        jogo = st.selectbox(
+            "Jogo", ordem,
+            format_func=lambda j: "{} — {} x {}  ({})".format(
+                por_jogo[j][0].get("liga") or "?", por_jogo[j][0].get("casa") or "?",
+                por_jogo[j][0].get("fora") or "?",
+                str(por_jogo[j][0].get("inicio_utc") or "")[5:16].replace("T", " ")),
+            key="oportunidades_jogo_completo")
+        so_modelo = st.checkbox("So as linhas que o modelo sabe precificar",
+                                value=False, key="oportunidades_so_modelo")
+        linhas = [x for x in por_jogo.get(jogo) or []
+                  if not so_modelo or x.get("p_modelo") is not None]
+        linhas.sort(key=_ordem_no_quadro)
+        st.dataframe(tabela_do_mercado_completo(linhas), hide_index=True,
+                     width="stretch")
+        st.caption("Ordenado pela vantagem. **Pinnacle sem margem** e a odd "
+                   "dela com a margem tirada pelo metodo da potencia (o que "
+                   "melhor acertou nos estudos -- fontes em "
+                   "app_core/preco_justo_casa_core.py). Linhas sem modelo "
+                   "mostram so o preco da casa, com o motivo.")
+
+
+def tabela_do_mercado_completo(linhas: List[Mapping[str, Any]]) -> List[Dict[str, Any]]:
+    """As colunas do quadro. Separado da tela para dar para testar."""
+    def _r(v: Any, casas: int) -> Any:
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            return None
+        return round(f, casas) if f == f else None
+    return [{
+        "mercado": x.get("nome_pt") or x.get("mercado"),
+        "aposta": _aposta_no_quadro(x),
+        "casa paga": _r(x.get("odd_casa"), 2),
+        "pinnacle sem margem": _r(x.get("odd_casa_justa"), 2),
+        "modelo": _r(x.get("odd_modelo"), 2),
+        "vantagem %": _r(x.get("vantagem_pct"), 1),
+        "modelo x pinnacle (pts)": _r(x.get("diferenca_pp"), 1),
+        "margem %": _r(x.get("margem_pct"), 1),
+        "por que sem modelo": x.get("motivo") or "",
+    } for x in linhas]
 
 
 # ---------------------------------------------------------------------------
@@ -234,12 +337,14 @@ def _linha_comparada(a: Mapping[str, Any]) -> str:
     limite = a.get("limite")
     return (
         "<div style='display:grid;grid-template-columns:minmax(110px,1.4fr) "
-        "repeat(3,minmax(64px,0.55fr));gap:10px;max-width:620px;"
+        "repeat(4,minmax(58px,0.55fr));gap:10px;max-width:700px;"
         "align-items:center;padding:7px 4px;"
         "border-top:1px solid rgba(255,255,255,0.07);'>"
         "<div><b>{lado}</b>{marcas}<div style='opacity:0.45;font-size:0.74em;'>"
         "limite {lim}</div></div>"
         "<div style='text-align:right;color:{cm};font-weight:700;'>{justa}</div>"
+        "<div style='text-align:right;opacity:0.75;'>{justa_casa}"
+        "<div style='opacity:0.6;font-size:0.7em;'>{dif}</div></div>"
         "<div style='text-align:right;color:{cc};font-weight:700;'>{casa}"
         "<div style='opacity:0.45;font-size:0.7em;font-weight:400;'>{mov}</div></div>"
         "<div style='text-align:right;color:{cv};font-weight:800;'>{vant}</div>"
@@ -248,6 +353,7 @@ def _linha_comparada(a: Mapping[str, Any]) -> str:
         lado=escape(_nome_do_lado(a)), marcas=marcas,
         lim=(limite if limite is not None else "—"),
         cm=_COR_MODELO, justa=_fmt(a.get("odd_justa")),
+        justa_casa=_fmt(a.get("odd_casa_justa")), dif=escape(_texto_da_diferenca(a)),
         cc=_COR_CASA, casa=_fmt(a.get("odd_casa")),
         mov=escape(_texto_do_movimento(a)),
         cv=cor_v, vant=("{:+.2f}%".format(vf) if vf == vf else "—"),
@@ -257,11 +363,12 @@ def _linha_comparada(a: Mapping[str, Any]) -> str:
 def _tabela_comparada(st: Any, titulo: str, linhas: List[Mapping[str, Any]]) -> None:
     cabeca = (
         "<div style='display:grid;grid-template-columns:minmax(110px,1.4fr) "
-        "repeat(3,minmax(64px,0.55fr));gap:10px;max-width:620px;"
+        "repeat(4,minmax(58px,0.55fr));gap:10px;max-width:700px;"
         "padding:2px 4px;opacity:0.55;"
         "font-size:0.76em;text-transform:uppercase;letter-spacing:0.05em;'>"
         "<div>aposta</div>"
         "<div style='text-align:right;color:{cm};'>modelo</div>"
+        "<div style='text-align:right;'>pinnacle sem margem</div>"
         "<div style='text-align:right;color:{cc};'>casa</div>"
         "<div style='text-align:right;'>vantagem</div></div>"
     ).format(cm=_COR_MODELO, cc=_COR_CASA)
@@ -269,7 +376,7 @@ def _tabela_comparada(st: Any, titulo: str, linhas: List[Mapping[str, Any]]) -> 
     st.markdown(
         "<div style='background:rgba(255,255,255,0.025);border:1px solid "
         "rgba(255,255,255,0.09);border-top:3px solid {cm};border-radius:14px;"
-        "padding:12px 16px 10px;max-width:680px;'>"
+        "padding:12px 16px 10px;max-width:760px;'>"
         "<div style='opacity:0.6;font-size:0.8em;text-transform:uppercase;"
         "letter-spacing:0.06em;margin-bottom:4px;'>{t}</div>"
         "{cab}{corpo}</div>".format(cm=_COR_MODELO, t=escape(titulo),

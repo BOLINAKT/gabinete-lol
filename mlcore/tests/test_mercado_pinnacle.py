@@ -204,7 +204,7 @@ class TestOColetorUsaEAvisa(unittest.TestCase):
     def test_a_traducao_vem_ANTES_da_chave(self):
         """A chave identifica a aposta; se ela for montada antes, os campos
         novos nao entram nela."""
-        i_trad = self.fonte.index('linhas[-1]["metrica"]')
+        i_trad = self.fonte.index('linhas[-1].update(traducao)')
         i_chave = self.fonte.index('linhas[-1]["chave"] = chave_da_linha')
         self.assertLess(i_trad, i_chave)
 
