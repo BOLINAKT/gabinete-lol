@@ -340,6 +340,22 @@ def render_matchup_selection(
                         # importar); aqui ele nunca tinha sido chamado.
                         _res_a = _resolver_time_salvo(session_state, str(game.get("teamA", "")), teams)
                         _res_b = _resolver_time_salvo(session_state, str(game.get("teamB", "")), teams)
+                        # UM LADO CASOU E O OUTRO NAO (23/09/2026): tenta o
+                        # outro pela liga do que casou. Regra medida em 52
+                        # apelidos dele -- 36 certos, 16 deixados para ele,
+                        # nenhum errado. O que ela decidir aparece na tela
+                        # como decidido por ela; so vira apelido se ele
+                        # confirmar. Ver app_core/casar_time_core.py.
+                        _automaticos = []
+                        try:
+                            from app_core.casar_time_core import completar_par
+                            _res_a, _res_b, _automaticos = completar_par(
+                                game.get("teamA", ""), _res_a, game.get("teamB", ""), _res_b,
+                                list(teams), session_state.get("_ligas_por_time") or {},
+                                session_state.get("_ultimo_jogo_por_time") or {})
+                        except Exception:
+                            _automaticos = []
+                        session_state["_casados_sozinhos"] = list(_automaticos)
                         if _res_a:
                             payload["teamA"] = _res_a
                         if _res_b:
@@ -377,6 +393,31 @@ def render_matchup_selection(
     # que o botao "Usar este jogo" nao tinha funcionado. Agora diz QUAL time
     # falhou, ja traz o palpite, e deixa ensinar ali mesmo: o apelido fica
     # salvo e o problema nao volta.
+    # O QUE FOI CASADO SOZINHO aparece, com o motivo e o botao de guardar.
+    # Esconder seria o erro do UP2U de volta, so que calado.
+    _auto = session_state.get("_casados_sozinhos") or []
+    if _auto:
+        from app_core.casar_time_core import motivo as _motivo_auto
+        from app_core.schedule_import_core import (
+            load_schedule_aliases as _carregar_ap_auto,
+            normalize_schedule_team_key as _chave_ap_auto,
+            save_schedule_aliases as _salvar_ap_auto,
+        )
+        for _lado, _cru_a, _escolhido, _adv in _auto:
+            st.info("%s -- %s" % (_lado, _motivo_auto(_cru_a, _escolhido, _adv)))
+            if st.button("Esta certo, guardar \"%s\" = %s" % (_cru_a, _escolhido),
+                         key="auto_ok_%s" % _chave_ap_auto(_cru_a)):
+                from pathlib import Path as _P_auto
+                _arq_auto = _P_auto(__file__).resolve().parents[1] / "user_team_aliases.json"
+                _ap = _carregar_ap_auto(session_state, _arq_auto)
+                _ap[_chave_ap_auto(_cru_a)] = str(_escolhido)
+                _salvar_ap_auto(session_state, _arq_auto, _ap)
+                session_state["_casados_sozinhos"] = [
+                    x for x in _auto if x[1] != _cru_a]
+                st.success("Guardado: \"%s\" = %s." % (_cru_a, _escolhido))
+        st.caption("Se algum estiver errado, e so escolher o time certo nas listas "
+                   "de Time 1 / Time 2 -- nada foi gravado sem voce confirmar.")
+
     _nao_casou = session_state.get(_CHAVE_NAO_RESOLVIDOS) or []
     if _nao_casou:
         from pathlib import Path as _Path

@@ -103,6 +103,8 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         st.caption(carimbo)
 
     _mostrar_diario(st, raiz)
+    _mostrar_casados_sozinhos(st, ctx.get("casados_sozinhos") or {},
+                              ctx.get("ensinar_apelido"))
     _jogos_que_dao = _diagnostico_do_confronto(
         st, odds, confronto, resolver,
         ctx.get("sugerir_times"), ctx.get("ensinar_apelido"))
@@ -525,6 +527,33 @@ def _montar_prob_de_vencedor(st: Any, confronto: Mapping[str, Any],
                                 casa_e_time_a=bool(lado_certo))
 
     return _prob
+
+
+def _mostrar_casados_sozinhos(st: Any, casados: Mapping[str, Any],
+                              ensinar: Optional[Callable[[str, str], None]]) -> None:
+    """O que a regra de casar nome decidiu sozinha, com o botao de guardar.
+
+    Esconder isto seria o erro do UP2U de volta, so que calado: ele veria o
+    preco e nao saberia que o time foi escolhido por uma regra.
+    """
+    if not casados:
+        return
+    from app_core.casar_time_core import motivo
+    with st.expander("Times casados sozinhos ({}) -- confira".format(len(casados)),
+                     expanded=False):
+        for cru, par in sorted(casados.items()):
+            escolhido, adv = (list(par) + ["", ""])[:2]
+            st.write(motivo(cru, escolhido, adv))
+            if ensinar is not None and st.button(
+                    "Esta certo, guardar \"{}\" = {}".format(cru, escolhido),
+                    key="oport_auto_ok_{}".format(str(cru).lower().replace(" ", "_"))):
+                try:
+                    ensinar(str(cru), str(escolhido))
+                    st.success("Guardado: \"{}\" = {}.".format(cru, escolhido))
+                except Exception:
+                    st.error("Nao consegui guardar o apelido.")
+        st.caption("Nada disto foi gravado sem voce: e usado so para mostrar o "
+                   "preco. Se algum estiver errado, ensine o certo na aba Jogos.")
 
 
 def _o_que_ficou_de_fora(st: Any, r: Mapping[str, Any], nao_casados: List[str]) -> None:

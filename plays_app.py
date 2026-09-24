@@ -897,6 +897,30 @@ def _liga_por_time(csv_sig: Tuple[str, int, int]) -> Dict[str, str]:
 
 
 @st.cache_data(show_spinner=False)
+def _ligas_por_time(csv_sig: Tuple[str, int, int]) -> Dict[str, Any]:
+    """Time -> CONJUNTO de ligas em que jogou no ultimo ano.
+
+    Diferente de `_liga_por_time` (uma liga so, a mais jogada): a regra de
+    casar nome sozinho (app_core/casar_time_core.py) foi MEDIDA com o conjunto
+    do ultimo ano -- 36 de 52 apelidos acertados, nenhum errado. Usar outra
+    coisa aqui seria servir uma regra diferente da medida.
+    """
+    csv_path, _size, _mtime = csv_sig
+    from mlcore.stats_teams import build_team_games, load_team_rows
+    try:
+        tg = build_team_games(load_team_rows(str(csv_path)))
+        tg["date"] = pd.to_datetime(tg["date"], errors="coerce")
+        tg = tg.dropna(subset=["date"])
+        rec = tg[tg["date"] >= tg["date"].max() - pd.Timedelta(days=365)]
+        fora: Dict[str, Any] = {}
+        for t, lg in zip(rec["team"].astype(str), rec["league"].astype(str)):
+            fora.setdefault(t, set()).add(lg)
+        return fora
+    except (OSError, KeyError, ValueError, TypeError):
+        return {}
+
+
+@st.cache_data(show_spinner=False)
 def _ultimo_jogo_por_time(csv_sig: Tuple[str, int, int]) -> Dict[str, Any]:
     """Time -> data do jogo mais recente dele no CSV.
 
@@ -1860,6 +1884,11 @@ try:
 except Exception:
     st.session_state["_ultimo_jogo_por_time"] = {}
 
+try:
+    st.session_state["_ligas_por_time"] = _ligas_por_time(csv_sig)
+except Exception:
+    st.session_state["_ligas_por_time"] = {}
+
 # Normaliza grafias (ex.: "Dplus Kia" vs "Dplus KIA") para evitar cair na liga errada no modo auto.
 core_normalize_matchup_selection_teams(
     session_state=st.session_state,
@@ -2652,21 +2681,65 @@ def _oportunidades_calcular_totais(casa: str, fora: str, mapa: str):
     return _expected_totals_dc(team_games, _pA, _pB)
 
 
-def _oportunidades_resolver_time(nome: str) -> str:
-    """O nome da casa -> o nome do CSV, usando os apelidos JA APRENDIDOS.
-
-    A Pinnacle escreve "Liquid", "9z", "Invictus"; o CSV tem "Team Liquid",
-    "9z Globant", "Invictus Gaming". NAO se adivinha: o mesmo resolvedor da
-    aba Jogos decide, e o que ele nao casar aparece na tela pelo nome, para
-    ele ensinar uma vez. Adivinhar aqui seria analisar o time errado com toda
-    a confianca do mundo.
-    """
+def _oportunidades_resolver_base(nome: str) -> str:
+    """O nome da casa -> o nome do CSV, so por nome exato ou apelido ensinado."""
     try:
         achado, ok = core_resolve_schedule_team(str(nome), list(teams),
                                            _oportunidades_apelidos())
     except Exception:
         return ""
     return str(achado) if ok else ""
+
+
+# Calculado uma vez por passada do script (o Streamlit reexecuta o arquivo
+# inteiro a cada clique, entao isto zera sozinho).
+_OPORT_AUTO: Optional[Dict[str, Tuple[str, str]]] = None
+
+
+def _oportunidades_casados_sozinhos() -> Dict[str, Tuple[str, str]]:
+    """{nome da casa: (time do CSV, adversario)} decididos pela regra.
+
+    Para cada jogo coletado da Pinnacle em que UM lado casa e o outro nao,
+    tenta o outro pela liga do que casou (app_core/casar_time_core.py:
+    medida em 52 apelidos dele -- 36 certos, 16 deixados para ele, nenhum
+    errado). Nada e gravado aqui: a aba mostra e ele confirma.
+    """
+    global _OPORT_AUTO
+    if _OPORT_AUTO is not None:
+        return _OPORT_AUTO
+    fora: Dict[str, Tuple[str, str]] = {}
+    try:
+        from app_core.casar_time_core import completar_par
+        from app_core.odds_coletadas_core import carregar_odds_coletadas
+        _odds = carregar_odds_coletadas(APP_ROOT)
+        _ligas = st.session_state.get("_ligas_por_time") or {}
+        _ultimo = st.session_state.get("_ultimo_jogo_por_time") or {}
+        for j in (_odds.get("jogos") or []):
+            ca, fa = str(j.get("casa") or ""), str(j.get("fora") or "")
+            ra, rb = _oportunidades_resolver_base(ca), _oportunidades_resolver_base(fa)
+            _, _, autos = completar_par(ca, ra, fa, rb, list(teams), _ligas, _ultimo)
+            for _lado, cru, escolhido, adv in autos:
+                fora.setdefault(str(cru), (str(escolhido), str(adv)))
+    except Exception:
+        fora = {}
+    _OPORT_AUTO = fora
+    return fora
+
+
+def _oportunidades_resolver_time(nome: str) -> str:
+    """O nome da casa -> o nome do CSV.
+
+    A Pinnacle escreve "Liquid", "9z", "Invictus"; o CSV tem "Team Liquid",
+    "9z Globant", "Invictus Gaming". Primeiro o nome exato ou o apelido que ele
+    ensinou. Se nao der, o que a regra de casar sozinho decidiu para aquele
+    jogo -- e so ela, que so decide com liga do adversario e time ativo.
+    O resto aparece na tela pelo nome, para ele ensinar uma vez.
+    """
+    achado = _oportunidades_resolver_base(nome)
+    if achado:
+        return achado
+    auto = _oportunidades_casados_sozinhos().get(str(nome))
+    return auto[0] if auto else ""
 
 
 def _oportunidades_apelidos():
@@ -2729,6 +2802,7 @@ _secondary_tab_renderers = {
             "raiz": APP_ROOT,
             "calcular_totais": _oportunidades_calcular_totais,
             "prob_over": core_prob_over_from_total,
+            "casados_sozinhos": _oportunidades_casados_sozinhos(),
             "jogos_por_time": _oportunidades_jogos_por_time,
             "times_nao_casados": _oportunidades_times_nao_casados(),
             "resolver_time": _oportunidades_resolver_time,
