@@ -270,8 +270,11 @@ class TestAListaQueEleVaiOLHAR(unittest.TestCase):
         por_time = motivo_de_nao_precificar(_linha(tipo="team_total", pontos=12.5))
         serie = motivo_de_nao_precificar(
             _linha(tipo="moneyline", lado="home", pontos=None, unidade="", periodo=0))
-        self.assertIn("diferenca", handicap)
-        self.assertIn("cada time", por_time)
+        # Desde 24/09/2026 o modelo CALCULA handicap de kills e total por time
+        # (mlcore/abates_por_time.py). O que falta, quando falta, e o
+        # confronto -- ou, no total por time, saber de qual time e a linha.
+        self.assertIn("nao conseguiu este confronto", handicap)
+        self.assertIn("de qual time", por_time)
         self.assertIn("vencedor", serie)
         self.assertNotEqual(handicap, por_time)
         self.assertNotEqual(handicap, serie)

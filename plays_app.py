@@ -2681,6 +2681,20 @@ def _oportunidades_calcular_totais(casa: str, fora: str, mapa: str):
     return _expected_totals_dc(team_games, _pA, _pB)
 
 
+def _oportunidades_medias_kills(casa: str, fora: str):
+    """Kills esperados do mandante e do visitante (24/09/2026).
+
+    Mesma conta Dixon-Coles do total da tela, com as metades separadas
+    (mlcore/abates_por_time.py). None quando um nome nao casa ou falta jogo.
+    """
+    a_csv = _oportunidades_resolver_time(casa)
+    b_csv = _oportunidades_resolver_time(fora)
+    if not a_csv or not b_csv:
+        return None
+    from mlcore.abates_por_time import medias_dc
+    return medias_dc(team_games, a_csv, b_csv)
+
+
 def _oportunidades_resolver_base(nome: str) -> str:
     """O nome da casa -> o nome do CSV, so por nome exato ou apelido ensinado."""
     try:
@@ -2802,6 +2816,7 @@ _secondary_tab_renderers = {
             "raiz": APP_ROOT,
             "calcular_totais": _oportunidades_calcular_totais,
             "prob_over": core_prob_over_from_total,
+            "medias_kills": _oportunidades_medias_kills,
             "casados_sozinhos": _oportunidades_casados_sozinhos(),
             "jogos_por_time": _oportunidades_jogos_por_time,
             "times_nao_casados": _oportunidades_times_nao_casados(),
