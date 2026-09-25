@@ -197,7 +197,53 @@ class TestOJogoAntesDoMercado(unittest.TestCase):
     def test_a_tabela_do_mercado_so_tem_um_jogo(self):
         fonte = (Path(__file__).resolve().parents[2] / "app_core" /
                  "oportunidades_tab_core.py").read_text(encoding="utf-8")
-        self.assertIn("por_jogo_cmp.get(jogo_cmp)", fonte)
+        self.assertIn("if a.get(\"jogo\") == jogo_cmp:", fonte)
+
+
+class TestALinhaJusta(unittest.TestCase):
+    """Pedido dele (25/09/2026): "caso o seu calculo de 25.5, eu quero ver como
+    e a odd que o nosso modelo da o 25.5 e como a pinnacle aponta"."""
+
+    def _odds(self, linhas_pin):
+        linhas = []
+        for pts, o_over, o_under in linhas_pin:
+            for lado, odd in (("over", o_over), ("under", o_under)):
+                linhas.append({"jogo": 1, "tipo": "total", "periodo": 1, "lado": lado,
+                               "pontos": pts, "odd": odd, "unidade": "Kills",
+                               "mercado": "Total - Kills - mapa 1"})
+        return {"jogos": [{"id": 1, "casa": "FlyQuest", "fora": "Shopify", "liga": "LCS"}],
+                "linhas": linhas}
+
+    def _montar(self, odds):
+        import math
+        from app_core.oportunidades_core import montar_linhas_justas
+        # modelo: mediana em 24,9 kills
+        prob = lambda t, L: 1.0 / (1.0 + math.exp((L - 24.9) / 3.0))
+        return montar_linhas_justas(odds, lambda a, b, m: {"kills": object()}, prob_over=prob)
+
+    def test_linha_do_modelo_da_pinnacle_e_a_distancia(self):
+        r = self._montar(self._odds([(24.5, 1.68, 2.08), (25.5, 1.87, 1.87), (26.5, 2.08, 1.68)]))
+        self.assertEqual(len(r), 1)
+        x = r[0]
+        self.assertEqual(x["linha_modelo"], 24.5)
+        self.assertEqual(x["linha_pinnacle"], 25.5)
+        self.assertEqual(x["diferenca"], -1.0)
+        self.assertTrue(x["pinnacle_oferece"])
+        self.assertEqual((x["casa_a"], x["casa_b"]), (1.68, 2.08))
+        self.assertAlmostEqual(x["vantagem_b"], ((1 - x["p_modelo_a"]) * 2.08 - 1) * 100)
+
+    def test_sem_a_linha_do_modelo_compara_na_linha_DELA(self):
+        r = self._montar(self._odds([(26.5, 1.90, 1.90), (27.5, 2.10, 1.72)]))
+        x = r[0]
+        self.assertFalse(x["pinnacle_oferece"])
+        self.assertEqual(x["linha_pinnacle"], 26.5)
+        self.assertIsNotNone(x["vantagem_pin_b"])
+        self.assertEqual((x["pin_casa_a"], x["pin_casa_b"]), (1.90, 1.90))
+
+    def test_a_meia_linha_mais_perto_de_meio(self):
+        from app_core.oportunidades_core import linha_mais_perto_de_meio
+        L, p = linha_mais_perto_de_meio(lambda L: 1 - L / 10.0, [x + 0.5 for x in range(10)])
+        self.assertEqual(L, 4.5)
 
 
 if __name__ == "__main__":
