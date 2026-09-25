@@ -1,53 +1,23 @@
 {
-  "gerado_em": "2026-09-24T22:51:38-03:00",
+  "gerado_em": "2026-09-25T05:08:59-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
     "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 11,
+    "indefinidos": 14,
     "sem_dois_times": 0
   },
   "jogos": [
     {
       "date": "25/09",
-      "time": "03:00",
-      "league": "WSCI",
-      "teamA_raw": "Cupid Esports",
-      "teamB_raw": "Dplus KIA",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-25T06:00:00Z"
-    },
-    {
-      "date": "25/09",
-      "time": "04:00",
-      "league": "WSCI",
-      "teamA_raw": "FENNEL",
-      "teamB_raw": "Vivo Keyd Stars Academy",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-25T07:00:00Z"
-    },
-    {
-      "date": "25/09",
-      "time": "05:00",
-      "league": "WSCI",
-      "teamA_raw": "ZSK",
-      "teamB_raw": "Saigon Warrior",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-25T08:00:00Z"
-    },
-    {
-      "date": "25/09",
       "time": "06:00",
       "league": "WSCI",
-      "teamA_raw": "Solary",
-      "teamB_raw": "Galions",
+      "teamA_raw": "Galions",
+      "teamB_raw": "Solary",
       "bo": 1,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-25T09:00:00Z"
     },
     {
