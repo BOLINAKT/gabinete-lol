@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-25T15:51:17-03:00",
+  "gerado_em": "2026-09-25T20:29:44-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
@@ -7,7 +7,7 @@
     "ja_jogados": 39,
     "passados": 0,
     "indefinidos": 18,
-    "sem_dois_times": 1
+    "sem_dois_times": 0
   },
   "jogos": [
     {
@@ -17,7 +17,7 @@
       "teamA_raw": "Shopify Rebellion",
       "teamB_raw": "FlyQuest",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-25T20:00:00Z"
     },
     {
@@ -229,6 +229,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-09-27T16:00:00Z"
+    },
+    {
+      "date": "27/09",
+      "time": "17:00",
+      "league": "LCS",
+      "teamA_raw": "Team Liquid Alienware",
+      "teamB_raw": "Cloud9 Kia",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-27T20:00:00Z"
     }
   ]
 }
