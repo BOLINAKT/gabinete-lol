@@ -97,5 +97,62 @@ class TestAPagina(unittest.TestCase):
         self.assertGreater(dois, um)
 
 
+class TestOVencedorEmCima(unittest.TestCase):
+    """"que em cima disso tudo tenha a parte do vencedor, baseado no BO que o
+    calendario [da] por padrao" (25/09/2026)."""
+
+    def _linhas(self):
+        return [{"tipo": "moneyline", "unidade": "", "lado": "home", "periodo": 0, "odd": 1.47},
+                {"tipo": "moneyline", "unidade": "", "lado": "away", "periodo": 0, "odd": 2.75},
+                {"tipo": "moneyline", "unidade": "", "lado": "home", "periodo": 1, "odd": 1.60},
+                {"tipo": "moneyline", "unidade": "", "lado": "away", "periodo": 1, "odd": 2.35},
+                {"tipo": "moneyline", "unidade": "Kills", "lado": "home", "periodo": 1, "odd": 1.3},
+                {"tipo": "moneyline", "unidade": "Maps", "lado": "A 3, B 0", "periodo": 0, "odd": 3}]
+
+    def test_serie_e_mapa_com_a_odd_da_pinnacle(self):
+        from app_core.tabela_casa_core import vencedores_da_tela
+        v = vencedores_da_tela(self._linhas(), [])
+        self.assertEqual([x["periodo"] for x in v], [0, 1])
+        self.assertEqual((v[0]["pin_a"], v[0]["pin_b"]), (1.47, 2.75))
+        self.assertNotIn("modelo_a", v[0])
+
+    def test_o_modelo_e_o_numero_do_CARTAO(self):
+        from app_core.tabela_casa_core import vencedores_da_tela
+        achados = [{"metrica": "vencedor", "mercado": "Vencedor - serie", "lado": "home",
+                    "odd_justa": 1.60, "vantagem_pct": -8.1},
+                   {"metrica": "vencedor", "mercado": "Vencedor - mapa 1", "lado": "away",
+                    "odd_justa": 2.10, "vantagem_pct": 11.9}]
+        v = {x["periodo"]: x for x in vencedores_da_tela(self._linhas(), achados)}
+        self.assertEqual(v[0]["modelo_a"], 1.60)
+        self.assertEqual(v[1]["vant_b"], 11.9)
+
+    def test_a_pagina_leva_o_BO_e_os_times(self):
+        from app_core.tabela_casa_core import vencedores_da_tela
+        h = html_das_tabelas([], "t", vencedores=vencedores_da_tela(self._linhas(), []),
+                             bo=5, casa="FlyQuest", fora="Shopify")
+        venc = json.loads(h.split("const VENC = ", 1)[1].split(";" + chr(10), 1)[0])
+        self.assertEqual((venc["bo"], venc["casa"]), (5, "FlyQuest"))
+        self.assertIn("Série - Vencedor", h)
+
+
+class TestGrandeDemais(unittest.TestCase):
+
+    def test_a_marca_usa_a_MESMA_regra_da_aba(self):
+        from app_core.oportunidades_core import VANTAGEM_SUSPEITA_PCT
+        h = html_das_tabelas(linhas_da_tela([_justa()]), "t")
+        self.assertIn("const SUSPEITA = %s;" % float(VANTAGEM_SUSPEITA_PCT), h)
+        self.assertIn("grande demais", h)
+
+
+class TestAsCoresDoApp(unittest.TestCase):
+
+    def test_ciano_do_modelo_ambar_da_pinnacle_e_tema_claro(self):
+        h = html_das_tabelas(linhas_da_tela([_justa()]), "t")
+        self.assertIn("#2daac4", h)
+        self.assertIn("#d9a441", h)
+        self.assertIn("prefers-color-scheme: light", h)
+        self.assertNotIn("#f2d91a", h, "o amarelo da bet365 saiu a pedido dele")
+
+
 if __name__ == "__main__":
     unittest.main()
