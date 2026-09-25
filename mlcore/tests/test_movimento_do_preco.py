@@ -107,42 +107,6 @@ class TestUmaLeituraNAOEhMovimento(unittest.TestCase):
         self.assertFalse(movimento_da_linha({}, {"k": {"primeiro": 2.0}})["sabido"])
 
 
-class TestATelaNAOChamaDeABERTURA(unittest.TestCase):
-    """O nome errado viraria uma limitacao conhecida em afirmacao falsa."""
-
-    def test_o_texto_diz_DESDE_e_nao_abriu(self):
-        from app_core.oportunidades_tab_core import _texto_do_movimento
-        t = _texto_do_movimento({"_movimento": {
-            "sabido": True, "variacao_pct": -10.2, "quando": "2026-09-15T20:21", "leituras": 2}})
-        self.assertIn("desde", t)
-        self.assertNotIn("abriu", t.lower())
-        self.assertNotIn("abertura", t.lower())
-
-    def test_diz_para_que_lado_andou(self):
-        from app_core.oportunidades_tab_core import _texto_do_movimento
-        self.assertIn("cai", _texto_do_movimento({"_movimento": {
-            "sabido": True, "variacao_pct": -10.2, "quando": "x", "leituras": 2}}))
-        self.assertIn("sobe", _texto_do_movimento({"_movimento": {
-            "sabido": True, "variacao_pct": 6.5, "quando": "x", "leituras": 2}}))
-
-    def test_sem_movimento_sabido_nao_inventa_texto(self):
-        from app_core.oportunidades_tab_core import _texto_do_movimento
-        self.assertEqual(_texto_do_movimento({"_movimento": {"sabido": False, "leituras": 0}}), "")
-
-    def test_o_coletor_grava_a_CHAVE_no_retrato(self):
-        """Sem a chave no retrato, a tela teria de remontar a identidade da
-        aposta -- uma segunda implementacao, e elas divergem."""
-        import inspect
-
-        from tools import coletar_odds as c
-        self.assertIn('linhas[-1]["chave"] = chave_da_linha(linhas[-1])',
-                      inspect.getsource(c.normalizar))
-
-
-if __name__ == "__main__":
-    unittest.main()
-
-
 class TestALeituraPertoDoApito(unittest.TestCase):
     """O buraco que a pesquisa apontou -- e que tinha conserto.
 

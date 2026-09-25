@@ -194,10 +194,13 @@ class TestOJogoAntesDoMercado(unittest.TestCase):
         }
         self.assertEqual(ordem_dos_jogos(por_jogo), [2, 1, 3])
 
-    def test_a_tabela_do_mercado_so_tem_um_jogo(self):
+    def test_a_tabela_linha_por_linha_SAIU(self):
+        """25/09/2026: "acho que nao precisa mais disso" -- a tabela no
+        formato da casa mostra o mesmo em qualquer linha."""
         fonte = (Path(__file__).resolve().parents[2] / "app_core" /
                  "oportunidades_tab_core.py").read_text(encoding="utf-8")
-        self.assertIn("if a.get(\"jogo\") == jogo_cmp:", fonte)
+        self.assertNotIn("Qual mercado voce quer comparar", fonte)
+        self.assertIn("_tabelas_da_casa(st, [x for x in justas if x.get(\"jogo\") == jogo_cmp]", fonte)
 
 
 class TestALinhaJusta(unittest.TestCase):
