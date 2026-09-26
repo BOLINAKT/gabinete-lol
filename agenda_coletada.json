@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-09-26T04:59:06-03:00",
+  "gerado_em": "2026-09-26T10:21:45-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
     "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 17,
+    "indefinidos": 16,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "26/09",
-      "time": "06:00",
-      "league": "VCS",
-      "teamA_raw": "Saigon 9Gaming Esports",
-      "teamB_raw": "TP.HCM SN CyberCore Esports",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-26T09:00:00Z"
-    },
     {
       "date": "26/09",
       "time": "13:00",
@@ -213,6 +203,16 @@
     {
       "date": "27/09",
       "time": "06:00",
+      "league": "VCS",
+      "teamA_raw": "TP.HCM SN CyberCore Esports",
+      "teamB_raw": "Saigon MVKE Academy",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-27T09:00:00Z"
+    },
+    {
+      "date": "27/09",
+      "time": "06:00",
       "league": "WSCI",
       "teamA_raw": "Dplus KIA",
       "teamB_raw": "DNS Challengers",
@@ -239,6 +239,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-09-27T20:00:00Z"
+    },
+    {
+      "date": "28/09",
+      "time": "03:00",
+      "league": "WSCI",
+      "teamA_raw": "T1 Esports Academy",
+      "teamB_raw": "Cupid Esports",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-28T06:00:00Z"
     }
   ]
 }
