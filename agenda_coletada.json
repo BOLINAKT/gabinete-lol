@@ -1,13 +1,13 @@
 {
-  "gerado_em": "2026-09-26T10:21:45-03:00",
+  "gerado_em": "2026-09-26T14:58:37-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 30,
     "passados": 0,
-    "indefinidos": 16,
-    "sem_dois_times": 0
+    "indefinidos": 24,
+    "sem_dois_times": 1
   },
   "jogos": [
     {
@@ -17,7 +17,7 @@
       "teamA_raw": "RED Kalunga",
       "teamB_raw": "FURIA",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-26T16:00:00Z"
     },
     {
@@ -74,8 +74,8 @@
       "date": "26/09",
       "time": "14:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Bushido Wildcats",
-      "teamB_raw": "Senshi eSports",
+      "teamA_raw": "Senshi eSports",
+      "teamB_raw": "Bushido Wildcats",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-26T17:00:00Z"
@@ -84,8 +84,8 @@
       "date": "26/09",
       "time": "14:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Kaufland Hangry Knights",
-      "teamB_raw": "Ruddy Corporation",
+      "teamA_raw": "Ruddy Corporation",
+      "teamB_raw": "Kaufland Hangry Knights",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-26T17:00:00Z"
@@ -94,8 +94,8 @@
       "date": "26/09",
       "time": "14:00",
       "league": "EMEA Masters",
-      "teamA_raw": "HMBLE",
-      "teamB_raw": "UCAM Esports Club",
+      "teamA_raw": "UCAM Esports Club",
+      "teamB_raw": "HMBLE",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-26T17:00:00Z"
@@ -114,8 +114,8 @@
       "date": "26/09",
       "time": "15:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Heretics Academy",
-      "teamB_raw": "eSuba",
+      "teamA_raw": "eSuba",
+      "teamB_raw": "Heretics Academy",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-26T18:00:00Z"
@@ -249,6 +249,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-09-28T06:00:00Z"
+    },
+    {
+      "date": "28/09",
+      "time": "06:00",
+      "league": "WSCI",
+      "teamA_raw": "kt Challengers",
+      "teamB_raw": "Galions",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-28T09:00:00Z"
     }
   ]
 }
