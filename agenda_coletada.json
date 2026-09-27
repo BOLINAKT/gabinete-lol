@@ -1,45 +1,15 @@
 {
-  "gerado_em": "2026-09-27T05:31:57-03:00",
+  "gerado_em": "2026-09-27T11:15:46-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 39,
+    "ja_jogados": 40,
     "passados": 0,
     "indefinidos": 16,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "27/09",
-      "time": "03:00",
-      "league": "WSCI",
-      "teamA_raw": "Movistar KOI Fénix",
-      "teamB_raw": "Solary",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-09-27T06:00:00Z"
-    },
-    {
-      "date": "27/09",
-      "time": "06:00",
-      "league": "VCS",
-      "teamA_raw": "TP.HCM SN CyberCore Esports",
-      "teamB_raw": "Saigon MVKE Academy",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-27T09:00:00Z"
-    },
-    {
-      "date": "27/09",
-      "time": "06:00",
-      "league": "WSCI",
-      "teamA_raw": "Dplus KIA",
-      "teamB_raw": "DNS Challengers",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-27T09:00:00Z"
-    },
     {
       "date": "27/09",
       "time": "13:00",
@@ -259,6 +229,26 @@
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-29T00:00:00Z"
+    },
+    {
+      "date": "28/09",
+      "time": "21:00",
+      "league": "Asian Games",
+      "teamA_raw": "United Arab Emirates",
+      "teamB_raw": "Malaysia",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-29T00:00:00Z"
+    },
+    {
+      "date": "28/09",
+      "time": "23:30",
+      "league": "Asian Games",
+      "teamA_raw": "Saudi Arabia",
+      "teamB_raw": "United Arab Emirates",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-29T02:30:00Z"
     }
   ]
 }
