@@ -329,6 +329,11 @@ def main() -> int:
         print("  >> AMOSTRA PEQUENA DEMAIS (%d partidas de %d). Nenhuma"
               % (len(medias), PARTIDAS_MINIMAS))
         print("     conclusao sai daqui, nem a favor nem contra.")
+
+    # O resumo para o app e o robo (25/09/2026): tools/regua_pinnacle_comum.py.
+    from tools.regua_pinnacle_comum import gravar, resumo
+    gravar("total_kills", {"mercado": "Total de kills (linha principal)",
+                           "so_kills": resumo(casos, "p_modelo", minimo=PARTIDAS_MINIMAS)})
     return 0
 
 

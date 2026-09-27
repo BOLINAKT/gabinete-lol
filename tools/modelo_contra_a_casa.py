@@ -388,6 +388,15 @@ def main() -> int:
             100 * c["p_modelo"], 100 * c["p_mercado"],
             100 * (c["p_modelo"] - c["p_mercado"]),
             "azul" if c["y"] == 1 else "verm"))
+
+    # O resumo para o app (25/09/2026): tools/regua_pinnacle_comum.py. Um
+    # mapa por partida aqui, entao a partida e o proprio jogo.
+    from tools.regua_pinnacle_comum import gravar, resumo
+    gravar("vencedor", {"mercado": "Vencedor do mapa 1",
+                        "so_kills": resumo([{"partida": c["gameid"], "p_modelo": c["p_modelo"],
+                                              "p_casa": c["p_mercado"], "y": c["y"]}
+                                             for c in casos], "p_modelo",
+                                            minimo=PARTIDAS_MINIMAS)})
     return 0
 
 

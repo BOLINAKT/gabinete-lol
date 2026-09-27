@@ -1,0 +1,72 @@
+# REGUAS "MODELO x PINNACLE", TODA SEMANA (25/09/2026)
+#
+# Ele perguntou a nota do modelo "em relacao as notas da pinnacle". As reguas
+# ja existiam (tools/abates_contra_a_casa.py e tools/handicap_contra_a_casa.py),
+# mas so rodavam quando eu rodava. Com 23 a 26 partidas a resposta ainda e
+# "nao da para concluir"; o minimo e 60. Os robos de odds juntam partidas
+# sozinhos -- este so refaz a conta toda semana e grava o placar em
+# evidence/regua_pinnacle_*.json, que a aba Oportunidades mostra.
+#
+# O VENCEDOR (tools/modelo_contra_a_casa.py) NAO roda aqui: ele precisa da
+# regua da nota honesta, que mora so na maquina dele. Idem a versao "com
+# vitoria" do handicap. Esses dois atualizam quando rodados la.
+name: Reguas (modelo x Pinnacle)
+
+on:
+  schedule:
+    # segunda-feira, 10:17 UTC -- longe dos minutos disputados e dos outros robos
+    - cron: "17 10 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reguas-pinnacle
+  cancel-in-progress: false
+
+jobs:
+  medir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependencias
+        run: pip install --quiet -r requirements.txt
+
+      # O REAJUSTE SEMANAL DO TOTAL DE KILLS (25/09/2026): refeito com os
+      # ultimos 60 dias ANTES das reguas, para elas ja medirem a conta nova.
+      # O motor ignora o arquivo se ele tiver mais de 21 dias.
+      - name: Reajuste semanal do total de kills
+        continue-on-error: true
+        run: python tools/gerar_kills_recalibrado.py
+
+      - name: Total de kills contra a Pinnacle
+        continue-on-error: true
+        run: python tools/abates_contra_a_casa.py
+
+      - name: Handicap de kills contra a Pinnacle
+        continue-on-error: true
+        run: python tools/handicap_contra_a_casa.py
+
+      - name: Commitar o placar
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add kills_recalibrado.json evidence/regua_pinnacle_total_kills.json evidence/regua_pinnacle_handicap_kills.json || true
+          if git diff --cached --quiet; then
+            echo "nada mudou - nada a commitar"
+          else
+            git commit -m "Robo: reajuste semanal dos kills e reguas modelo x Pinnacle"
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado (concorrencia) - rebase e nova tentativa $i/3"
+              git pull --rebase || exit 1
+            done
+            git push
+          fi

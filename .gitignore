@@ -58,6 +58,9 @@ evidence/*
 !evidence/gate_calibradores_lol.json
 !evidence/auditoria_pre_jogo.json
 !evidence/gate_calibrador_final.json
+# O placar "modelo x Pinnacle" (25/09/2026): a aba Oportunidades LE dele, e o
+# robo semanal (reguas_pinnacle.yml) o atualiza. Sem versionar, o site nao ve.
+!evidence/regua_pinnacle_*.json
 !evidence/frescor.json
 !evidence/regua_28.json
 tmp/

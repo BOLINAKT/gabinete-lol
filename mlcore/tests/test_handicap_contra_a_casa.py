@@ -146,17 +146,21 @@ class TestONaoAdivinhaNemVazaOFuturo(unittest.TestCase):
         self.assertIn("from app_core.schedule_import_core import resolve_schedule_team",
                       self.fonte)
 
-    def test_o_modelo_e_ajustado_com_jogos_ANTERIORES_a_coleta(self):
-        self.assertIn("anteriores a coleta", self.fonte)
+    def test_o_modelo_usa_so_o_que_se_sabia_ANTES_do_jogo(self):
+        """Desde 25/09/2026 a regua mede a conta da TELA, com os kills
+        esperados de cada jogo guardados ANTES de ele entrar no historico."""
+        self.assertIn('prob_cobre_handicap(est["ea"], est["eb"], linha_azul)', self.fonte)
 
     def test_o_estado_de_cada_jogo_e_gravado_ANTES_de_ele_entrar(self):
         i_estado = self.fonte.index("estado[str(r.gameid)] =")
         i_aprende = self.fonte.index("hist[t] = nova if d is None")
         self.assertLess(i_estado, i_aprende)
 
-    def test_reusa_o_modelo_da_regua_em_vez_de_copiar(self):
-        """PRINCIPIO V: duas implementacoes do mesmo preco divergem."""
-        self.assertIn("from tools.handicap_de_abates import", self.fonte)
+    def test_reusa_a_conta_de_PRODUCAO_em_vez_de_copiar(self):
+        """PRINCIPIO V: duas implementacoes do mesmo preco divergem. Ate
+        25/09/2026 esta regua reusava a conta de 21/09 (tools/
+        handicap_de_abates); agora reusa a que a tela serve."""
+        self.assertIn("from mlcore.abates_por_time import prob_cobre_handicap", self.fonte)
 
     def test_NAO_escreve_no_arquivo_de_apelidos(self):
         for proibido in ("write_text", "json.dump"):

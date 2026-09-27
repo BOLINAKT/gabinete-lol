@@ -122,11 +122,21 @@ class TestAFormaMudaOPrecoOndeDeve(unittest.TestCase):
         self.assertAlmostEqual(prob_over_from_total(a, 13.5),
                                prob_over_from_total(b, 13.5), places=12)
 
-    def test_abates_sai_IDENTICO_ao_de_antes(self):
-        k1 = MatchupTotals(mean=30.4, sd=10.4, dist="normal")
-        k2 = MatchupTotals(mean=30.4, sd=10.4, dist="normal", metric="kills")
-        self.assertEqual(prob_over_from_total(k1, 31.5),
-                         prob_over_from_total(k2, 31.5))
+    def test_abates_SEM_o_reajuste_semanal_sai_IDENTICO_ao_de_antes(self):
+        """Kills nao usa a forma de 23/09 (piorava). Desde 25/09 usa o
+        REAJUSTE SEMANAL (kills_recalibrado.json, ver test_kills_recalibrado);
+        sem ele -- ausente ou velho --, kills e exatamente o de antes."""
+        guardado = dict(le._KILLS_RECAL_CACHE)
+        try:
+            le._KILLS_RECAL_CACHE.clear()
+            le._KILLS_RECAL_CACHE["art"] = None
+            k1 = MatchupTotals(mean=30.4, sd=10.4, dist="normal")
+            k2 = MatchupTotals(mean=30.4, sd=10.4, dist="normal", metric="kills")
+            self.assertEqual(prob_over_from_total(k1, 31.5),
+                             prob_over_from_total(k2, 31.5))
+        finally:
+            le._KILLS_RECAL_CACHE.clear()
+            le._KILLS_RECAL_CACHE.update(guardado)
 
     def test_a_funcao_das_TELAS_tambem_herda(self):
         """resumo_core, lines_table_core e consistencia chamam

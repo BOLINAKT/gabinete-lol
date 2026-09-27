@@ -165,7 +165,7 @@ def main() -> int:
     return _avaliar(registros, disp)
 
 
-def _coletar_servido(tg, season):
+def _coletar_servido(tg, season, desde=None):
     """Igual a `collect_season` do gate anterior, mas com a media DA TELA.
 
     Copiado e nao importado por um motivo so: la a media sai de
@@ -182,6 +182,10 @@ def _coletar_servido(tg, season):
     MIN_HIST, HL = 8, 180.0
     g = tg[(tg["date"].dt.year == season)
            & (tg["team"].astype(str) < tg["opponent"].astype(str))]
+    # `desde` (25/09/2026): o reajuste semanal do total de kills
+    # (tools/gerar_kills_recalibrado.py) so precisa dos ultimos 60 dias.
+    if desde is not None:
+        g = g[g["date"] >= pd.Timestamp(desde)]
     g = g.sort_values("date").reset_index(drop=True)
     flt = Filters()
     out, cache = [], {}
@@ -221,10 +225,14 @@ def _coletar_servido(tg, season):
                 continue
             if not math.isfinite(actual):
                 continue
+            # `gameid` e `actual` (25/09/2026): a regua do total de kills com
+            # a chance de vitoria (tools/kills_total_com_vitoria.py) precisa
+            # juntar cada previsao servida com a regua do vencedor, jogo a jogo.
             out.append({"year": season, "metric": metric,
                         "mean": float(tot.mean), "sd": float(tot.sd),
                         "line": float(line), "y": 1 if actual > line else 0,
-                        "z": (actual - float(tot.mean)) / float(tot.sd)})
+                        "z": (actual - float(tot.mean)) / float(tot.sd),
+                        "gameid": str(getattr(r, "gameid", "")), "actual": actual})
         if (idx + 1) % 1500 == 0:
             print("  %d: %d/%d" % (season, idx + 1, len(g)), flush=True)
     return out

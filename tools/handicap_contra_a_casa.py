@@ -114,7 +114,6 @@ def main() -> int:
     from app_core.schedule_import_core import resolve_schedule_team
     from mlcore.lines_engine import DC_BLEND_HL_DAYS as HL, DC_BLEND_MIN_EFF as MIN_EFF, _dc_decayed
     from mlcore.stats_teams import build_team_games, load_team_rows
-    from tools.handicap_de_abates import calibrador, forma_empirica, prob_acima
     from tools.modelo_contra_a_casa import _apelidos
     from tools.nota_honesta import default_csvs
 
@@ -159,6 +158,7 @@ def main() -> int:
                     and all(x == x for x in (aa, da, ab, db))):
                 ea, eb = aa * db / nivel, ab * da / nivel
                 estado[str(r.gameid)] = {"media": ea - eb, "total": ea + eb,
+                                         "ea": ea, "eb": eb,
                                          "azul": azul, "passado": len(passado)}
                 passado.append({"media": ea - eb, "total": ea + eb,
                                 "dif": float(r.ka) - float(r.kc)})
@@ -170,34 +170,20 @@ def main() -> int:
         soma += float(r.ka) + float(r.kc)
         peso += 2.0
 
-    # --- o modelo, ajustado UMA VEZ com tudo que veio antes da coleta ---
-    # A coleta comecou em 15/09/2026; todo jogo medido aqui e posterior ao
-    # ajuste, entao nenhum deles entra no proprio ajuste.
-    from tools.handicap_de_abates import LINHAS_TIPICAS
-    JANELA = 3000
-    base = passado[-JANELA:] if len(passado) > JANELA else passado
-    vies = float(np.mean([t["dif"] - t["media"] for t in base]))
-    resto = np.array([t["dif"] - t["media"] - vies for t in base], dtype=float)
-    tot = np.array([t["total"] for t in base], dtype=float)
-    qs = np.quantile(tot, [0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
-    pontos = []
-    for i in range(len(qs) - 1):
-        m = (tot >= qs[i]) & (tot <= qs[i + 1] if i == len(qs) - 2 else tot < qs[i + 1])
-        if int(m.sum()) >= 100:
-            pontos.append((float(np.mean(tot[m])), float(np.std(resto[m]))))
-    inc, bas = (np.polyfit([x for x, _ in pontos], [y for _, y in pontos], 1)
-                if len(pontos) >= 2 else (0.0, float(np.std(resto))))
-    largura = lambda x: max(1.0, inc * float(x) + bas)
-    forma = forma_empirica([t["dif"] - t["media"] - vies for t in base],
-                           [largura(t["total"]) for t in base])
-    cru = []
-    for t in base:
-        for L in LINHAS_TIPICAS:
-            pp = prob_acima(L, t["media"] + vies, largura(t["total"]), forma)
-            if pp is not None:
-                cru.append((pp, 1.0 if t["dif"] > L else 0.0))
-    cal = calibrador(cru)
-    print("[hcasa] modelo ajustado em %d jogos anteriores a coleta" % len(base))
+    # --- O MODELO DA TELA (25/09/2026) ---
+    # Ate aqui esta regua media a conta de 21/09 (tools/handicap_de_abates:
+    # lado azul, calibrador proprio) -- NAO a que a tela serve. Agora e a de
+    # producao, mlcore/abates_por_time.prob_cobre_handicap, com os kills
+    # esperados ponto-no-tempo calculados acima (mesma conta Dixon-Coles).
+    # Onde a regua do vencedor tem a chance de vitoria daquele jogo, mede
+    # tambem a versao "com vitoria" -- a que a tela usa no confronto aberto.
+    from mlcore.abates_por_time import prob_cobre_handicap
+    try:
+        from tools.kills_total_com_vitoria import REGUA as _REGUA_VENC
+        p_azul = {str(g): float(pp) for g, pp, _ in
+                  json.loads(_REGUA_VENC.read_text(encoding="utf-8"))["por_jogo"]}
+    except (OSError, ValueError, KeyError):
+        p_azul = {}
 
     # --- casar cada aposta com o jogo do CSV ---
     ap = _apelidos()
@@ -244,17 +230,19 @@ def main() -> int:
         azul_e_casa = str(r.team) == ca
         # O handicap da casa: "casa com pontos_casa". Do lado azul isso vira:
         linha_azul = a["pontos_casa"] if azul_e_casa else -a["pontos_casa"]
-        p_modelo = prob_acima(-linha_azul, est["media"] + vies,
-                              largura(est["total"]), forma)
+        p_modelo = prob_cobre_handicap(est["ea"], est["eb"], linha_azul)
         if p_modelo is None:
             sem += 1
             continue
-        p_modelo = cal(p_modelo)
+        pv = p_azul.get(str(r.gameid))
+        p_vit = (prob_cobre_handicap(est["ea"], est["eb"], linha_azul, p_lado=pv)
+                 if pv is not None else None)
         p_casa = a["p_casa"] if azul_e_casa else a["p_fora"]
         dif = float(r.ka) - float(r.kc)
         casos.append({"partida": a["jogo"], "gameid": str(r.gameid),
                       "mapa": a["mapa"], "linha_azul": linha_azul,
                       "p_modelo": float(p_modelo), "p_casa": float(p_casa),
+                      "p_vitoria": (float(p_vit) if p_vit is not None else None),
                       "y": 1.0 if dif + linha_azul > 0 else 0.0,
                       "margem": a["margem_pct"], "limite": a.get("limite"),
                       "liga": j.get("liga"), "confronto": "%s x %s" % (j.get("casa"), j.get("fora"))})
@@ -307,6 +295,21 @@ def main() -> int:
         print("  >> AMOSTRA PEQUENA DEMAIS (%d partidas de %d). Nenhuma"
               % (len(medias), PARTIDAS_MINIMAS))
         print("     conclusao sai daqui, nem a favor nem contra.")
+
+    # O RESUMO PARA O APP E PARA O ROBO (25/09/2026). "so kills" e a conta
+    # que a tela usa nos jogos que nao estao abertos; "com vitoria" e a do
+    # confronto aberto -- medida so onde a regua do vencedor tem o jogo.
+    from tools.regua_pinnacle_comum import gravar, resumo
+    so_kills = resumo(casos, "p_modelo", minimo=PARTIDAS_MINIMAS)
+    com_vit = resumo(casos, "p_vitoria", minimo=PARTIDAS_MINIMAS)
+    if com_vit:
+        print()
+        print("COM A CHANCE DE VITORIA (%d partidas em que a regua do vencedor tem o jogo)"
+              % com_vit["partidas"])
+        print("  logloss do modelo ... %.4f | da casa %.4f | diferenca %+.4f"
+              % (com_vit["logloss_modelo"], com_vit["logloss_casa"], com_vit["diferenca"]))
+    gravar("handicap_kills", {"mercado": "Handicap de kills (linha principal)",
+                              "so_kills": so_kills, "com_vitoria": com_vit})
     return 0
 
 

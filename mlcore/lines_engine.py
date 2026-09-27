@@ -611,6 +611,67 @@ def _prob_acima_pela_forma(metric: str, mean: float, line: float):
     return float(1.0 - (i / len(quantis)))
 
 
+# ---------------------------------------------------------------------------
+# O TOTAL DE KILLS REAJUSTADO TODA SEMANA (25/09/2026)
+#
+# A conta servida do total de kills (normal com a media V0+Dixon-Coles)
+# esta descalibrada: onde diz 40%, acontece 37%. O conserto e uma reta
+# (total real ~ a + b x media) com a forma real do erro, REFEITA TODA SEMANA
+# com os ultimos 60 dias (tools/gerar_kills_recalibrado.py): o nivel de kills
+# anda, e o mesmo conserto ajustado uma vez so piorou (gate de 23/09).
+#
+# Prova cega 23/06-21/09/2026, refeito semanalmente: Brier 0,23236 -> 0,22940
+# (+0,0030, IC95 [+0,0006, +0,0054]); calibracao 2,19 -> 1,69 pp.
+#
+# TRAVA DE IDADE: mais de KILLS_RECAL_MAX_DIAS e o arquivo e ignorado e volta
+# a curva de sempre -- ajuste velho e exatamente o que falhou.
+# ---------------------------------------------------------------------------
+KILLS_RECAL_MAX_DIAS = 21
+_KILLS_RECAL_CACHE: Dict[str, Any] = {}
+
+
+def _kills_recalibrado(hoje: Optional[Any] = None) -> Optional[Dict[str, Any]]:
+    """O reajuste semanal, ou None (ausente, quebrado ou velho demais)."""
+    if "art" not in _KILLS_RECAL_CACHE:
+        art = None
+        try:
+            import json as _json
+            from pathlib import Path as _Path
+            alvo = _Path(__file__).resolve().parents[1] / "kills_recalibrado.json"
+            if alvo.exists():
+                d = _json.loads(alvo.read_text(encoding="utf-8"))
+                q, c = d.get("quantis"), d.get("coef")
+                if (isinstance(q, list) and len(q) >= 50 and q == sorted(q)
+                        and isinstance(c, list) and len(c) == 2):
+                    art = d
+        except Exception:
+            art = None
+        _KILLS_RECAL_CACHE["art"] = art
+    art = _KILLS_RECAL_CACHE["art"]
+    if not art:
+        return None
+    try:
+        from datetime import date as _date
+        gerado = _date.fromisoformat(str(art.get("gerado_em"))[:10])
+        ref = hoje if hoje is not None else _date.today()
+        if (ref - gerado).days > KILLS_RECAL_MAX_DIAS:
+            return None
+    except (TypeError, ValueError):
+        return None
+    return art
+
+
+def _prob_kills_recalibrado(mean: float, line: float) -> Optional[float]:
+    art = _kills_recalibrado()
+    if art is None or not math.isfinite(float(mean)):
+        return None
+    import bisect
+    a, b = float(art["coef"][0]), float(art["coef"][1])
+    q = art["quantis"]
+    folga = float(line) - (a + b * float(mean))
+    return float(1.0 - bisect.bisect_right(q, folga) / len(q))
+
+
 def prob_over_from_total(total: MatchupTotals, line: float,
                          metric: Optional[str] = None) -> float:
     """Probability that integer total is OVER a .5 line.
@@ -630,6 +691,10 @@ def prob_over_from_total(total: MatchupTotals, line: float,
         p = _prob_acima_pela_forma(str(metric), float(total.mean), float(line))
         if p is not None:
             return float(min(max(p, 0.0), 1.0))
+        if str(metric) == "kills":
+            p = _prob_kills_recalibrado(float(total.mean), float(line))
+            if p is not None:
+                return float(min(max(p, 0.0), 1.0))
 
     if total.dist == "normal":
         # continuity correction for .5 lines is basically the same as threshold
