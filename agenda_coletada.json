@@ -1,31 +1,31 @@
 {
-  "gerado_em": "2026-09-27T11:15:46-03:00",
+  "gerado_em": "2026-09-27T15:38:25-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 26,
     "passados": 0,
-    "indefinidos": 16,
-    "sem_dois_times": 0
+    "indefinidos": 26,
+    "sem_dois_times": 1
   },
   "jogos": [
     {
       "date": "27/09",
       "time": "13:00",
       "league": "CBLOL",
-      "teamA_raw": "LOS",
-      "teamB_raw": "LOUD",
+      "teamA_raw": "LOUD",
+      "teamB_raw": "LOS",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-09-27T16:00:00Z"
     },
     {
       "date": "27/09",
       "time": "13:00",
       "league": "EMEA Masters",
-      "teamA_raw": "TLN Pirates",
-      "teamB_raw": "BOMBA Team",
+      "teamA_raw": "BOMBA Team",
+      "teamB_raw": "TLN Pirates",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-27T16:00:00Z"
@@ -44,8 +44,8 @@
       "date": "27/09",
       "time": "13:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Heretics Academy",
-      "teamB_raw": "Senshi eSports",
+      "teamA_raw": "Senshi eSports",
+      "teamB_raw": "Heretics Academy",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-27T16:00:00Z"
@@ -54,8 +54,8 @@
       "date": "27/09",
       "time": "13:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Colossal Gaming",
-      "teamB_raw": "Ruddy Corporation",
+      "teamA_raw": "Ruddy Corporation",
+      "teamB_raw": "Colossal Gaming",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-27T16:00:00Z"
@@ -94,8 +94,8 @@
       "date": "27/09",
       "time": "14:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Frites Esports Club",
-      "teamB_raw": "LODIS",
+      "teamA_raw": "LODIS",
+      "teamB_raw": "Frites Esports Club",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-27T17:00:00Z"
@@ -104,8 +104,8 @@
       "date": "27/09",
       "time": "15:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Berlin International Gaming",
-      "teamB_raw": "Valerion",
+      "teamA_raw": "Valerion",
+      "teamB_raw": "Berlin International Gaming",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-27T18:00:00Z"
@@ -114,8 +114,8 @@
       "date": "27/09",
       "time": "15:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Karmine Corp Blue",
-      "teamB_raw": "UCAM Esports Club",
+      "teamA_raw": "UCAM Esports Club",
+      "teamB_raw": "Karmine Corp Blue",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-27T18:00:00Z"
@@ -124,8 +124,8 @@
       "date": "27/09",
       "time": "15:00",
       "league": "EMEA Masters",
-      "teamA_raw": "PCIFIC Esports",
-      "teamB_raw": "The Secret Club",
+      "teamA_raw": "The Secret Club",
+      "teamB_raw": "PCIFIC Esports",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-27T18:00:00Z"
@@ -174,8 +174,8 @@
       "date": "27/09",
       "time": "16:00",
       "league": "EMEA Masters",
-      "teamA_raw": "MAGAZA",
-      "teamB_raw": "Gamespace M.C.",
+      "teamA_raw": "Gamespace M.C.",
+      "teamB_raw": "MAGAZA",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-27T19:00:00Z"
@@ -249,6 +249,36 @@
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-29T02:30:00Z"
+    },
+    {
+      "date": "28/09",
+      "time": "23:30",
+      "league": "Asian Games",
+      "teamA_raw": "Viet Nam",
+      "teamB_raw": "Malaysia",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-29T02:30:00Z"
+    },
+    {
+      "date": "29/09",
+      "time": "02:00",
+      "league": "Asian Games",
+      "teamA_raw": "Saudi Arabia",
+      "teamB_raw": "Malaysia",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-29T05:00:00Z"
+    },
+    {
+      "date": "29/09",
+      "time": "02:00",
+      "league": "Asian Games",
+      "teamA_raw": "Viet Nam",
+      "teamB_raw": "United Arab Emirates",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-29T05:00:00Z"
     }
   ]
 }
