@@ -6,6 +6,11 @@ from pathlib import Path
 
 from app_core.ui_labels import MARKET_TAB_NAMES
 from app_core.text_normalization import _fix_mojibake_text, _canonicalize_tab_labels
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
+
 
 
 class UITestMojibakeGuardrails(unittest.TestCase):
@@ -13,6 +18,7 @@ class UITestMojibakeGuardrails(unittest.TestCase):
         p = Path("plays_app.py")
         return p.read_text(encoding="utf-8")
 
+    @so_no_lol("usa o plays_app.py, o app do LoL")
     def test_plays_app_is_valid_utf8(self) -> None:
         src = self._load_source()
         self.assertTrue(len(src) > 1000)
@@ -52,6 +58,7 @@ class UITestMojibakeGuardrails(unittest.TestCase):
         self.assertEqual(cons_count, 1)
         self.assertEqual(out[1], "Consistência de Mercado (Laplace)")
 
+    @so_no_lol("usa o plays_app.py, o app do LoL")
     def test_market_tab_labels_are_canonical(self) -> None:
         src = self._load_source()
         # list(_MARKET_TAB_NAMES) moved to consistencia_tab_core.py when TAB_CONS was extracted
@@ -66,6 +73,7 @@ class UITestMojibakeGuardrails(unittest.TestCase):
         self.assertIn("Barões", MARKET_TAB_NAMES)
         self.assertNotIn("Seletor R?pido", MARKET_TAB_NAMES)
 
+    @so_no_lol("usa o plays_app.py, o app do LoL")
     def test_common_broken_ui_tokens_not_present(self) -> None:
         src = self._load_source()
         # Ignore the correction dictionary block itself; broken tokens are expected there as keys.
@@ -79,6 +87,7 @@ class UITestMojibakeGuardrails(unittest.TestCase):
         for tok in banned:
             self.assertNotIn(tok, src_no_dict, f"broken token still present outside mapper: {tok}")
 
+    @so_no_lol("usa o plays_app.py, o app do LoL")
     def test_tab_refs_use_canonical_tab_all_indices(self) -> None:
         src = self._load_source()
         # TAB constants are imported from app_core.tab_dispatcher and aliased locally

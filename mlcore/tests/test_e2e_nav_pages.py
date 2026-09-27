@@ -11,6 +11,10 @@ import subprocess
 import sys
 import unittest
 from pathlib import Path
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -18,6 +22,7 @@ _DRIVER = r"""
 import sys
 page = sys.argv[1]
 from streamlit.testing.v1 import AppTest
+
 at = AppTest.from_file("plays_app.py", default_timeout=900)
 at.run()
 entrar = [b for b in at.button if b.label == "Entrar no app"]
@@ -64,14 +69,17 @@ def _run_page(page: str) -> tuple[str, str]:
 
 
 class TestNavPagesSmoke(unittest.TestCase):
+    @so_no_lol("usa o plays_app.py, o app do LoL")
     def test_radar_page_renders(self) -> None:
         status, payload = _run_page("Radar")
         self.assertEqual(status, "OK", f"página Radar quebrou: {payload}")
 
+    @so_no_lol("usa o plays_app.py, o app do LoL")
     def test_meta_page_renders(self) -> None:
         status, payload = _run_page("Meta")
         self.assertEqual(status, "OK", f"página Meta quebrou: {payload}")
 
+    @so_no_lol("usa o plays_app.py, o app do LoL")
     def test_tecnico_page_renders(self) -> None:
         # Fecha a última página do top-nav sem cobertura E2E (força-tarefa 23/07):
         # endurece a rede pro refactor da espinha globals->ctx.
