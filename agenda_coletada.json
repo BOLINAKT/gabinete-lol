@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-09-26T20:07:31-03:00",
+  "gerado_em": "2026-09-26T22:44:08-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 39,
+    "ja_jogados": 40,
     "passados": 0,
     "indefinidos": 16,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "26/09",
-      "time": "17:00",
-      "league": "LCS",
-      "teamA_raw": "Shopify Rebellion",
-      "teamB_raw": "LYON",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-09-26T20:00:00Z"
-    },
     {
       "date": "27/09",
       "time": "03:00",
