@@ -29,6 +29,10 @@ import unittest
 from datetime import date
 
 from app_core import frescor_do_time_core as f
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 
 class TestOTextoQueElePediu(unittest.TestCase):
@@ -240,6 +244,7 @@ class TestAsTelasUsamAMesmaPeca(unittest.TestCase):
                 ".get(" in fonte and "opcoes" in fonte,
                 "%s precisa voltar do rotulo para o nome" % caminho)
 
+    @so_no_lol("usa o plays_app.py, o app do LoL")
     def test_o_app_monta_a_tabela_de_datas_uma_vez_so(self):
         fonte = self._fonte("plays_app.py")
         self.assertIn("_ultimo_jogo_por_time", fonte)

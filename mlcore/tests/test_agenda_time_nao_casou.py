@@ -26,6 +26,10 @@ from app_core.matchup_selection_core import (
     _resolver_time_salvo,
     set_pending_unresolved,
 )
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 TIMES = ["Barcząca Esports by Yumisu", "French Flair", "Gen.G", "T1"]
 
@@ -183,6 +187,7 @@ class TestOBOSobreviveAoEnsinarOApelido(unittest.TestCase):
         corte = src.split("Salvar e usar", 1)[1]
         self.assertIn("BO_OPTIONS", corte)
 
+    @so_no_lol("usa o plays_app.py, o app do LoL")
     def test_a_fila_e_aplicada_ANTES_dos_widgets(self):
         """Se fosse depois, o valor chegaria tarde e a tela mostraria o antigo.
 

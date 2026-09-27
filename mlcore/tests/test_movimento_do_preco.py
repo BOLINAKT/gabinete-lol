@@ -33,6 +33,10 @@ import unittest
 from pathlib import Path
 
 from app_core.odds_coletadas_core import carregar_movimento, movimento_da_linha
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 
 def _hist(tmp: Path, linhas):
@@ -147,6 +151,7 @@ class TestALeituraPertoDoApito(unittest.TestCase):
                 minutos.extend(x * 60 + m for x in horas)
         return sorted(minutos)
 
+    @so_no_lol("os horarios e o arquivo de partidas do robo de odds do LoL")
     def test_existe_a_janela_perto_do_apito(self):
         """A REGRA, nao o minuto: existe leitura na faixa de horario de jogo.
 
@@ -159,6 +164,7 @@ class TestALeituraPertoDoApito(unittest.TestCase):
         faixa = [c for c in self._crons() if "8-20" in c]
         self.assertTrue(faixa, "sumiu a leitura da faixa de jogos")
 
+    @so_no_lol("os horarios e o arquivo de partidas do robo de odds do LoL")
     def test_a_base_de_3_em_3_horas_continua(self):
         """Ela e quem constroi o historico de MOVIMENTO do preco."""
         self.assertTrue(any(c.startswith("25 ") for c in self._crons()))
@@ -187,6 +193,7 @@ class TestALeituraPertoDoApito(unittest.TestCase):
                 self.assertLessEqual(m, 55, "leitura marcada quase na hora cheia")
                 self.assertGreaterEqual(60 - m, 5, "menos de 5 min de folga")
 
+    @so_no_lol("os horarios e o arquivo de partidas do robo de odds do LoL")
     def test_ha_MAIS_DE_UMA_tentativa_por_hora(self):
         """MEDIDO em 17/09/2026: com uma tentativa so, 14 de 21 janelas nao
         aconteceram (67%). Nenhum bloqueio da casa, nenhum erro -- elas
@@ -261,6 +268,7 @@ class TestQuemJogavaFicaGravado(unittest.TestCase):
         yml = (raiz / ".github" / "workflows" / "odds.yml").read_text(encoding="utf-8")
         self.assertIn("odds_pinnacle_partidas.jsonl", yml)
 
+    @so_no_lol("os horarios e o arquivo de partidas do robo de odds do LoL")
     def test_o_arquivo_ja_tem_as_partidas_recuperadas(self):
         """O passado foi preenchido a partir do git, uma vez so."""
         import json

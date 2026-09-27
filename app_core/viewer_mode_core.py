@@ -124,6 +124,20 @@ _DISPATCH_COOLDOWN_S = 180
 _WORKFLOW_FILE = "retreino.yml"
 
 
+def _workflow_do_repo() -> str:
+    """O robo que o botao acorda, DESTE repositorio (27/09/2026).
+
+    O Dota nao tem `retreino.yml`: la o robo que baixa os dados e retreina e o
+    `dados_diarios_dota.yml`. Antes o Dota apontava para `dados_diarios.yml`,
+    que tambem nao existe la -- o botao do Dota nunca funcionou. Achado ao
+    juntar o motor dos dois apps.
+    """
+    raiz = Path(__file__).resolve().parents[1]
+    if (raiz / "dota_paths.py").exists():
+        return "dados_diarios_dota.yml"
+    return _WORKFLOW_FILE
+
+
 def _gh_dispatch_config() -> tuple[str, str]:
     """(token, repo) dos secrets/env; token vazio = botão não aparece."""
     tok = str(os.environ.get("GABINETE_GH_TOKEN", "") or "").strip()
@@ -148,7 +162,7 @@ def dispatch_data_workflow(*, token: str, repo: str, post_fn: Any = None) -> tup
     porque apagar e barato depois; o que nao pode e alguem ler isto e achar
     que o app dispara alguma coisa hoje. Nao dispara.
     """
-    url = f"https://api.github.com/repos/{repo}/actions/workflows/{_WORKFLOW_FILE}/dispatches"
+    url = f"https://api.github.com/repos/{repo}/actions/workflows/{_workflow_do_repo()}/dispatches"
     try:
         if post_fn is None:
             import requests
@@ -352,7 +366,7 @@ def check_publish_progress(
                 return "ok" if str(arr[0].get("conclusion") or "") == "success" else "falhou"
             return "rodando"
 
-        out["retrain"] = _run_state("retreino.yml")
+        out["retrain"] = _run_state(_workflow_do_repo())
         # data_run (robô de dados) não existe mais — o CSV vem do upload manual.
         # Mantido "ok" para não travar o acompanhamento que espera esse passo.
         if include_data_run:

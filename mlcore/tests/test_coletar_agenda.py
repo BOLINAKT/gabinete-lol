@@ -20,6 +20,12 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+try:
+    from mlcore.tests._repo import E_O_DOTA as _E_O_DOTA
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import E_O_DOTA as _E_O_DOTA
+if _E_O_DOTA:
+    raise unittest.SkipTest("so no LoL: importa uma ferramenta de tools/ que so existe no LoL")
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 

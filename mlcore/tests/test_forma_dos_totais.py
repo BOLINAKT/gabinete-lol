@@ -38,6 +38,10 @@ from pathlib import Path
 
 import mlcore.lines_engine as le
 from mlcore.lines_engine import MatchupTotals, prob_over_from_total, total_over_prob
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 RAIZ = Path(__file__).resolve().parents[2]
 
@@ -191,6 +195,7 @@ class TestOArtefatoVemDoCaminhoDaTela(unittest.TestCase):
         d = json.loads(alvo.read_text(encoding="utf-8"))
         self.assertIn("servido", str(d.get("_caminho") or ""))
 
+    @so_no_lol("so vale para o LoL")
     def test_o_gerador_le_a_medicao_servida(self):
         fonte = (RAIZ / "tools" / "gerar_forma_dos_totais.py").read_text(encoding="utf-8")
         self.assertIn("gate_totais_registros_servido.json", fonte)

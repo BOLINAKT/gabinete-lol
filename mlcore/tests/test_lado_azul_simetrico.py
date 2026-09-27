@@ -34,6 +34,10 @@ import math
 import unittest
 
 from app_core import ml_artifact_pricing_core as m
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 
 class _CalibradorComVies:
@@ -125,12 +129,14 @@ class TestOsOUTROSLugaresContinuamSimetrizando(unittest.TestCase):
 class TestAMedicaoExiste(unittest.TestCase):
     """Numero central do app nao se muda no palpite."""
 
+    @so_no_lol("a medicao do lado azul foi feita com dados do LoL")
     def test_a_ferramenta_de_medicao_esta_no_repositorio(self):
         from pathlib import Path
         raiz = Path(__file__).resolve().parents[2]
         alvo = raiz / "tools" / "medir_lado_azul.py"
         self.assertTrue(alvo.exists(), "a medicao que justificou o conserto sumiu")
 
+    @so_no_lol("a medicao do lado azul foi feita com dados do LoL")
     def test_a_medicao_avalia_as_DUAS_ordens(self):
         from pathlib import Path
         raiz = Path(__file__).resolve().parents[2]
@@ -138,6 +144,7 @@ class TestAMedicaoExiste(unittest.TestCase):
         self.assertIn("_inverter", src)
         self.assertIn("ordem arbitraria", src)
 
+    @so_no_lol("a medicao do lado azul foi feita com dados do LoL")
     def test_a_medicao_NAO_reimplementa_o_caminho(self):
         """PRINCIPIO V: usa replay_pre_jogo, que existe para isso."""
         from pathlib import Path

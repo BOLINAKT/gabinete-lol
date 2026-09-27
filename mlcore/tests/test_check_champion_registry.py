@@ -14,6 +14,10 @@ from __future__ import annotations
 import unittest
 
 from app_core.champion_knowledge_core import _norm_key
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 
 class TestChaveDeCampeao(unittest.TestCase):
@@ -45,6 +49,7 @@ class TestChaveDeCampeao(unittest.TestCase):
 
 
 class TestRegistroLocal(unittest.TestCase):
+    @so_no_lol("campeoes do LoL")
     def test_locke_esta_no_registro(self) -> None:
         """O campeao que ele sentiu falta — trava para nao sumir num rebuild."""
         from app_core.champion_knowledge_core import load_champion_knowledge_registry

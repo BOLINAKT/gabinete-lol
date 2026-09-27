@@ -266,14 +266,12 @@ def main() -> None:
 
     art = MLArtifact.load_json(str(art_path))
 
-    # Ate onde os RATINGS realmente foram. ratings_max_date vem primeiro porque
+    # Ate onde os RATINGS realmente foram. Preferimos ratings_max_date porque
     # data_max_date grava o fim de TODOS os dados, incluindo o holdout que o
-    # train_offline NAO aplicou aos ratings. Se o artifact vier de um
-    # train_offline (e nao deste incremental), a diferenca entre os dois e o
-    # buraco que este script precisa fechar — sem isso ele responderia
-    # "0 jogos novos" com o modelo defasado (16/08/2026, portado do Dota, onde o
-    # sintoma era um time do TI com 16 jogos e games_played=0).
-    # Artifact antigo nao tem a chave: cai em data_max_date, igual a antes.
+    # treino NAO aplicou aos ratings (achado 16/08/2026). Enquanto so existia
+    # data_max_date este script respondia "0 jogos novos" com o modelo 30 dias
+    # atrasado — Iron Wing tinha 16 jogos em 2026 e games_played=0.
+    # Artefato antigo nao tem a chave nova: cai em data_max_date, igual a antes.
     _meta = art.meta or {}
     data_max = _parse_dt(_meta.get("ratings_max_date")) or _parse_dt(_meta.get("data_max_date"))
     trained_at = _parse_dt(_meta.get("trained_at"))

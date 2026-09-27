@@ -25,6 +25,10 @@ import unittest
 from datetime import date
 
 from app_core import casar_time_core as ct
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 HOJE = date(2026, 9, 21)
 TIMES = ["Team Liquid", "G2 Esports", "G2 NORD", "Invictus Gaming",
@@ -169,6 +173,7 @@ class TestNadaEGravadoSemEle(unittest.TestCase):
         self.assertIn("Esta certo, guardar", agenda)
         self.assertIn("_mostrar_casados_sozinhos", aba)
 
+    @so_no_lol("so vale para o LoL")
     def test_a_medicao_usa_a_regra_de_PRODUCAO(self):
         """Uma copia na ferramenta mediria uma regra e a tela serviria outra."""
         from pathlib import Path

@@ -14,6 +14,10 @@ from datetime import date, timedelta
 
 import mlcore.lines_engine as le
 from mlcore.lines_engine import MatchupTotals, prob_over_from_total
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 
 def _art(dias_atras=0, a=8.0, b=0.75):
@@ -79,6 +83,7 @@ class TestATravaDeIdade(_ComArtefato):
 
 class TestORoboRefazTodaSemana(unittest.TestCase):
 
+    @so_no_lol("so vale para o LoL")
     def test_o_robo_semanal_gera_o_reajuste(self):
         from pathlib import Path
         raiz = Path(__file__).resolve().parents[2]

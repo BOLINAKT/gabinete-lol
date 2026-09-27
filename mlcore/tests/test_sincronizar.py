@@ -22,6 +22,10 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 RAIZ = Path(__file__).resolve().parents[2]
 ARQ = RAIZ / "tools" / "sincronizar.py"
@@ -88,11 +92,13 @@ class _Cenario(unittest.TestCase):
 
 class TestOCaminhoFeliz(_Cenario):
 
+    @so_no_lol("so vale para o LoL")
     def test_em_dia_nao_faz_nada(self):
         r = self.m.sincronizar(self.pc)
         self.assertTrue(r["ok"])
         self.assertEqual(r["trazidas"], 0)
 
+    @so_no_lol("so vale para o LoL")
     def test_atras_e_limpo_traz_tudo(self):
         self.robo_publica("dados.csv", "v2\n")
         self.robo_publica("dados.csv", "v3\n")
@@ -105,6 +111,7 @@ class TestOCaminhoFeliz(_Cenario):
 class TestArquivoGeradoMexidoDosDoisLados(_Cenario):
     """O caso real: o app reescreve o modelo aqui, o robo publica outro."""
 
+    @so_no_lol("so vale para o LoL")
     def test_troca_pelo_do_robo_e_GUARDA_o_daqui(self):
         (self.pc / "modelo.json").write_text('{"v":"local"}\n', encoding="utf-8")
         self.robo_publica("modelo.json", '{"v":2}\n')
@@ -116,6 +123,7 @@ class TestArquivoGeradoMexidoDosDoisLados(_Cenario):
         self.assertEqual(len(copias), 1, "nao guardou a copia fisica")
         self.assertEqual(copias[0].read_text(encoding="utf-8"), '{"v":"local"}\n')
 
+    @so_no_lol("so vale para o LoL")
     def test_arquivo_novo_aqui_que_o_robo_tambem_cria(self):
         (self.pc / "relatorio.json").write_text("local\n", encoding="utf-8")
         self.robo_publica("relatorio.json", "robo\n")
@@ -127,6 +135,7 @@ class TestArquivoGeradoMexidoDosDoisLados(_Cenario):
 class TestNADADoQueEleFezSePerde(_Cenario):
     """A regra que mais importa."""
 
+    @so_no_lol("so vale para o LoL")
     def test_codigo_mexido_dos_dois_lados_PARA_e_nao_toca_em_nada(self):
         (self.pc / "app.py").write_text("print('meu trabalho')\n", encoding="utf-8")
         self.robo_publica("app.py", "print(2)\n")
@@ -135,6 +144,7 @@ class TestNADADoQueEleFezSePerde(_Cenario):
         self.assertIn("app.py", r["aviso"])
         self.assertEqual(self.ler("app.py"), "print('meu trabalho')\n")
 
+    @so_no_lol("so vale para o LoL")
     def test_apelidos_mexidos_dos_dois_lados_PARA(self):
         (self.robo / "user_team_aliases.json").write_text("{}\n", encoding="utf-8")
         _g(self.robo, "add", ".")
@@ -148,6 +158,7 @@ class TestNADADoQueEleFezSePerde(_Cenario):
         self.assertFalse(r["ok"])
         self.assertIn("Team Liquid", self.ler("user_team_aliases.json"))
 
+    @so_no_lol("so vale para o LoL")
     def test_codigo_mexido_SO_aqui_e_preservado_e_a_atualizacao_segue(self):
         """O caso do livro_caixa.py do Dota: mudanca dele, que o robo nao toca."""
         (self.pc / "app.py").write_text("print('meu')\n", encoding="utf-8")
@@ -157,6 +168,7 @@ class TestNADADoQueEleFezSePerde(_Cenario):
         self.assertEqual(self.ler("dados.csv"), "v2\n")
         self.assertEqual(self.ler("app.py"), "print('meu')\n")
 
+    @so_no_lol("so vale para o LoL")
     def test_commits_feitos_nesta_maquina_sao_mantidos(self):
         (self.pc / "novo.py").write_text("x = 1\n", encoding="utf-8")
         _g(self.pc, "add", "novo.py")
@@ -167,6 +179,7 @@ class TestNADADoQueEleFezSePerde(_Cenario):
         self.assertEqual(self.ler("dados.csv"), "v2\n")
         self.assertIn("trabalho local", _g(self.pc, "log", "--oneline"))
 
+    @so_no_lol("so vale para o LoL")
     def test_juncao_que_falha_e_DESFEITA_e_devolve_os_arquivos(self):
         (self.pc / "dados.csv").write_text("commit local\n", encoding="utf-8")
         _g(self.pc, "commit", "-am", "local mexeu no dado")
@@ -184,23 +197,27 @@ class TestNADADoQueEleFezSePerde(_Cenario):
 
 class TestOAppAbreDeQualquerJeito(_Cenario):
 
+    @so_no_lol("so vale para o LoL")
     def test_sem_conexao_so_avisa(self):
         _g(self.pc, "remote", "set-url", "origin", str(self.tmp / "nao_existe.git"))
         r = self.m.sincronizar(self.pc)
         self.assertFalse(r["ok"])
         self.assertIn("conexao", r["aviso"])
 
+    @so_no_lol("so vale para o LoL")
     def test_sem_github_configurado_so_avisa(self):
         _g(self.pc, "branch", "--unset-upstream")
         r = self.m.sincronizar(self.pc)
         self.assertFalse(r["ok"])
 
+    @so_no_lol("so vale para o LoL")
     def test_no_meio_de_outra_operacao_nao_mexe(self):
         (self.pc / ".git" / "MERGE_HEAD").write_text("x", encoding="utf-8")
         r = self.m.sincronizar(self.pc)
         self.assertFalse(r["ok"])
         self.assertIn("outra operacao", r["aviso"])
 
+    @so_no_lol("so vale para o LoL")
     def test_main_sempre_devolve_zero(self):
         """O lancador so segue se o codigo de saida deixar."""
         import inspect
@@ -214,6 +231,7 @@ class TestOQueEProtegido(unittest.TestCase):
     def setUp(self):
         self.m = _carregar()
 
+    @so_no_lol("so vale para o LoL")
     def test_codigo_e_configuracao_sao_protegidos(self):
         for c in ("app.py", "tools/x.py", "CLAUDE.md", "RUN.bat", "a.ps1",
                   "requirements.txt", ".github/workflows/odds.yml",
@@ -221,6 +239,7 @@ class TestOQueEProtegido(unittest.TestCase):
                   ".gitignore"):
             self.assertTrue(self.m.protegido(c), c)
 
+    @so_no_lol("so vale para o LoL")
     def test_dados_e_modelos_nao_sao(self):
         for c in ("data.csv", "live_models/minute_10/lgb_model.txt",
                   "evidence/regua_28.json", "odds_pinnacle.json",
@@ -231,6 +250,7 @@ class TestOQueEProtegido(unittest.TestCase):
 class TestOsDoisRepositoriosTemOMesmoArquivo(unittest.TestCase):
     """Regra de arquivo compartilhado do Dota: identico nos dois."""
 
+    @so_no_lol("so vale para o LoL")
     def test_copia_do_dota_e_identica(self):
         dota = RAIZ.parent / "GabineteDOTA" / "sincronizar.py"
         if not dota.exists():

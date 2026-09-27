@@ -33,6 +33,10 @@ from __future__ import annotations
 import subprocess
 import unittest
 from pathlib import Path
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 
 def _raiz() -> Path:
@@ -63,6 +67,7 @@ def _rastreado(caminho: str) -> bool:
     return bool(r.stdout.strip())
 
 
+@so_no_lol("depende de SETUP.md, que so existe no LoL")
 class TestSetupDizAVerdade(unittest.TestCase):
 
     @classmethod

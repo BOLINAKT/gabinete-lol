@@ -21,6 +21,12 @@ import importlib.util as _iu
 import subprocess
 import sys
 import unittest
+try:
+    from mlcore.tests._repo import E_O_DOTA as _E_O_DOTA
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import E_O_DOTA as _E_O_DOTA
+if _E_O_DOTA:
+    raise unittest.SkipTest("so no LoL: so vale para o LoL")
 from pathlib import Path
 
 

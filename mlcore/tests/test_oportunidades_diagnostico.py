@@ -24,6 +24,10 @@ import inspect
 import unittest
 
 from app_core import oportunidades_tab_core as m
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 FONTE = inspect.getsource(m)
 
@@ -179,6 +183,7 @@ class TestAAbaLeOMESMONumeroQueOCard(unittest.TestCase):
     implementacoes da probabilidade pre-jogo.
     """
 
+    @so_no_lol("usa o plays_app.py, o app do LoL")
     def test_a_aba_recebe_o_numero_do_FIM_do_caminho(self):
         from pathlib import Path
         raiz = Path(__file__).resolve().parents[2]
@@ -187,6 +192,7 @@ class TestAAbaLeOMESMONumeroQueOCard(unittest.TestCase):
         self.assertIn('_p_map_used', corte)
         self.assertIn('_p_series_used', corte)
 
+    @so_no_lol("usa o plays_app.py, o app do LoL")
     def test_a_expressao_e_a_MESMA_que_o_card_usa(self):
         """Letra por letra: se as duas divergirem de novo, os numeros
         divergem junto, e o sintoma volta a ser um print dele."""

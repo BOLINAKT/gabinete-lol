@@ -14,6 +14,10 @@ import unittest
 from pathlib import Path
 
 from tools.regua_pinnacle_comum import resumo
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 RAIZ = Path(__file__).resolve().parents[2]
 
@@ -72,16 +76,19 @@ class TestATelaLe(unittest.TestCase):
 
 class TestORobo(unittest.TestCase):
 
+    @so_no_lol("o .gitignore do LoL (o placar das reguas e so do LoL)")
     def test_o_robo_semanal_roda_as_reguas_e_guarda_o_placar(self):
         yml = (RAIZ / ".github" / "workflows" / "reguas_pinnacle.yml").read_text(encoding="utf-8")
         self.assertIn("python tools/abates_contra_a_casa.py", yml)
         self.assertIn("python tools/handicap_contra_a_casa.py", yml)
         self.assertIn("evidence/regua_pinnacle_total_kills.json", yml)
 
+    @so_no_lol("o .gitignore do LoL (o placar das reguas e so do LoL)")
     def test_o_placar_e_versionado(self):
         gi = (RAIZ / ".gitignore").read_text(encoding="utf-8")
         self.assertIn("!evidence/regua_pinnacle_*.json", gi)
 
+    @so_no_lol("o .gitignore do LoL (o placar das reguas e so do LoL)")
     def test_a_regua_do_handicap_mede_a_conta_da_TELA(self):
         fonte = (RAIZ / "tools" / "handicap_contra_a_casa.py").read_text(encoding="utf-8")
         self.assertIn("from mlcore.abates_por_time import prob_cobre_handicap", fonte)

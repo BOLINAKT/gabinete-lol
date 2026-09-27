@@ -1,4 +1,11 @@
-"""NOTA POR LIGA na tela — onde o modelo merece confiança (pedido dele 24/07).
+"""[COPIA DO REPO DO LOL — mantenha os dois iguais.]
+
+No Dota "liga" e um TORNEIO (DreamLeague, PGL Wallachia, ESL One). O resto
+vale igual, e os numeros daqui sao outros: os piores torneios batem ECE 0.19
+e 0.25, muito acima de qualquer liga de LoL — e exatamente por isso o aviso
+importa mais aqui.
+
+NOTA POR LIGA na tela — onde o modelo merece confiança (pedido dele 24/07).
 
 A nota geral (8.63) é média de ligas muito diferentes. Medido na season 2026:
 a LPL tem a MELHOR calibração de todas (ECE 0.019) e mesmo assim a nota mais
@@ -9,7 +16,8 @@ Por isso a tela mostra as DUAS coisas, que respondem perguntas diferentes:
   nota        -> quanta previsibilidade existe ali (quanto edge dá pra extrair)
   calibração  -> se o % que o modelo diz é honesto (se o EV calculado é real)
 
-Fonte: evidence/nota_por_liga.json, escrito por tools/nota_por_liga.py.
+Fonte: evidence/nota_por_liga.json — no LoL escrito por tools/nota_por_liga.py,
+no Dota por dota_scorecard.py (mesmo schema, de proposito).
 """
 from __future__ import annotations
 

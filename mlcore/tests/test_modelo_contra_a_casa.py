@@ -32,6 +32,10 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 RAIZ = Path(__file__).resolve().parents[2]
 ARQ = RAIZ / "tools" / "modelo_contra_a_casa.py"
@@ -64,22 +68,26 @@ class TestAMargemDaCasaSaiAntes(unittest.TestCase):
             m.PRECOS = _historico(Path(d), linhas)
             return m.precos_do_vencedor()
 
+    @so_no_lol("so vale para o LoL")
     def test_as_duas_probabilidades_somam_um(self):
         r = self._ler([_preco(1, "home", 2.00, "2026-09-20T10:00"),
                        _preco(1, "away", 1.80, "2026-09-20T10:00")])
         self.assertAlmostEqual(r[1]["casa"] + r[1]["fora"], 1.0, places=9)
 
+    @so_no_lol("so vale para o LoL")
     def test_a_margem_e_a_que_a_casa_cobra(self):
         """1/2.00 + 1/1.80 = 1,0556 -> 5,56%."""
         r = self._ler([_preco(1, "home", 2.00, "2026-09-20T10:00"),
                        _preco(1, "away", 1.80, "2026-09-20T10:00")])
         self.assertAlmostEqual(r[1]["margem_pct"], 5.5556, places=3)
 
+    @so_no_lol("so vale para o LoL")
     def test_odds_iguais_dao_CINQUENTA_por_cento_a_cada_lado(self):
         r = self._ler([_preco(1, "home", 1.90, "2026-09-20T10:00"),
                        _preco(1, "away", 1.90, "2026-09-20T10:00")])
         self.assertAlmostEqual(r[1]["casa"], 0.5, places=9)
 
+    @so_no_lol("so vale para o LoL")
     def test_favorito_fica_com_a_maior_probabilidade(self):
         r = self._ler([_preco(1, "home", 1.20, "2026-09-20T10:00"),
                        _preco(1, "away", 4.50, "2026-09-20T10:00")])
@@ -99,6 +107,7 @@ class TestPegaAULTIMALeitura(unittest.TestCase):
             m.PRECOS = _historico(Path(d), linhas)
             return m.precos_do_vencedor()
 
+    @so_no_lol("so vale para o LoL")
     def test_usa_a_leitura_mais_recente_de_cada_lado(self):
         r = self._ler([_preco(1, "home", 3.00, "2026-09-20T08:00"),
                        _preco(1, "home", 2.00, "2026-09-20T19:00"),
@@ -107,26 +116,31 @@ class TestPegaAULTIMALeitura(unittest.TestCase):
         self.assertAlmostEqual(r[1]["odd_casa"], 2.00)
         self.assertAlmostEqual(r[1]["odd_fora"], 1.80)
 
+    @so_no_lol("so vale para o LoL")
     def test_um_lado_so_NAO_vira_probabilidade(self):
         """Sem os dois lados nao da para tirar a margem. Inventar o outro lado
         seria transformar ausencia em numero."""
         self.assertEqual(self._ler([_preco(1, "home", 2.00, "2026-09-20T10:00")]), {})
 
+    @so_no_lol("so vale para o LoL")
     def test_linha_alternativa_fica_de_fora(self):
         self.assertEqual(
             self._ler([_preco(1, "home", 2.0, "t", alternativa=True),
                        _preco(1, "away", 1.8, "t", alternativa=True)]), {})
 
+    @so_no_lol("so vale para o LoL")
     def test_outro_mercado_nao_se_mistura(self):
         self.assertEqual(
             self._ler([_preco(1, "home", 2.0, "t", mercado="Total - Kills - mapa 1"),
                        _preco(1, "away", 1.8, "t", mercado="Total - Kills - mapa 1")]), {})
 
+    @so_no_lol("so vale para o LoL")
     def test_odd_impossivel_e_descartada(self):
         for ruim in (0.0, 1.0, -2.0, None, "x"):
             self.assertEqual(self._ler([_preco(1, "home", ruim, "t"),
                                         _preco(1, "away", 1.8, "t")]), {})
 
+    @so_no_lol("so vale para o LoL")
     def test_linha_torta_no_arquivo_nao_apaga_o_resto(self):
         m = _carregar()
         with tempfile.TemporaryDirectory() as d:
@@ -144,10 +158,12 @@ class TestNaoAfirmaComPoucasPartidas(unittest.TestCase):
     def setUp(self):
         self.fonte = ARQ.read_text(encoding="utf-8")
 
+    @so_no_lol("so vale para o LoL")
     def test_existe_um_piso_de_partidas(self):
         m = _carregar()
         self.assertGreaterEqual(m.PARTIDAS_MINIMAS, 100)
 
+    @so_no_lol("so vale para o LoL")
     def test_abaixo_do_piso_a_conclusao_e_BLOQUEADA(self):
         self.assertIn("if n < PARTIDAS_MINIMAS:", self.fonte)
         i_piso = self.fonte.index("if n < PARTIDAS_MINIMAS:")
@@ -155,6 +171,7 @@ class TestNaoAfirmaComPoucasPartidas(unittest.TestCase):
         self.assertLess(i_piso, i_afirma,
                         "o piso tem de ser conferido ANTES de qualquer afirmacao")
 
+    @so_no_lol("so vale para o LoL")
     def test_mostra_o_peso_da_partida_mais_influente(self):
         """Com poucos jogos, uma partida costuma decidir tudo. Esconder isso
         deixaria o numero parecer mais solido do que e."""
@@ -166,10 +183,12 @@ class TestNaoAdivinhaOTime(unittest.TestCase):
     def setUp(self):
         self.fonte = ARQ.read_text(encoding="utf-8")
 
+    @so_no_lol("so vale para o LoL")
     def test_usa_o_resolvedor_de_PRODUCAO(self):
         self.assertIn("from app_core.schedule_import_core import resolve_schedule_team",
                       self.fonte)
 
+    @so_no_lol("so vale para o LoL")
     def test_quem_nao_resolve_vai_para_SEM_APELIDO_e_nao_entra_na_conta(self):
         self.assertIn("sem_apelido.append", self.fonte)
         i_falha = self.fonte.index("sem_apelido.append")
@@ -178,11 +197,13 @@ class TestNaoAdivinhaOTime(unittest.TestCase):
         self.assertLess(i_continua, i_caso,
                         "partida sem apelido nao pode chegar na conta")
 
+    @so_no_lol("so vale para o LoL")
     def test_a_tela_DIZ_qual_nome_falta(self):
         """Sumir em silencio deixaria ele sem saber o que ensinar."""
         self.assertIn("SEM APELIDO ENSINADO", self.fonte)
         self.assertIn('x["falta"]', self.fonte)
 
+    @so_no_lol("so vale para o LoL")
     def test_NUNCA_escreve_no_arquivo_de_apelidos(self):
         """Uma vez eu gravei um apelido adivinhado e tive de desfazer."""
         i = self.fonte.index("user_team_aliases.json")
@@ -198,10 +219,12 @@ class TestOLadoCertoDaAposta(unittest.TestCase):
     def setUp(self):
         self.fonte = ARQ.read_text(encoding="utf-8")
 
+    @so_no_lol("so vale para o LoL")
     def test_tudo_e_visto_do_lado_AZUL(self):
         self.assertIn('azul_e_casa = str(r.team) == ca', self.fonte)
         self.assertIn('pr["casa"] if azul_e_casa else pr["fora"]', self.fonte)
 
+    @so_no_lol("so vale para o LoL")
     def test_so_o_MAPA_1_entra(self):
         """O mercado lido e 'Vencedor - mapa 1'; casar com outro mapa
         compararia precos de partidas diferentes."""
@@ -238,6 +261,7 @@ class TestAReguaJuntaAsMedicoes(unittest.TestCase):
         m.PASTA_REGUA = Path(d)
         return m
 
+    @so_no_lol("so vale para o LoL")
     def test_junta_dois_arquivos_da_mesma_familia(self):
         with tempfile.TemporaryDirectory() as d:
             m = self._pasta(d, {
@@ -249,6 +273,7 @@ class TestAReguaJuntaAsMedicoes(unittest.TestCase):
             self.assertEqual(sorted(modelo), ["G1", "G2", "G3"])
             self.assertEqual(resumo["jogos"], 3)
 
+    @so_no_lol("so vale para o LoL")
     def test_NAO_mistura_outra_variante_do_modelo(self):
         """"margem" e "elo" sao modelos diferentes. Junta-los mediria um
         Frankenstein que nunca existiu."""
@@ -262,6 +287,7 @@ class TestAReguaJuntaAsMedicoes(unittest.TestCase):
             self.assertIn("G1", modelo)
             self.assertNotIn("G9", modelo, "entrou jogo de outra variante")
 
+    @so_no_lol("so vale para o LoL")
     def test_jogo_repetido_fica_com_UM_valor_so_e_deterministico(self):
         with tempfile.TemporaryDirectory() as d:
             m = self._pasta(d, {
@@ -274,6 +300,7 @@ class TestAReguaJuntaAsMedicoes(unittest.TestCase):
             self.assertEqual(a["G1"], b["G1"], "o resultado mudou entre chamadas")
             self.assertEqual(resumo["repetidos"], 1)
 
+    @so_no_lol("so vale para o LoL")
     def test_DIZ_o_quanto_as_rodadas_divergem(self):
         """Se duas rodadas discordarem muito sobre o mesmo jogo, alguma delas
         deixou de ser comparavel -- e isso tem de aparecer, nao ser engolido."""
@@ -286,6 +313,7 @@ class TestAReguaJuntaAsMedicoes(unittest.TestCase):
             _, resumo = m.carregar_regua()
             self.assertAlmostEqual(resumo["divergencia_media"], 0.10, places=6)
 
+    @so_no_lol("so vale para o LoL")
     def test_arquivo_torto_nao_derruba_os_outros(self):
         with tempfile.TemporaryDirectory() as d:
             (Path(d) / "nota_honesta_base_agree_zz_diaria_hybrid_form_platt.json"
@@ -296,6 +324,7 @@ class TestAReguaJuntaAsMedicoes(unittest.TestCase):
             modelo, _ = m.carregar_regua()
             self.assertEqual(sorted(modelo), ["G1"])
 
+    @so_no_lol("so vale para o LoL")
     def test_pasta_vazia_devolve_vazio_e_diz_o_comando(self):
         with tempfile.TemporaryDirectory() as d:
             m = self._pasta(d, {})
@@ -305,6 +334,7 @@ class TestAReguaJuntaAsMedicoes(unittest.TestCase):
         fonte = ARQ.read_text(encoding="utf-8")
         self.assertIn("python tools/nota_honesta.py --marca base_agree", fonte)
 
+    @so_no_lol("so vale para o LoL")
     def test_o_comando_do_reforco_BARATO_esta_no_cabecalho(self):
         """Se o reforco nao estiver escrito, ninguem lembra de fazer."""
         fonte = ARQ.read_text(encoding="utf-8")

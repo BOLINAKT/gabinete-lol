@@ -26,6 +26,10 @@ import unittest
 import pandas as pd
 
 from mlcore.fusion_core import hybrid_momentum_blend
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 
 def _quadro(n, vitorias):
@@ -71,6 +75,7 @@ class TestOPadraoNaoMudouNada(unittest.TestCase):
         self.assertIn('ss.get("ml_hybrid_agree_damp", 1.0)', fonte,
                       "o caminho servido precisa cair em 1.0 por omissao")
 
+    @so_no_lol("so vale para o LoL")
     def test_a_REGUA_tambem_cai_em_1_0(self):
         from pathlib import Path
         raiz = Path(__file__).resolve().parents[2]
@@ -132,16 +137,20 @@ class TestAVarreduraNaoReimplementaOEstagio(unittest.TestCase):
         raiz = Path(__file__).resolve().parents[2]
         self.fonte = (raiz / "tools" / "varrer_agree.py").read_text(encoding="utf-8")
 
+    @so_no_lol("so vale para o LoL")
     def test_chama_a_funcao_de_producao(self):
         self.assertIn("from mlcore.fusion_core import hybrid_momentum_blend", self.fonte)
 
+    @so_no_lol("so vale para o LoL")
     def test_usa_os_pesos_GRAVADOS_e_nao_recalcula_o_interregional(self):
         self.assertIn('max_weight=float(x["w"])', self.fonte)
         self.assertNotIn("ml_interregional_hybrid_max_weight_mult", self.fonte)
 
+    @so_no_lol("so vale para o LoL")
     def test_a_nota_sai_da_funcao_oficial(self):
         self.assertIn("nota_de", self.fonte)
 
+    @so_no_lol("so vale para o LoL")
     def test_a_regua_grava_o_entrado_do_ultimo_estagio(self):
         from pathlib import Path
         raiz = Path(__file__).resolve().parents[2]

@@ -271,6 +271,16 @@ def build_retrain_command(
     envelhecendo pra sempre. Agora usa o orquestrador, que também atualiza o
     manifest de frescor no fim.
     """
+    # No Dota o orquestrador do LoL nao existe (o clone nao tem tools/) e o
+    # retreino falhava todo dia em silencio. A fase 6 daqui e run_phase6_live_dota,
+    # que treina E MEDE contra a previsao pre-jogo antes de salvar (16/08/2026).
+    _fase6_dota = Path(__file__).resolve().parents[1] / "run_phase6_live_dota.py"
+    if _fase6_dota.exists():
+        cmd = [sys.executable, "run_phase6_live_dota.py",
+               "--save-models-dir", str(save_models_dir)]
+        if extra_args:
+            cmd += list(extra_args)
+        return cmd
     cmd = [
         sys.executable, "tools/retrain_live_models_all.py",
         "--val-cutoff", str(val_cutoff),
@@ -296,6 +306,18 @@ def launch_retrain_background(
     """
     cmd = build_retrain_command(val_cutoff=val_cutoff, save_models_dir=save_models_dir)
     root = Path(str(project_root)).resolve()
+
+    # PRE-VOO (achado 16/08/2026): o Popen SUCEDE mesmo com o script inexistente,
+    # porque quem existe e o python.exe — quem falha e o Python depois, ao abrir o
+    # arquivo. Resultado: "ok: True", carimbo de tentativa gravado, e a unica
+    # pista era uma linha num retrain.log que ninguem abre.
+    # Foi assim que o Dota ficou SEM NENHUM modelo de estado ao vivo: o clone nao
+    # tem tools/retrain_live_models_all.py, o app tentava todo dia, "dava certo",
+    # e a aba mais validada do projeto simplesmente nao existia la.
+    _script = next((Path(str(c)) for c in cmd[1:2]), None)
+    if _script is not None and not (root / _script).exists() and not _script.is_absolute():
+        return {"ok": False, "command": cmd,
+                "error": f"script de retreino nao existe neste repositorio: {_script}"}
     log = Path(str(log_path)) if log_path else root / "live_models" / "retrain.log"
     log.parent.mkdir(parents=True, exist_ok=True)
     try:

@@ -43,9 +43,15 @@ class TestDispatchWorkflow(unittest.TestCase):
 
         ok, msg = dispatch_data_workflow(token="tok123", repo="X/y", post_fn=fake_post)
         self.assertTrue(ok, msg)
-        # aponta pro RETREINO desde 24/07 (o robô de dados foi removido: a quota
-        # do Google Drive do Oracle's Elixir impedia o download automático).
-        self.assertIn("/repos/X/y/actions/workflows/retreino.yml/dispatches", seen["url"])
+        # Cada repositorio acorda o SEU robo (27/09/2026): no LoL, o retreino;
+        # no Dota, o dados_diarios_dota.yml -- os unicos que existem em cada um.
+        from app_core.viewer_mode_core import _workflow_do_repo
+        esperado = _workflow_do_repo()
+        self.assertIn(esperado, ("retreino.yml", "dados_diarios_dota.yml"))
+        self.assertIn("/repos/X/y/actions/workflows/%s/dispatches" % esperado, seen["url"])
+        raiz = __import__("pathlib").Path(__file__).resolve().parents[2]
+        self.assertTrue((raiz / ".github" / "workflows" / esperado).exists(),
+                        "o botao aponta para um robo que nao existe neste repositorio")
         self.assertEqual(seen["auth"], "Bearer tok123")
 
     def test_non_204_is_explained_failure(self):

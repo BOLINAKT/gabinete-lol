@@ -12,6 +12,12 @@ import importlib.util
 import json
 import tempfile
 import unittest
+try:
+    from mlcore.tests._repo import E_O_DOTA as _E_O_DOTA
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import E_O_DOTA as _E_O_DOTA
+if _E_O_DOTA:
+    raise unittest.SkipTest("so no LoL: so vale para o LoL")
 from datetime import datetime, timedelta
 from pathlib import Path
 

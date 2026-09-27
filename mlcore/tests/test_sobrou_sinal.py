@@ -30,6 +30,10 @@ from __future__ import annotations
 import importlib.util
 import unittest
 from pathlib import Path
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 RAIZ = Path(__file__).resolve().parents[2]
 ARQ = RAIZ / "tools" / "sobrou_sinal.py"
@@ -48,6 +52,7 @@ class TestOAjusteConverge(unittest.TestCase):
     def setUp(self):
         self.m = _carregar()
 
+    @so_no_lol("so vale para o LoL")
     def test_acha_o_coeficiente_certo_de_um_caso_conhecido(self):
         import math
         import random
@@ -62,6 +67,7 @@ class TestOAjusteConverge(unittest.TestCase):
         self.assertAlmostEqual(w[0], 1.5, delta=0.15)
         self.assertAlmostEqual(b, 0.5, delta=0.15)
 
+    @so_no_lol("so vale para o LoL")
     def test_a_ESCALA_da_coluna_nao_muda_o_resultado(self):
         """O bug de verdade: com passo fixo, uma coluna em "dias" (+-100)
         ficava longe do minimo e o ganho saia negativo e grande."""
@@ -79,6 +85,7 @@ class TestOAjusteConverge(unittest.TestCase):
         w_g, _ = self.m._ajustar(xs_g, ys)
         self.assertAlmostEqual(w_p[0], w_g[0] * 100.0, delta=0.05)
 
+    @so_no_lol("so vale para o LoL")
     def test_coluna_sem_informacao_devolve_peso_perto_de_zero(self):
         import random
         rng = random.Random(3)
@@ -155,6 +162,7 @@ class TestNaoOlhaOFuturo(unittest.TestCase):
         L += jogo("ALVO", "A", "B", False, 10)
         return pd.DataFrame(L)
 
+    @so_no_lol("so vale para o LoL")
     def test_a_forma_do_ADVERSARIO_nao_contem_o_jogo_atual(self):
         """O teste que teria pego o vazamento no dia em que ele entrou."""
         m = _carregar()
@@ -167,6 +175,7 @@ class TestNaoOlhaOFuturo(unittest.TestCase):
                 "adversario (0.750 e a assinatura exata desse vazamento)"
                 % linhas[0]["forma"])
 
+    @so_no_lol("so vale para o LoL")
     def test_a_ordem_das_DUAS_LINHAS_do_jogo_nao_muda_o_resultado(self):
         """Se mudar, o laco depende de um desempate que ninguem garante --
         e o pandas nao garante: medido, a linha vermelha vinha primeiro em
@@ -179,21 +188,25 @@ class TestNaoOlhaOFuturo(unittest.TestCase):
             self.assertEqual(x["forma"], y["forma"])
             self.assertEqual(x["h2h"], y["h2h"])
 
+    @so_no_lol("so vale para o LoL")
     def test_percorre_JOGO_a_jogo_e_nao_linha_a_linha(self):
         """A causa-raiz, travada tambem na forma."""
         self.assertIn('side"].astype(str).str.lower() == "blue"', self.fonte)
         self.assertIn('kind="mergesort"', self.fonte)
 
+    @so_no_lol("so vale para o LoL")
     def test_os_DOIS_times_aprendem_depois_de_a_linha_ficar_pronta(self):
         i_monta = self.fonte.index('dados.append({')
         self.assertLess(i_monta, self.fonte.index('historico.setdefault(blue, []).append'))
         self.assertLess(i_monta, self.fonte.index('historico.setdefault(red, []).append'))
 
+    @so_no_lol("so vale para o LoL")
     def test_o_confronto_direto_tambem_so_aprende_depois(self):
         i_monta = self.fonte.index('dados.append({')
         i_aprende = self.fonte.index('confrontos.setdefault(ch, []).append')
         self.assertLess(i_monta, i_aprende)
 
+    @so_no_lol("so vale para o LoL")
     def test_as_datas_do_CSV_tem_HORA(self):
         """Sem hora, dois jogos do mesmo dia entrariam em ordem arbitraria e
         a "forma" poderia incluir um jogo que ainda nao tinha acontecido."""
@@ -212,11 +225,13 @@ class TestNaoOlhaOFuturo(unittest.TestCase):
 class TestPerguntaAoModeloCERTO(unittest.TestCase):
     """Medir contra um modelo que nao tem forma responde outra pergunta."""
 
+    @so_no_lol("so vale para o LoL")
     def test_o_padrao_e_a_medicao_COM_as_camadas_de_producao(self):
         m = _carregar()
         self.assertIn("hybrid_form_platt", m.PADRAO,
                       "o padrao voltou a ser a medicao sem as camadas de forma")
 
+    @so_no_lol("so vale para o LoL")
     def test_o_arquivo_padrao_realmente_tem_form_e_hybrid_ligados(self):
         import json
         alvo = RAIZ / "scratchpad" / "nota_honesta" / _carregar().PADRAO
@@ -237,11 +252,13 @@ class TestSeparaOQueServeDoQueNaoServe(unittest.TestCase):
     vendido como se valesse para o pre-jogo.
     """
 
+    @so_no_lol("so vale para o LoL")
     def test_a_ferramenta_separa_os_dois_recortes(self):
         fonte = ARQ.read_text(encoding="utf-8")
         self.assertIn('x["mapa"] <= 1', fonte)
         self.assertIn('x["mapa"] >= 2', fonte)
 
+    @so_no_lol("so vale para o LoL")
     def test_a_linha_guarda_o_numero_do_mapa(self):
         fonte = ARQ.read_text(encoding="utf-8")
         self.assertIn('"mapa":', fonte)

@@ -1197,16 +1197,15 @@ def render_live_bet_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         except Exception:
             p_map_pre_val = None
         # League / BO / playoffs context (best-effort, with safe defaults)
-        # BUG SILENCIOSO (achado 16/08/2026 pela varredura de pyflakes): aqui
-        # havia `scope_meta.get(...) if "scope_meta" in locals() else ""`, e
-        # `scope_meta` NUNCA existiu neste modulo — ela vive em market_stats_ui e
-        # opponent_profile_ui. O guarda por locals() era sempre falso, entao o
-        # painel de estado ao vivo recebia liga VAZIA desde sempre. Nao quebrava,
-        # nao avisava: so nao fazia. Agora a liga sai do team_games, que ja esta
-        # no ctx, e vale so quando os DOIS times sao dela — mesmo criterio do
-        # resolve_shared_league_hint usado na Visao Geral (num confronto entre
-        # ligas diferentes, "a liga do jogo" nao existe e vazio e a resposta certa).
-        scope_league = _liga_compartilhada(team_games, str(team_a), str(team_b))
+        try:
+            # scope_meta NUNCA existiu neste modulo: a guarda locals() era
+            # sempre falsa, entao a liga chegava VAZIA ao modelo ao vivo — que
+            # no treino recebe a liga de verdade. Divergencia treino/servico,
+            # corrigida no repo do LoL em 26/08/2026 e portada para ca quando o
+            # varredor de erros do LoL apontou que aqui ficara para tras.
+            scope_league = _liga_compartilhada(team_games, str(team_a), str(team_b))
+        except Exception:
+            scope_league = ""
         try:
             bo_val = int(ctx.get("bo", 1) or 1) if isinstance(ctx, Mapping) else 1
         except Exception:

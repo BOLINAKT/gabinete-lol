@@ -396,6 +396,15 @@ def _top_global_v04(model: EloModel, team_meta: Dict[str, Dict[str, str]], n: in
 # ---------------------------------------------------------------------
 
 def main() -> None:
+    # Dota tem time com nome em chines/cirilico. No Windows o console e cp1252 e
+    # o print do ranking final estourava UnicodeEncodeError — o artifact JA estava
+    # salvo, mas o processo saia com erro e qualquer wrapper (robo, atualizador)
+    # lia isso como "treino falhou". Visto em 16/08/2026 no gate do TI.
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except (AttributeError, OSError, ValueError):
+        pass
     ap = argparse.ArgumentParser(description="Train ML core artifact from OracleElixir CSV (offline).")
     ap.add_argument("--csv", required=True, action="append", help="Path to OracleElixir match_data CSV. Can be passed multiple times.")
     ap.add_argument("--out", default="ml_artifact.json", help="Output artifact path (json)")
@@ -411,6 +420,26 @@ def main() -> None:
     ap.add_argument("--k", type=float, default=28.0, help="Elo K-factor. 28 validado no OOS puro (prequencial): ganho real pequeno same-league, inter ~flat. k>28 ganha so in-sample (frozen otimista).")
     ap.add_argument("--scale", type=float, default=300.0, help="Elo scale_points (denominator). 300 validado no caminho CALIBRADO (logloss 0.6112->0.6029, ECE ~0.038 ok). scale nao causa overfit in-sample (so reescala prob); ganho confirmado tambem no OOS cru.")
     ap.add_argument("--alpha", type=float, default=60.0, help="Shrink/k-decay coupling: inference shrink n/(n+alpha) + k-decay alpha/(alpha+n). Lower = more confident/stable. 60 validated best on the faithful artifact path (NOTA 7.40 vs 7.38@80, melhor ECE); prequential harness preferred ~25 but that was a false positive (sem calibracao).")
+    ap.add_argument(
+        "--unc-scale-c", type=float, default=0.0,
+        help="Incerteza -> probabilidade mais chata (forma do Glicko). Infla a escala do "
+             "Elo por sqrt(1+c*(u_blue+u_red)), u=n0/(n0+n). Quem tem pouco jogo puxa a "
+             "previsao pra perto de 50%%. 0 = desligado (legado). Fixar no TREINO, nao na "
+             "predicao: assim o calibrador reabsorve a parte global e sobra o efeito direcionado.",
+    )
+    ap.add_argument(
+        "--apply-holdout", action="store_true",
+        help="Depois de calibrar, aplica os jogos do holdout aos RATINGS. Sem isto o modelo "
+             "publicado fica --holdout-days dias atrasado de forma permanente quando a esteira "
+             "retreina todo dia (bug do Dota, 16/08/2026: metade do field do TI aparecia como "
+             "'time desconhecido' so porque os jogos deles eram posteriores ao corte). Nao "
+             "contamina a calibracao: o Platt e amostrado prequencialmente ANTES desta etapa.",
+    )
+    ap.add_argument(
+        "--unc-n-prior", type=float, default=50.0,
+        help="Jogos para um time contar como 'conhecido' no fator de incerteza (u=n0/(n0+n)). "
+             "50 vem do degrau medido no TI 2026. So tem efeito com --unc-scale-c > 0.",
+    )
     ap.add_argument(
         "--sos-league",
         action=argparse.BooleanOptionalAction,
@@ -593,6 +622,8 @@ def main() -> None:
             k=float(args.k),
             scale_points=float(args.scale),
             alpha=float(args.alpha),
+            unc_scale_c=float(args.unc_scale_c),
+            unc_n_prior=float(args.unc_n_prior),
             init_rating=0.0,
             league_prior_weight=float(args.league_prior_weight),
             tier_prior_weight=float(args.tier_prior_weight),
@@ -692,7 +723,16 @@ def main() -> None:
             day = int(r.date.toordinal())
             _b, _r = str(r.blue), str(r.red)
             if r.date >= _preq_cut and whr.n_games.get(_b, 0) >= 5 and whr.n_games.get(_r, 0) >= 5:
-                whr_preq_p.append(float(whr.p_blue(_b, _r)))
+                # o achatamento por incerteza tem que entrar AQUI tambem, senao o
+                # Platt e fitado numa distribuicao que o runtime nao usa e a parte
+                # global do efeito vira vies em vez de ser reabsorvida
+                _p_preq = float(whr.p_blue(_b, _r))
+                if float(args.unc_scale_c) > 0.0:
+                    from .elo import flatten_p_by_uncertainty
+                    _p_preq = flatten_p_by_uncertainty(
+                        _p_preq, whr.n_games.get(_b, 0), whr.n_games.get(_r, 0),
+                        float(args.unc_scale_c), float(args.unc_n_prior))
+                whr_preq_p.append(_p_preq)
                 whr_preq_y.append(int(r.blue_win))
                 whr_preq_gid.append(str(getattr(r, "gameid", "")))
             whr.add_game(_b, _r, int(r.blue_win), day,
@@ -716,6 +756,31 @@ def main() -> None:
                 "jogos_com_margem": int(whr.n_mov_usados),
                 "jogos_sem_margem": int(whr.n_mov_faltando),
             }
+
+        # DEFASAGEM DO HOLDOUT (achado 16/08/2026): os ratings so viam ate o
+        # corte, ou seja, o modelo publicado ficava --holdout-days DIAS ATRASADO
+        # de forma PERMANENTE quando a esteira retreina todo dia (caso do Dota).
+        # Medido: Iron Wing tinha 16 jogos em 2026 e games_played=0, porque todos
+        # eram posteriores ao corte; no TI isso virava metade do torneio "time
+        # desconhecido". E o meta gravava data_max_date = fim de TUDO, entao o
+        # update_incremental achava que estava em dia e nao aplicava nada.
+        # Aqui os jogos do holdout entram nos ratings DEPOIS da coleta
+        # prequencial — o Platt ja foi amostrado fora da amostra, nao contamina.
+        if bool(getattr(args, "apply_holdout", False)) and len(test_df) > 0:
+            _test_fit = _augment_games_with_home_meta(
+                test_df, domestic_by_year=domestic_by_year,
+                team_meta_latest=team_meta_latest,
+            ).sort_values(["date", "gameid"]).reset_index(drop=True)
+            _n_tail = 0
+            for r in _test_fit.itertuples(index=False):
+                whr.add_game(str(r.blue), str(r.red), int(r.blue_win),
+                             int(r.date.toordinal()),
+                             blue_league=str(r.blue_league), red_league=str(r.red_league))
+                whr.refresh_pair(str(r.blue), str(r.red), iters=2)
+                _n_tail += 1
+            whr.full_sweeps(sweeps=8, tol_elo=0.5, iters=1)
+            print(f"[train_offline] holdout aplicado aos ratings: +{_n_tail} jogos "
+                  f"(o modelo conhece ate data_max_date, nao so ate o corte).")
 
         # Injeta no EloModel (mesmo formato de artefato/runtime). Os ratings
         # vão COMPLETOS (prior de liga já embutido pelo 1º ponto do WHR) e
@@ -922,19 +987,18 @@ def main() -> None:
         "data_min_date": data_min_dt.date().isoformat() if pd.notna(data_min_dt) else None,
         "data_max_date": data_max_dt.date().isoformat() if pd.notna(data_max_dt) else None,
         "cutoff_date": cutoff_dt.date().isoformat() if cutoff_dt is not None and pd.notna(cutoff_dt) else None,
-        # ATE ONDE OS RATINGS FORAM DE VERDADE (16/08/2026, portado do Dota).
-        # data_max_date grava o fim de TODOS os dados, mas o fit so ve ate o corte
-        # do holdout — os dois nao sao a mesma coisa, e a distancia entre eles E a
-        # defasagem do modelo. Aqui isso e PREVENTIVO: o robo diario roda
-        # update_incremental, entao o LoL esta em dia. Mas o incidente holdout-180
-        # (junho/2026) foi exatamente isto — a "Manutencao completa" chamou o
-        # train_offline sem holdout explicito, o default de 180 entrou, os ratings
-        # congelaram em dezembro e o app rodou degradado 4 DIAS sem ninguem notar
-        # (nota 4.97). Com este carimbo, aquilo teria ficado visivel na hora.
+        # ATE ONDE OS RATINGS FORAM DE VERDADE (16/08/2026). data_max_date grava o
+        # fim de TODOS os dados, mas o fit so ve ate o corte do holdout — a menos
+        # que --apply-holdout esteja ligado. Com os dois iguais, o modelo esta em
+        # dia; diferentes, a distancia entre eles E a defasagem do modelo.
+        # Quem consome: update_incremental (para saber o que ainda falta aplicar)
+        # e o detector de defasagem, que antes eram enganados pelo data_max_date.
         "ratings_max_date": (
-            cutoff_dt.date().isoformat()
-            if cutoff_dt is not None and pd.notna(cutoff_dt)
-            else (data_max_dt.date().isoformat() if pd.notna(data_max_dt) else None)
+            data_max_dt.date().isoformat()
+            if bool(getattr(args, "apply_holdout", False)) and pd.notna(data_max_dt)
+            else (cutoff_dt.date().isoformat()
+                  if cutoff_dt is not None and pd.notna(cutoff_dt)
+                  else (data_max_dt.date().isoformat() if pd.notna(data_max_dt) else None))
         ),
         "n_games_total": len(games),
         "n_games_train": len(train_df),
