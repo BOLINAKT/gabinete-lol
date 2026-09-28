@@ -1,35 +1,15 @@
 {
-  "gerado_em": "2026-09-28T05:56:23-03:00",
+  "gerado_em": "2026-09-28T15:43:25-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 39,
+    "ja_jogados": 27,
     "passados": 0,
-    "indefinidos": 16,
-    "sem_dois_times": 0
+    "indefinidos": 20,
+    "sem_dois_times": 1
   },
   "jogos": [
-    {
-      "date": "28/09",
-      "time": "03:00",
-      "league": "WSCI",
-      "teamA_raw": "T1 Esports Academy",
-      "teamB_raw": "Cupid Esports",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-09-28T06:00:00Z"
-    },
-    {
-      "date": "28/09",
-      "time": "06:00",
-      "league": "WSCI",
-      "teamA_raw": "kt Challengers",
-      "teamB_raw": "Galions",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-28T09:00:00Z"
-    },
     {
       "date": "28/09",
       "time": "13:00",
@@ -54,8 +34,8 @@
       "date": "28/09",
       "time": "13:00",
       "league": "EMEA Masters",
-      "teamA_raw": "PCIFIC Esports",
-      "teamB_raw": "UCAM Esports Club",
+      "teamA_raw": "UCAM Esports Club",
+      "teamB_raw": "PCIFIC Esports",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-28T16:00:00Z"
@@ -64,8 +44,8 @@
       "date": "28/09",
       "time": "13:00",
       "league": "EMEA Masters",
-      "teamA_raw": "eSuba",
-      "teamB_raw": "LODIS",
+      "teamA_raw": "LODIS",
+      "teamB_raw": "eSuba",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-28T16:00:00Z"
@@ -74,8 +54,8 @@
       "date": "28/09",
       "time": "14:00",
       "league": "EMEA Masters",
-      "teamA_raw": "TLN Pirates",
-      "teamB_raw": "JSK Gamefy",
+      "teamA_raw": "JSK Gamefy",
+      "teamB_raw": "TLN Pirates",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-28T17:00:00Z"
@@ -84,8 +64,8 @@
       "date": "28/09",
       "time": "14:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Kaufland Hangry Knights",
-      "teamB_raw": "Senshi eSports",
+      "teamA_raw": "Senshi eSports",
+      "teamB_raw": "Kaufland Hangry Knights",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-28T17:00:00Z"
@@ -114,8 +94,8 @@
       "date": "28/09",
       "time": "15:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Heretics Academy",
-      "teamB_raw": "Valerion",
+      "teamA_raw": "Valerion",
+      "teamB_raw": "Heretics Academy",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-28T18:00:00Z"
@@ -164,8 +144,8 @@
       "date": "28/09",
       "time": "16:00",
       "league": "EMEA Masters",
-      "teamA_raw": "HMBLE",
-      "teamB_raw": "Unicorns of Love Sexy Edition",
+      "teamA_raw": "Unicorns of Love Sexy Edition",
+      "teamB_raw": "HMBLE",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-28T19:00:00Z"
@@ -259,6 +239,96 @@
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-29T05:00:00Z"
+    },
+    {
+      "date": "29/09",
+      "time": "18:00",
+      "league": "CBLOL",
+      "teamA_raw": "Estral Esports",
+      "teamB_raw": "9z Globant",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-29T21:00:00Z"
+    },
+    {
+      "date": "29/09",
+      "time": "21:00",
+      "league": "Asian Games",
+      "teamA_raw": "India",
+      "teamB_raw": "Hong Kong, China",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T00:00:00Z"
+    },
+    {
+      "date": "29/09",
+      "time": "21:00",
+      "league": "Asian Games",
+      "teamA_raw": "Republic of Korea",
+      "teamB_raw": "Chinese Taipei",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T00:00:00Z"
+    },
+    {
+      "date": "29/09",
+      "time": "23:30",
+      "league": "Asian Games",
+      "teamA_raw": "India",
+      "teamB_raw": "Republic of Korea",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T02:30:00Z"
+    },
+    {
+      "date": "29/09",
+      "time": "23:30",
+      "league": "Asian Games",
+      "teamA_raw": "Hong Kong, China",
+      "teamB_raw": "Chinese Taipei",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T02:30:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "02:00",
+      "league": "Asian Games",
+      "teamA_raw": "India",
+      "teamB_raw": "Chinese Taipei",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T05:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "02:00",
+      "league": "Asian Games",
+      "teamA_raw": "Hong Kong, China",
+      "teamB_raw": "Republic of Korea",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T05:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "03:00",
+      "league": "WSCI",
+      "teamA_raw": "DNS Challengers",
+      "teamB_raw": "Solary",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T06:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "06:00",
+      "league": "WSCI",
+      "teamA_raw": "Galions",
+      "teamB_raw": "T1 Esports Academy",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T09:00:00Z"
     }
   ]
 }
