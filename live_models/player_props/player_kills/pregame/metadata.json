@@ -1,7 +1,7 @@
 {
   "market": "player_kills",
-  "best_iteration": 129,
-  "residual_sigma": 2.5883354959871117,
+  "best_iteration": 122,
+  "residual_sigma": 2.5874801505458733,
   "feature_cols": [
     "player_kills_mean",
     "player_kills_std",
@@ -16,8 +16,8 @@
     "market": "player_kills",
     "n_train": 202520,
     "n_val": 23770,
-    "best_iteration": 129,
-    "residual_sigma": 2.5883354959871117,
+    "best_iteration": 122,
+    "residual_sigma": 2.5874801505458733,
     "feature_names": [
       "player_kills_mean",
       "player_kills_std",
@@ -29,14 +29,14 @@
       "z_pre"
     ],
     "feature_importance": {
-      "player_kills_mean": 409309.3046398163,
-      "player_kills_std": 55125.36103820801,
-      "champ_kills_mean_pos": 4947487.194466591,
-      "position_id": 28071.46911048889,
-      "league_tier": 66287.12922286987,
-      "bo": 38134.33977127075,
-      "playoffs": 7268.429975509644,
-      "z_pre": 295394.70910167694
+      "player_kills_mean": 408109.0311431885,
+      "player_kills_std": 54488.759841918945,
+      "champ_kills_mean_pos": 4943678.487585068,
+      "position_id": 27110.943908691406,
+      "league_tier": 66466.78790855408,
+      "bo": 37410.42748069763,
+      "playoffs": 6567.872762680054,
+      "z_pre": 290238.2795639038
     }
   }
 }
