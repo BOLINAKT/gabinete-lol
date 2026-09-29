@@ -1,21 +1,21 @@
 {
-  "gerado_em": "2026-09-29T05:59:20-03:00",
+  "gerado_em": "2026-09-29T13:59:53-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 31,
     "passados": 0,
-    "indefinidos": 14,
-    "sem_dois_times": 0
+    "indefinidos": 22,
+    "sem_dois_times": 1
   },
   "jogos": [
     {
       "date": "29/09",
       "time": "12:00",
       "league": "EMEA Masters",
-      "teamA_raw": "G2 NORD",
-      "teamB_raw": "Ruddy Corporation",
+      "teamA_raw": "Ruddy Corporation",
+      "teamB_raw": "G2 NORD",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-29T15:00:00Z"
@@ -54,8 +54,8 @@
       "date": "29/09",
       "time": "13:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Berlin International Gaming",
-      "teamB_raw": "BOMBA Team",
+      "teamA_raw": "BOMBA Team",
+      "teamB_raw": "Berlin International Gaming",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-29T16:00:00Z"
@@ -74,8 +74,8 @@
       "date": "29/09",
       "time": "13:00",
       "league": "EMEA Masters",
-      "teamA_raw": "JSK Gamefy",
-      "teamB_raw": "Unicorns of Love Sexy Edition",
+      "teamA_raw": "Unicorns of Love Sexy Edition",
+      "teamB_raw": "JSK Gamefy",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-29T16:00:00Z"
@@ -84,8 +84,8 @@
       "date": "29/09",
       "time": "13:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Frites Esports Club",
-      "teamB_raw": "Gamespace M.C.",
+      "teamA_raw": "Gamespace M.C.",
+      "teamB_raw": "Frites Esports Club",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-29T16:00:00Z"
@@ -94,8 +94,8 @@
       "date": "29/09",
       "time": "14:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Kaufland Hangry Knights",
-      "teamB_raw": "Otter Side",
+      "teamA_raw": "Otter Side",
+      "teamB_raw": "Kaufland Hangry Knights",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-29T17:00:00Z"
@@ -114,8 +114,8 @@
       "date": "29/09",
       "time": "14:00",
       "league": "EMEA Masters",
-      "teamA_raw": "HMBLE",
-      "teamB_raw": "Senshi eSports",
+      "teamA_raw": "Senshi eSports",
+      "teamB_raw": "HMBLE",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-29T17:00:00Z"
