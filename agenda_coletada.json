@@ -1,75 +1,15 @@
 {
-  "gerado_em": "2026-09-28T21:30:46-03:00",
+  "gerado_em": "2026-09-29T05:59:20-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 38,
+    "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 11,
+    "indefinidos": 14,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "28/09",
-      "time": "21:00",
-      "league": "Asian Games",
-      "teamA_raw": "Saudi Arabia",
-      "teamB_raw": "Viet Nam",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-29T00:00:00Z"
-    },
-    {
-      "date": "28/09",
-      "time": "21:00",
-      "league": "Asian Games",
-      "teamA_raw": "United Arab Emirates",
-      "teamB_raw": "Malaysia",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-29T00:00:00Z"
-    },
-    {
-      "date": "28/09",
-      "time": "23:30",
-      "league": "Asian Games",
-      "teamA_raw": "Saudi Arabia",
-      "teamB_raw": "United Arab Emirates",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-29T02:30:00Z"
-    },
-    {
-      "date": "28/09",
-      "time": "23:30",
-      "league": "Asian Games",
-      "teamA_raw": "Viet Nam",
-      "teamB_raw": "Malaysia",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-29T02:30:00Z"
-    },
-    {
-      "date": "29/09",
-      "time": "02:00",
-      "league": "Asian Games",
-      "teamA_raw": "Saudi Arabia",
-      "teamB_raw": "Malaysia",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-29T05:00:00Z"
-    },
-    {
-      "date": "29/09",
-      "time": "02:00",
-      "league": "Asian Games",
-      "teamA_raw": "Viet Nam",
-      "teamB_raw": "United Arab Emirates",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-09-29T05:00:00Z"
-    },
     {
       "date": "29/09",
       "time": "12:00",
@@ -319,6 +259,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-09-30T09:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "18:00",
+      "league": "CBLOL",
+      "teamA_raw": "KaBuM! Eports",
+      "teamB_raw": "LOS",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T21:00:00Z"
     }
   ]
 }
