@@ -1,31 +1,21 @@
 {
-  "gerado_em": "2026-09-29T18:32:06-03:00",
+  "gerado_em": "2026-09-29T23:20:18-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 39,
+    "ja_jogados": 38,
     "passados": 0,
-    "indefinidos": 31,
+    "indefinidos": 19,
     "sem_dois_times": 0
   },
   "jogos": [
     {
       "date": "29/09",
-      "time": "18:00",
-      "league": "CBLOL",
-      "teamA_raw": "Estral Esports",
-      "teamB_raw": "9z Globant",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-09-29T21:00:00Z"
-    },
-    {
-      "date": "29/09",
       "time": "21:00",
       "league": "Asian Games",
-      "teamA_raw": "India",
-      "teamB_raw": "Hong Kong, China",
+      "teamA_raw": "Hong Kong, China",
+      "teamB_raw": "India",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-30T00:00:00Z"
@@ -34,8 +24,8 @@
       "date": "29/09",
       "time": "21:00",
       "league": "Asian Games",
-      "teamA_raw": "Republic of Korea",
-      "teamB_raw": "Chinese Taipei",
+      "teamA_raw": "Chinese Taipei",
+      "teamB_raw": "Republic of Korea",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-30T00:00:00Z"
@@ -99,6 +89,146 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-09-30T09:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "10:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Berlin International Gaming",
+      "teamB_raw": "Senshi eSports",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T13:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "10:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Bushido Wildcats",
+      "teamB_raw": "MAGAZA",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T13:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "10:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Frites Esports Club",
+      "teamB_raw": "Otter Side",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T13:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "11:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "PCIFIC Esports",
+      "teamB_raw": "Ruddy Corporation",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T14:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "11:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "JSK Gamefy",
+      "teamB_raw": "Skillcamp",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T14:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "11:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Colossal Gaming",
+      "teamB_raw": "LODIS",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T14:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "12:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "TLN Pirates",
+      "teamB_raw": "Valerion",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T15:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "12:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Kaufland Hangry Knights",
+      "teamB_raw": "Unicorns of Love Sexy Edition",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T15:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "12:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "HMBLE",
+      "teamB_raw": "Barça Esports",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T15:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "12:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "eSuba",
+      "teamB_raw": "UCAM Esports Club",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T15:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "G2 NORD",
+      "teamB_raw": "BOMBA Team",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T16:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Heretics Academy",
+      "teamB_raw": "NightBirds",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T16:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Team Phantasma",
+      "teamB_raw": "Gamespace M.C.",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T16:00:00Z"
+    },
+    {
+      "date": "30/09",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "The Secret Club",
+      "teamB_raw": "Avella SU Esports",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-09-30T16:00:00Z"
     },
     {
       "date": "30/09",
