@@ -1,31 +1,21 @@
 {
-  "gerado_em": "2026-09-30T05:58:22-03:00",
+  "gerado_em": "2026-09-30T13:59:13-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
-    "passados": 0,
-    "indefinidos": 18,
+    "ja_jogados": 29,
+    "passados": 1,
+    "indefinidos": 24,
     "sem_dois_times": 0
   },
   "jogos": [
     {
       "date": "30/09",
-      "time": "06:00",
-      "league": "WSCI",
-      "teamA_raw": "Galions",
-      "teamB_raw": "T1 Esports Academy",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-09-30T09:00:00Z"
-    },
-    {
-      "date": "30/09",
       "time": "10:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Berlin International Gaming",
-      "teamB_raw": "Senshi eSports",
+      "teamA_raw": "Senshi eSports",
+      "teamB_raw": "Berlin International Gaming",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-30T13:00:00Z"
@@ -34,8 +24,8 @@
       "date": "30/09",
       "time": "10:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Bushido Wildcats",
-      "teamB_raw": "MAGAZA",
+      "teamA_raw": "MAGAZA",
+      "teamB_raw": "Bushido Wildcats",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-30T13:00:00Z"
@@ -54,8 +44,8 @@
       "date": "30/09",
       "time": "11:00",
       "league": "EMEA Masters",
-      "teamA_raw": "PCIFIC Esports",
-      "teamB_raw": "Ruddy Corporation",
+      "teamA_raw": "Ruddy Corporation",
+      "teamB_raw": "PCIFIC Esports",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-09-30T14:00:00Z"
@@ -84,8 +74,8 @@
       "date": "30/09",
       "time": "12:00",
       "league": "EMEA Masters",
-      "teamA_raw": "TLN Pirates",
-      "teamB_raw": "Valerion",
+      "teamA_raw": "Valerion",
+      "teamB_raw": "TLN Pirates",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-30T15:00:00Z"
@@ -94,8 +84,8 @@
       "date": "30/09",
       "time": "12:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Kaufland Hangry Knights",
-      "teamB_raw": "Unicorns of Love Sexy Edition",
+      "teamA_raw": "Unicorns of Love Sexy Edition",
+      "teamB_raw": "Kaufland Hangry Knights",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-30T15:00:00Z"
@@ -124,8 +114,8 @@
       "date": "30/09",
       "time": "15:00",
       "league": "EMEA Masters",
-      "teamA_raw": "G2 NORD",
-      "teamB_raw": "BOMBA Team",
+      "teamA_raw": "BOMBA Team",
+      "teamB_raw": "G2 NORD",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-30T18:00:00Z"
@@ -144,8 +134,8 @@
       "date": "30/09",
       "time": "15:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Team Phantasma",
-      "teamB_raw": "Gamespace M.C.",
+      "teamA_raw": "Gamespace M.C.",
+      "teamB_raw": "Team Phantasma",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-09-30T18:00:00Z"
@@ -191,6 +181,16 @@
       "inicio_utc": "2026-10-01T04:30:00Z"
     },
     {
+      "date": "02/10",
+      "time": "06:00",
+      "league": "WSCI",
+      "teamA_raw": "T1 Esports Academy",
+      "teamB_raw": "Solary",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-02T09:00:00Z"
+    },
+    {
       "date": "03/10",
       "time": "05:00",
       "league": "DCGI",
@@ -229,6 +229,46 @@
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-10-03T11:00:00Z"
+    },
+    {
+      "date": "03/10",
+      "time": "09:00",
+      "league": "DCGI",
+      "teamA_raw": "GAM Esports",
+      "teamB_raw": "Xi'an Team WE",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-03T12:00:00Z"
+    },
+    {
+      "date": "03/10",
+      "time": "10:00",
+      "league": "DCGI",
+      "teamA_raw": "HANJIN BRION",
+      "teamB_raw": "Beijing JDG Esports",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-03T13:00:00Z"
+    },
+    {
+      "date": "03/10",
+      "time": "13:00",
+      "league": "CBLOL",
+      "teamA_raw": "FURIA",
+      "teamB_raw": "LOUD",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-03T16:00:00Z"
+    },
+    {
+      "date": "03/10",
+      "time": "17:00",
+      "league": "LCS",
+      "teamA_raw": "LYON",
+      "teamB_raw": "Cloud9 Kia",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-03T20:00:00Z"
     }
   ]
 }
