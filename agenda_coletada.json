@@ -1,13 +1,13 @@
 {
-  "gerado_em": "2026-10-01T06:23:32-03:00",
+  "gerado_em": "2026-10-01T14:29:09-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 34,
     "passados": 0,
-    "indefinidos": 17,
-    "sem_dois_times": 0
+    "indefinidos": 22,
+    "sem_dois_times": 1
   },
   "jogos": [
     {
@@ -24,8 +24,8 @@
       "date": "01/10",
       "time": "12:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Valerion",
-      "teamB_raw": "Ruddy Corporation",
+      "teamA_raw": "Ruddy Corporation",
+      "teamB_raw": "Valerion",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-10-01T15:00:00Z"
@@ -34,8 +34,8 @@
       "date": "01/10",
       "time": "12:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Colossal Gaming",
-      "teamB_raw": "Unicorns of Love Sexy Edition",
+      "teamA_raw": "Unicorns of Love Sexy Edition",
+      "teamB_raw": "Colossal Gaming",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-10-01T15:00:00Z"
