@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-10-02T05:56:15-03:00",
+  "gerado_em": "2026-10-02T13:49:20-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 36,
     "passados": 0,
-    "indefinidos": 23,
-    "sem_dois_times": 0
+    "indefinidos": 27,
+    "sem_dois_times": 1
   },
   "jogos": [
-    {
-      "date": "02/10",
-      "time": "06:00",
-      "league": "WSCI",
-      "teamA_raw": "T1 Esports Academy",
-      "teamB_raw": "Solary",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-02T09:00:00Z"
-    },
     {
       "date": "02/10",
       "time": "12:00",
@@ -34,8 +24,8 @@
       "date": "02/10",
       "time": "12:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Colossal Gaming",
-      "teamB_raw": "The Secret Club",
+      "teamA_raw": "The Secret Club",
+      "teamB_raw": "Colossal Gaming",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-10-02T15:00:00Z"
@@ -44,8 +34,8 @@
       "date": "02/10",
       "time": "12:00",
       "league": "EMEA Masters",
-      "teamA_raw": "NightBirds",
-      "teamB_raw": "UCAM Esports Club",
+      "teamA_raw": "UCAM Esports Club",
+      "teamB_raw": "NightBirds",
       "bo": 3,
       "estado": "unstarted",
       "inicio_utc": "2026-10-02T15:00:00Z"
