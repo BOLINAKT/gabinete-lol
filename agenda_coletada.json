@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-10-01T23:32:43-03:00",
+  "gerado_em": "2026-10-02T05:56:15-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
     "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 27,
+    "indefinidos": 23,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "02/10",
-      "time": "00:00",
-      "league": "Asian Games",
-      "teamA_raw": "Republic of Korea",
-      "teamB_raw": "Chinese Taipei",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-02T03:00:00Z"
-    },
     {
       "date": "02/10",
       "time": "06:00",
@@ -27,8 +17,58 @@
       "teamA_raw": "T1 Esports Academy",
       "teamB_raw": "Solary",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-10-02T09:00:00Z"
+    },
+    {
+      "date": "02/10",
+      "time": "12:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "PCIFIC Esports",
+      "teamB_raw": "Frites Esports Club",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-02T15:00:00Z"
+    },
+    {
+      "date": "02/10",
+      "time": "12:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Colossal Gaming",
+      "teamB_raw": "The Secret Club",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-02T15:00:00Z"
+    },
+    {
+      "date": "02/10",
+      "time": "12:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "NightBirds",
+      "teamB_raw": "UCAM Esports Club",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-02T15:00:00Z"
+    },
+    {
+      "date": "02/10",
+      "time": "15:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Valerion",
+      "teamB_raw": "MAGAZA",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-02T18:00:00Z"
+    },
+    {
+      "date": "02/10",
+      "time": "15:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "BOMBA Team",
+      "teamB_raw": "Barça Esports",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-02T18:00:00Z"
     },
     {
       "date": "03/10",
@@ -113,7 +153,7 @@
     {
       "date": "05/10",
       "time": "18:00",
-      "league": "CBLOL",
+      "league": "CBLOL Promotion",
       "teamA_raw": "KaBuM! Eports",
       "teamB_raw": "9z Globant",
       "bo": 5,
@@ -123,7 +163,7 @@
     {
       "date": "05/10",
       "time": "18:00",
-      "league": "LCS",
+      "league": "LCS Promotion",
       "teamA_raw": "Maryville University",
       "teamB_raw": "Zeu5 Esports",
       "bo": 5,
@@ -133,7 +173,7 @@
     {
       "date": "06/10",
       "time": "18:00",
-      "league": "LCS",
+      "league": "LCS Promotion",
       "teamA_raw": "Cupid Esports",
       "teamB_raw": "FUEGO",
       "bo": 5,
