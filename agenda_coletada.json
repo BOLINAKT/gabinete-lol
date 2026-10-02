@@ -1,65 +1,15 @@
 {
-  "gerado_em": "2026-10-02T13:49:20-03:00",
+  "gerado_em": "2026-10-02T18:26:25-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 36,
+    "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 27,
-    "sem_dois_times": 1
+    "indefinidos": 29,
+    "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "02/10",
-      "time": "12:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "PCIFIC Esports",
-      "teamB_raw": "Frites Esports Club",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-02T15:00:00Z"
-    },
-    {
-      "date": "02/10",
-      "time": "12:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "The Secret Club",
-      "teamB_raw": "Colossal Gaming",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-02T15:00:00Z"
-    },
-    {
-      "date": "02/10",
-      "time": "12:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "UCAM Esports Club",
-      "teamB_raw": "NightBirds",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-02T15:00:00Z"
-    },
-    {
-      "date": "02/10",
-      "time": "15:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "Valerion",
-      "teamB_raw": "MAGAZA",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-02T18:00:00Z"
-    },
-    {
-      "date": "02/10",
-      "time": "15:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "BOMBA Team",
-      "teamB_raw": "Barça Esports",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-02T18:00:00Z"
-    },
     {
       "date": "03/10",
       "time": "05:00",
