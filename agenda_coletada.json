@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-03T15:08:41-03:00",
+  "gerado_em": "2026-10-03T20:18:24-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
@@ -12,22 +12,12 @@
   "jogos": [
     {
       "date": "03/10",
-      "time": "13:00",
-      "league": "CBLOL",
-      "teamA_raw": "FURIA",
-      "teamB_raw": "LOUD",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-03T16:00:00Z"
-    },
-    {
-      "date": "03/10",
       "time": "17:00",
       "league": "LCS",
       "teamA_raw": "LYON",
       "teamB_raw": "Cloud9 Kia",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-10-03T20:00:00Z"
     },
     {
@@ -149,6 +139,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-06T21:00:00Z"
+    },
+    {
+      "date": "10/10",
+      "time": "13:00",
+      "league": "CBLOL",
+      "teamA_raw": "FURIA",
+      "teamB_raw": "LOS",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-10T16:00:00Z"
     }
   ]
 }
