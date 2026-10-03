@@ -1,75 +1,15 @@
 {
-  "gerado_em": "2026-10-03T05:31:49-03:00",
+  "gerado_em": "2026-10-03T10:40:05-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 39,
+    "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 30,
+    "indefinidos": 32,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "03/10",
-      "time": "05:00",
-      "league": "DCGI",
-      "teamA_raw": "RED Kalunga",
-      "teamB_raw": "Natus Vincere",
-      "bo": 1,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-03T08:00:00Z"
-    },
-    {
-      "date": "03/10",
-      "time": "06:00",
-      "league": "DCGI",
-      "teamA_raw": "LGD GAMING",
-      "teamB_raw": "FlyQuest",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-03T09:00:00Z"
-    },
-    {
-      "date": "03/10",
-      "time": "07:00",
-      "league": "DCGI",
-      "teamA_raw": "Shopify Rebellion",
-      "teamB_raw": "kt Rolster",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-03T10:00:00Z"
-    },
-    {
-      "date": "03/10",
-      "time": "08:00",
-      "league": "DCGI",
-      "teamA_raw": "Team Vitality",
-      "teamB_raw": "BNK FEARX",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-03T11:00:00Z"
-    },
-    {
-      "date": "03/10",
-      "time": "09:00",
-      "league": "DCGI",
-      "teamA_raw": "GAM Esports",
-      "teamB_raw": "Xi'an Team WE",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-03T12:00:00Z"
-    },
-    {
-      "date": "03/10",
-      "time": "10:00",
-      "league": "DCGI",
-      "teamA_raw": "HANJIN BRION",
-      "teamB_raw": "Beijing JDG Esports",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-03T13:00:00Z"
-    },
     {
       "date": "03/10",
       "time": "13:00",
@@ -89,6 +29,36 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-03T20:00:00Z"
+    },
+    {
+      "date": "04/10",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Galions",
+      "teamB_raw": "The Secret Club",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-04T16:00:00Z"
+    },
+    {
+      "date": "04/10",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Solary",
+      "teamB_raw": "Barça Esports",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-04T16:00:00Z"
+    },
+    {
+      "date": "04/10",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Movistar KOI Fénix",
+      "teamB_raw": "UCAM Esports Club",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-04T16:00:00Z"
     },
     {
       "date": "05/10",
