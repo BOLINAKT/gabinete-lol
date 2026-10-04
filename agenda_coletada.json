@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-10-03T20:18:24-03:00",
+  "gerado_em": "2026-10-03T23:50:51-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 39,
+    "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 27,
+    "indefinidos": 26,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "03/10",
-      "time": "17:00",
-      "league": "LCS",
-      "teamA_raw": "LYON",
-      "teamB_raw": "Cloud9 Kia",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-03T20:00:00Z"
-    },
     {
       "date": "04/10",
       "time": "04:00",
@@ -79,6 +69,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-04T16:00:00Z"
+    },
+    {
+      "date": "04/10",
+      "time": "17:00",
+      "league": "LCS",
+      "teamA_raw": "LYON",
+      "teamB_raw": "Team Liquid Alienware",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-04T20:00:00Z"
     },
     {
       "date": "05/10",
