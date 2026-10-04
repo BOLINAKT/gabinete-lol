@@ -1,35 +1,15 @@
 {
-  "gerado_em": "2026-10-03T23:50:51-03:00",
+  "gerado_em": "2026-10-04T08:16:08-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 39,
     "passados": 0,
-    "indefinidos": 26,
+    "indefinidos": 29,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "04/10",
-      "time": "04:00",
-      "league": "DCGI",
-      "teamA_raw": "LGD GAMING",
-      "teamB_raw": "BNK FEARX",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-04T07:00:00Z"
-    },
-    {
-      "date": "04/10",
-      "time": "06:00",
-      "league": "DCGI",
-      "teamA_raw": "RED Kalunga",
-      "teamB_raw": "kt Rolster",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-04T09:00:00Z"
-    },
     {
       "date": "04/10",
       "time": "08:00",
@@ -37,7 +17,7 @@
       "teamA_raw": "Xi'an Team WE",
       "teamB_raw": "HANJIN BRION",
       "bo": 3,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-10-04T11:00:00Z"
     },
     {
