@@ -1,33 +1,23 @@
 {
-  "gerado_em": "2026-10-04T23:20:38-03:00",
+  "gerado_em": "2026-10-05T06:34:51-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 39,
     "passados": 0,
-    "indefinidos": 33,
+    "indefinidos": 26,
     "sem_dois_times": 0
   },
   "jogos": [
     {
       "date": "05/10",
-      "time": "04:00",
-      "league": "DCGI",
-      "teamA_raw": "GAM Esports",
-      "teamB_raw": "Team Vitality",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-05T07:00:00Z"
-    },
-    {
-      "date": "05/10",
       "time": "06:00",
       "league": "DCGI",
-      "teamA_raw": "Natus Vincere",
-      "teamB_raw": "FlyQuest",
+      "teamA_raw": "FlyQuest",
+      "teamB_raw": "Natus Vincere",
       "bo": 3,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-10-05T09:00:00Z"
     },
     {
@@ -62,6 +52,46 @@
     },
     {
       "date": "06/10",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Solary",
+      "teamB_raw": "Valerion",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-06T16:00:00Z"
+    },
+    {
+      "date": "06/10",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Movistar KOI Fénix",
+      "teamB_raw": "Frites Esports Club",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-06T16:00:00Z"
+    },
+    {
+      "date": "06/10",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "TLN Pirates",
+      "teamB_raw": "Bushido Wildcats",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-06T16:00:00Z"
+    },
+    {
+      "date": "06/10",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Galions",
+      "teamB_raw": "Berlin International Gaming",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-06T16:00:00Z"
+    },
+    {
+      "date": "06/10",
       "time": "18:00",
       "league": "LCS Promotion",
       "teamA_raw": "Cupid Esports",
@@ -69,6 +99,46 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-06T21:00:00Z"
+    },
+    {
+      "date": "07/10",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Heretics Academy",
+      "teamB_raw": "G2 NORD",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-07T16:00:00Z"
+    },
+    {
+      "date": "07/10",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Karmine Corp Blue",
+      "teamB_raw": "Skillcamp",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-07T16:00:00Z"
+    },
+    {
+      "date": "07/10",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Anubis Gaming",
+      "teamB_raw": "Ruddy Corporation",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-07T16:00:00Z"
+    },
+    {
+      "date": "07/10",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Kaufland Hangry Knights",
+      "teamB_raw": "Unicorns of Love Sexy Edition",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-07T16:00:00Z"
     },
     {
       "date": "10/10",
@@ -79,6 +149,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-10T16:00:00Z"
+    },
+    {
+      "date": "11/10",
+      "time": "07:00",
+      "league": "VCS",
+      "teamA_raw": "Saigon MVKE Academy",
+      "teamB_raw": "Saigon Warrior",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-11T10:00:00Z"
     }
   ]
 }
