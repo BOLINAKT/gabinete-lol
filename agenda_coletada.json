@@ -1,51 +1,21 @@
 {
-  "gerado_em": "2026-10-06T06:21:30-03:00",
+  "gerado_em": "2026-10-06T14:23:46-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 38,
+    "ja_jogados": 35,
     "passados": 0,
-    "indefinidos": 23,
-    "sem_dois_times": 0
+    "indefinidos": 28,
+    "sem_dois_times": 1
   },
   "jogos": [
     {
       "date": "06/10",
-      "time": "04:00",
-      "league": "DCGI",
-      "teamA_raw": "HANJIN BRION",
-      "teamB_raw": "Natus Vincere",
-      "bo": 3,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-06T07:00:00Z"
-    },
-    {
-      "date": "06/10",
-      "time": "06:00",
-      "league": "DCGI",
-      "teamA_raw": "Team Vitality",
-      "teamB_raw": "RED Kalunga",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-06T09:00:00Z"
-    },
-    {
-      "date": "06/10",
-      "time": "08:00",
-      "league": "DCGI",
-      "teamA_raw": "Beijing JDG Esports",
-      "teamB_raw": "LGD GAMING",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-06T11:00:00Z"
-    },
-    {
-      "date": "06/10",
       "time": "13:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Solary",
-      "teamB_raw": "Valerion",
+      "teamA_raw": "Valerion",
+      "teamB_raw": "Solary",
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-06T16:00:00Z"
@@ -54,8 +24,8 @@
       "date": "06/10",
       "time": "13:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Movistar KOI Fénix",
-      "teamB_raw": "Frites Esports Club",
+      "teamA_raw": "Frites Esports Club",
+      "teamB_raw": "Movistar KOI Fénix",
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-06T16:00:00Z"
@@ -64,8 +34,8 @@
       "date": "06/10",
       "time": "13:00",
       "league": "EMEA Masters",
-      "teamA_raw": "TLN Pirates",
-      "teamB_raw": "Bushido Wildcats",
+      "teamA_raw": "Bushido Wildcats",
+      "teamB_raw": "TLN Pirates",
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-06T16:00:00Z"
@@ -74,8 +44,8 @@
       "date": "06/10",
       "time": "13:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Galions",
-      "teamB_raw": "Berlin International Gaming",
+      "teamA_raw": "Berlin International Gaming",
+      "teamB_raw": "Galions",
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-06T16:00:00Z"
