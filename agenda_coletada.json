@@ -1,54 +1,44 @@
 {
-  "gerado_em": "2026-10-05T06:34:51-03:00",
+  "gerado_em": "2026-10-05T22:24:59-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 39,
+    "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 26,
+    "indefinidos": 21,
     "sem_dois_times": 0
   },
   "jogos": [
     {
-      "date": "05/10",
-      "time": "06:00",
+      "date": "06/10",
+      "time": "04:00",
       "league": "DCGI",
-      "teamA_raw": "FlyQuest",
+      "teamA_raw": "HANJIN BRION",
       "teamB_raw": "Natus Vincere",
       "bo": 3,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-05T09:00:00Z"
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-06T07:00:00Z"
     },
     {
-      "date": "05/10",
-      "time": "08:00",
+      "date": "06/10",
+      "time": "06:00",
       "league": "DCGI",
-      "teamA_raw": "Shopify Rebellion",
-      "teamB_raw": "Beijing JDG Esports",
+      "teamA_raw": "Team Vitality",
+      "teamB_raw": "RED Kalunga",
       "bo": 3,
       "estado": "unstarted",
-      "inicio_utc": "2026-10-05T11:00:00Z"
+      "inicio_utc": "2026-10-06T09:00:00Z"
     },
     {
-      "date": "05/10",
-      "time": "18:00",
-      "league": "CBLOL Promotion",
-      "teamA_raw": "KaBuM! Eports",
-      "teamB_raw": "9z Globant",
-      "bo": 5,
+      "date": "06/10",
+      "time": "08:00",
+      "league": "DCGI",
+      "teamA_raw": "Beijing JDG Esports",
+      "teamB_raw": "LGD GAMING",
+      "bo": 3,
       "estado": "unstarted",
-      "inicio_utc": "2026-10-05T21:00:00Z"
-    },
-    {
-      "date": "05/10",
-      "time": "18:00",
-      "league": "LCS Promotion",
-      "teamA_raw": "Maryville University",
-      "teamB_raw": "Zeu5 Esports",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-05T21:00:00Z"
+      "inicio_utc": "2026-10-06T11:00:00Z"
     },
     {
       "date": "06/10",
@@ -93,12 +83,52 @@
     {
       "date": "06/10",
       "time": "18:00",
+      "league": "CBLOL Promotion",
+      "teamA_raw": "KaBuM! Eports",
+      "teamB_raw": "Estral Esports",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-06T21:00:00Z"
+    },
+    {
+      "date": "06/10",
+      "time": "18:00",
       "league": "LCS Promotion",
       "teamA_raw": "Cupid Esports",
       "teamB_raw": "FUEGO",
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-06T21:00:00Z"
+    },
+    {
+      "date": "07/10",
+      "time": "04:00",
+      "league": "DCGI",
+      "teamA_raw": "GAM Esports",
+      "teamB_raw": "FlyQuest",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-07T07:00:00Z"
+    },
+    {
+      "date": "07/10",
+      "time": "06:00",
+      "league": "DCGI",
+      "teamA_raw": "Shopify Rebellion",
+      "teamB_raw": "GAM Esports",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-07T09:00:00Z"
+    },
+    {
+      "date": "07/10",
+      "time": "08:00",
+      "league": "DCGI",
+      "teamA_raw": "FlyQuest",
+      "teamB_raw": "Shopify Rebellion",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-07T11:00:00Z"
     },
     {
       "date": "07/10",
@@ -139,6 +169,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-07T16:00:00Z"
+    },
+    {
+      "date": "07/10",
+      "time": "18:00",
+      "league": "LCS Promotion",
+      "teamA_raw": "Maryville University",
+      "teamB_raw": "Disguised",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-07T21:00:00Z"
     },
     {
       "date": "10/10",
