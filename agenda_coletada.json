@@ -1,43 +1,23 @@
 {
-  "gerado_em": "2026-10-06T23:40:57-03:00",
+  "gerado_em": "2026-10-07T08:58:36-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 39,
     "passados": 0,
-    "indefinidos": 28,
+    "indefinidos": 31,
     "sem_dois_times": 0
   },
   "jogos": [
     {
       "date": "07/10",
-      "time": "04:00",
-      "league": "DCGI",
-      "teamA_raw": "GAM Esports",
-      "teamB_raw": "FlyQuest",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-07T07:00:00Z"
-    },
-    {
-      "date": "07/10",
-      "time": "06:00",
-      "league": "DCGI",
-      "teamA_raw": "Shopify Rebellion",
-      "teamB_raw": "GAM Esports",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-07T09:00:00Z"
-    },
-    {
-      "date": "07/10",
       "time": "08:00",
       "league": "DCGI",
-      "teamA_raw": "FlyQuest",
-      "teamB_raw": "Shopify Rebellion",
+      "teamA_raw": "Shopify Rebellion",
+      "teamB_raw": "FlyQuest",
       "bo": 3,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-10-07T11:00:00Z"
     },
     {
@@ -91,14 +71,14 @@
       "inicio_utc": "2026-10-07T21:00:00Z"
     },
     {
-      "date": "10/10",
+      "date": "09/10",
       "time": "13:00",
       "league": "EMEA Masters",
       "teamA_raw": "TLN Pirates",
       "teamB_raw": "Movistar KOI Fénix",
       "bo": 5,
       "estado": "unstarted",
-      "inicio_utc": "2026-10-10T16:00:00Z"
+      "inicio_utc": "2026-10-09T16:00:00Z"
     },
     {
       "date": "10/10",
