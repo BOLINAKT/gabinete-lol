@@ -1,35 +1,15 @@
 {
-  "gerado_em": "2026-10-06T18:52:28-03:00",
+  "gerado_em": "2026-10-06T23:40:57-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 38,
+    "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 29,
+    "indefinidos": 28,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "06/10",
-      "time": "18:00",
-      "league": "CBLOL Promotion",
-      "teamA_raw": "Estral Esports",
-      "teamB_raw": "KaBuM! Eports",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-06T21:00:00Z"
-    },
-    {
-      "date": "06/10",
-      "time": "18:00",
-      "league": "LCS Promotion",
-      "teamA_raw": "Cupid Esports",
-      "teamB_raw": "FUEGO",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-06T21:00:00Z"
-    },
     {
       "date": "07/10",
       "time": "04:00",
@@ -139,6 +119,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-11T10:00:00Z"
+    },
+    {
+      "date": "12/10",
+      "time": "18:00",
+      "league": "CBLOL Promotion",
+      "teamA_raw": "KaBuM! Eports",
+      "teamB_raw": "LOS",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-12T21:00:00Z"
     }
   ]
 }
