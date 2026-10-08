@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-10-07T17:07:44-03:00",
+  "gerado_em": "2026-10-07T21:22:51-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 34,
-    "passados": 5,
-    "indefinidos": 32,
-    "sem_dois_times": 1
+    "ja_jogados": 40,
+    "passados": 0,
+    "indefinidos": 29,
+    "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "07/10",
-      "time": "18:00",
-      "league": "LCS Promotion",
-      "teamA_raw": "Maryville University",
-      "teamB_raw": "Disguised",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-07T21:00:00Z"
-    },
     {
       "date": "08/10",
       "time": "06:00",
@@ -41,6 +31,16 @@
       "inicio_utc": "2026-10-08T11:00:00Z"
     },
     {
+      "date": "08/10",
+      "time": "18:00",
+      "league": "LCS Promotion",
+      "teamA_raw": "Maryville University",
+      "teamB_raw": "Cupid Esports",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-08T21:00:00Z"
+    },
+    {
       "date": "09/10",
       "time": "13:00",
       "league": "EMEA Masters",
@@ -59,6 +59,36 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-09T16:00:00Z"
+    },
+    {
+      "date": "09/10",
+      "time": "18:00",
+      "league": "LCS Promotion",
+      "teamA_raw": "Disguised",
+      "teamB_raw": "FUEGO",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-09T21:00:00Z"
+    },
+    {
+      "date": "10/10",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "G2 NORD",
+      "teamB_raw": "Solary",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-10T16:00:00Z"
+    },
+    {
+      "date": "10/10",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Anubis Gaming",
+      "teamB_raw": "Karmine Corp Blue",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-10T16:00:00Z"
     },
     {
       "date": "10/10",
