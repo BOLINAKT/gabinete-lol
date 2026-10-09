@@ -1,21 +1,21 @@
 {
-  "gerado_em": "2026-10-09T06:34:10-03:00",
+  "gerado_em": "2026-10-09T14:32:32-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 37,
     "passados": 0,
-    "indefinidos": 28,
-    "sem_dois_times": 0
+    "indefinidos": 30,
+    "sem_dois_times": 1
   },
   "jogos": [
     {
       "date": "09/10",
       "time": "13:00",
       "league": "EMEA Masters",
-      "teamA_raw": "TLN Pirates",
-      "teamB_raw": "Movistar KOI Fénix",
+      "teamA_raw": "Movistar KOI Fénix",
+      "teamB_raw": "TLN Pirates",
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-09T16:00:00Z"
@@ -24,8 +24,8 @@
       "date": "09/10",
       "time": "13:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Kaufland Hangry Knights",
-      "teamB_raw": "Galions",
+      "teamA_raw": "Galions",
+      "teamB_raw": "Kaufland Hangry Knights",
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-09T16:00:00Z"
