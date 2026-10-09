@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-10-08T14:59:01-03:00",
+  "gerado_em": "2026-10-08T21:36:40-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
     "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 27,
+    "indefinidos": 28,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "08/10",
-      "time": "18:00",
-      "league": "LCS Promotion",
-      "teamA_raw": "Maryville University",
-      "teamB_raw": "Cupid Esports",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-08T21:00:00Z"
-    },
     {
       "date": "09/10",
       "time": "13:00",
