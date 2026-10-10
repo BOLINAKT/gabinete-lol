@@ -1,5 +1,5 @@
 {
-  "lido_em": "2026-10-10T18:52:40-03:00",
+  "lido_em": "2026-10-10T19:04:22-03:00",
   "fonte": "https://guest.api.arcadia.pinnacle.com/0.1/",
   "fuso": "America/Sao_Paulo",
   "jogos": [
@@ -1009,46 +1009,6 @@
       "mapa": 5,
       "nome_pt": "Vencedor - mapa 5",
       "chave": "1638089960|Vencedor - mapa 5|moneyline|5|away|"
-    },
-    {
-      "jogo": 1638089960,
-      "tipo": "moneyline",
-      "periodo": 2,
-      "alternativa": false,
-      "lado": "home",
-      "pontos": null,
-      "odd": 2.57,
-      "americana": 157,
-      "limite": 375,
-      "margem_pct": 5.24,
-      "fecha_em": "2026-10-11T06:00:00+00:00",
-      "mercado": "Vencedor - mapa 2",
-      "unidade": "",
-      "metrica": "ml",
-      "forma": "vence",
-      "mapa": 2,
-      "nome_pt": "Vencedor - mapa 2",
-      "chave": "1638089960|Vencedor - mapa 2|moneyline|2|home|"
-    },
-    {
-      "jogo": 1638089960,
-      "tipo": "moneyline",
-      "periodo": 2,
-      "alternativa": false,
-      "lado": "away",
-      "pontos": null,
-      "odd": 1.5076,
-      "americana": -197,
-      "limite": 375,
-      "margem_pct": 5.24,
-      "fecha_em": "2026-10-11T06:00:00+00:00",
-      "mercado": "Vencedor - mapa 2",
-      "unidade": "",
-      "metrica": "ml",
-      "forma": "vence",
-      "mapa": 2,
-      "nome_pt": "Vencedor - mapa 2",
-      "chave": "1638089960|Vencedor - mapa 2|moneyline|2|away|"
     },
     {
       "jogo": 1637960625,
@@ -2452,9 +2412,9 @@
     }
   ],
   "descartes": {
-    "ao_vivo": 0,
+    "ao_vivo": 2,
     "filho": 0,
-    "sem_mercado": 0,
+    "sem_mercado": 1,
     "outro_jogo": 117,
     "sem_lados": 2
   }
