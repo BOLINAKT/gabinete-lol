@@ -1,45 +1,15 @@
 {
-  "gerado_em": "2026-10-10T13:22:13-03:00",
+  "gerado_em": "2026-10-10T17:40:56-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 36,
-    "passados": 0,
-    "indefinidos": 32,
+    "ja_jogados": 38,
+    "passados": 1,
+    "indefinidos": 31,
     "sem_dois_times": 1
   },
   "jogos": [
-    {
-      "date": "10/10",
-      "time": "13:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "Solary",
-      "teamB_raw": "G2 NORD",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-10T16:00:00Z"
-    },
-    {
-      "date": "10/10",
-      "time": "13:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "Karmine Corp Blue",
-      "teamB_raw": "Anubis Gaming",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-10T16:00:00Z"
-    },
-    {
-      "date": "10/10",
-      "time": "13:00",
-      "league": "CBLOL",
-      "teamA_raw": "FURIA",
-      "teamB_raw": "LOS",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-10T16:00:00Z"
-    },
     {
       "date": "10/10",
       "time": "18:00",
@@ -119,6 +89,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-13T16:00:00Z"
+    },
+    {
+      "date": "14/10",
+      "time": "13:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Anubis Gaming",
+      "teamB_raw": "Solary",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-14T16:00:00Z"
     }
   ]
 }
