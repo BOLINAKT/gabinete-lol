@@ -67594,7 +67594,7 @@
     "08c39963af253250b9191cf41e37ea35355977c166229ea928c77e61f021dd1a": {
       "artifact_file": "ml_artifact.json",
       "artifact_sha256": "08c39963af253250b9191cf41e37ea35355977c166229ea928c77e61f021dd1a",
-      "generated_at": "2026-10-11T16:04:57",
+      "generated_at": "2026-10-11T19:58:08",
       "method": "avg_forward_reverse_calibrated",
       "matchups": [
         {
@@ -68163,5 +68163,5 @@
   "fixture_schema": "artifact_snapshot_v1",
   "latest_artifact_sha256": "08c39963af253250b9191cf41e37ea35355977c166229ea928c77e61f021dd1a",
   "artifact_sha256": "08c39963af253250b9191cf41e37ea35355977c166229ea928c77e61f021dd1a",
-  "generated_at": "2026-10-11T16:04:57"
+  "generated_at": "2026-10-11T19:58:08"
 }
