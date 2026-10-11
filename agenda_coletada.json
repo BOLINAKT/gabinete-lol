@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-10-10T17:40:56-03:00",
+  "gerado_em": "2026-10-10T23:08:23-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 38,
-    "passados": 1,
-    "indefinidos": 31,
-    "sem_dois_times": 1
+    "ja_jogados": 40,
+    "passados": 0,
+    "indefinidos": 29,
+    "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "10/10",
-      "time": "18:00",
-      "league": "LCS Promotion",
-      "teamA_raw": "Disguised",
-      "teamB_raw": "Cupid Esports",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-10T21:00:00Z"
-    },
     {
       "date": "11/10",
       "time": "07:00",
@@ -61,6 +51,16 @@
       "inicio_utc": "2026-10-12T21:00:00Z"
     },
     {
+      "date": "12/10",
+      "time": "20:00",
+      "league": "LCS Promotion",
+      "teamA_raw": "Disguised",
+      "teamB_raw": "Maryville University",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-12T23:00:00Z"
+    },
+    {
       "date": "13/10",
       "time": "03:00",
       "league": "DCGI",
@@ -99,6 +99,26 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-14T16:00:00Z"
+    },
+    {
+      "date": "15/10",
+      "time": "15:00",
+      "league": "Mundial",
+      "teamA_raw": "FURIA",
+      "teamB_raw": "MVK Esports",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-15T18:00:00Z"
+    },
+    {
+      "date": "15/10",
+      "time": "20:00",
+      "league": "Mundial",
+      "teamA_raw": "Cloud9 Kia",
+      "teamB_raw": "Karmine Corp",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-15T23:00:00Z"
     }
   ]
 }
