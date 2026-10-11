@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-10-11T06:15:42-03:00",
+  "gerado_em": "2026-10-11T13:45:07-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
     "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 29,
+    "indefinidos": 30,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "11/10",
-      "time": "07:00",
-      "league": "VCS",
-      "teamA_raw": "Saigon MVKE Academy",
-      "teamB_raw": "Saigon Warrior",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-11T10:00:00Z"
-    },
     {
       "date": "12/10",
       "time": "03:00",
