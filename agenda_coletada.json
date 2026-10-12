@@ -1,35 +1,15 @@
 {
-  "gerado_em": "2026-10-12T06:43:13-03:00",
+  "gerado_em": "2026-10-12T17:25:07-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 38,
+    "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 32,
+    "indefinidos": 31,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "12/10",
-      "time": "03:00",
-      "league": "DCGI",
-      "teamA_raw": "kt Rolster",
-      "teamB_raw": "Team Vitality",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-12T06:00:00Z"
-    },
-    {
-      "date": "12/10",
-      "time": "06:00",
-      "league": "DCGI",
-      "teamA_raw": "BNK FEARX",
-      "teamB_raw": "Beijing JDG Esports",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-12T09:00:00Z"
-    },
     {
       "date": "12/10",
       "time": "18:00",
@@ -82,6 +62,16 @@
     },
     {
       "date": "14/10",
+      "time": "06:00",
+      "league": "DCGI",
+      "teamA_raw": "kt Rolster",
+      "teamB_raw": "BNK FEARX",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-14T09:00:00Z"
+    },
+    {
+      "date": "14/10",
       "time": "13:00",
       "league": "EMEA Masters",
       "teamA_raw": "Anubis Gaming",
@@ -94,8 +84,8 @@
       "date": "15/10",
       "time": "15:00",
       "league": "Mundial",
-      "teamA_raw": "FURIA",
-      "teamB_raw": "MVK Esports",
+      "teamA_raw": "Cloud9 Kia",
+      "teamB_raw": "Karmine Corp",
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-15T18:00:00Z"
@@ -104,8 +94,8 @@
       "date": "15/10",
       "time": "20:00",
       "league": "Mundial",
-      "teamA_raw": "Cloud9 Kia",
-      "teamB_raw": "Karmine Corp",
+      "teamA_raw": "FURIA",
+      "teamB_raw": "MVK Esports",
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-15T23:00:00Z"
