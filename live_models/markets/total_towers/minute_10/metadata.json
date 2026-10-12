@@ -1,8 +1,8 @@
 {
   "market": "total_towers",
   "minute": 10,
-  "best_iteration": 142,
-  "residual_sigma": 2.27409338671758,
+  "best_iteration": 148,
+  "residual_sigma": 2.275565385136585,
   "feature_cols": [
     "z_pre",
     "gold_diff",
@@ -22,8 +22,8 @@
     "minute": 10,
     "n_train": 18043,
     "n_val": 2322,
-    "best_iteration": 142,
-    "residual_sigma": 2.27409338671758,
+    "best_iteration": 148,
+    "residual_sigma": 2.275565385136585,
     "feature_names": [
       "z_pre",
       "gold_diff",
@@ -39,18 +39,18 @@
       "playoffs"
     ],
     "feature_importance": {
-      "z_pre": 20924.89820623398,
-      "gold_diff": 14796.46853029728,
-      "abs_gold_diff": 26420.614240646362,
-      "xp_diff": 14646.420419380069,
-      "cs_diff": 15984.775835514069,
-      "kills_total": 4493.706069946289,
-      "kills_diff": 4528.1168332099915,
-      "deaths_total": 2479.8184571266174,
-      "assists_total": 7272.002953529358,
-      "league_tier": 9795.184411525726,
-      "bo": 2409.190948009491,
-      "playoffs": 1655.0262541770935
+      "z_pre": 21375.060898303986,
+      "gold_diff": 14063.060366690159,
+      "abs_gold_diff": 26437.086503505707,
+      "xp_diff": 15678.260233163834,
+      "cs_diff": 16432.127230644226,
+      "kills_total": 4961.81663942337,
+      "kills_diff": 4666.069213628769,
+      "deaths_total": 2435.3443717956543,
+      "assists_total": 7669.891894340515,
+      "league_tier": 9828.114665985107,
+      "bo": 2354.1478061676025,
+      "playoffs": 1995.1630082130432
     }
   }
 }
