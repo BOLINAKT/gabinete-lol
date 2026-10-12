@@ -1,17 +1,17 @@
 {
- "gerado_em": "2026-09-28T18:14:17",
+ "gerado_em": "2026-10-12T19:54:40",
  "mercado": "Handicap de kills (linha principal)",
  "so_kills": {
-  "apostas": 167,
-  "partidas": 34,
+  "apostas": 380,
+  "partidas": 86,
   "minimo": 60,
-  "logloss_modelo": 0.6477474135056525,
-  "logloss_casa": 0.6910315823057158,
-  "diferenca": -0.04328416880006336,
-  "margem_erro": 0.11930901351159252,
-  "bateu": 17,
-  "nota_modelo": 6.426181965231057,
-  "nota_casa": 5.065044581581265,
+  "logloss_modelo": 0.7542990813984186,
+  "logloss_casa": 0.6922673477638376,
+  "diferenca": 0.06203173363458103,
+  "margem_erro": 0.0951902278900686,
+  "bateu": 33,
+  "nota_modelo": 3.0755005849553907,
+  "nota_casa": 5.026184032583726,
   "conclusivo": false
  },
  "com_vitoria": null
