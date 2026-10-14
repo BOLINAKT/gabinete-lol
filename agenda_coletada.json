@@ -1,12 +1,12 @@
 {
-  "gerado_em": "2026-10-14T10:59:48-03:00",
+  "gerado_em": "2026-10-14T15:51:10-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 39,
     "passados": 0,
-    "indefinidos": 36,
+    "indefinidos": 37,
     "sem_dois_times": 0
   },
   "jogos": [
@@ -17,7 +17,7 @@
       "teamA_raw": "Anubis Gaming",
       "teamB_raw": "Solary",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-10-14T16:00:00Z"
     },
     {
