@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-10-14T04:59:07-03:00",
+  "gerado_em": "2026-10-14T10:59:48-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
     "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 35,
+    "indefinidos": 36,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "14/10",
-      "time": "06:00",
-      "league": "DCGI",
-      "teamA_raw": "kt Rolster",
-      "teamB_raw": "BNK FEARX",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-14T09:00:00Z"
-    },
     {
       "date": "14/10",
       "time": "13:00",
