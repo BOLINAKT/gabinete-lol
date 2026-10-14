@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-10-14T15:51:10-03:00",
+  "gerado_em": "2026-10-14T20:24:27-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 39,
+    "ja_jogados": 40,
     "passados": 0,
-    "indefinidos": 37,
+    "indefinidos": 36,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "14/10",
-      "time": "13:00",
-      "league": "EMEA Masters",
-      "teamA_raw": "Anubis Gaming",
-      "teamB_raw": "Solary",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-14T16:00:00Z"
-    },
     {
       "date": "15/10",
       "time": "06:00",
@@ -49,6 +39,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-10-15T23:00:00Z"
+    },
+    {
+      "date": "22/10",
+      "time": "09:00",
+      "league": "EMEA Masters",
+      "teamA_raw": "Galions",
+      "teamB_raw": "Solary",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-22T12:00:00Z"
     }
   ]
 }
