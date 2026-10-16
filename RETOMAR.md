@@ -205,6 +205,36 @@ emergência usando os arquivos `.pre_update_*`.
 
 ---
 
+## 2-C. O MODELO CONTRA A PINNACLE NO VENCEDOR — 16/10/2026
+
+**Primeira resposta conclusiva, e ela é contra o modelo.** Com 132 partidas
+(o mínimo é 100), no vencedor do mapa 1, já sem a margem da casa:
+
+```
+logloss do modelo  0,6198
+logloss da casa    0,5621      diferença +0,0577 ± 0,0454  -> a casa acerta mais
+inclinação do modelo contra a casa: 0,60   (o modelo puxa tudo para o meio)
+```
+
+Em 25/09 eram só 25 partidas. A régua ficou parada porque dependia da nota
+honesta, que só rodava nesta máquina.
+
+**Agora roda sozinha toda segunda** no `reguas_pinnacle.yml`: o robô refaz a
+nota honesta só no período com odds (coleta desde 13/09), em dobras de 30
+dias, com teto de 6 (janela móvel de ~180 dias). O mesmo arquivo alimenta o
+handicap "com vitória", que também nunca tinha rodado: 88 partidas, ainda
+inconclusivo. Reproduzido do zero com `scratchpad` vazio em 16/10: 2 dobras,
+5,5 min, e o vencedor dá exatamente o mesmo número da rodada de 8 dobras.
+
+O que fazer com isto é a próxima frente: por que o modelo é tão tímido.
+
+Diagnóstico entre ligas (Fase 9), re-rodado no mesmo dia porque esperava
+mais jogos internacionais: 211 jogos de teste (eram 142 em maio). Correção
+global não ajuda (p = 0,70), por par de regiões piora (p = 0,02). **Fechado:
+sem correção.**
+
+---
+
 ## 3-A. FRENTE 0 — LIGADA, MAS QUASE NUNCA APLICA (corrigido em 08/09/2026)
 
 **LEIA ISTO ANTES DOS NÚMEROS ABAIXO.** Em 08/09 o app foi aberto pela

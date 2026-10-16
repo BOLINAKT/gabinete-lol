@@ -83,6 +83,37 @@ class TestORobo(unittest.TestCase):
         self.assertIn("python tools/handicap_contra_a_casa.py", yml)
         self.assertIn("evidence/regua_pinnacle_total_kills.json", yml)
 
+    @so_no_lol("o vencedor contra a Pinnacle so existe no LoL")
+    def test_o_robo_alimenta_o_vencedor_com_o_arquivo_que_ele_le(self):
+        """16/10/2026: o vencedor entrou no robo semanal. Ele so funciona se a
+        nota honesta rodar ANTES e gravar o arquivo com o nome exato que o
+        vencedor (familia) e o handicap "com vitoria" (nome fixo) procuram.
+        Casar string no YAML nao prova que o passo roda -- por isso o nome e
+        reconstruido aqui com as mesmas opcoes que o robo passa."""
+        import fnmatch
+        import re as _re
+        from tools.modelo_contra_a_casa import FAMILIA_REGUA
+        from tools.kills_total_com_vitoria import REGUA
+        yml = (RAIZ / ".github" / "workflows" / "reguas_pinnacle.yml").read_text(encoding="utf-8")
+        cmd = [l for l in yml.splitlines() if "python tools/nota_honesta.py" in l]
+        self.assertEqual(len(cmd), 1, "o robo tem que rodar a nota honesta uma vez")
+        cmd = cmd[0]
+        marca = _re.search(r"--marca\s+(\S+)", cmd).group(1)
+        cadencia = _re.search(r"--cadencia\s+(\S+)", cmd).group(1)
+        # mesma montagem de nome de tools/nota_honesta.py (variante sem jogadores)
+        nome = ("nota_honesta_%s_%s%s%s%s.json" % (
+            marca, cadencia,
+            "_hybrid" if "--com-hybrid" in cmd else "",
+            "_form" if "--com-form" in cmd else "",
+            "_semplatt" if "--sem-platt" in cmd else "_platt"))
+        self.assertTrue(fnmatch.fnmatch(nome, FAMILIA_REGUA), nome)
+        self.assertEqual(nome, REGUA.name)
+        # a ordem importa: a nota honesta antes das reguas que a leem
+        pos = yml.index("python tools/nota_honesta.py")
+        self.assertLess(pos, yml.index("python tools/modelo_contra_a_casa.py"))
+        self.assertLess(pos, yml.index("python tools/handicap_contra_a_casa.py"))
+        self.assertIn("evidence/regua_pinnacle_vencedor.json", yml)
+
     @so_no_lol("o .gitignore do LoL (o placar das reguas e so do LoL)")
     def test_o_placar_e_versionado(self):
         gi = (RAIZ / ".gitignore").read_text(encoding="utf-8")
