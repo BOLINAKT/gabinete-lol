@@ -1,24 +1,34 @@
 {
-  "gerado_em": "2026-10-15T20:15:08-03:00",
+  "gerado_em": "2026-10-15T22:37:32-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
     "ja_jogados": 39,
-    "passados": 0,
-    "indefinidos": 38,
+    "passados": 1,
+    "indefinidos": 36,
     "sem_dois_times": 0
   },
   "jogos": [
     {
-      "date": "15/10",
+      "date": "16/10",
+      "time": "15:00",
+      "league": "Mundial",
+      "teamA_raw": "Karmine Corp",
+      "teamB_raw": "MVK Esports",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-16T18:00:00Z"
+    },
+    {
+      "date": "16/10",
       "time": "20:00",
       "league": "Mundial",
-      "teamA_raw": "MVK Esports",
+      "teamA_raw": "Cloud9 Kia",
       "teamB_raw": "FURIA",
       "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-15T23:00:00Z"
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-16T23:00:00Z"
     },
     {
       "date": "17/10",
