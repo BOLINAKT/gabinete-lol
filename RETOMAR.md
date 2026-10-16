@@ -575,6 +575,30 @@ roda 2x por dia — lá o prazo está tolerante demais (avisaria com 14 dias em 
 de 2). É a mesma doença curada na régua das 28 (afirmação sobre um repositório
 morando em código compartilhado), e a cura é a mesma: cadência vira dado do repo.
 
+**D13. O VIGIA SEMANAL NUNCA PUBLICOU — RESOLVIDA em 16/10/2026.**
+
+O `nota_semanal.yml` rodava com `contents: read` desde que nasceu (17/07). O
+push era recusado, e o laço de retry terminava num `git pull --rebase` que dá
+certo — o passo ficava **verde sem gravar nada**. Por isso a nota do produto,
+a nota por liga, os totais e o `frescor.json` ficaram parados em **07/09**, e os
+dois únicos commits deles na história foram feitos à mão (16/08 e 07/09).
+
+Os cálculos em si funcionavam: rodados em 16/10 numa cópia limpa, todos os
+passos terminaram sem erro (nota do produto 7,77).
+
+Conserto: `contents: write` e o mesmo laço de push dos outros 6 robôs, que
+termina num `git push` que falha alto. Trava nova em
+`mlcore/tests/test_robos_yml.py`: robô que faz push tem que declarar escrita,
+e laço de push não pode terminar em `break` — conferida contra o workflow
+antigo (as duas falham). Fonte no próprio workflow.
+
+É a mesma doença da D11: **ausência de dado virando sinal verde, calado** — e
+de novo dentro da régua que existe para avisar.
+
+**Achado lateral, não consertado:** `mlcore/tests/test_movimento_do_preco.py`
+importa `yaml`, mas o PyYAML não está no `requirements.txt` nem no `.venv`.
+Sem ele a suíte dá 6 erros que não são de modelo. Com ele, passam.
+
 **D12. ABRIR O APP REESCREVE ARTEFATOS VERSIONADOS.** Achado em 08/09/2026, ao
 dirigir o app pela primeira vez.
 

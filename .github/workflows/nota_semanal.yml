@@ -9,8 +9,20 @@ on:
     - cron: "11 8 * * 1"  # segunda de manhã
   workflow_dispatch: {}
 
+# PERMISSAO DE ESCRITA (consertado em 16/10/2026). De 17/07 a 16/10 isto era
+# `contents: read`, e o vigia NUNCA publicou: o push era recusado e o laco de
+# retry engolia a recusa (break so no sucesso, e o ultimo comando era um
+# `git pull --rebase` que da certo), entao o passo ficava verde sem gravar nada.
+# A nota do produto e o frescor ficaram parados em 07/09 (ultimo commit A MAO).
+# Os outros 6 robos deste repo tem `contents: write` e publicam todo dia.
+# FONTES (abertas em 16/10/2026):
+# - https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
+#   "If you specify the access for any of these permissions, all of those that
+#   are not specified are set to `none`." / "`contents: read` permits an action
+#   to list the commits" -- `read` nao inclui escrita. A pagina nao diz com
+#   essas palavras que push exige `write`: isso e a prova empirica acima.
 permissions:
-  contents: read
+  contents: write
   issues: write
 
 jobs:
@@ -52,10 +64,14 @@ jobs:
             echo "registro de campeoes sem mudanca"
           else
             git commit -m "Robô: registro de campeões atualizado (campeão novo no Data Dragon)"
+            # mesmo laco dos outros robos: se as 3 tentativas falharem, o
+            # `git push` final FALHA o passo -- antes a recusa sumia calada.
             for i in 1 2 3; do
-              if git push; then break; fi
+              if git push; then exit 0; fi
+              echo "push recusado -- rebase e retry $i/3"
               git pull --rebase || exit 1
             done
+            git push
           fi
 
       # Ate 16/08/2026 o vigia media SO a fase Vencedor. As outras sete so eram
@@ -88,11 +104,14 @@ jobs:
             echo "nota do produto sem mudanca — sem commit"
           else
             git commit -m "Robô: nota do produto re-medida (vigia semanal)"
+            # mesmo laco dos outros robos: se as 3 tentativas falharem, o
+            # `git push` final FALHA o passo -- antes a recusa sumia calada.
             for i in 1 2 3; do
-              if git push; then break; fi
-              echo "push recusado — rebase e retry $i/3"
+              if git push; then exit 0; fi
+              echo "push recusado -- rebase e retry $i/3"
               git pull --rebase || exit 1
             done
+            git push
           fi
 
       # LIVRO-CAIXA DO SILENCIO. Severidade em camadas: reporta sempre, e
@@ -128,7 +147,11 @@ jobs:
             echo "livro-caixa sem mudanca"
           else
             git commit -m "Robô: livro-caixa do silêncio atualizado"
-            for i in 1 2 3; do git push && break; git pull --rebase || exit 1; done
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              git pull --rebase || exit 1
+            done
+            git push
           fi
 
       - name: Avaliar piso e alertar se cair
