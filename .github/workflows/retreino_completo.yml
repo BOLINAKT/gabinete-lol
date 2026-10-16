@@ -45,7 +45,7 @@ concurrency:
 jobs:
   completo:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
 
@@ -96,11 +96,35 @@ jobs:
             mlcore.tests.test_pscore_servido \
             mlcore.tests.test_portao_retreino 2>&1 | tail -5
 
+      # REAJUSTE TRIMESTRAL DO CALIBRADOR COM GRUPO (16/10/2026). O retreino
+      # troca o modelo, mas o bloco postfusion_group_calibration do
+      # params_fitted.json ficava parado (o de 06/09 servia sobre o modelo de
+      # 01/10, timido: inclinacao 1,34). tools/cadencia_calibrador.py mediu,
+      # contra "nunca reajustar", em 7.217 jogos de abr-out/2026, com plano
+      # fixado antes e Bonferroni: trimestral +0,0072 [+0,0030; +0,0107]
+      # p=0,0004 PASSA; gatilho +0,0065 passa; mensal +0,0061 p=0,017 nao
+      # passa. Pelo plano (empate < 0,002 -> menos reajustes): TRIMESTRAL.
+      # Roda DEPOIS do modelo novo, para o calibrador ser ajustado sobre o
+      # modelo que vai servir. Se o ajustador abortar (paridade), o modelo
+      # sai com o calibrador anterior e a falha fica marcada no run.
+      - name: Reajuste trimestral do calibrador com grupo (jan/abr/jul/out)
+        continue-on-error: true
+        timeout-minutes: 50
+        run: |
+          MES=$(date -u +%m)
+          case "$MES" in
+            01|04|07|10)
+              echo "mes $MES: reajusta o calibrador com grupo"
+              python tools/ajustar_calibrador_grupo.py --escrever ;;
+            *)
+              echo "mes $MES: nao e mes de reajuste (trimestral: jan/abr/jul/out)" ;;
+          esac
+
       - name: Commitar modelo retreinado
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add ml_artifact.json players_artifact.json players_pscore.json mlcore/tests/fixtures/
+          git add ml_artifact.json players_artifact.json players_pscore.json params_fitted.json mlcore/tests/fixtures/
           if git diff --cached --quiet; then
             echo "modelo não mudou — nada a commitar"
           else

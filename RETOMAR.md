@@ -294,6 +294,50 @@ tocar no futuro) é candidata a frente própria.
 
 ---
 
+## 2-E. CADÊNCIA DO CALIBRADOR COM GRUPO: TRIMESTRAL — 16/10/2026
+
+`tools/cadencia_calibrador.py` (só mede). Plano **fixado antes de rodar**,
+escrito no próprio arquivo: quatro políticas servidas mês a mês de abr a
+out/2026 (horizonte de avaliação = horizonte de serviço), cada reajuste com o
+procedimento do ajustador de produção (2.500 jogos mais recentes, VC escolhe
+agrupamento e L2). Contra "nunca reajustar", barra da casa com Bonferroni
+(p < 0,05/3):
+
+```
+                logloss   inclinação  reajustes   contra "nunca"
+nunca           0,57933     1,47         0
+mensal          0,57321     1,08         7       +0,0061 p=0,017  não passa
+TRIMESTRAL      0,57211     1,16         3       +0,0072 p=0,0004 PASSA
+por gatilho     0,57284     1,08         5       +0,0065 p=0,012  passa
+```
+
+Pela regra do plano (empate < 0,002 → menos reajustes): **trimestral**. O
+"por gatilho" existe por causa da literatura (Davis et al., AMIA 2019: teste
+que decide quando atualizar calibra melhor que nunca atualizar e que
+calendário fixo); aqui ele passou, mas não ganhou do trimestral.
+
+**O que foi feito:**
+- `retreino_completo.yml` reajusta o calibrador nos meses 1, 4, 7 e 10,
+  **depois** do modelo novo (antes o bloco ficava parado enquanto o modelo era
+  trocado todo mês). Se o ajustador abortar por paridade, o modelo sai com o
+  calibrador anterior e a falha fica marcada no run. Trava em
+  `test_cadencia_calibrador.py`.
+- **Reajuste de outubro feito à mão em 16/10** (o de 01/10 não existia):
+  2.500 jogos de 08–10, "formato + fase", L2 = 1, paridade 2e-16. O bloco
+  agora **estica** (termo global 1,54); o de 06/09 achatava as BO3.
+- Guardas pós-retreino e suíte inteira: OK.
+
+**LEMBRETE QUE CONTINUA VALENDO (seção 3-A):** no app, o calibrador com grupo
+só é aplicado quando o ajuste de escalação está ligado (padrão desligado). A
+decisão "vale para todo jogo ou só com escalação" continua sendo dele e
+continua aberta.
+
+**Pendência:** a cadência não entrou no `frescor.py` — ele só olha
+`evidence/`, e o arquivo é compartilhado com o Dota (dívida D4). Hoje a
+garantia é o robô mais a trava do teste.
+
+---
+
 ## 3-A. FRENTE 0 — LIGADA, MAS QUASE NUNCA APLICA (corrigido em 08/09/2026)
 
 **LEIA ISTO ANTES DOS NÚMEROS ABAIXO.** Em 08/09 o app foi aberto pela
