@@ -226,7 +226,35 @@ handicap "com vitória", que também nunca tinha rodado: 88 partidas, ainda
 inconclusivo. Reproduzido do zero com `scratchpad` vazio em 16/10: 2 dobras,
 5,5 min, e o vencedor dá exatamente o mesmo número da rodada de 8 dobras.
 
-O que fazer com isto é a próxima frente: por que o modelo é tão tímido.
+### Por que ele perde — investigado no mesmo dia (`tools/diagnostico_timidez.py`)
+
+**Não é calibração, é informação.** Com modelo e casa juntos na mesma
+regressão (teste de *encompassing*), a casa leva todo o peso (z = 3,7) e o
+modelo **não acrescenta nada** (coeficiente −0,06, p = 0,89). Esticar as
+probabilidades do modelo não fecha a distância: o melhor fator (×1,25) leva o
+logloss de 0,6198 para 0,6191, contra 0,5621 da casa.
+
+E as 132 partidas são quase todas de torneio atípico: EMEA Masters (63), World
+Star Challengers Invitational (25), Demacia Cup (11). Só 24 são de liga grande.
+Nos dois grupos a casa ganha por ~0,05.
+
+**Consequência prática:** no vencedor, quando o modelo discorda da Pinnacle, a
+Pinnacle está certa. Isto é sobre acerto, não lucro (CLV segue fora do plano).
+
+**Achado separado, que é calibração de verdade:** nos 8.336 jogos da nota
+honesta, a inclinação de calibração é **1,145** (IC 1,06–1,23; alvo 1; acima
+de 1 = moderado demais). Concentrada nas **ligas grandes: 1,43** (1,26–1,61,
+n = 2.784). Nas menores, 1,06 (ok). O calibrador **por liga** foi reprovado em
+16/08, mas ele ajustava liga a liga com amostra pequena; o grupo das ligas
+grandes juntas, com 2.784 jogos, **nunca foi testado**. É candidato a frente
+própria, com teste cego separado e a barra da casa.
+
+FONTES (abertas em 16/10/2026): Van Calster et al. 2019, PMC6912996 — "The
+calibration slope evaluates the spread of the estimated risks and has a target
+value of 1" / "A slope > 1 suggests the opposite, i.e., that risk estimates are
+too moderate". Reade, Singleton e Vaughan Williams 2020
+(https://econpapers.repec.org/paper/rdgemxxdp/em-dp2020-03.htm): comparação
+modelo × casa "based on forecast encompassing regressions".
 
 Diagnóstico entre ligas (Fase 9), re-rodado no mesmo dia porque esperava
 mais jogos internacionais: 211 jogos de teste (eram 142 em maio). Correção
