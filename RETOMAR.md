@@ -263,6 +263,37 @@ sem correção.**
 
 ---
 
+## 2-D. TIER DA LIGA NO CALIBRADOR — REPROVADO em 16/10/2026
+
+`tools/gate_calibrador_tier.py` (só mede). Mesmo desenho do gate de setembro:
+base = o procedimento de produção (os 4 agrupamentos de hoje), escolha por
+validação cruzada repetida **dentro** da calibração, teste cego tocado uma vez.
+Candidatos novos, poucos de propósito: "T1 × resto", "T1/T2/resto",
+"formato + fase + T1".
+
+**A validação cruzada nem escolheu o tier**: ficou com "formato + fase" (VC
+0,60444 contra 0,60567 do melhor com tier). Sem mudança, ganho zero, não passa.
+Evidência em `evidence/gate_calibrador_tier.json`.
+
+**O ACHADO QUE IMPORTA MAIS — o calibrador em produção envelheceu.**
+`tools/calibrador_envelheceu.py` aplica o bloco que está no `params_fitted.json`
+(ajustado em 06/09 com jogos de 06–08), pela mesma função do app, nos 1.458
+jogos de setembro em diante, que ele nunca viu:
+
+```
+logloss sem o bloco 0,60171   com o bloco 0,59650     -> ainda ajuda
+inclinação do servido 1,34 [1,14; 1,53]               -> mas está tímido de novo
+  BO3 regular 1,87   BO3 playoffs 1,81   BO1 regular 1,25
+```
+
+Em setembro o bloco achatava as BO3 (80% virava ~63%); com a mistura de
+set/out o achatamento ficou forte demais. É o que o próprio ajustador avisava
+("o calibrador envelhece com a composição"), e a cadência de reajuste **nunca
+foi declarada**. Medir qual cadência de reajuste é melhor (origem rolante, sem
+tocar no futuro) é candidata a frente própria.
+
+---
+
 ## 3-A. FRENTE 0 — LIGADA, MAS QUASE NUNCA APLICA (corrigido em 08/09/2026)
 
 **LEIA ISTO ANTES DOS NÚMEROS ABAIXO.** Em 08/09 o app foi aberto pela
