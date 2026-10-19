@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-19T12:50:53-03:00",
+  "gerado_em": "2026-10-19T18:43:49-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
@@ -34,8 +34,8 @@
       "date": "23/10",
       "time": "15:00",
       "league": "Mundial",
-      "teamA_raw": "Team Liquid Alienware",
-      "teamB_raw": "CTBC Flying Oyster",
+      "teamA_raw": "Hanwha Life Esports",
+      "teamB_raw": "TOP ESPORTS",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-10-23T18:00:00Z"
@@ -44,8 +44,8 @@
       "date": "23/10",
       "time": "16:00",
       "league": "Mundial",
-      "teamA_raw": "Anyone's Legend",
-      "teamB_raw": "Karmine Corp",
+      "teamA_raw": "BILIBILI GAMING",
+      "teamB_raw": "Movistar KOI",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-10-23T19:00:00Z"
@@ -54,8 +54,8 @@
       "date": "23/10",
       "time": "17:00",
       "league": "Mundial",
-      "teamA_raw": "G2 Esports",
-      "teamB_raw": "Dplus KIA",
+      "teamA_raw": "Anyone's Legend",
+      "teamB_raw": "Karmine Corp",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-10-23T20:00:00Z"
@@ -64,8 +64,8 @@
       "date": "23/10",
       "time": "18:00",
       "league": "Mundial",
-      "teamA_raw": "Hanwha Life Esports",
-      "teamB_raw": "TOP ESPORTS",
+      "teamA_raw": "G2 Esports",
+      "teamB_raw": "Dplus KIA",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-10-23T21:00:00Z"
@@ -74,8 +74,8 @@
       "date": "23/10",
       "time": "19:00",
       "league": "Mundial",
-      "teamA_raw": "LOS",
-      "teamB_raw": "T1",
+      "teamA_raw": "Team Liquid Alienware",
+      "teamB_raw": "CTBC Flying Oyster",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-10-23T22:00:00Z"
@@ -84,8 +84,8 @@
       "date": "23/10",
       "time": "20:00",
       "league": "Mundial",
-      "teamA_raw": "Team Secret Whales",
-      "teamB_raw": "LYON",
+      "teamA_raw": "LOS",
+      "teamB_raw": "T1",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-10-23T23:00:00Z"
@@ -94,8 +94,8 @@
       "date": "23/10",
       "time": "21:00",
       "league": "Mundial",
-      "teamA_raw": "BILIBILI GAMING",
-      "teamB_raw": "Movistar KOI",
+      "teamA_raw": "Team Secret Whales",
+      "teamB_raw": "LYON",
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-10-24T00:00:00Z"
