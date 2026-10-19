@@ -1,42 +1,42 @@
 {
- "generated_at": "2026-09-06T02:16:42",
- "nota_produto": 8.63,
- "teto_produto": 9.03,
+ "generated_at": "2026-10-19T15:49:52",
+ "nota_produto": 7.57,
+ "teto_produto": 8.97,
  "fases": [
   {
    "fase": "Vencedor (ML)",
    "peso": 25,
-   "nota": 8.87,
+   "nota": 8.61,
    "teto": 9.5
   },
   {
    "fase": "Dados/automação",
    "peso": 15,
-   "nota": 9.5,
+   "nota": 9.71,
    "teto": 9.5
   },
   {
    "fase": "Totais",
    "peso": 15,
-   "nota": 6.12,
+   "nota": 6.21,
    "teto": 6.5
   },
   {
    "fase": "Live",
    "peso": 10,
-   "nota": 8.89,
+   "nota": 8.88,
    "teto": 9.5
   },
   {
    "fase": "Confiabilidade",
    "peso": 10,
-   "nota": 10.0,
+   "nota": 6.51,
    "teto": 10.0
   },
   {
    "fase": "Código/testes",
    "peso": 10,
-   "nota": 8.26,
+   "nota": 3.0,
    "teto": 9.0
   },
   {
@@ -44,20 +44,7 @@
    "peso": 5,
    "nota": 8.64,
    "teto": 9.0
-  },
-  {
-   "fase": "Portabilidade",
-   "peso": 5,
-   "nota": 9.88,
-   "teto": 10.0
   }
  ],
- "stale": [
-  "Dados/automação (20d)",
-  "Live (20d)",
-  "Confiabilidade (20d)",
-  "Código/testes (20d)",
-  "Players (20d)",
-  "Portabilidade (20d)"
- ]
+ "stale": []
 }

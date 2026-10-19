@@ -1,305 +1,314 @@
 {
- "gerado_em": "2026-09-06T14:16:14",
+ "gerado_em": "2026-10-19T15:50:31",
  "season": 2026,
- "nota_geral": 8.37,
+ "nota_geral": 8.15,
  "min_n": 80,
  "ligas": [
   {
    "liga": "AL",
    "tier": "MINOR",
-   "n": 343,
-   "nota": 7.42,
-   "logloss": 0.6163,
-   "acuracia": 0.671,
-   "ece": 0.047
+   "n": 363,
+   "nota": 6.13,
+   "logloss": 0.6571,
+   "acuracia": 0.683,
+   "ece": 0.091
   },
   {
    "liga": "CBLOL",
    "tier": "T2",
-   "n": 239,
-   "nota": 7.1,
-   "logloss": 0.6262,
-   "acuracia": 0.69,
-   "ece": 0.124
+   "n": 275,
+   "nota": 6.91,
+   "logloss": 0.6325,
+   "acuracia": 0.676,
+   "ece": 0.111
   },
   {
    "liga": "CD",
    "tier": "MINOR",
-   "n": 268,
-   "nota": 8.57,
-   "logloss": 0.5794,
-   "acuracia": 0.694,
-   "ece": 0.041
+   "n": 279,
+   "nota": 9.0,
+   "logloss": 0.566,
+   "acuracia": 0.699,
+   "ece": 0.058
   },
   {
    "liga": "EBL",
    "tier": "ERL",
-   "n": 196,
-   "nota": 7.15,
-   "logloss": 0.6247,
-   "acuracia": 0.617,
-   "ece": 0.126
+   "n": 213,
+   "nota": 9.2,
+   "logloss": 0.5595,
+   "acuracia": 0.7,
+   "ece": 0.095
   },
   {
    "liga": "EM",
    "tier": "ERL",
-   "n": 284,
-   "nota": 10.0,
-   "logloss": 0.4902,
-   "acuracia": 0.764,
-   "ece": 0.085
+   "n": 519,
+   "nota": 9.95,
+   "logloss": 0.5356,
+   "acuracia": 0.734,
+   "ece": 0.051
   },
   {
    "liga": "EWC",
    "tier": "T1",
    "n": 232,
-   "nota": 8.3,
-   "logloss": 0.5882,
-   "acuracia": 0.694,
-   "ece": 0.067
+   "nota": 7.06,
+   "logloss": 0.6277,
+   "acuracia": 0.655,
+   "ece": 0.054
   },
   {
    "liga": "HC",
    "tier": "MINOR",
-   "n": 99,
-   "nota": 9.61,
-   "logloss": 0.5466,
-   "acuracia": 0.747,
-   "ece": 0.105
+   "n": 201,
+   "nota": 5.64,
+   "logloss": 0.6728,
+   "acuracia": 0.582,
+   "ece": 0.051
   },
   {
    "liga": "HLL",
    "tier": "MINOR",
-   "n": 235,
+   "n": 243,
    "nota": 10.0,
-   "logloss": 0.4958,
-   "acuracia": 0.804,
-   "ece": 0.086
+   "logloss": 0.5113,
+   "acuracia": 0.765,
+   "ece": 0.076
   },
   {
    "liga": "HM",
    "tier": "ERL",
-   "n": 142,
+   "n": 174,
    "nota": 10.0,
-   "logloss": 0.4833,
-   "acuracia": 0.775,
-   "ece": 0.062
+   "logloss": 0.4579,
+   "acuracia": 0.822,
+   "ece": 0.092
   },
   {
    "liga": "HW",
    "tier": "MINOR",
    "n": 103,
-   "nota": 10.0,
-   "logloss": 0.5215,
-   "acuracia": 0.738,
-   "ece": 0.063
+   "nota": 8.04,
+   "logloss": 0.5964,
+   "acuracia": 0.68,
+   "ece": 0.109
   },
   {
    "liga": "LAS",
    "tier": "MINOR",
-   "n": 229,
-   "nota": 10.0,
-   "logloss": 0.5175,
-   "acuracia": 0.755,
-   "ece": 0.075
+   "n": 486,
+   "nota": 8.92,
+   "logloss": 0.5684,
+   "acuracia": 0.706,
+   "ece": 0.051
   },
   {
    "liga": "LCK",
    "tier": "T1",
-   "n": 490,
-   "nota": 7.15,
-   "logloss": 0.6247,
-   "acuracia": 0.645,
-   "ece": 0.058
+   "n": 502,
+   "nota": 6.27,
+   "logloss": 0.6528,
+   "acuracia": 0.612,
+   "ece": 0.054
   },
   {
    "liga": "LCKC",
    "tier": "MINOR",
-   "n": 459,
-   "nota": 6.95,
-   "logloss": 0.631,
-   "acuracia": 0.645,
-   "ece": 0.039
+   "n": 491,
+   "nota": 6.45,
+   "logloss": 0.647,
+   "acuracia": 0.637,
+   "ece": 0.055
   },
   {
    "liga": "LCP",
    "tier": "T1",
    "n": 301,
-   "nota": 8.06,
-   "logloss": 0.5959,
-   "acuracia": 0.684,
-   "ece": 0.065
+   "nota": 7.75,
+   "logloss": 0.6057,
+   "acuracia": 0.674,
+   "ece": 0.052
   },
   {
    "liga": "LCS",
    "tier": "T2",
-   "n": 217,
-   "nota": 8.56,
-   "logloss": 0.5798,
-   "acuracia": 0.728,
-   "ece": 0.075
+   "n": 260,
+   "nota": 7.94,
+   "logloss": 0.5996,
+   "acuracia": 0.673,
+   "ece": 0.025
   },
   {
    "liga": "LEC",
    "tier": "T1",
-   "n": 359,
-   "nota": 7.74,
-   "logloss": 0.6061,
-   "acuracia": 0.68,
-   "ece": 0.065
+   "n": 383,
+   "nota": 7.63,
+   "logloss": 0.6093,
+   "acuracia": 0.695,
+   "ece": 0.067
   },
   {
    "liga": "LES",
    "tier": "ERL",
-   "n": 187,
+   "n": 193,
    "nota": 10.0,
-   "logloss": 0.4451,
-   "acuracia": 0.759,
-   "ece": 0.067
+   "logloss": 0.4518,
+   "acuracia": 0.798,
+   "ece": 0.082
   },
   {
    "liga": "LFL",
    "tier": "ERL",
    "n": 273,
-   "nota": 7.94,
-   "logloss": 0.5996,
-   "acuracia": 0.674,
-   "ece": 0.082
+   "nota": 8.02,
+   "logloss": 0.5971,
+   "acuracia": 0.667,
+   "ece": 0.075
   },
   {
    "liga": "LIT",
    "tier": "MINOR",
-   "n": 237,
+   "n": 252,
    "nota": 10.0,
-   "logloss": 0.5109,
-   "acuracia": 0.751,
-   "ece": 0.063
+   "logloss": 0.5341,
+   "acuracia": 0.742,
+   "ece": 0.101
   },
   {
    "liga": "LJL",
    "tier": "T2",
-   "n": 358,
+   "n": 363,
    "nota": 10.0,
-   "logloss": 0.4873,
-   "acuracia": 0.746,
-   "ece": 0.027
+   "logloss": 0.504,
+   "acuracia": 0.76,
+   "ece": 0.036
   },
   {
    "liga": "LPL",
    "tier": "T1",
-   "n": 644,
-   "nota": 6.24,
-   "logloss": 0.6538,
-   "acuracia": 0.62,
-   "ece": 0.047
+   "n": 674,
+   "nota": 6.35,
+   "logloss": 0.6501,
+   "acuracia": 0.636,
+   "ece": 0.042
   },
   {
    "liga": "LPLOL",
    "tier": "ERL",
-   "n": 142,
-   "nota": 4.32,
-   "logloss": 0.7146,
-   "acuracia": 0.655,
-   "ece": 0.108
+   "n": 162,
+   "nota": 10.0,
+   "logloss": 0.4818,
+   "acuracia": 0.796,
+   "ece": 0.086
   },
   {
    "liga": "LRN",
    "tier": "MINOR",
-   "n": 173,
-   "nota": 9.3,
-   "logloss": 0.5563,
-   "acuracia": 0.694,
-   "ece": 0.076
+   "n": 176,
+   "nota": 7.9,
+   "logloss": 0.6008,
+   "acuracia": 0.676,
+   "ece": 0.068
   },
   {
    "liga": "LRS",
    "tier": "MINOR",
-   "n": 184,
-   "nota": 8.0,
-   "logloss": 0.5977,
-   "acuracia": 0.69,
-   "ece": 0.121
+   "n": 187,
+   "nota": 6.03,
+   "logloss": 0.6603,
+   "acuracia": 0.578,
+   "ece": 0.128
   },
   {
    "liga": "NACL",
    "tier": "MINOR",
-   "n": 289,
-   "nota": 6.05,
-   "logloss": 0.6598,
-   "acuracia": 0.637,
+   "n": 306,
+   "nota": 6.51,
+   "logloss": 0.6451,
+   "acuracia": 0.621,
    "ece": 0.075
   },
   {
    "liga": "NL",
    "tier": "MINOR",
-   "n": 133,
-   "nota": 4.7,
-   "logloss": 0.7027,
-   "acuracia": 0.714,
-   "ece": 0.108
+   "n": 137,
+   "nota": 10.0,
+   "logloss": 0.5024,
+   "acuracia": 0.759,
+   "ece": 0.081
   },
   {
    "liga": "NLC",
    "tier": "ERL",
-   "n": 196,
+   "n": 210,
    "nota": 8.41,
-   "logloss": 0.5848,
-   "acuracia": 0.668,
-   "ece": 0.087
+   "logloss": 0.5847,
+   "acuracia": 0.729,
+   "ece": 0.072
   },
   {
    "liga": "PCS",
    "tier": "T2",
-   "n": 81,
+   "n": 86,
    "nota": 10.0,
-   "logloss": 0.433,
-   "acuracia": 0.778,
-   "ece": 0.151
+   "logloss": 0.4454,
+   "acuracia": 0.756,
+   "ece": 0.133
   },
   {
    "liga": "PRM",
    "tier": "ERL",
-   "n": 306,
-   "nota": 7.82,
-   "logloss": 0.6035,
-   "acuracia": 0.673,
-   "ece": 0.07
+   "n": 312,
+   "nota": 7.43,
+   "logloss": 0.6158,
+   "acuracia": 0.66,
+   "ece": 0.077
   },
   {
    "liga": "RL",
    "tier": "MINOR",
-   "n": 196,
-   "nota": 7.89,
-   "logloss": 0.6011,
-   "acuracia": 0.658,
-   "ece": 0.053
+   "n": 211,
+   "nota": 7.01,
+   "logloss": 0.6291,
+   "acuracia": 0.626,
+   "ece": 0.035
   },
   {
    "liga": "ROL",
    "tier": "ERL",
-   "n": 242,
-   "nota": 9.96,
-   "logloss": 0.5354,
-   "acuracia": 0.707,
-   "ece": 0.056
+   "n": 257,
+   "nota": 9.38,
+   "logloss": 0.5539,
+   "acuracia": 0.689,
+   "ece": 0.069
   },
   {
    "liga": "TCL",
    "tier": "ERL",
-   "n": 204,
+   "n": 208,
    "nota": 10.0,
-   "logloss": 0.5075,
-   "acuracia": 0.745,
-   "ece": 0.06
+   "logloss": 0.5275,
+   "acuracia": 0.755,
+   "ece": 0.076
   },
   {
    "liga": "VCS",
    "tier": "T2",
-   "n": 113,
-   "nota": 7.02,
-   "logloss": 0.6287,
-   "acuracia": 0.664,
-   "ece": 0.117
+   "n": 155,
+   "nota": 6.9,
+   "logloss": 0.6325,
+   "acuracia": 0.619,
+   "ece": 0.097
+  },
+  {
+   "liga": "WSCI",
+   "tier": "MINOR",
+   "n": 85,
+   "nota": 6.59,
+   "logloss": 0.6425,
+   "acuracia": 0.647,
+   "ece": 0.11
   }
  ]
 }
