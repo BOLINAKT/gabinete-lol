@@ -1,17 +1,17 @@
 {
- "gerado_em": "2026-10-12T19:51:42",
+ "gerado_em": "2026-10-19T17:06:42",
  "mercado": "Total de kills (linha principal)",
  "so_kills": {
-  "apostas": 327,
-  "partidas": 90,
+  "apostas": 364,
+  "partidas": 99,
   "minimo": 60,
-  "logloss_modelo": 0.6888111507274378,
-  "logloss_casa": 0.6895342896806764,
-  "diferenca": -0.0007231389532386112,
-  "margem_erro": 0.02491643856560253,
-  "bateu": 45,
-  "nota_modelo": 5.134869473979944,
-  "nota_casa": 5.112129255324642,
+  "logloss_modelo": 0.6865840901078374,
+  "logloss_casa": 0.6886636329600766,
+  "diferenca": -0.0020795428522392134,
+  "margem_erro": 0.02273813788960555,
+  "bateu": 50,
+  "nota_modelo": 5.204902826797568,
+  "nota_casa": 5.13950839748187,
   "conclusivo": false
  }
 }

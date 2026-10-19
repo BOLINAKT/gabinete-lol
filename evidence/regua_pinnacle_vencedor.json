@@ -1,17 +1,17 @@
 {
- "gerado_em": "2026-09-25T17:34:52",
+ "gerado_em": "2026-10-19T17:08:54",
  "mercado": "Vencedor do mapa 1",
  "so_kills": {
-  "apostas": 25,
-  "partidas": 25,
+  "apostas": 139,
+  "partidas": 137,
   "minimo": 100,
-  "logloss_modelo": 0.5821068581082874,
-  "logloss_casa": 0.5745013760197839,
-  "diferenca": 0.007605482088503535,
-  "margem_erro": 0.06695572701267462,
-  "bateu": 9,
-  "nota_modelo": 8.490350373953227,
-  "nota_casa": 8.729516477365287,
-  "conclusivo": false
+  "logloss_modelo": 0.6279775792137451,
+  "logloss_casa": 0.5688900571586509,
+  "diferenca": 0.059087522055094155,
+  "margem_erro": 0.044906613515721255,
+  "bateu": 47,
+  "nota_modelo": 7.047874867492295,
+  "nota_casa": 8.905973045325444,
+  "conclusivo": true
  }
 }
