@@ -4,7 +4,7 @@
 # comportamento. Ao atualizar pacote local, atualizar aqui junto.
 # (matplotlib/scikit-image/scikit-learn saíram: nada importa e não
 # existem no venv local — eram pins aspiracionais antigos.)
-altair==6.0.0
+altair==6.3.0
 click==8.3.1
 # live/in-game ML (guardado: pre-jogo roda sem ele; necessario p/ live-bet)
 lightgbm==4.6.0
