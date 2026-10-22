@@ -276,7 +276,9 @@ def comp_coverage(root: Path, fast: bool) -> dict:
     src = ",".join(PKGS)
     rc, _ = _run(root, [sys.executable, "-m", "coverage", "run", f"--source={src}",
                         "-m", "unittest", "discover", "-s", "mlcore/tests"], timeout=3600)
-    rc2, out = _run(root, [sys.executable, "-m", "coverage", "report", "--format=total"], timeout=300)
+    # --ignore-errors: um teste cria e apaga um modulo temporario em mlcore/_recovered;
+    # sem isto o report sai rc=1 ("No source for code") e a cobertura vira 0.
+    rc2, out = _run(root, [sys.executable, "-m", "coverage", "report", "--format=total", "--ignore-errors"], timeout=300)
     try:
         pct = float(out.strip().splitlines()[-1])
     except (ValueError, IndexError):
