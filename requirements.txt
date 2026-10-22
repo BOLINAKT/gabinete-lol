@@ -16,7 +16,7 @@ pytz==2025.2
 requests==2.32.5
 scipy==1.17.1
 streamlit==1.52.2
-tqdm==4.68.4
+tqdm==4.70.1
 tzdata==2025.3
 coverage==7.15.2
 pyflakes==3.4.0
