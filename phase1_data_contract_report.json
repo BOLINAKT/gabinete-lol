@@ -1,6 +1,6 @@
 {
   "version": "phase1_data_contract_v1",
-  "generated_at": "2026-03-05T14:01:56+00:00",
+  "generated_at": "2026-10-22T19:47:41+00:00",
   "decision": "promote",
   "reasons": [],
   "parts": {
@@ -13,7 +13,7 @@
       "csv_files": 3,
       "files_ok": 3,
       "files_fail": 0,
-      "rows_total": 264348,
+      "rows_total": 359688,
       "label_issues_total": 0,
       "critical_issues_total": 0
     },
@@ -32,9 +32,9 @@
       ],
       "feature_schema_static_check": {
         "scanned_files": [
-          "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\app_core\\style_matchup_core.py",
-          "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\app_core\\meta_blend_core.py",
-          "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\app_core\\state_strength_areal_core.py"
+          "/home/runner/work/gabinete-lol/gabinete-lol/app_core/style_matchup_core.py",
+          "/home/runner/work/gabinete-lol/gabinete-lol/app_core/meta_blend_core.py",
+          "/home/runner/work/gabinete-lol/gabinete-lol/app_core/state_strength_areal_core.py"
         ],
         "keyword_hits": [],
         "critical_hits": [],
@@ -45,7 +45,7 @@
     },
     "files": [
       {
-        "path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\CSV_HISTORICO\\2024_LoL_esports_match_data_from_OraclesElixir.csv",
+        "path": "/home/runner/work/gabinete-lol/gabinete-lol/CSV_HISTORICO/2024_LoL_esports_match_data_from_OraclesElixir.csv",
         "ok": true,
         "errors": [],
         "warnings": [
@@ -87,7 +87,7 @@
         }
       },
       {
-        "path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\CSV_HISTORICO\\2025_LoL_esports_match_data_from_OraclesElixir.csv",
+        "path": "/home/runner/work/gabinete-lol/gabinete-lol/CSV_HISTORICO/2025_LoL_esports_match_data_from_OraclesElixir.csv",
         "ok": true,
         "errors": [],
         "warnings": [
@@ -129,16 +129,16 @@
         }
       },
       {
-        "path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\CSV_DIARIO\\2026_LoL_esports_match_data_from_OraclesElixir.csv",
+        "path": "/home/runner/work/gabinete-lol/gabinete-lol/CSV_DIARIO/2026_LoL_esports_match_data_from_OraclesElixir.csv",
         "ok": true,
         "errors": [],
         "warnings": [
           "missing_bo_col"
         ],
-        "rows": 21324,
+        "rows": 116664,
         "columns": 165,
         "label_view_mode": "team_rows_only",
-        "label_rows": 3554,
+        "label_rows": 19444,
         "label_cols": {
           "team": "teamname",
           "side": "side",
@@ -149,19 +149,19 @@
         },
         "empty_team_rows": 0,
         "side_counts": {
-          "blue": 1777,
-          "red": 1777
+          "blue": 9722,
+          "red": 9722
         },
         "bo_missing_informational": true,
         "playoffs_counts": {
-          "0": 3024,
-          "1": 530
+          "0": 15330,
+          "1": 4114
         },
-        "duplicate_gameid_rows": 1777,
+        "duplicate_gameid_rows": 9722,
         "duplicate_gameid_team_rows": 0,
         "game_consistency": {
           "checked": true,
-          "games_checked": 1777,
+          "games_checked": 9722,
           "bad_side_games": 0,
           "bad_result_games": 0
         },
@@ -178,116 +178,116 @@
     "summary": {
       "files_ok": 3,
       "files_total": 3,
-      "rows_total": 264348,
-      "league_count": 66,
+      "rows_total": 359688,
+      "league_count": 72,
       "low_sample_leagues_lt30": 0,
-      "team_rows": 264348,
+      "team_rows": 359688,
       "blank_team_rows": 0,
       "blank_team_rate": 0.0
     },
     "top_leagues": [
       {
         "league": "LPL",
-        "rows": 20640
+        "rows": 26352
       },
       {
         "league": "LCKC",
-        "rows": 14040
+        "rows": 18528
       },
       {
         "league": "LCK",
-        "rows": 13944
+        "rows": 18468
       },
       {
         "league": "EM",
-        "rows": 10068
+        "rows": 16296
       },
       {
         "league": "LAS",
-        "rows": 9336
+        "rows": 15168
       },
       {
         "league": "NACL",
-        "rows": 9168
+        "rows": 12540
       },
       {
         "league": "LEC",
-        "rows": 8460
+        "rows": 11796
       },
       {
         "league": "LJL",
-        "rows": 7872
-      },
-      {
-        "league": "LFL",
-        "rows": 7680
-      },
-      {
-        "league": "PCS",
-        "rows": 7200
+        "rows": 10620
       },
       {
         "league": "PRM",
-        "rows": 6972
+        "rows": 10392
+      },
+      {
+        "league": "LFL",
+        "rows": 9960
+      },
+      {
+        "league": "AL",
+        "rows": 9552
+      },
+      {
+        "league": "PCS",
+        "rows": 8232
+      },
+      {
+        "league": "NLC",
+        "rows": 8004
+      },
+      {
+        "league": "TCL",
+        "rows": 7680
+      },
+      {
+        "league": "LCP",
+        "rows": 6888
+      },
+      {
+        "league": "LIT",
+        "rows": 6816
       },
       {
         "league": "LDL",
         "rows": 6780
       },
       {
-        "league": "AL",
-        "rows": 6720
+        "league": "CBLOL",
+        "rows": 6744
+      },
+      {
+        "league": "CD",
+        "rows": 6708
+      },
+      {
+        "league": "VCS",
+        "rows": 6576
+      },
+      {
+        "league": "EBL",
+        "rows": 6552
+      },
+      {
+        "league": "HM",
+        "rows": 6228
+      },
+      {
+        "league": "HC",
+        "rows": 6144
       },
       {
         "league": "LVP SL",
         "rows": 6072
       },
       {
-        "league": "NLC",
-        "rows": 5988
-      },
-      {
-        "league": "TCL",
-        "rows": 5700
-      },
-      {
-        "league": "LFL2",
-        "rows": 4860
-      },
-      {
-        "league": "VCS",
-        "rows": 4836
-      },
-      {
-        "league": "LCP",
-        "rows": 4716
-      },
-      {
-        "league": "EBL",
-        "rows": 4584
-      },
-      {
-        "league": "LIT",
-        "rows": 4572
-      },
-      {
         "league": "LPLOL",
-        "rows": 4152
-      },
-      {
-        "league": "HM",
-        "rows": 4140
-      },
-      {
-        "league": "PCL",
-        "rows": 4080
-      },
-      {
-        "league": "CBLOL",
-        "rows": 3972
+        "rows": 5712
       }
     ],
     "errors": []
   },
-  "run_log": "$ check_data_leakage_and_labels rc=0\nOK: leakage/label report saved -> data_leakage_label_report.json | decision=promote | files_ok=3/3 rows=264348"
+  "run_log": "$ check_data_leakage_and_labels rc=0\nOK: leakage/label report saved -> data_leakage_label_report.json | decision=promote | files_ok=3/3 rows=359688"
 }
