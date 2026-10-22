@@ -1,10 +1,10 @@
 {
-  "gerado_em": "2026-10-22T04:55:13-03:00",
+  "gerado_em": "2026-10-22T11:03:49-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 40,
+    "ja_jogados": 39,
     "passados": 0,
     "indefinidos": 31,
     "sem_dois_times": 0
@@ -14,10 +14,10 @@
       "date": "22/10",
       "time": "09:00",
       "league": "EMEA Masters",
-      "teamA_raw": "Galions",
-      "teamB_raw": "Solary",
+      "teamA_raw": "Solary",
+      "teamB_raw": "Galions",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-10-22T12:00:00Z"
     },
     {
@@ -99,6 +99,16 @@
       "bo": 1,
       "estado": "unstarted",
       "inicio_utc": "2026-10-24T00:00:00Z"
+    },
+    {
+      "date": "10/11",
+      "time": "02:00",
+      "league": "LCP P&R",
+      "teamA_raw": "FENNEL",
+      "teamB_raw": "Nothin'Here",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-11-10T05:00:00Z"
     }
   ]
 }
