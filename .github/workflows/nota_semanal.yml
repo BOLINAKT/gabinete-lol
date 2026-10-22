@@ -95,11 +95,23 @@ jobs:
         timeout-minutes: 25
         run: python tools/nota_por_liga.py
 
+      # ALARME DE QUALIDADE (22/10/2026). tools/ml_quality_check.py nasceu do
+      # incidente de 06/2026 (nota despencou 4 dias sem aviso), mas so rodava
+      # na manutencao feita pelo app -- a ultima vez foi 14/07. E o baseline
+      # morava em ops/ (fora do git): no robo, "sem baseline" fixava o atual e
+      # dizia ok, entao o alarme nunca dispararia. Agora o baseline e
+      # versionado e o alarme roda aqui toda semana; "fail" abre issue.
+      # Re-fixado em 22/10 no estado de hoje: o de 08/07 comparava outra
+      # janela de 45 dias (jogos diferentes), nao o mesmo conjunto.
+      - name: Alarme de qualidade pos-retreino
+        continue-on-error: true
+        run: python tools/ml_quality_check.py 2>&1 | tee qualidade_out.txt
+
       - name: Publicar a nota do produto (a nuvem e o PC dele so leem do git)
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add -f evidence/product_scorecard.json evidence/nota_por_liga.json evidence/totals_scorecard.json evidence/regua_28.json evidence/frescor.json evidence/livro_caixa.json
+          git add -f ops/monitoring/ml_quality_baseline.json evidence/product_scorecard.json evidence/nota_por_liga.json evidence/totals_scorecard.json evidence/regua_28.json evidence/frescor.json evidence/livro_caixa.json
           if git diff --cached --quiet; then
             echo "nota do produto sem mudanca — sem commit"
           else
@@ -167,6 +179,10 @@ jobs:
           elif [ "$(echo "$nota < $PISO" | bc -l)" = "1" ]; then
             titulo="🚨 Vigia da nota: caiu para $nota (piso $PISO)"
             corpo="A nota oficial (fusion scorecard, replay cego na temporada) caiu para **$nota**. Últimas suspeitas de praxe: retreino com CSV truncado, calibrador achatado, artifact incompleto. Rodar tools/ml_quality_diagnose.py no PC."
+          elif grep -q "verdict=fail" qualidade_out.txt 2>/dev/null; then
+            motivo=$(grep -oE "verdict=fail.*" qualidade_out.txt | head -1 | head -c 400)
+            titulo="🚨 Alarme de qualidade: o modelo piorou de repente"
+            corpo="O alarme pos-retreino (tools/ml_quality_check.py) acusou queda alem de +0,020 de logloss contra o baseline: $motivo. Suspeitas de praxe: retreino com CSV truncado, holdout errado, cutoff."
           elif grep -q "régua(s) velha(s)" produto_out.txt 2>/dev/null; then
             velhas=$(grep -oE "réguas VELHAS.*" produto_out.txt | head -1)
             titulo="⚠️ Vigia da nota: régua(s) do produto envelhecendo"

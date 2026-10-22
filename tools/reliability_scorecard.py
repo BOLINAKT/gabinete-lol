@@ -42,6 +42,26 @@ GUARD_TESTS = [
     "mlcore.tests.test_ml_marginal_guard_core",
     "mlcore.tests.test_ui_text_guardrails",
 ]
+# Os passos [2/3] e [3/3] de tools/check_regression.ps1, na mesma ordem.
+REGR_TESTS = [
+    "mlcore.tests.test_odds_regression",
+    "mlcore.tests.test_odds_regression_40",
+    "mlcore.tests.test_interleague_matchups_regression",
+    "mlcore.tests.test_key_matchups_regression",
+    "mlcore.tests.test_key_matchups_extended_regression",
+    "mlcore.tests.test_players_fusion_regression",
+    "mlcore.tests.test_settings_core",
+    "mlcore.tests.test_app_state",
+    "mlcore.tests.test_resumo_core",
+    "mlcore.tests.test_app_odds_core",
+    "mlcore.tests.test_players_state",
+    "mlcore.tests.test_players_core",
+    "mlcore.tests.test_players_layer_weights",
+    "mlcore.tests.test_fit_ml_params",
+    "mlcore.tests.test_regression_fixtures",
+    "mlcore.tests.test_ui_labels_integrity",
+    "mlcore.tests.test_smoke",
+]
 
 
 def _run_tests(mods: list[str], env_e2e: bool = False) -> tuple[int, int, str]:
@@ -70,15 +90,14 @@ def main() -> int:
     ok_i, tot_i, det_i = _run_tests(IMMUT_TESTS, env_e2e=True)
     ok_g, tot_g, det_g = _run_tests(GUARD_TESTS)
 
-    # regressões: check_regression.ps1 (fixtures de odds + core safety)
-    import os
-    try:
-        cp = subprocess.run(["powershell", "-ExecutionPolicy", "Bypass", "-File", "tools/check_regression.ps1"],
-                            capture_output=True, text=True, cwd=str(ROOT), timeout=900,
-                            encoding="utf-8", errors="replace", env=dict(os.environ, PYTHONIOENCODING="utf-8"))
-        regr_ok = "regression checks passed" in (cp.stdout or "").lower() or cp.returncode == 0
-    except Exception:
-        regr_ok = False
+    # regressões: os MESMOS módulos do tools/check_regression.ps1 (fixtures de
+    # odds + core safety), rodados pelo próprio Python.
+    # CONSERTO 22/10/2026: antes isto chamava `powershell -File ...ps1`. No robô
+    # (ubuntu) não existe `powershell`, e no PC o ps1 chamava o `python` do PATH,
+    # não o do .venv -- nos dois casos a parte "regressões" dava ZERO com as
+    # regressões passando. O ps1 continua para uso à mão; a lista é a dele.
+    ok_r, tot_r, _ = _run_tests(REGR_TESTS)
+    regr_ok = tot_r > 0 and ok_r == tot_r
 
     # vigia: workflow + baseline de qualidade presentes
     vigia_wf = (ROOT / ".github" / "workflows" / "nota_semanal.yml").exists()
