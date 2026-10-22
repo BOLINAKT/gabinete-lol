@@ -47,6 +47,10 @@ jobs:
       - name: Instalar dependências
         run: pip install --quiet -r requirements.txt
 
+      - name: Contrato de dados (CSV novo bloqueia o modelo se vazar/quebrar)
+        # sai != 0 quando o contrato nao promove: o job para e o modelo antigo fica
+        run: python tools/run_phase1_data_contract.py
+
       - name: Incremental (aplica jogos novos ao modelo)
         run: |
           python -m mlcore.update_incremental \
@@ -68,7 +72,7 @@ jobs:
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add ml_artifact.json players_artifact.json mlcore/tests/fixtures/
+          git add ml_artifact.json players_artifact.json mlcore/tests/fixtures/ phase1_data_contract_report.json
           if git diff --cached --quiet; then
             echo "modelo não mudou (CSV sem jogos novos) — nada a commitar"
           else
