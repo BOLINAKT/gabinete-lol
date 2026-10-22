@@ -1,13 +1,13 @@
 {
- "testes": 5804,
- "segundos": 116.037,
+ "testes": 5805,
+ "segundos": 159.951,
  "status": "FAILED",
  "falhas": 3,
  "erros": 0,
  "pulados": 11,
  "ok": false,
- "gerado_em": "2026-10-22T15:41:23",
- "duracao_total_s": 118.9,
+ "gerado_em": "2026-10-22T15:52:18",
+ "duracao_total_s": 163.4,
  "primeiras_falhas": [
   "test_apply_reset_and_resolve_bootstrap_selection (test_csv_bootstrap_runtime_core.TestCSVBootstrapRuntimeCore.test_apply_reset_and_resolve_bootstrap_selection)",
   "test_build_fit_params_runtime_paths (test_maintenance_runtime_core.MaintenanceRuntimeCoreTests.test_build_fit_params_runtime_paths)",
