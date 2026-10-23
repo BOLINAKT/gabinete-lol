@@ -8,8 +8,8 @@
   },
   "dados 2": {
    "nota": 1.0,
-   "justificativa": "22 ferramentas de gate em tools/; REJECTs registrados no historico (draft, players no Dota, circuitos, calibracao ao vivo)",
-   "verificado_em": "2026-08-27"
+   "justificativa": "26 ferramentas de gate em tools/ (reconferido 23/10); REJECTs seguem registrados, o mais recente o calibrador por tier (tools/gate_calibrador_tier.py, 22/10)",
+   "verificado_em": "2026-10-23"
   },
   "dados 3": {
    "nota": 0.0,
@@ -18,8 +18,8 @@
   },
   "dados 4": {
    "nota": 1.0,
-   "justificativa": "as regras existem (is_pro_tier, keep_playoffs, MAJOR_LEAGUES) E ha testes que as forcam (test_active_teams_filter, test_exhibition_league), com a suite rodando em retreino.yml",
-   "verificado_em": "2026-08-27"
+   "justificativa": "as regras existem (is_pro_tier, keep_playoffs, MAJOR_LEAGUES) e os testes que as forcam (test_active_teams_filter, test_exhibition_league, test_league_context) rodam todo dia na suite do robo (suite.yml)",
+   "verificado_em": "2026-10-23"
   },
   "dados 5": {
    "nota": 0.5,
@@ -29,37 +29,37 @@
   "dados 6": {
    "nota": 0.5,
    "justificativa": "nao ha registro central de features nem documento de 'como adicionar' (nada em docs/); a feature nova e ligada por bandeira (feature_flags_ui_core) e medida por gate, mas o caminho e manual e o tempo de ponta a ponta nunca foi cronometrado",
-   "verificado_em": "2026-08-27"
+   "verificado_em": "2026-10-23"
   },
   "modelo 1": {
    "nota": 1.0,
-   "justificativa": "tudo em git, e os commits carregam o porque no corpo (346 linhas de corpo nos ultimos 20 commits); nenhuma mudanca de modelo sem gate",
-   "verificado_em": "2026-08-27"
+   "justificativa": "tudo em git, e os commits carregam o porque no corpo (126 linhas de corpo nos ultimos 20 commits nao-robo, contado em 23/10); nenhuma mudanca de modelo sem gate",
+   "verificado_em": "2026-10-23"
   },
   "modelo 2": {
    "nota": 0.0,
    "justificativa": "NAO medido: exigiria CLV, que esta fora do plano por decisao dele. E fronteira escolhida, nao falha de execucao",
-   "verificado_em": "2026-08-27"
+   "verificado_em": "2026-10-23"
   },
   "modelo 3": {
    "nota": 1.0,
    "justificativa": "validacao cruzada nos gates; L2 e agrupamento do calibrador escolhidos por VC repetida DENTRO da calibracao, sem tocar no teste",
-   "verificado_em": "2026-08-27"
+   "verificado_em": "2026-10-23"
   },
   "modelo 4": {
    "nota": 1.0,
-   "justificativa": "medido em 27/08: calibrador ajustado em temporada velha custa +0.023 de logloss; evidence/gate_calibrador_final.json",
-   "verificado_em": "2026-08-27"
+   "justificativa": "medido duas vezes: 27/08 (calibrador de temporada velha custa +0.023 de logloss, evidence/gate_calibrador_final.json) e 16/10 (tools/calibrador_envelheceu.py: o bloco em producao ficou timido, inclinacao 1,34), o que gerou o reajuste trimestral (tools/cadencia_calibrador.py)",
+   "verificado_em": "2026-10-23"
   },
   "modelo 5": {
    "nota": 1.0,
    "justificativa": "comparacao contra a base presente nas ferramentas de gate; ha casos em que o simples ganhou e foi mantido (calibrar o ao vivo perdeu em 15 de 15)",
-   "verificado_em": "2026-08-27"
+   "verificado_em": "2026-10-23"
   },
   "modelo 7": {
    "nota": 1.0,
    "justificativa": "o sujeito da previsao e o TIME vencer um mapa, nao uma pessoa; nao ha grupo protegido em jogo. Declarado, nao ignorado",
-   "verificado_em": "2026-08-27"
+   "verificado_em": "2026-10-23"
   },
   "infra 1": {
    "nota": 0.0,
@@ -69,12 +69,12 @@
   "infra 5": {
    "nota": 1.0,
    "justificativa": "session_state[_ml_trace_last] guarda o caminho da previsao (first_x_gap_core, flow_runtime_core) e a aba de explicabilidade o exibe",
-   "verificado_em": "2026-08-27"
+   "verificado_em": "2026-10-23"
   },
   "infra 6": {
    "nota": 0.5,
    "justificativa": "o calibrador com grupo entrou desligado ate os coeficientes existirem (postfusion_calibration_core), mas e um caso pontual, nao pratica sistematica",
-   "verificado_em": "2026-08-27"
+   "verificado_em": "2026-10-23"
   },
   "monitor 1": {
    "nota": 0.0,
@@ -87,9 +87,9 @@
    "verificado_em": "2026-08-27"
   },
   "monitor 3": {
-   "nota": 0.0,
-   "justificativa": "divergencia ENCONTRADA duas vezes em 26/08 (scope_meta nos dois repos) e a nota oficial mede caminho diferente do servido (3.36pp em 69% dos jogos). Nenhum vigia existe",
-   "verificado_em": "2026-08-27"
+   "nota": 0.5,
+   "justificativa": "testes de paridade treino x servico rodam todo dia na suite do robo (suite.yml): test_ml_parity_golden, test_paridade_grupo_servido, test_pscore_servido, test_regua_vs_servido. Mas a divida D5 segue aberta (o replay da regua perde o delta de jogadores e mede so parte do caminho servido): vigia parcial, meio ponto",
+   "verificado_em": "2026-10-23"
   },
   "monitor 5": {
    "nota": 0.0,
