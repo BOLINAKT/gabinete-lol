@@ -68,6 +68,12 @@ jobs:
             mlcore.tests.test_odds_regression \
             mlcore.tests.test_odds_regression_40 -v 2>&1 | tail -5
 
+      # CANARIO (23/10/2026): o modelo novo preve parecido com o que esta no ar,
+      # nos mesmos jogos? Barrou: o job para aqui e o modelo anterior fica.
+      # Tetos medidos no historico do git (ver a ferramenta).
+      - name: Canario (modelo novo x modelo no ar)
+        run: python tools/canario_modelo.py
+
       - name: Commitar modelo atualizado
         run: |
           git config user.name "Robo Gabinete"
