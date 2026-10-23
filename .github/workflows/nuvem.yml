@@ -34,20 +34,35 @@ jobs:
           ref: master
           fetch-depth: 1
 
-      - name: Refazer a branch nuvem so com a versao atual
+      - name: Atualizar a branch nuvem com a versao atual
+        # 23/10/2026: refazer a branch do zero a cada hora (push --force) fazia
+        # a nuvem reinstalar o app e perder o que estava no disco dela (os
+        # apelidos de time salvos). Agora cada atualizacao e UM commit novo em
+        # cima do anterior (a nuvem so puxa a diferenca), e a branch so e
+        # refeita do zero quando passa de 60 commits, para nao voltar a pesar.
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
           origem=$(git rev-parse --short HEAD)
+          arvore=$(git rev-parse HEAD^{tree})
+          msg="Nuvem: copia do master $origem"
           atual=$(git ls-remote origin refs/heads/nuvem | cut -c1-40)
-          if [ -n "$atual" ]; then
-            git fetch -q --depth 1 origin nuvem
-            if git diff --quiet HEAD FETCH_HEAD; then
-              echo "nuvem ja igual ao master ($origem) -- nada a fazer"
-              exit 0
-            fi
+          if [ -z "$atual" ]; then
+            novo=$(git commit-tree "$arvore" -m "$msg, sem historico")
+            git push -q origin "$novo:refs/heads/nuvem"
+            echo "nuvem criada ($origem)"; exit 0
           fi
-          git checkout -q --orphan nuvem_nova
-          git commit -q -m "Nuvem: copia do master $origem, sem historico"
-          git push -q --force origin nuvem_nova:refs/heads/nuvem
-          echo "nuvem atualizada a partir do master $origem"
+          git fetch -q --depth 60 origin nuvem
+          if [ "$(git rev-parse FETCH_HEAD^{tree})" = "$arvore" ]; then
+            echo "nuvem ja igual ao master ($origem) -- nada a fazer"; exit 0
+          fi
+          n=$(git rev-list --count FETCH_HEAD)
+          if [ "$n" -ge 60 ]; then
+            novo=$(git commit-tree "$arvore" -m "$msg, sem historico (recomeco: $n commits)")
+            git push -q --force origin "$novo:refs/heads/nuvem"
+            echo "nuvem recomecada do zero ($n commits)"
+          else
+            novo=$(git commit-tree "$arvore" -p FETCH_HEAD -m "$msg")
+            git push -q origin "$novo:refs/heads/nuvem"
+            echo "nuvem +1 commit ($origem; $((n+1)) no total)"
+          fi
