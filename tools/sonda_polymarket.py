@@ -97,7 +97,12 @@ def main() -> int:
         for ev in (evs if isinstance(evs, list) else []):
             eventos.setdefault(str(ev.get("id")), ev)
     rel["passos"]["events"] = {"tentativas": tentativas, "eventos_unicos": len(eventos)}
-    rel["eventos"] = [_resumo_evento(e) for e in list(eventos.values())[:40]]
+    # 2a rodada (23/10/2026): a 1a mostrou que o LoL e o esporte id 39, tag
+    # primaria 65 (56 eventos abertos). So ele, inteiro, com os mercados.
+    st, evs = _get("events", tag_id=65, closed="false", limit=200)
+    lol = evs if isinstance(evs, list) else []
+    rel["passos"]["lol_tag65"] = {"status": st, "n": len(lol)}
+    rel["eventos"] = [_resumo_evento(e) for e in lol]
 
     SAIDA.parent.mkdir(exist_ok=True)
     SAIDA.write_text(json.dumps(rel, ensure_ascii=False, indent=1), encoding="utf-8")
