@@ -380,6 +380,15 @@ reverificadas em 23/10, vencem em 21/01/2027. O que falta e por quê:
 - monitor 3 (treino x serviço): paridade parcial na suíte, D5 aberta;
 - Dota modelo 3: hiperparâmetros só por gate à mão, sem validação cruzada.
 
+**Polymarket (23/10):** coletada de hora em hora (`tools/coletar_polymarket.py`,
+`polymarket.yml`; os dominios dela nao resolvem no Brasil, o robo roda nos EUA)
+e mostrada na aba "Modelo × Mercado" com a Pinnacle como regua
+(`app_core/mercado_vencedor_core.py`). **A FAZER, combinado com ele:** quando
+`polymarket_lol_historico.jsonl` tiver algumas semanas (~200 jogos com
+resultado), medir Pinnacle e Polymarket contra os resultados (logloss, mesma
+conta da regua da Pinnacle). So entao "a Pinnacle e mais bem regulada" deixa de
+ser suposicao.
+
 **Conferir na segunda, 27/10:** a primeira rodada dos robôs com contrato e
 canário (os arquivos `evidence/contrato_dados_dota.json`,
 `phase1_data_contract_report.json`), o `retreino_ao_vivo_dota`, o alarme do
