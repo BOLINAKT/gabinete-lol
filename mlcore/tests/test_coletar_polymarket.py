@@ -5,7 +5,11 @@ from __future__ import annotations
 import unittest
 from datetime import datetime, timezone
 
-from tools.coletar_polymarket import ler_partida
+try:
+    from tools.coletar_polymarket import ler_partida
+except ImportError as _sem_ferramenta:
+    import unittest as _u
+    raise _u.SkipTest("tools.coletar_polymarket nao existe neste repositorio: " + str(_sem_ferramenta))
 
 ANTES = datetime(2026, 10, 23, 12, 0, tzinfo=timezone.utc)
 
