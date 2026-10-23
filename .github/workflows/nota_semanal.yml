@@ -69,7 +69,7 @@ jobs:
             for i in 1 2 3; do
               if git push; then exit 0; fi
               echo "push recusado -- rebase e retry $i/3"
-              git pull --rebase || exit 1
+              git pull --rebase --autostash || exit 1
             done
             git push
           fi
@@ -121,7 +121,7 @@ jobs:
             for i in 1 2 3; do
               if git push; then exit 0; fi
               echo "push recusado -- rebase e retry $i/3"
-              git pull --rebase || exit 1
+              git pull --rebase --autostash || exit 1
             done
             git push
           fi
@@ -161,7 +161,7 @@ jobs:
             git commit -m "Robô: livro-caixa do silêncio atualizado"
             for i in 1 2 3; do
               if git push; then exit 0; fi
-              git pull --rebase || exit 1
+              git pull --rebase --autostash || exit 1
             done
             git push
           fi
