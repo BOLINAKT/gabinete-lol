@@ -338,6 +338,55 @@ garantia é o robô mais a trava do teste.
 
 ---
 
+## 2-F. MODELO CONGELADO, ENGENHARIA FECHADA — 22 e 23/10/2026
+
+**Decisão dele (22/10):** o modelo do LoL e o do Dota ficam como estão. Nada de
+mudança grande de modelo; só verificação e engenharia em volta, para fechar o
+10 no que não depende de acertar jogo. A acertividade fica para depois.
+
+**O que entrou (nos dois repos, salvo onde diz):**
+
+| item da régua | o que roda sozinho agora | onde |
+|---|---|---|
+| suíte na esteira | `suite.yml` roda a suíte inteira todo dia e grava `evidence/suite_esteira.json` | ambos |
+| contrato de dados | `run_phase1_data_contract.py` (LoL) e `tools/contrato_dados_dota.py` antes do treino; falhou, o modelo antigo fica | robôs diários |
+| canário | `tools/canario_modelo.py`: modelo novo x modelo no ar nos mesmos 500 jogos; tetos medidos no histórico do git | robôs diários |
+| treino reproduzível | `test_treino_reproduzivel.py`: treina duas vezes, compara (igual, fora carimbo de hora) | suíte |
+| reverter | `tools/reverter_modelo.py` + ensaio na suíte (substitui o backup em `ops/baselines`) | suíte |
+| NaN/infinito | `tools/vigia_numerico.py` | suíte |
+| privacidade | `tools/vigia_privacidade.py`: só o id profissional; barra apelido Steam, nome real, país etc. | suíte |
+| custo por camada | `tools/custo_por_feature.py`: ms por previsão e MB por bloco, com teto | suíte |
+| desempenho | `tools/medir_desempenho.py` em `suite.yml`, histórico em `evidence/desempenho.json` | suíte |
+| dependências | `.github/dependabot.yml` | ambos |
+| alarme pós-retreino | `nota_semanal.yml` roda `ml_quality_check.py` (LoL); `tools/portao_qualidade_dota.py` (Dota) | robôs |
+| modelos ao vivo do Dota | `retreino_ao_vivo_dota.yml`, segunda 06:50 UTC | Dota |
+
+**Defeitos achados no caminho e consertados:** a suíte do Dota retreinava os
+modelos ao vivo de produção (chave `GABINETE_SEM_TREINO=1` agora desliga); 3
+testes só passavam no Windows; a cobertura dava 0 porque um teste apaga um
+módulo temporário (`--ignore-errors`; a real é 81%).
+
+**Medido no Dota (23/10):** congelar o modelo por 30 dias custa +0,041 de
+logloss (`evidence/envelhecimento_dota.json`). E um achado que NÃO foi mexido,
+porque o modelo está congelado: nos 683 jogos depois do corte, a probabilidade
+crua do Dota dá logloss 0,70 mesmo aprendendo jogo a jogo — pior que moeda
+(0,693). A nota de 0,57 do `dota_scorecard.py` é dentro da amostra. **Primeira
+coisa a olhar quando a frente de acertividade voltar.**
+
+**Régua das 28 em 23/10:** LoL 6,0, Dota 5,5 (era 2,5 e 2,0). Declarações
+reverificadas em 23/10, vencem em 21/01/2027. O que falta e por quê:
+- modelo 2 (offline x online): exige CLV, fora do plano por decisão dele;
+- dados 6 (feature nova entra rápido): não há como cronometrar sem adicionar uma;
+- monitor 3 (treino x serviço): paridade parcial na suíte, D5 aberta;
+- Dota modelo 3: hiperparâmetros só por gate à mão, sem validação cruzada.
+
+**Conferir na segunda, 27/10:** a primeira rodada dos robôs com contrato e
+canário (os arquivos `evidence/contrato_dados_dota.json`,
+`phase1_data_contract_report.json`), o `retreino_ao_vivo_dota`, o alarme do
+`nota_semanal` e `evidence/suite_esteira.json` verde nos dois.
+
+---
+
 ## 3-A. FRENTE 0 — LIGADA, MAS QUASE NUNCA APLICA (corrigido em 08/09/2026)
 
 **LEIA ISTO ANTES DOS NÚMEROS ABAIXO.** Em 08/09 o app foi aberto pela
