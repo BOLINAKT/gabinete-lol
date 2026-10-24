@@ -1,10 +1,10 @@
 {
-  "gerado_em": "2026-10-24T16:44:08-03:00",
+  "gerado_em": "2026-10-24T19:42:36-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 45,
+    "ja_jogados": 48,
     "passados": 0,
     "indefinidos": 26,
     "sem_dois_times": 0
@@ -12,42 +12,12 @@
   "jogos": [
     {
       "date": "24/10",
-      "time": "16:00",
-      "league": "Mundial",
-      "teamA_raw": "LOS",
-      "teamB_raw": "G2 Esports",
-      "bo": 1,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-24T19:00:00Z"
-    },
-    {
-      "date": "24/10",
-      "time": "17:00",
-      "league": "Mundial",
-      "teamA_raw": "LYON",
-      "teamB_raw": "Karmine Corp",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-24T20:00:00Z"
-    },
-    {
-      "date": "24/10",
-      "time": "18:00",
-      "league": "Mundial",
-      "teamA_raw": "Team Secret Whales",
-      "teamB_raw": "Invictus Gaming",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-24T21:00:00Z"
-    },
-    {
-      "date": "24/10",
       "time": "19:00",
       "league": "Mundial",
-      "teamA_raw": "Gen.G Esports",
-      "teamB_raw": "Hanwha Life Esports",
+      "teamA_raw": "Hanwha Life Esports",
+      "teamB_raw": "Gen.G Esports",
       "bo": 1,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-10-24T22:00:00Z"
     },
     {
