@@ -1,15 +1,95 @@
 {
-  "gerado_em": "2026-10-24T22:32:27-03:00",
+  "gerado_em": "2026-10-25T04:47:34-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 50,
-    "passados": 1,
-    "indefinidos": 26,
+    "ja_jogados": 51,
+    "passados": 0,
+    "indefinidos": 18,
     "sem_dois_times": 0
   },
   "jogos": [
+    {
+      "date": "25/10",
+      "time": "14:00",
+      "league": "Mundial",
+      "teamA_raw": "Hanwha Life Esports",
+      "teamB_raw": "Invictus Gaming",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-25T17:00:00Z"
+    },
+    {
+      "date": "25/10",
+      "time": "15:00",
+      "league": "Mundial",
+      "teamA_raw": "G2 Esports",
+      "teamB_raw": "TOP ESPORTS",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-25T18:00:00Z"
+    },
+    {
+      "date": "25/10",
+      "time": "16:00",
+      "league": "Mundial",
+      "teamA_raw": "Movistar KOI",
+      "teamB_raw": "Dplus KIA",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-25T19:00:00Z"
+    },
+    {
+      "date": "25/10",
+      "time": "19:00",
+      "league": "Mundial",
+      "teamA_raw": "Gen.G Esports",
+      "teamB_raw": "LYON",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-25T22:00:00Z"
+    },
+    {
+      "date": "26/10",
+      "time": "14:00",
+      "league": "Mundial",
+      "teamA_raw": "CTBC Flying Oyster",
+      "teamB_raw": "T1",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-26T17:00:00Z"
+    },
+    {
+      "date": "26/10",
+      "time": "15:00",
+      "league": "Mundial",
+      "teamA_raw": "BILIBILI GAMING",
+      "teamB_raw": "Karmine Corp",
+      "bo": 1,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-26T18:00:00Z"
+    },
+    {
+      "date": "26/10",
+      "time": "16:00",
+      "league": "Mundial",
+      "teamA_raw": "LOS",
+      "teamB_raw": "Team Secret Whales",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-26T19:00:00Z"
+    },
+    {
+      "date": "26/10",
+      "time": "19:00",
+      "league": "Mundial",
+      "teamA_raw": "Team Liquid Alienware",
+      "teamB_raw": "Anyone's Legend",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-26T22:00:00Z"
+    },
     {
       "date": "10/11",
       "time": "02:00",
