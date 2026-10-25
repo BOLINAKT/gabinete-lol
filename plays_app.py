@@ -2845,41 +2845,44 @@ def _oportunidades_times_nao_casados() -> list:
     return [n for n in times_da_coleta(_odds) if not _oportunidades_resolver_time(n)]
 
 
-_secondary_tab_renderers = {
-    TAB_OPORTUNIDADES: lambda: core_render_oportunidades_tab(
-        st=st,
-        ctx={
-            "raiz": APP_ROOT,
-            "calcular_totais": _oportunidades_calcular_totais,
-            "prob_over": core_prob_over_from_total,
-            "medias_kills": _oportunidades_medias_kills,
-            "casados_sozinhos": _oportunidades_casados_sozinhos(),
-            "jogos_por_time": _oportunidades_jogos_por_time,
-            "team_games": team_games,
-            "times_nao_casados": _oportunidades_times_nao_casados(),
-            "resolver_time": _oportunidades_resolver_time,
-            "sugerir_times": _oportunidades_sugerir_times,
-            "ensinar_apelido": _oportunidades_ensinar_apelido,
-            # O MESMO numero do card do confronto -- nao um recalculo, e nao
-            # uma CAMADA ANTERIOR dele.
-            #
-            # DEFEITO RELATADO POR ELE (16/09/2026, com dois prints): a aba
-            # mostrava eSuba 1.85 e o card 1.71 no MESMO confronto. Eu estava
-            # passando `p_map_cal`/`p_series`, que sao o meio do caminho; o
-            # card (e a Analise de Linha, e o entre-mapas) leem
-            # `_p_map_used`/`_p_series_used`, que e o fim -- depois das
-            # camadas de escalacao e do ajuste de serie.
-            #
-            # Dois numeros para a mesma pergunta e exatamente o que este
-            # projeto passou a sessao inteira combatendo. A expressao abaixo e
-            # LETRA POR LETRA a que visao_tab_core usa.
-            "confronto": {
-                "teamA": teamA, "teamB": teamB, "bo": int(bo),
-                "p_map": st.session_state.get("_p_map_used", p_map_cal),
-                "p_series": st.session_state.get("_p_series_used", p_series),
-            },
+def _ctx_oportunidades() -> dict:
+    """O contexto das abas Modelo x Mercado e Melhores apostas (25/10/2026)."""
+    return {
+        "raiz": APP_ROOT,
+        "calcular_totais": _oportunidades_calcular_totais,
+        "prob_over": core_prob_over_from_total,
+        "medias_kills": _oportunidades_medias_kills,
+        "casados_sozinhos": _oportunidades_casados_sozinhos(),
+        "jogos_por_time": _oportunidades_jogos_por_time,
+        "team_games": team_games,
+        "times_nao_casados": _oportunidades_times_nao_casados(),
+        "resolver_time": _oportunidades_resolver_time,
+        "sugerir_times": _oportunidades_sugerir_times,
+        "ensinar_apelido": _oportunidades_ensinar_apelido,
+        # O MESMO numero do card do confronto -- nao um recalculo, e nao
+        # uma CAMADA ANTERIOR dele.
+        #
+        # DEFEITO RELATADO POR ELE (16/09/2026, com dois prints): a aba
+        # mostrava eSuba 1.85 e o card 1.71 no MESMO confronto. Eu estava
+        # passando `p_map_cal`/`p_series`, que sao o meio do caminho; o
+        # card (e a Analise de Linha, e o entre-mapas) leem
+        # `_p_map_used`/`_p_series_used`, que e o fim -- depois das
+        # camadas de escalacao e do ajuste de serie.
+        #
+        # Dois numeros para a mesma pergunta e exatamente o que este
+        # projeto passou a sessao inteira combatendo. A expressao abaixo e
+        # LETRA POR LETRA a que visao_tab_core usa.
+        "confronto": {
+            "teamA": teamA, "teamB": teamB, "bo": int(bo),
+            "p_map": st.session_state.get("_p_map_used", p_map_cal),
+            "p_series": st.session_state.get("_p_series_used", p_series),
         },
-    ),
+    }
+
+
+_secondary_tab_renderers = {
+    TAB_OPORTUNIDADES: lambda: core_render_oportunidades_tab(st=st, ctx=_ctx_oportunidades(), parte="jogo"),
+    "Melhores apostas": lambda: core_render_oportunidades_tab(st=st, ctx=_ctx_oportunidades(), parte="apostas"),
     "Rankings": lambda: core_render_rankings_tab(
         st=st,
         team_games=team_games,
