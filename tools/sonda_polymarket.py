@@ -103,6 +103,19 @@ def main() -> int:
     lol = evs if isinstance(evs, list) else []
     rel["passos"]["lol_tag65"] = {"status": st, "n": len(lol)}
     rel["eventos"] = [_resumo_evento(e) for e in lol]
+    # 3a rodada (25/10/2026, ele perguntou se tem mercado de TEMPO): todos os
+    # tipos de mercado das partidas, nao so os 6 primeiros de cada evento.
+    tipos = {}
+    for e in lol:
+        if not str(e.get("title") or "").startswith("LoL:"):
+            continue
+        for m in e.get("markets") or []:
+            t = str(m.get("sportsMarketType") or "")
+            d = tipos.setdefault(t, {"n": 0, "exemplos": []})
+            d["n"] += 1
+            if len(d["exemplos"]) < 4:
+                d["exemplos"].append(str(m.get("question") or "")[:120])
+    rel["tipos_de_mercado"] = tipos
 
     SAIDA.parent.mkdir(exist_ok=True)
     SAIDA.write_text(json.dumps(rel, ensure_ascii=False, indent=1), encoding="utf-8")
