@@ -1,10 +1,10 @@
 {
-  "gerado_em": "2026-10-25T14:48:48-03:00",
+  "gerado_em": "2026-10-25T19:47:26-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 51,
+    "ja_jogados": 54,
     "passados": 0,
     "indefinidos": 18,
     "sem_dois_times": 0
@@ -12,42 +12,12 @@
   "jogos": [
     {
       "date": "25/10",
-      "time": "14:00",
-      "league": "Mundial",
-      "teamA_raw": "Invictus Gaming",
-      "teamB_raw": "Hanwha Life Esports",
-      "bo": 1,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-25T17:00:00Z"
-    },
-    {
-      "date": "25/10",
-      "time": "15:00",
-      "league": "Mundial",
-      "teamA_raw": "G2 Esports",
-      "teamB_raw": "TOP ESPORTS",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-25T18:00:00Z"
-    },
-    {
-      "date": "25/10",
-      "time": "16:00",
-      "league": "Mundial",
-      "teamA_raw": "Movistar KOI",
-      "teamB_raw": "Dplus KIA",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-25T19:00:00Z"
-    },
-    {
-      "date": "25/10",
       "time": "19:00",
       "league": "Mundial",
-      "teamA_raw": "Gen.G Esports",
-      "teamB_raw": "LYON",
+      "teamA_raw": "LYON",
+      "teamB_raw": "Gen.G Esports",
       "bo": 3,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-10-25T22:00:00Z"
     },
     {
