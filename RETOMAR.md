@@ -389,7 +389,7 @@ resultado), medir Pinnacle e Polymarket contra os resultados (logloss, mesma
 conta da regua da Pinnacle). So entao "a Pinnacle e mais bem regulada" deixa de
 ser suposicao.
 
-**Conferir na segunda, 27/10:** a primeira rodada dos robôs com contrato e
+**Conferir na segunda, 26/10:** a primeira rodada dos robôs com contrato e
 canário (os arquivos `evidence/contrato_dados_dota.json`,
 `phase1_data_contract_report.json`), o `retreino_ao_vivo_dota`, o alarme do
 `nota_semanal` e `evidence/suite_esteira.json` verde nos dois.
