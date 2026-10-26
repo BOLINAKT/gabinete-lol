@@ -141,24 +141,29 @@ jobs:
         continue-on-error: true
         run: python tools/regua_28.py 2>&1 | tee regua_out.txt
 
-      - name: Frescor das reguas
-        continue-on-error: true
-        run: python tools/frescor.py 2>&1 | tee frescor_out.txt
-
       - name: Livro-caixa do silencio
         continue-on-error: true
         run: python tools/livro_caixa.py 2>&1 | tee livro_out.txt
 
-      - name: Publicar o livro-caixa
+      # FRESCOR POR ULTIMO (26/10/2026): ele mede a idade dos outros arquivos,
+      # entao tem de rodar DEPOIS do livro-caixa -- antes media o livro-caixa
+      # da semana anterior. E o frescor.json nunca entrava no git: o "git add"
+      # do passo da nota rodava antes de ele existir, e ele se acusava VELHO
+      # (50 dias) toda semana. Agora vai no commit abaixo.
+      - name: Frescor das reguas
+        continue-on-error: true
+        run: python tools/frescor.py 2>&1 | tee frescor_out.txt
+
+      - name: Publicar o livro-caixa e o frescor
         continue-on-error: true
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add -f evidence/livro_caixa.json
+          git add -f evidence/livro_caixa.json evidence/frescor.json
           if git diff --cached --quiet; then
-            echo "livro-caixa sem mudanca"
+            echo "livro-caixa e frescor sem mudanca"
           else
-            git commit -m "Robô: livro-caixa do silêncio atualizado"
+            git commit -m "Robô: livro-caixa do silêncio e frescor atualizados"
             for i in 1 2 3; do
               if git push; then exit 0; fi
               git pull --rebase --autostash || exit 1
