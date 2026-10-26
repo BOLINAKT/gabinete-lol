@@ -1,77 +1,29 @@
 {
- "gerado_em": "2026-09-06T02:16:55",
+ "gerado_em": "2026-10-26T15:33:24",
  "itens": [
   {
    "familia": "continue_on_error",
    "item": "nota_semanal.yml: Re-medir a nota por liga (o aviso do confronto)",
-   "onde": ".github/workflows/nota_semanal.yml:78",
+   "onde": ".github/workflows/nota_semanal.yml:94",
    "chave": "continue_on_error|nota_semanal.yml: Re-medir a nota por liga (o aviso do confronto)",
    "visto_em": "2026-08-26",
-   "idade_dias": 11
+   "idade_dias": 61
   },
   {
    "familia": "continue_on_error",
    "item": "nota_semanal.yml: Re-medir as demais fases (totais + as baratas) e consolidar",
-   "onde": ".github/workflows/nota_semanal.yml:66",
+   "onde": ".github/workflows/nota_semanal.yml:82",
    "chave": "continue_on_error|nota_semanal.yml: Re-medir as demais fases (totais + as baratas) e consolidar",
    "visto_em": "2026-08-26",
-   "idade_dias": 11
+   "idade_dias": 61
   },
   {
    "familia": "continue_on_error",
    "item": "nota_semanal.yml: Registro de campeoes em dia? (conserta sozinho se faltar)",
-   "onde": ".github/workflows/nota_semanal.yml:43",
+   "onde": ".github/workflows/nota_semanal.yml:55",
    "chave": "continue_on_error|nota_semanal.yml: Registro de campeoes em dia? (conserta sozinho se faltar)",
    "visto_em": "2026-08-26",
-   "idade_dias": 11
-  },
-  {
-   "familia": "lido_nao_versionado",
-   "item": ".gabinete_settings.json",
-   "onde": "app_core/app_settings_config_core.py:12",
-   "chave": "lido_nao_versionado|.gabinete_settings.json",
-   "visto_em": "2026-08-26",
-   "idade_dias": 11
-  },
-  {
-   "familia": "lido_nao_versionado",
-   "item": "csv_bootstrap_maintenance.lock.json",
-   "onde": "plays_app.py:1268",
-   "chave": "lido_nao_versionado|csv_bootstrap_maintenance.lock.json",
-   "visto_em": "2026-08-26",
-   "idade_dias": 11
-  },
-  {
-   "familia": "lido_nao_versionado",
-   "item": "csv_bootstrap_maintenance_cache.json",
-   "onde": "plays_app.py:1267",
-   "chave": "lido_nao_versionado|csv_bootstrap_maintenance_cache.json",
-   "visto_em": "2026-08-26",
-   "idade_dias": 11
-  },
-  {
-   "familia": "lido_nao_versionado",
-   "item": "csv_bootstrap_maintenance_report.json",
-   "onde": "app_core/csv_bootstrap_flow_core.py:123",
-   "chave": "lido_nao_versionado|csv_bootstrap_maintenance_report.json",
-   "visto_em": "2026-08-26",
-   "idade_dias": 11
-  },
-  {
-   "familia": "lido_nao_versionado",
-   "item": "csv_bootstrap_maintenance_state.json",
-   "onde": "plays_app.py:1269",
-   "chave": "lido_nao_versionado|csv_bootstrap_maintenance_state.json",
-   "visto_em": "2026-08-26",
-   "idade_dias": 11
-  },
-  {
-   "familia": "lido_nao_versionado",
-   "item": "data_leakage_label_report.json",
-   "onde": "app_core/params_sections_core.py:58",
-   "chave": "lido_nao_versionado|data_leakage_label_report.json",
-   "visto_em": "2026-08-26",
-   "idade_dias": 11
+   "idade_dias": 61
   },
   {
    "familia": "lido_nao_versionado",
@@ -79,54 +31,126 @@
    "onde": "app_core/ml_session_runtime_core.py:423",
    "chave": "lido_nao_versionado|ml_trace_last.json",
    "visto_em": "2026-08-26",
-   "idade_dias": 11
-  },
-  {
-   "familia": "lido_nao_versionado",
-   "item": "ops/picks_tracker.json",
-   "onde": "app_core/picks_anti_loss_core.py:69",
-   "chave": "lido_nao_versionado|ops/picks_tracker.json",
-   "visto_em": "2026-08-26",
-   "idade_dias": 11
-  },
-  {
-   "familia": "lido_nao_versionado",
-   "item": "user_lines_store.json",
-   "onde": "plays_app.py:1069",
-   "chave": "lido_nao_versionado|user_lines_store.json",
-   "visto_em": "2026-08-26",
-   "idade_dias": 11
+   "idade_dias": 61
   },
   {
    "familia": "continue_on_error",
    "item": "nota_semanal.yml: Livro-caixa do silencio",
-   "onde": ".github/workflows/nota_semanal.yml:118",
+   "onde": ".github/workflows/nota_semanal.yml:149",
    "chave": "continue_on_error|nota_semanal.yml: Livro-caixa do silencio",
    "visto_em": "2026-08-27",
-   "idade_dias": 10
+   "idade_dias": 60
   },
   {
    "familia": "continue_on_error",
    "item": "nota_semanal.yml: Publicar o livro-caixa",
-   "onde": ".github/workflows/nota_semanal.yml:122",
+   "onde": ".github/workflows/nota_semanal.yml:153",
    "chave": "continue_on_error|nota_semanal.yml: Publicar o livro-caixa",
    "visto_em": "2026-08-27",
-   "idade_dias": 10
+   "idade_dias": 60
   },
   {
    "familia": "continue_on_error",
    "item": "nota_semanal.yml: Frescor das reguas",
-   "onde": ".github/workflows/nota_semanal.yml:114",
+   "onde": ".github/workflows/nota_semanal.yml:145",
    "chave": "continue_on_error|nota_semanal.yml: Frescor das reguas",
    "visto_em": "2026-09-06",
-   "idade_dias": 0
+   "idade_dias": 50
   },
   {
    "familia": "continue_on_error",
    "item": "nota_semanal.yml: Regua das 28",
-   "onde": ".github/workflows/nota_semanal.yml:110",
+   "onde": ".github/workflows/nota_semanal.yml:141",
    "chave": "continue_on_error|nota_semanal.yml: Regua das 28",
    "visto_em": "2026-09-06",
+   "idade_dias": 50
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "nota_semanal.yml: Alarme de qualidade pos-retreino",
+   "onde": ".github/workflows/nota_semanal.yml:107",
+   "chave": "continue_on_error|nota_semanal.yml: Alarme de qualidade pos-retreino",
+   "visto_em": "2026-10-26",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "reguas_pinnacle.yml: Handicap de kills contra a Pinnacle",
+   "onde": ".github/workflows/reguas_pinnacle.yml:84",
+   "chave": "continue_on_error|reguas_pinnacle.yml: Handicap de kills contra a Pinnacle",
+   "visto_em": "2026-10-26",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "reguas_pinnacle.yml: Nota honesta do periodo com odds (alimenta vencedor e handicap com vitoria)",
+   "onde": ".github/workflows/reguas_pinnacle.yml:65",
+   "chave": "continue_on_error|reguas_pinnacle.yml: Nota honesta do periodo com odds (alimenta vencedor e handicap com vitoria)",
+   "visto_em": "2026-10-26",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "reguas_pinnacle.yml: Polymarket contra a Pinnacle",
+   "onde": ".github/workflows/reguas_pinnacle.yml:94",
+   "chave": "continue_on_error|reguas_pinnacle.yml: Polymarket contra a Pinnacle",
+   "visto_em": "2026-10-26",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "reguas_pinnacle.yml: Reajuste semanal do total de kills",
+   "onde": ".github/workflows/reguas_pinnacle.yml:76",
+   "chave": "continue_on_error|reguas_pinnacle.yml: Reajuste semanal do total de kills",
+   "visto_em": "2026-10-26",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "reguas_pinnacle.yml: Total de kills contra a Pinnacle",
+   "onde": ".github/workflows/reguas_pinnacle.yml:80",
+   "chave": "continue_on_error|reguas_pinnacle.yml: Total de kills contra a Pinnacle",
+   "visto_em": "2026-10-26",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "reguas_pinnacle.yml: Vencedor contra a Pinnacle",
+   "onde": ".github/workflows/reguas_pinnacle.yml:88",
+   "chave": "continue_on_error|reguas_pinnacle.yml: Vencedor contra a Pinnacle",
+   "visto_em": "2026-10-26",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "retreino_completo.yml: Reajuste trimestral do calibrador com grupo (jan/abr/jul/out)",
+   "onde": ".github/workflows/retreino_completo.yml:111",
+   "chave": "continue_on_error|retreino_completo.yml: Reajuste trimestral do calibrador com grupo (jan/abr/jul/out)",
+   "visto_em": "2026-10-26",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "suite.yml: Medir desempenho computacional",
+   "onde": ".github/workflows/suite.yml:50",
+   "chave": "continue_on_error|suite.yml: Medir desempenho computacional",
+   "visto_em": "2026-10-26",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "suite.yml: Rodar a suite inteira",
+   "onde": ".github/workflows/suite.yml:43",
+   "chave": "continue_on_error|suite.yml: Rodar a suite inteira",
+   "visto_em": "2026-10-26",
+   "idade_dias": 0
+  },
+  {
+   "familia": "lido_nao_versionado",
+   "item": "rank_snapshot.json",
+   "onde": "app_core/rankings_tab_core.py:361",
+   "chave": "lido_nao_versionado|rank_snapshot.json",
+   "visto_em": "2026-10-26",
    "idade_dias": 0
   }
  ]
