@@ -1,7 +1,7 @@
 {
- "gerado_em": "2026-10-19T15:50:31",
+ "gerado_em": "2026-10-26T15:32:29",
  "season": 2026,
- "nota_geral": 8.15,
+ "nota_geral": 8.18,
  "min_n": 80,
  "ligas": [
   {
@@ -17,10 +17,10 @@
    "liga": "CBLOL",
    "tier": "T2",
    "n": 275,
-   "nota": 6.91,
-   "logloss": 0.6325,
+   "nota": 6.94,
+   "logloss": 0.6315,
    "acuracia": 0.676,
-   "ece": 0.111
+   "ece": 0.122
   },
   {
    "liga": "CD",
@@ -43,20 +43,20 @@
   {
    "liga": "EM",
    "tier": "ERL",
-   "n": 519,
-   "nota": 9.95,
-   "logloss": 0.5356,
-   "acuracia": 0.734,
-   "ece": 0.051
+   "n": 524,
+   "nota": 9.92,
+   "logloss": 0.5366,
+   "acuracia": 0.733,
+   "ece": 0.048
   },
   {
    "liga": "EWC",
    "tier": "T1",
    "n": 232,
-   "nota": 7.06,
-   "logloss": 0.6277,
-   "acuracia": 0.655,
-   "ece": 0.054
+   "nota": 7.0,
+   "logloss": 0.6294,
+   "acuracia": 0.647,
+   "ece": 0.066
   },
   {
    "liga": "HC",
@@ -97,20 +97,20 @@
   {
    "liga": "LAS",
    "tier": "MINOR",
-   "n": 486,
-   "nota": 8.92,
-   "logloss": 0.5684,
-   "acuracia": 0.706,
-   "ece": 0.051
+   "n": 541,
+   "nota": 9.65,
+   "logloss": 0.5451,
+   "acuracia": 0.745,
+   "ece": 0.042
   },
   {
    "liga": "LCK",
    "tier": "T1",
    "n": 502,
-   "nota": 6.27,
-   "logloss": 0.6528,
-   "acuracia": 0.612,
-   "ece": 0.054
+   "nota": 6.23,
+   "logloss": 0.6541,
+   "acuracia": 0.608,
+   "ece": 0.073
   },
   {
    "liga": "LCKC",
@@ -125,28 +125,28 @@
    "liga": "LCP",
    "tier": "T1",
    "n": 301,
-   "nota": 7.75,
-   "logloss": 0.6057,
+   "nota": 7.65,
+   "logloss": 0.6088,
    "acuracia": 0.674,
-   "ece": 0.052
+   "ece": 0.056
   },
   {
    "liga": "LCS",
    "tier": "T2",
    "n": 260,
-   "nota": 7.94,
-   "logloss": 0.5996,
+   "nota": 8.11,
+   "logloss": 0.5942,
    "acuracia": 0.673,
-   "ece": 0.025
+   "ece": 0.053
   },
   {
    "liga": "LEC",
    "tier": "T1",
    "n": 383,
-   "nota": 7.63,
-   "logloss": 0.6093,
+   "nota": 7.66,
+   "logloss": 0.6085,
    "acuracia": 0.695,
-   "ece": 0.067
+   "ece": 0.059
   },
   {
    "liga": "LES",
@@ -161,10 +161,10 @@
    "liga": "LFL",
    "tier": "ERL",
    "n": 273,
-   "nota": 8.02,
-   "logloss": 0.5971,
+   "nota": 7.96,
+   "logloss": 0.5989,
    "acuracia": 0.667,
-   "ece": 0.075
+   "ece": 0.082
   },
   {
    "liga": "LIT",
@@ -188,10 +188,10 @@
    "liga": "LPL",
    "tier": "T1",
    "n": 674,
-   "nota": 6.35,
-   "logloss": 0.6501,
-   "acuracia": 0.636,
-   "ece": 0.042
+   "nota": 6.26,
+   "logloss": 0.6531,
+   "acuracia": 0.623,
+   "ece": 0.027
   },
   {
    "liga": "LPLOL",
@@ -305,10 +305,10 @@
    "liga": "WSCI",
    "tier": "MINOR",
    "n": 85,
-   "nota": 6.59,
-   "logloss": 0.6425,
+   "nota": 6.53,
+   "logloss": 0.6446,
    "acuracia": 0.647,
-   "ece": 0.11
+   "ece": 0.102
   }
  ]
 }
