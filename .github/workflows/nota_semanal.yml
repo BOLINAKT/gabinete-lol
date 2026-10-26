@@ -33,7 +33,7 @@ jobs:
     # a issue quando a nota cai — que e o motivo deste workflow existir.
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v5
         with:

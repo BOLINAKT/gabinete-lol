@@ -38,7 +38,7 @@ jobs:
     # anti-eco: commits do próprio robô de retreino não tocam CSV_DIARIO,
     # então não redisparam este workflow.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v5
         with:
