@@ -88,11 +88,17 @@ jobs:
         continue-on-error: true
         run: python tools/modelo_contra_a_casa.py
 
+      # POLYMARKET x PINNACLE (26/10/2026): as duas casas nos mesmos jogos BO1,
+      # contra o resultado. Minimo 200 partidas antes de concluir.
+      - name: Polymarket contra a Pinnacle
+        continue-on-error: true
+        run: python tools/polymarket_contra_pinnacle.py
+
       - name: Commitar o placar
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add kills_recalibrado.json evidence/regua_pinnacle_total_kills.json evidence/regua_pinnacle_handicap_kills.json evidence/regua_pinnacle_vencedor.json || true
+          git add kills_recalibrado.json evidence/regua_pinnacle_total_kills.json evidence/regua_pinnacle_handicap_kills.json evidence/regua_pinnacle_vencedor.json evidence/regua_pinnacle_polymarket.json || true
           if git diff --cached --quiet; then
             echo "nada mudou - nada a commitar"
           else
