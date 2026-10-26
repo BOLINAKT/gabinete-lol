@@ -1,10 +1,10 @@
 {
-  "gerado_em": "2026-10-26T12:26:33-03:00",
+  "gerado_em": "2026-10-26T18:49:41-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 55,
+    "ja_jogados": 58,
     "passados": 0,
     "indefinidos": 18,
     "sem_dois_times": 0
@@ -12,42 +12,12 @@
   "jogos": [
     {
       "date": "26/10",
-      "time": "14:00",
-      "league": "Mundial",
-      "teamA_raw": "CTBC Flying Oyster",
-      "teamB_raw": "T1",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-26T17:00:00Z"
-    },
-    {
-      "date": "26/10",
-      "time": "15:00",
-      "league": "Mundial",
-      "teamA_raw": "BILIBILI GAMING",
-      "teamB_raw": "Karmine Corp",
-      "bo": 1,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-26T18:00:00Z"
-    },
-    {
-      "date": "26/10",
-      "time": "16:00",
-      "league": "Mundial",
-      "teamA_raw": "LOS",
-      "teamB_raw": "Team Secret Whales",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-26T19:00:00Z"
-    },
-    {
-      "date": "26/10",
       "time": "19:00",
       "league": "Mundial",
-      "teamA_raw": "Team Liquid Alienware",
-      "teamB_raw": "Anyone's Legend",
+      "teamA_raw": "Anyone's Legend",
+      "teamB_raw": "Team Liquid Alienware",
       "bo": 3,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-10-26T22:00:00Z"
     },
     {
