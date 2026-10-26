@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-10-25T19:47:26-03:00",
+  "gerado_em": "2026-10-25T22:36:30-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 54,
+    "ja_jogados": 55,
     "passados": 0,
     "indefinidos": 18,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "25/10",
-      "time": "19:00",
-      "league": "Mundial",
-      "teamA_raw": "LYON",
-      "teamB_raw": "Gen.G Esports",
-      "bo": 3,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-25T22:00:00Z"
-    },
     {
       "date": "26/10",
       "time": "14:00",
