@@ -1,24 +1,74 @@
 {
-  "gerado_em": "2026-10-26T18:49:41-03:00",
+  "gerado_em": "2026-10-26T23:22:59-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 58,
+    "ja_jogados": 59,
     "passados": 0,
-    "indefinidos": 18,
+    "indefinidos": 12,
     "sem_dois_times": 0
   },
   "jogos": [
     {
-      "date": "26/10",
-      "time": "19:00",
+      "date": "28/10",
+      "time": "17:00",
       "league": "Mundial",
-      "teamA_raw": "Anyone's Legend",
-      "teamB_raw": "Team Liquid Alienware",
+      "teamA_raw": "Movistar KOI",
+      "teamB_raw": "T1",
       "bo": 3,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-26T22:00:00Z"
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-28T20:00:00Z"
+    },
+    {
+      "date": "28/10",
+      "time": "20:00",
+      "league": "Mundial",
+      "teamA_raw": "LYON",
+      "teamB_raw": "Invictus Gaming",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-28T23:00:00Z"
+    },
+    {
+      "date": "29/10",
+      "time": "17:00",
+      "league": "Mundial",
+      "teamA_raw": "CTBC Flying Oyster",
+      "teamB_raw": "Karmine Corp",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-29T20:00:00Z"
+    },
+    {
+      "date": "29/10",
+      "time": "20:00",
+      "league": "Mundial",
+      "teamA_raw": "BILIBILI GAMING",
+      "teamB_raw": "TOP ESPORTS",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-29T23:00:00Z"
+    },
+    {
+      "date": "30/10",
+      "time": "17:00",
+      "league": "Mundial",
+      "teamA_raw": "Team Liquid Alienware",
+      "teamB_raw": "LOS",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-30T20:00:00Z"
+    },
+    {
+      "date": "30/10",
+      "time": "20:00",
+      "league": "Mundial",
+      "teamA_raw": "G2 Esports",
+      "teamB_raw": "Hanwha Life Esports",
+      "bo": 3,
+      "estado": "unstarted",
+      "inicio_utc": "2026-10-30T23:00:00Z"
     },
     {
       "date": "10/11",
