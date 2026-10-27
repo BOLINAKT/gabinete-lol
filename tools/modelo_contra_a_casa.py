@@ -392,12 +392,51 @@ def main() -> int:
     # O resumo para o app (25/09/2026): tools/regua_pinnacle_comum.py. Um
     # mapa por partida aqui, entao a partida e o proprio jogo.
     from tools.regua_pinnacle_comum import gravar, resumo
+
+    def _res(cs, minimo):
+        return resumo([{"partida": c["gameid"], "p_modelo": c["p_modelo"], "p_casa": c["p_mercado"], "y": c["y"]}
+                       for c in cs], "p_modelo", minimo=minimo)
+
+    # POR LIGA e APOSTAS SIMULADAS (27/10/2026, ele: "levar os modelos a um proximo
+    # nivel"). A media geral esconde onde o modelo ganha da casa; o que decide aposta
+    # e o recorte. Cada liga com o mesmo resumo da regua (minimo menor: e leitura,
+    # nao veredito -- o "conclusivo" diz quando ja vale).
+    por_liga = {}
+    for liga in sorted({c["liga"] for c in casos if c.get("liga")}):
+        cs = [c for c in casos if c.get("liga") == liga]
+        if len(cs) >= 5:
+            por_liga[liga] = _res(cs, minimo=30)
     gravar("vencedor", {"mercado": "Vencedor do mapa 1",
-                        "so_kills": resumo([{"partida": c["gameid"], "p_modelo": c["p_modelo"],
-                                              "p_casa": c["p_mercado"], "y": c["y"]}
-                                             for c in casos], "p_modelo",
-                                            minimo=PARTIDAS_MINIMAS)})
+                        "so_kills": _res(casos, PARTIDAS_MINIMAS),
+                        "por_liga": por_liga,
+                        "apostas_simuladas": apostas_simuladas(casos)})
     return 0
+
+
+def apostas_simuladas(casos, minimo: float = 1.0, maximo: float = 20.0) -> dict:
+    """1 unidade onde o modelo ve vantagem entre minimo% e maximo% contra a odd REAL
+    da Pinnacle (com a margem dela de volta, repartida em proporcao). Pura.
+    Devolve o total e por liga: apostas, lucro, ROI."""
+    def _um(cs):
+        ap, lucro = 0, 0.0
+        for c in cs:
+            m = float(c.get("margem") or 0) / 100.0
+            for p_mod, p_mer, ganhou in ((c["p_modelo"], c["p_mercado"], c["y"] == 1),
+                                         (1 - c["p_modelo"], 1 - c["p_mercado"], c["y"] == 0)):
+                if p_mer <= 0:
+                    continue
+                odd = 1.0 / (p_mer * (1 + m))
+                v = (p_mod * odd - 1) * 100
+                if minimo <= v <= maximo:
+                    ap += 1
+                    lucro += (odd - 1) if ganhou else -1.0
+        return {"apostas": ap, "lucro": round(lucro, 2), "roi": round(lucro / ap, 4) if ap else None}
+    out = {"total": _um(casos), "por_liga": {}}
+    for liga in sorted({c["liga"] for c in casos if c.get("liga")}):
+        r = _um([c for c in casos if c.get("liga") == liga])
+        if r["apostas"]:
+            out["por_liga"][liga] = r
+    return out
 
 
 if __name__ == "__main__":
