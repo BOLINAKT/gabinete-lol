@@ -1,17 +1,172 @@
 {
- "gerado_em": "2026-10-26T16:53:57",
+ "gerado_em": "2026-10-27T22:12:28",
  "mercado": "Vencedor do mapa 1",
  "so_kills": {
-  "apostas": 162,
-  "partidas": 160,
+  "apostas": 176,
+  "partidas": 174,
   "minimo": 100,
-  "logloss_modelo": 0.6384022278076051,
-  "logloss_casa": 0.5864866353827477,
-  "diferenca": 0.05191559242485744,
-  "margem_erro": 0.039579170518867855,
-  "bateu": 54,
-  "nota_modelo": 6.7200557293205945,
-  "nota_casa": 8.352621528844413,
+  "logloss_modelo": 0.6418023932416653,
+  "logloss_casa": 0.5923990756243135,
+  "diferenca": 0.04940331761735184,
+  "margem_erro": 0.03807415783476497,
+  "bateu": 60,
+  "nota_modelo": 6.6131322879979475,
+  "nota_casa": 8.166695735084483,
   "conclusivo": true
+ },
+ "por_liga": {
+  "CBLOL": {
+   "apostas": 6,
+   "partidas": 6,
+   "minimo": 30,
+   "logloss_modelo": 0.6808519128436048,
+   "logloss_casa": 0.6128811917238349,
+   "diferenca": 0.06797072111976987,
+   "margem_erro": 0.0865843254384448,
+   "bateu": 1,
+   "nota_modelo": 5.3851599734715485,
+   "nota_casa": 7.52260403384167,
+   "conclusivo": false
+  },
+  "Demacia Cup": {
+   "apostas": 19,
+   "partidas": 19,
+   "minimo": 30,
+   "logloss_modelo": 0.6507177232318669,
+   "logloss_casa": 0.6720979936345897,
+   "diferenca": -0.021380270402722723,
+   "margem_erro": 0.1307087516979337,
+   "bateu": 7,
+   "nota_modelo": 6.332775998997897,
+   "nota_casa": 5.660440451742465,
+   "conclusivo": false
+  },
+  "EMEA Masters": {
+   "apostas": 75,
+   "partidas": 73,
+   "minimo": 30,
+   "logloss_modelo": 0.6286616749344914,
+   "logloss_casa": 0.561275444233237,
+   "diferenca": 0.06738623070125438,
+   "margem_erro": 0.06604343910695537,
+   "bateu": 23,
+   "nota_modelo": 7.026362423443667,
+   "nota_casa": 9.145426281973679,
+   "conclusivo": true
+  },
+  "EMEA Masters LCQ": {
+   "apostas": 5,
+   "partidas": 5,
+   "minimo": 30,
+   "logloss_modelo": 0.2966778955828632,
+   "logloss_casa": 0.24982641281458315,
+   "diferenca": 0.04685148276828008,
+   "margem_erro": 0.1301420131763321,
+   "bateu": 2,
+   "nota_modelo": 10.0,
+   "nota_casa": 10.0,
+   "conclusivo": false
+  },
+  "LCS": {
+   "apostas": 8,
+   "partidas": 8,
+   "minimo": 30,
+   "logloss_modelo": 0.6142476260189413,
+   "logloss_casa": 0.6165802612557433,
+   "diferenca": -0.0023326352368019387,
+   "margem_erro": 0.07155024604692038,
+   "bateu": 3,
+   "nota_modelo": 7.4796344019200856,
+   "nota_casa": 7.40628109258669,
+   "conclusivo": false
+  },
+  "LCS Promotion": {
+   "apostas": 6,
+   "partidas": 6,
+   "minimo": 30,
+   "logloss_modelo": 0.8165914956573502,
+   "logloss_casa": 0.6056755838553983,
+   "diferenca": 0.2109159118019519,
+   "margem_erro": 0.3466890950928431,
+   "bateu": 1,
+   "nota_modelo": 1.1166196334166614,
+   "nota_casa": 7.749195476245337,
+   "conclusivo": false
+  },
+  "World Championship": {
+   "apostas": 20,
+   "partidas": 20,
+   "minimo": 30,
+   "logloss_modelo": 0.7039393244959602,
+   "logloss_casa": 0.702340916458567,
+   "diferenca": 0.0015984080373931953,
+   "margem_erro": 0.09600771324028083,
+   "bateu": 7,
+   "nota_modelo": 4.65914073912075,
+   "nota_casa": 4.7094051428123604,
+   "conclusivo": false
+  },
+  "World Star Challengers Invitational": {
+   "apostas": 25,
+   "partidas": 25,
+   "minimo": 30,
+   "logloss_modelo": 0.640716054398531,
+   "logloss_casa": 0.562258200855316,
+   "diferenca": 0.078457853543215,
+   "margem_erro": 0.08603297119272027,
+   "bateu": 10,
+   "nota_modelo": 6.64729388683865,
+   "nota_casa": 9.11452198568189,
+   "conclusivo": false
+  }
+ },
+ "apostas_simuladas": {
+  "total": {
+   "apostas": 61,
+   "lucro": -12.58,
+   "roi": -0.2063
+  },
+  "por_liga": {
+   "CBLOL": {
+    "apostas": 4,
+    "lucro": -1.98,
+    "roi": -0.495
+   },
+   "Demacia Cup": {
+    "apostas": 5,
+    "lucro": -2.93,
+    "roi": -0.586
+   },
+   "EMEA Masters": {
+    "apostas": 24,
+    "lucro": -4.72,
+    "roi": -0.1968
+   },
+   "EMEA Masters LCQ": {
+    "apostas": 2,
+    "lucro": -0.82,
+    "roi": -0.4093
+   },
+   "LCS": {
+    "apostas": 7,
+    "lucro": 0.14,
+    "roi": 0.0203
+   },
+   "LEC": {
+    "apostas": 3,
+    "lucro": 1.78,
+    "roi": 0.5933
+   },
+   "World Championship": {
+    "apostas": 8,
+    "lucro": -5.8,
+    "roi": -0.725
+   },
+   "World Star Challengers Invitational": {
+    "apostas": 8,
+    "lucro": 1.75,
+    "roi": 0.2184
+   }
+  }
  }
 }
