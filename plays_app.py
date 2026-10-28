@@ -847,6 +847,13 @@ def _load_team_games(csv_sig: Tuple[str, int, int]) -> pd.DataFrame:
     # EWC: divide por região (KR/EU/CN/NA/...), inferida da liga nativa de cada time.
     from app_core.ewc_region_split import annotate_ewc_region_split
     df = annotate_ewc_region_split(df)
+    # AJUSTE PELO ADVERSARIO (28/10/2026): quanto o adversario de cada jogo puxava o
+    # total de kills acima da liga. Ver app_core/cruzamento_estatistica_core.py.
+    try:
+        from app_core.cruzamento_estatistica_core import com_tendencia_dos_adversarios
+        df = com_tendencia_dos_adversarios(df)
+    except Exception:
+        pass
     return df
 # _canon_team_key imported from app_core.matchup_selection_core
 
