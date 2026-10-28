@@ -102,63 +102,145 @@ CSS_SINAIS = """
 """
 
 
-def html_painel(time_a: str, time_b: str, L: float, sg: Optional[dict], s1: Optional[dict],
-                odds_m1: Mapping[str, Any], p_modelo_over: Optional[float]) -> str:
-    """A tabela grande: 4 sinais x (Geral Mais/Menos, So mapa 1 Mais/Menos). Pura."""
-    from app_core.sinais_linha_core import chance, passam
-    if not sg:
-        return '<div class="nota">Poucos jogos recentes de um dos times para os sinais (mínimo 5 cada).</div>'
-    pts = _f(L)
-    cols = [("Geral", "over", sg), ("Geral", "under", sg), ("Só mapa 1", "over", s1), ("Só mapa 1", "under", s1)]
-    a, b = sg["detalhe"]["a"], sg["detalhe"]["b"]
-    det = {
-        0: (f"{escape(time_a)} {a['acima']}/{a['n']} · {escape(time_b)} {b['acima']}/{b['n']} acima de {pts}"),
-        1: (f"média {escape(time_a)} {_f(a['media'])} · {escape(time_b)} {_f(b['media'])} → "
-            f"{_f(sg['media'])} ({'+' if sg['media'] >= L else ''}{_f(sg['media'] - L)} vs {pts})"),
-        2: (f"ajustado: {escape(time_a)} {a['acima_aj']}/{a['n']} (adv. {'+' if a['adv'] >= 0 else ''}{_f(a['adv'])}) · "
-            f"{escape(time_b)} {b['acima_aj']}/{b['n']} (adv. {'+' if b['adv'] >= 0 else ''}{_f(b['adv'])})"),
-        3: (f"{escape(time_a)} {a['camp_acima']}/{a['camp_n']} ({escape(a['camp_rotulo'])}) · "
-            f"{escape(time_b)} {b['camp_acima']}/{b['camp_n']} ({escape(b['camp_rotulo'])})"),
-    }
-    nomes = ("Histórico", "Médias", "Adversário", "StatsCamps")
-    corpo = ""
-    for i, nome in enumerate(nomes):
-        celulas = ""
-        for j, (_, lado, sn) in enumerate(cols):
-            v = None if not sn else passam(sn, lado)[i]
-            celulas += f'<td class="{"g" if j in (0, 2) else ""}">{_marca(v)}</td>'
-        corpo += f'<tr><td class="n">{nome}</td><td class="d">{det[i]}</td>{celulas}</tr>'
-    # totais
-    ks, fairs, vals, ver, casas = [], [], [], [], []
-    for j, (_, lado, sn) in enumerate(cols):
-        k = 0 if not sn else sum(1 for v in passam(sn, lado) if v)
-        tot = 0 if not sn else sum(1 for v in passam(sn, lado) if v is not None)
-        p = chance(sg, lado)                       # a fair do veredito e a GERAL (ver o topo)
-        oc = odds_m1.get(lado)
-        val = None if (p is None or not oc) else (p * oc[0] - 1) * 100
-        ks.append(f'<span class="{"k2" if k >= 2 else "k0"}">{k}/{tot}</span>')
-        fairs.append("-" if not p else _f(1 / p, 2))
-        casas.append("-" if not oc else f'{_f(oc[0], 2)} <span class="num">{escape(oc[1])}</span>')
-        vals.append("-" if val is None else f'<span class="{"vb" if val > 0 else "vr"}">{"+" if val > 0 else ""}{_f(val)}%</span>')
-        vr = veredito(k, val)
-        ver.append(f'<span class="ent">{vr}</span>' if vr == VEREDITO_ENTRA
-                   else f'<span class="{"meio" if k >= 2 else "nao"}">{vr}</span>')
-    def linha(rot, xs, cls=""):
-        return (f'<tr class="{cls}"><td class="n">{rot}</td><td class="d"></td>'
-                + "".join(f'<td class="{"g" if j in (0, 2) else ""}">{x}</td>' for j, x in enumerate(xs)) + "</tr>")
-    mod = []
-    for _, lado, _ in cols:
-        mod.append("-" if p_modelo_over is None else _f(1 / (p_modelo_over if lado == "over" else 1 - p_modelo_over), 2))
-    corpo += linha("SINAIS", ks, "tot")
-    corpo += linha("Fair do conjunto", fairs)
-    corpo += linha("Fair do modelo", mod)
-    corpo += linha("Melhor odd (mapa 1)", casas)
-    corpo += linha("Vantagem", vals)
-    corpo += linha("VEREDITO", ver, "tot")
-    cab = ('<tr><th rowspan="2" style="text-align:left">Sinal</th><th rowspan="2" style="text-align:left">'
-           'O número por trás <span class="num">(geral: últimos 10 de cada time)</span></th><th class="g" colspan="2">GERAL</th><th class="g" colspan="2">SÓ MAPA 1</th></tr>'
-           f'<tr><th class="g">Mais {pts}</th><th>Menos {pts}</th><th class="g">Mais {pts}</th><th>Menos {pts}</th></tr>')
-    return CSS_SINAIS + f'<table class="ss">{cab}{corpo}</table>'
+# O que o historico mostrou para cada numero de passos a favor (cego 2026, metodo.py)
+BATEU_NO_HISTORICO = {"over": {0: 38, 1: 46, 2: 54, 3: 61, 4: 68},
+                      "under": {0: 43, 1: 53, 2: 60, 3: 64, 4: 67}}
+REFERENCIA = 0.58                 # a dele: 1,72 (58%) / 1,67 (60%)
+
+
+def _pct(x: float) -> str:
+    return f"{100 * x:.0f}%"
+
+
+def _adv(x: float) -> str:
+    rot = ("pegou adversários <b>over</b>" if x > 0.5 else "pegou adversários <b>under</b>" if x < -0.5
+           else "pegou adversários na média")
+    return f"{rot} ({'+' if x >= 0 else ''}{_f(x)})"
+
+
+def passos_do_lado(sn: dict, lado: str, time_a: str, time_b: str) -> List[Dict[str, Any]]:
+    """Os 4 passos dele, em frases, para 'over' (Mais) ou 'under' (Menos). Pura."""
+    from app_core.sinais_linha_core import JANELAS, PASSA_HIST, TETO_OUTRO_LADO, passam
+    L = sn["linha"]
+    mais = lado == "over"
+    a, b = sn["a"], sn["b"]
+    ok = passam(sn, lado)
+    ta, tb = escape(time_a), escape(time_b)
+    pos = "acima" if mais else "abaixo"
+    contra = "abaixo" if mais else "acima"
+    # 1. medias
+    lado_med = "acima" if sn["media"] > L else "abaixo"
+    t1 = (f"Média recente <b>{_f(sn['media'])}</b> ({ta} {_f(a['media'])} · {tb} {_f(b['media'])}) — "
+          f"<b>{lado_med}</b> de {_f(L)}.")
+    # 2. adversario
+    det = f"{ta} {_adv(a['adv'])} · {tb} {_adv(b['adv'])}. Ajustada: <b>{_f(sn['media_aj'])}</b>"
+    if ok[0] and ok[1]:
+        t2 = f"Média já a favor e o ajuste confirma. {det}."
+    elif ok[0]:
+        t2 = f"Média a favor, MAS só por causa dos adversários. {det} — {contra} da linha."
+    elif ok[1]:
+        t2 = f"Média contra, MAS os adversários explicam. {det} — {pos} da linha."
+    else:
+        t2 = f"Média contra e os adversários confirmam. {det} — a leitura não se sustenta."
+    # 3. historico 5 / 20 / 10 / ano
+    partes = []
+    for n in JANELAS:
+        x = a["janelas"][n][0] + b["janelas"][n][0]
+        tot = a["janelas"][n][1] + b["janelas"][n][1]
+        k = x if mais else tot - x
+        r = k / tot if tot else 0
+        partes.append(f'{n} jogos <span class="{"vb" if r >= PASSA_HIST else "vr"}">{k}/{tot}</span>')
+    ax, an = a["ano"][0] + b["ano"][0], a["ano"][1] + b["ano"][1]
+    ka = ax if mais else an - ax
+
+    def _cinco(t):
+        x, n = t["janelas"][5]
+        return f"{x if mais else n - x}/{n}"
+    t3 = (" · ".join(partes) + f' · ano {ka}/{an} <span class="num" style="display:inline">(só referência)</span>'
+          f'<span class="num">últimos 5: {ta} {_cinco(a)} · {tb} {_cinco(b)}</span>')
+    # 4. stats da linha
+    if sn.get("camp_mais") is None:
+        t4 = "Pouco jogo no campeonato (mínimo 3 de cada)."
+    else:
+        def _outro(t):
+            x, n = t["camp"]
+            return (n - x) / n if mais else x / n
+        oa, ob = _outro(a), _outro(b)
+        m = (oa + ob) / 2
+        t4 = (f"Outro lado ({'Menos' if mais else 'Mais'}): {ta} {_pct(oa)} · {tb} {_pct(ob)} → média "
+              f"<b>{_pct(m)}</b> {'≤' if m <= TETO_OUTRO_LADO else '>'} 30%"
+              f'<span class="num">{escape(a["camp_rotulo"])} · {escape(b["camp_rotulo"])}</span>')
+    return [{"nome": "1. Médias", "ok": ok[0], "txt": t1}, {"nome": "2. Adversário", "ok": ok[1], "txt": t2},
+            {"nome": "3. Histórico (5 · 20 · 10)", "ok": ok[2], "txt": t3},
+            {"nome": "4. Stats da linha", "ok": ok[3], "txt": t4}]
+
+
+def _coluna(sn: dict, lado: str, time_a: str, time_b: str, odd: Any, p_mod: Optional[float]) -> str:
+    from app_core.sinais_linha_core import chance
+    passos = passos_do_lado(sn, lado, time_a, time_b)
+    k = sum(1 for x in passos if x["ok"])
+    p = chance(sn, lado)
+    linhas = ""
+    for x in passos:
+        if x["ok"]:
+            st_ = '<span class="fav">A FAVOR</span>'
+        elif x["ok"] is None:
+            st_ = '<span class="sx">sem dado</span>'
+        else:
+            st_ = '<span class="con">CONTRA</span>'
+        linhas += f'<div class="passo"><div class="pn">{x["nome"]} {st_}</div><div class="pt">{x["txt"]}</div></div>'
+    val = None if (p is None or not odd) else (p * odd[0] - 1) * 100
+    vr = veredito(k, val)
+    bat = BATEU_NO_HISTORICO[lado].get(k)
+    nome_lado = "Mais" if lado == "over" else "Menos"
+    ref = "" if p is None else (' <span class="vb">≥ 58%</span>' if p >= REFERENCIA
+                                else ' <span class="nao">abaixo de 58%</span>')
+    mod = "-" if p_mod is None else _f(1 / (p_mod if lado == "over" else 1 - p_mod), 2)
+    vtxt = "" if val is None else f' → <span class="{"vb" if val > 0 else "vr"}">{"+" if val > 0 else ""}{_f(val)}%</span>'
+    otxt = "-" if not odd else f"{_f(odd[0], 2)}</b> {escape(odd[1])}<b>"
+    vd = (f'<span class="ent">{vr}</span>' if vr == VEREDITO_ENTRA
+          else f'<span class="{"meio" if k >= 2 else "nao"}">{vr}</span>')
+    res = (f'<div class="res"><div class="rk {"k2" if k >= 2 else "k0"}">{k} de 4 a favor</div>'
+           f'<div class="num">no histórico, com {k} de 4 o {nome_lado} bateu {bat}%</div>'
+           f'<div class="rl">Chance pelo seu método <b>{"-" if p is None else _pct(p)}</b>'
+           f' · fair <b>{"-" if not p else _f(1 / p, 2)}</b>{ref}</div>'
+           f'<div class="rl">Modelo: fair {mod}</div>'
+           f'<div class="rl">Melhor odd (mapa 1): <b>{otxt}</b>{vtxt}</div>'
+           f'<div class="vd">{vd}</div></div>')
+    titulo = "MENOS" if lado == "under" else "MAIS"
+    return f'<div class="col"><div class="ct">{titulo} {_f(sn["linha"])}</div>{linhas}{res}</div>'
+
+
+CSS_PASSOS = """
+<style>
+  .cols { display:flex; gap:14px; flex-wrap:wrap; }
+  .col { flex:1 1 380px; background:var(--painel); border:1px solid var(--borda); border-radius:12px; overflow:hidden; }
+  .ct { background:var(--cab); font-weight:800; font-size:15px; padding:9px 12px; letter-spacing:.04em; }
+  .passo { padding:8px 12px; border-top:1px solid var(--linha); }
+  .pn { font-weight:700; font-size:13px; display:flex; gap:8px; align-items:center; }
+  .pt { color:var(--texto); font-size:12.5px; line-height:1.5; margin-top:3px; }
+  .fav { color:#0e1117; background:var(--boa); border-radius:6px; padding:0 7px; font-size:11px; font-weight:800; }
+  .con { color:#fff; background:var(--ruim); border-radius:6px; padding:0 7px; font-size:11px; font-weight:800; }
+  .sx { color:var(--fraco); font-size:11px; }
+  .num { display:block; color:var(--fraco); font-size:11.5px; }
+  .vb { color:var(--boa); font-weight:800; } .vr { color:var(--ruim); font-weight:800; }
+  .res { border-top:2px solid var(--borda); padding:10px 12px; background:var(--cab); }
+  .rk { font-size:18px; font-weight:800; } .k2 { color:var(--boa); } .k0 { color:var(--fraco); }
+  .rl { font-size:13px; margin-top:3px; }
+  .vd { margin-top:8px; }
+  .ent { color:#0e1117; background:var(--boa); border-radius:7px; padding:3px 10px; font-weight:800; }
+  .meio { color:var(--pin); font-weight:700; } .nao { color:var(--fraco); font-weight:700; }
+</style>
+"""
+
+
+def html_painel(time_a: str, time_b: str, sn: Optional[dict], odds_m1: Mapping[str, Any],
+                p_modelo_over: Optional[float]) -> str:
+    """As duas colunas (Menos | Mais) com os 4 passos dele em frases. Pura."""
+    if not sn:
+        return '<div class="nota">Poucos jogos de um dos times para os seus passos (mínimo 5 cada).</div>'
+    return CSS_PASSOS + '<div class="cols">' + "".join(
+        _coluna(sn, lado, time_a, time_b, odds_m1.get(lado), p_modelo_over) for lado in ("under", "over")) + "</div>"
 
 
 def html_todas(linhas_casa: Dict[float, Dict], resumo: Callable[[float, int, str], Optional[dict]]) -> str:
@@ -235,26 +317,50 @@ def render_seus_sinais_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         livre = st.number_input("Outra linha", min_value=0.0, max_value=80.0, step=1.0,
                                 value=float(escolha if escolha is not None else 27.5), key=f"ss_livre_{time_a}_{time_b}")
     L = float(livre) if (escolha is None or abs(float(livre) - float(escolha)) > 1e-9) else float(escolha)
-    sg = sinais(tg, time_a, time_b, L)
-    s1 = sinais(tg, time_a, time_b, L, so_mapa1=True)
-    p_mod = None
-    try:
-        p_mod = chance_do_modelo({"jogo": 1, "periodo": 1, "unidade": "kills", "tipo": "total", "lado": "over",
-                                  "pontos": L}, time_a=time_a, time_b=time_b,
-                                 calcular_totais=ctx.get("calcular_totais"), prob_over=ctx.get("prob_over"))
-    except Exception:
-        p_mod = None
+    modo = st.radio("Jogos considerados", ["Todos os mapas", "Só mapa 1"], horizontal=True,
+                    key=f"ss_modo_{time_a}_{time_b}")
+    so_m1 = modo == "Só mapa 1"
+    sn = sinais(tg, time_a, time_b, L, so_mapa1=so_m1)
+    # O MODELO DO CONFRONTO (29/10/2026, ele: "a pior parte e saber se NAQUELE CONFRONTO o
+    # time vai ser over ou under"): o motor de totais cruza o quanto cada time mata com o
+    # quanto deixa matar CONTRA este adversario. O total esperado = o ponto em que ele da
+    # 50% para o Mais.
+    _cache: dict = {}
+
+    def _p_mod(x):
+        try:
+            return chance_do_modelo({"jogo": 1, "periodo": 1, "unidade": "kills", "tipo": "total", "lado": "over",
+                                     "pontos": float(x)}, time_a=time_a, time_b=time_b,
+                                    calcular_totais=ctx.get("calcular_totais"), prob_over=ctx.get("prob_over"),
+                                    _cache=_cache)
+        except Exception:
+            return None
+    p_mod = _p_mod(L)
+    esperado = None
+    if p_mod is not None:
+        lo, hi = 5.0, 70.0
+        for _ in range(30):
+            mid = (lo + hi) / 2
+            pm = _p_mod(mid)
+            if pm is None:
+                break
+            lo, hi = (mid, hi) if pm > 0.5 else (lo, mid)
+        esperado = (lo + hi) / 2
+    if esperado is not None:
+        st.markdown("**Para ESTE confronto, o modelo espera ~{} kills** (mapa 1) — {} da linha {}."
+                    .format(_f(esperado), "acima" if esperado > L else "abaixo", _f(L)))
     odds_m1 = (linhas_casa.get(L) or {}).get(1) or {}
-    corpo = html_painel(time_a, time_b, L, sg, s1, odds_m1, p_mod)
+    corpo = html_painel(time_a, time_b, sn, odds_m1, p_mod)
     try:
         import streamlit.components.v1 as _cmp
-        _cmp.html(pagina(corpo), height=470, scrolling=False)
+        _cmp.html(pagina(corpo), height=640, scrolling=True)
     except Exception:
         st.markdown(corpo, unsafe_allow_html=True)
-    st.caption("✓ passa · ✗ não passa · · sem dado. Passa: Histórico e Adversário com 60%+ dos 20 jogos do lado; "
-               "Médias com 1 kill de folga; StatsCamps com 60%+ no campeonato. **Veredito**: 2 de 4 e a casa paga "
-               "acima da fair do conjunto → ENTRA. A fair é a GERAL (mais certeira que a só-mapa-1 na medição); "
-               "o \"só mapa 1\" mostra os sinais com jogos de mapa 1.")
+    st.caption("A FAVOR/CONTRA seguem as suas regras: 1) média recente do lado certo da linha; 2) a média "
+               "ajustada pelos adversários enfrentados do lado certo; 3) 5, 20 e 10 jogos com 60%+ do lado (o ano "
+               "só aparece); 4) no campeonato, a média dos dois do OUTRO lado até 30%. A chance é a do seu método, "
+               "medida no histórico. **ENTRA** = 2 de 4 a favor e a casa paga acima da fair."
+               + (" Só mapa 1: tudo com jogos de mapa 1 (menos jogos, mais ruído)." if so_m1 else ""))
 
     if linhas_casa:
         cache: Dict = {}

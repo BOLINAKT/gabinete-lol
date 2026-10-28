@@ -38,15 +38,16 @@ class TestAba(unittest.TestCase):
         self.assertEqual(ss.veredito(3, -2.0), "2+ sinais, odd abaixo da fair")
         self.assertEqual(ss.veredito(1, 10.0), "não entra")
 
-    def test_painel_mostra_o_numero_por_tras(self):
+    def test_painel_em_passos(self):
         from app_core.sinais_linha_core import sinais
         tg = _tg(34, 32)
-        h = ss.html_painel("A", "B", 28.5, sinais(tg, "A", "B", 28.5), sinais(tg, "A", "B", 28.5, so_mapa1=True),
-                           {"over": (1.90, "Stake")}, 0.6)
-        self.assertIn("A 10/10", h)                                  # historico do time A
-        self.assertIn("ENTRA", h)                                    # 4/4 no over e 1,90 acima da fair
+        h = ss.html_painel("A", "B", sinais(tg, "A", "B", 28.5), {"over": (1.90, "Stake")}, 0.6)
+        self.assertIn("MENOS 28,5", h)
+        self.assertIn("MAIS 28,5", h)
+        self.assertIn("1. Médias", h)
+        self.assertIn("A FAVOR", h)
+        self.assertIn("ENTRA", h)                                    # 4/4 no Mais e 1,90 acima da fair
         self.assertIn("LCK Spring", h)
-
 
 if __name__ == "__main__":
     unittest.main()
