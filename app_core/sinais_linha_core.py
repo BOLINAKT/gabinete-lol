@@ -79,9 +79,9 @@ def _lg(p: float) -> float:
 def _total(d: pd.DataFrame, met: str) -> pd.Series:
     cols = METRICAS[met]["cols"]
     if cols is None:
-        t = pd.to_numeric(d.get("game_time_min"), errors="coerce")
-        if t is None or t.isna().all():
-            t = pd.to_numeric(d.get("gamelength"), errors="coerce") / 60.0
+        t = pd.to_numeric(d.get("game_time_min", pd.Series(dtype=float, index=d.index)), errors="coerce")
+        if len(t) and t.isna().all() and "gamelength" in d.columns:
+            t = pd.to_numeric(d["gamelength"], errors="coerce") / 60.0
         return t
     return pd.to_numeric(d[cols[0]], errors="coerce") + pd.to_numeric(d[cols[1]], errors="coerce")
 
