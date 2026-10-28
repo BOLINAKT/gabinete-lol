@@ -93,6 +93,21 @@ def sinais(team_games: pd.DataFrame, time_a: str, time_b: str, linha: float,
     s4 = ((camp > L).sum() + 1) / (len(camp) + 2) if len(camp) >= MINIMO_CAMPEONATO else None
     out = {"s": [float(s1), s2, float(s3), None if s4 is None else float(s4)], "n": n,
            "n_camp": int(len(camp)), "media": float(raw.mean()), "linha": L, "mapa1": bool(so_mapa1)}
+
+    # O NUMERO POR TRAS DE CADA SINAL, por time (aba "Seus sinais", 28/10/2026: ele quer
+    # ver, por exemplo, que e a LYON que puxa o under e que o historico dela esta inflado)
+    def _det(d, u):
+        t = _totais(u).dropna()
+        td = pd.to_numeric(u.get("tend_adv_kills", pd.Series(0.0, index=u.index)), errors="coerce") \
+            .reindex(t.index).fillna(0.0)
+        c = _camp(d)
+        ult = d.iloc[-1] if not d.empty else None
+        return {"n": int(len(t)), "acima": int((t > L).sum()), "media": float(t.mean()) if len(t) else None,
+                "acima_aj": int(((t - PESO_AJUSTE_KILLS * td) > L).sum()), "adv": float(td.mean()) if len(td) else 0.0,
+                "camp_n": int(len(c)), "camp_acima": int((c > L).sum()),
+                "camp_rotulo": "" if ult is None else " ".join(
+                    str(x) for x in (ult["league"], ult.get("split")) if x is not None and str(x) not in ("", "nan"))}
+    out["detalhe"] = {"a": _det(da, ua), "b": _det(db, ub)}
     if s4 is not None:
         b0, w1, w2, w3, w4 = PESOS["mapa1" if so_mapa1 else "todos"]
         z = b0 + w1 * _lg(s1) + w2 * s2 + w3 * _lg(s3) + w4 * _lg(s4)

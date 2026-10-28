@@ -2887,7 +2887,13 @@ def _ctx_oportunidades() -> dict:
     }
 
 
+def _render_seus_sinais() -> None:
+    from app_core.seus_sinais_tab_core import render_seus_sinais_tab
+    render_seus_sinais_tab(st=st, ctx=_ctx_oportunidades())
+
+
 _secondary_tab_renderers = {
+    "Seus sinais": _render_seus_sinais,
     TAB_OPORTUNIDADES: lambda: core_render_oportunidades_tab(st=st, ctx=_ctx_oportunidades(), parte="jogo"),
     "Melhores apostas": lambda: core_render_oportunidades_tab(st=st, ctx=_ctx_oportunidades(), parte="apostas"),
     "Rankings": lambda: core_render_rankings_tab(
