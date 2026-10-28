@@ -226,7 +226,7 @@ def resumo_html(sn: Optional[Dict[str, Any]], lado: str, rotulo: str = "", odd: 
                 "var(--boa)" if v > 0 else "var(--ruim)", f"{v:+.1f}%".replace(".", ","))
     except (TypeError, ValueError):
         pass
-    cor = "var(--boa)" if k >= 2 else "var(--fraco)"
+    cor = "var(--boa)" if k >= 3 else ("var(--pin)" if k == 2 else "var(--fraco)")
     fraco = 'style="color:var(--fraco);font-size:11px"'
     return '<span style="white-space:nowrap">{}<b>{}</b> <b style="color:{}">{}/{}</b><span {}>{}</span></span>'.format(
         f'<span {fraco}>{rotulo}</span>' if rotulo else "", marcas, cor, k, tot, fraco, justa)

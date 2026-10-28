@@ -34,8 +34,10 @@ class TestAba(unittest.TestCase):
         self.assertEqual(ss.linha_principal(lk), 27.5)               # a mais equilibrada do mapa 1
 
     def test_veredito(self):
-        self.assertEqual(ss.veredito(2, 3.0), ss.VEREDITO_ENTRA)
-        self.assertEqual(ss.veredito(3, -2.0), "2+ sinais, odd abaixo da fair")
+        # regra dele (29/10/2026): entra com 3 de 4; com 2 de 4, analisa
+        self.assertEqual(ss.veredito(3, 3.0), ss.VEREDITO_ENTRA)
+        self.assertEqual(ss.veredito(2, 3.0), ss.VEREDITO_ANALISAR)
+        self.assertEqual(ss.veredito(3, -2.0), "3+ a favor, odd abaixo da fair")
         self.assertEqual(ss.veredito(1, 10.0), "não entra")
 
     def test_painel_em_passos(self):

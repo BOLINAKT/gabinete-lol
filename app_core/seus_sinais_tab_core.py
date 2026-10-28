@@ -10,7 +10,8 @@ de kills do confronto aberto:
   - os 4 sinais (Historico, Medias, Adversario, StatsCamps) com o NUMERO por tras
     e separado por time, para Mais e Menos, no geral e so no mapa 1;
   - a fair do conjunto, a do modelo, a odd da casa e o veredito no criterio dele:
-    2 de 4 passam e a casa paga acima da fair do conjunto -> ENTRA.
+    3 de 4 a favor e a casa paga acima da fair -> ENTRA; 2 de 4 -> ANALISAR (29/10/2026,
+    ele: "em sua maioria eu so entro quando 3 das 4 sao boas, e quando tem 2 eu analiso").
   - embaixo, todas as linhas das casas dele com o mesmo veredito.
 
 A FAIR DO VEREDITO E A GERAL. Medido nas linhas de kills da Pinnacle (496, 140
@@ -26,6 +27,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Mapping, Optional
 
 VEREDITO_ENTRA = "ENTRA"
+VEREDITO_ANALISAR = "ANALISAR (2 de 4)"
 
 
 def _f(x: Any, casas: int = 1) -> str:
@@ -73,10 +75,12 @@ def linha_principal(linhas: Dict[float, Dict]) -> Optional[float]:
 
 
 def veredito(k: int, valor: Optional[float]) -> str:
-    if k >= 2 and valor is not None and valor > 0:
+    if k >= 3 and valor is not None and valor > 0:
         return VEREDITO_ENTRA
-    if k >= 2:
-        return "2+ sinais, odd abaixo da fair"
+    if k >= 3:
+        return "3+ a favor, odd abaixo da fair"
+    if k == 2:
+        return VEREDITO_ANALISAR
     return "não entra"
 
 
@@ -102,6 +106,7 @@ CSS_SINAIS = """
   .ss .num { display:block; font-size:11.5px; color:var(--fraco); }
   .ss tr.tot td { background:var(--cab); font-weight:800; }
   .ss .k2 { color:var(--boa); font-size:17px; } .ss .k0 { color:var(--fraco); font-size:17px; }
+  .ss .k1 { color:var(--pin); font-size:17px; }
   .ss .ent { color:#0e1117; background:var(--boa); border-radius:7px; padding:3px 9px; font-weight:800; }
   .ss .meio { color:var(--pin); font-weight:700; font-size:12px; }
   .ss .nao { color:var(--fraco); font-size:12px; }
@@ -208,7 +213,7 @@ def _coluna(sn: dict, lado: str, time_a: str, time_b: str, odd: Any, p_mod: Opti
     otxt = "-" if not odd else f"{_f(odd[0], 2)}</b> {escape(odd[1])}<b>"
     vd = (f'<span class="ent">{vr}</span>' if vr == VEREDITO_ENTRA
           else f'<span class="{"meio" if k >= 2 else "nao"}">{vr}</span>')
-    res = (f'<div class="res"><div class="rk {"k2" if k >= 2 else "k0"}">{k} de 4 a favor</div>'
+    res = (f'<div class="res"><div class="rk {"k2" if k >= 3 else ("k1" if k == 2 else "k0")}">{k} de 4 a favor</div>'
            f'<div class="num">no histórico, com {k} de 4 o {nome_lado} bateu {"-" if bat is None else bat}%'
            + (" (mercado de poucos números: leitura instável)" if cfg.get("instavel") else "") + "</div>"
            f'<div class="rl">Chance pelo seu método <b>{"-" if p is None else _pct(p)}</b>'
@@ -237,6 +242,7 @@ CSS_PASSOS = """
   .vb { color:var(--boa); font-weight:800; } .vr { color:var(--ruim); font-weight:800; }
   .res { border-top:2px solid var(--borda); padding:10px 12px; background:var(--cab); }
   .rk { font-size:18px; font-weight:800; } .k2 { color:var(--boa); } .k0 { color:var(--fraco); }
+  .k1 { color:var(--pin); }
   .rl { font-size:13px; margin-top:3px; }
   .vd { margin-top:8px; }
   .ent { color:#0e1117; background:var(--boa); border-radius:7px; padding:3px 10px; font-weight:800; }
@@ -271,16 +277,16 @@ def html_todas(linhas_casa: Dict[float, Dict], resumo: Callable[[float, int, str
                              "ver": veredito(max(r["k"], r.get("k1") or 0), val)})
     if not rows:
         return ""
-    ordem = {VEREDITO_ENTRA: 0, "2+ sinais, odd abaixo da fair": 1, "não entra": 2}
+    ordem = {VEREDITO_ENTRA: 0, VEREDITO_ANALISAR: 1, "3+ a favor, odd abaixo da fair": 2, "não entra": 3}
     rows.sort(key=lambda x: (ordem[x["ver"]], -(x["val"] if x["val"] is not None else -999), x["mapa"], x["pts"]))
     corpo = ""
     for x in rows:
         ver = (f'<span class="ent">{x["ver"]}</span>' if x["ver"] == VEREDITO_ENTRA
                else f'<span class="{"meio" if x["ver"] != "não entra" else "nao"}">{x["ver"]}</span>')
-        k1 = "-" if x["k1"] is None else f'<span class="{"k2" if x["k1"] >= 2 else "k0"}">{x["k1"]}/4</span>'
+        k1 = "-" if x["k1"] is None else f'<span class="{"k2" if x["k1"] >= 3 else ("k1" if x["k1"] == 2 else "k0")}">{x["k1"]}/4</span>'
         corpo += (f'<tr><td>Mapa {x["mapa"]}</td><td class="n">{"Mais" if x["lado"] == "over" else "Menos"} '
                   f'{_f(x["pts"])}</td><td>{_f(x["odd"], 2)} <span class="num">{escape(x["casa"])}</span></td>'
-                  f'<td><span class="{"k2" if x["k"] >= 2 else "k0"}">{x["k"]}/{x["tot"]}</span></td><td>{k1}</td>'
+                  f'<td><span class="{"k2" if x["k"] >= 3 else ("k1" if x["k"] == 2 else "k0")}">{x["k"]}/{x["tot"]}</span></td><td>{k1}</td>'
                   f'<td>{"-" if not x["p"] else _f(1 / x["p"], 2)}</td>'
                   f'<td>{"-" if x["val"] is None else ("<span class=vb>+" if x["val"] > 0 else "<span class=vr>") + _f(x["val"]) + "%</span>"}</td>'
                   f'<td>{ver}</td></tr>')
