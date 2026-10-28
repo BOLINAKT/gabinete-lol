@@ -35,7 +35,13 @@ def _f(x: Any, casas: int = 1) -> str:
         return "-"
 
 
-def linhas_de_kills(jogo: Optional[Mapping[str, Any]], inv: bool, casas: List[str]) -> Dict[float, Dict]:
+# metrica -> como a OddsPapi escreve a unidade (tempo de jogo as casas dele nao abrem la)
+UNIDADE_ODDSPAPI = {"kills": "kills", "towers": "turrets", "dragons": "dragons", "barons": "barons",
+                    "inhibitors": "inhibitors"}
+
+
+def linhas_de_kills(jogo: Optional[Mapping[str, Any]], inv: bool, casas: List[str],
+                    metrica: str = "kills") -> Dict[float, Dict]:
     """{pontos: {mapa: {"over": (odd, casa), "under": (odd, casa)}}} -- a MELHOR odd de cada
     lado entre as casas escolhidas. Pura."""
     from app_core.suas_casas_core import linhas_de_mapa
@@ -43,7 +49,7 @@ def linhas_de_kills(jogo: Optional[Mapping[str, Any]], inv: bool, casas: List[st
         return {}
     fora: Dict[float, Dict] = {}
     for l in linhas_de_mapa(jogo, inv, "lol", casas_dele=casas):
-        if l["unidade"] != "kills" or l["tipo"] != "total" or l["slug"] == "pinnacle":
+        if l["unidade"] != UNIDADE_ODDSPAPI.get(metrica) or l["tipo"] != "total" or l["slug"] == "pinnacle":
             continue
         cel = fora.setdefault(float(l["pontos"]), {}).setdefault(int(l["periodo"]), {})
         atual = cel.get(l["lado"])
@@ -104,9 +110,8 @@ CSS_SINAIS = """
 """
 
 
-# O que o historico mostrou para cada numero de passos a favor (cego 2026, metodo.py)
-BATEU_NO_HISTORICO = {"over": {0: 38, 1: 46, 2: 54, 3: 61, 4: 68},
-                      "under": {0: 43, 1: 53, 2: 60, 3: 64, 4: 67}}
+# O que o historico mostrou para cada numero de passos a favor: por mercado, em
+# sinais_linha_core.METRICAS[...]["bateu"] (cego 2026, linhas perto da media)
 REFERENCIA = 0.58                 # a dele: 1,72 (58%) / 1,67 (60%)
 
 
@@ -120,7 +125,7 @@ def _adv(x: float) -> str:
     return f"{rot} ({'+' if x >= 0 else ''}{_f(x)})"
 
 
-def passos_do_lado(sn: dict, lado: str, time_a: str, time_b: str) -> List[Dict[str, Any]]:
+def passos_do_lado(sn: dict, lado: str, time_a: str, time_b: str) -> List[Dict[str, Any]]:  # noqa: C901
     """Os 4 passos dele, em frases, para 'over' (Mais) ou 'under' (Menos). Pura."""
     from app_core.sinais_linha_core import JANELAS, PASSA_HIST, TETO_OUTRO_LADO, passam
     L = sn["linha"]
@@ -178,8 +183,9 @@ def passos_do_lado(sn: dict, lado: str, time_a: str, time_b: str) -> List[Dict[s
 
 
 def _coluna(sn: dict, lado: str, time_a: str, time_b: str, odd: Any, p_mod: Optional[float]) -> str:
-    from app_core.sinais_linha_core import chance
+    from app_core.sinais_linha_core import METRICAS, chance
     passos = passos_do_lado(sn, lado, time_a, time_b)
+    cfg = METRICAS.get(sn.get("metrica") or "kills", METRICAS["kills"])
     k = sum(1 for x in passos if x["ok"])
     p = chance(sn, lado)
     linhas = ""
@@ -193,7 +199,7 @@ def _coluna(sn: dict, lado: str, time_a: str, time_b: str, odd: Any, p_mod: Opti
         linhas += f'<div class="passo"><div class="pn">{x["nome"]} {st_}</div><div class="pt">{x["txt"]}</div></div>'
     val = None if (p is None or not odd) else (p * odd[0] - 1) * 100
     vr = veredito(k, val)
-    bat = BATEU_NO_HISTORICO[lado].get(k)
+    bat = cfg["bateu"][lado].get(k)
     nome_lado = "Mais" if lado == "over" else "Menos"
     ref = "" if p is None else (' <span class="vb">≥ 58%</span>' if p >= REFERENCIA
                                 else ' <span class="nao">abaixo de 58%</span>')
@@ -203,11 +209,14 @@ def _coluna(sn: dict, lado: str, time_a: str, time_b: str, odd: Any, p_mod: Opti
     vd = (f'<span class="ent">{vr}</span>' if vr == VEREDITO_ENTRA
           else f'<span class="{"meio" if k >= 2 else "nao"}">{vr}</span>')
     res = (f'<div class="res"><div class="rk {"k2" if k >= 2 else "k0"}">{k} de 4 a favor</div>'
-           f'<div class="num">no histórico, com {k} de 4 o {nome_lado} bateu {bat}%</div>'
+           f'<div class="num">no histórico, com {k} de 4 o {nome_lado} bateu {"-" if bat is None else bat}%'
+           + (" (mercado de poucos números: leitura instável)" if cfg.get("instavel") else "") + "</div>"
            f'<div class="rl">Chance pelo seu método <b>{"-" if p is None else _pct(p)}</b>'
            f' · fair <b>{"-" if not p else _f(1 / p, 2)}</b>{ref}</div>'
            f'<div class="rl">Modelo: fair {mod}</div>'
-           f'<div class="rl">Melhor odd (mapa 1): <b>{otxt}</b>{vtxt}</div>'
+           f'<div class="rl">Melhor odd (mapa 1): <b>{otxt}</b>{vtxt}'
+           + ("" if odd else ' <span class="num" style="display:inline">(suas casas não abriram esta linha)</span>')
+           + "</div>"
            f'<div class="vd">{vd}</div></div>')
     titulo = "MENOS" if lado == "under" else "MAIS"
     return f'<div class="col"><div class="ct">{titulo} {_f(sn["linha"])}</div>{linhas}{res}</div>'
@@ -287,7 +296,7 @@ def html_todas(linhas_casa: Dict[float, Dict], resumo: Callable[[float, int, str
 _CACHE_MODELO: Dict[Any, Any] = {}
 
 
-def _modelo_do_confronto(tg: Any, time_a: str, time_b: str):
+def _modelo_do_confronto(tg: Any, time_a: str, time_b: str, metrica: str = "kills"):
     """Os totais esperados do confronto pelo motor do app (mapa 1, meia-vida 180), ou None."""
     chave = (id(tg), len(tg), time_a, time_b)
     if chave not in _CACHE_MODELO:
@@ -304,10 +313,10 @@ def _modelo_do_confronto(tg: Any, time_a: str, time_b: str):
         except Exception:
             _CACHE_MODELO[chave] = None
     t = _CACHE_MODELO.get(chave)
-    return None if not t else t.get("kills")
+    return None if not t else t.get(metrica)
 
 
-def _odds_da_linha(tg: Any, time_a: str, time_b: str, L: float) -> Dict[str, Any]:
+def _odds_da_linha(tg: Any, time_a: str, time_b: str, L: float, metrica: str = "kills") -> Dict[str, Any]:
     """A melhor odd de Mais/Menos do MAPA 1 nas casas dele, para a linha L."""
     import json
     from app_core.schedule_import_core import resolve_schedule_team
@@ -328,23 +337,25 @@ def _odds_da_linha(tg: Any, time_a: str, time_b: str, L: float) -> Dict[str, Any
         casas = list(_st.session_state.get("suas_casas_escolhidas") or []) or list(CASAS_PADRAO)
     except Exception:
         casas = list(CASAS_PADRAO)
-    return (linhas_de_kills(jogo, inv, casas).get(float(L)) or {}).get(1) or {}
+    return (linhas_de_kills(jogo, inv, casas, metrica).get(float(L)) or {}).get(1) or {}
 
 
-def render_painel_na_analise(*, st: Any, tg: Any, time_a: str, time_b: str, linha: float, chave: str) -> None:
-    """Os passos dele (Menos | Mais) para a linha da Analise de Linha. So LoL, total de kills."""
+def render_painel_na_analise(*, st: Any, tg: Any, time_a: str, time_b: str, linha: float, chave: str,
+                             metrica: str = "kills") -> None:
+    """Os passos dele (Menos | Mais) para a linha da Analise de Linha. So LoL, totais."""
     from app_core.modelo_mercado_html_core import pagina
-    from app_core.sinais_linha_core import sinais
+    from app_core.sinais_linha_core import METRICAS, sinais
     L = float(linha)
+    un = METRICAS[metrica]["unidade"]
     modo = st.radio("Seus passos com", ["Todos os mapas", "Só mapa 1"], horizontal=True, key=f"ss_modo_{chave}")
-    sn = sinais(tg, time_a, time_b, L, so_mapa1=(modo == "Só mapa 1"))
-    total = _modelo_do_confronto(tg, time_a, time_b)
+    sn = sinais(tg, time_a, time_b, L, so_mapa1=(modo == "Só mapa 1"), metrica=metrica)
+    total = _modelo_do_confronto(tg, time_a, time_b, metrica)
     p_mod, esperado = None, None
     if total is not None:
         try:
             from mlcore.lines_engine import prob_over_from_total
             p_mod = float(prob_over_from_total(total, L))
-            lo, hi = 5.0, 70.0
+            lo, hi = 0.0, 90.0
             for _ in range(30):
                 mid = (lo + hi) / 2
                 lo, hi = (mid, hi) if float(prob_over_from_total(total, mid)) > 0.5 else (lo, mid)
@@ -352,9 +363,9 @@ def render_painel_na_analise(*, st: Any, tg: Any, time_a: str, time_b: str, linh
         except Exception:
             p_mod = esperado = None
     if esperado is not None:
-        st.markdown("**Para ESTE confronto, o modelo espera ~{} kills** (mapa 1) — {} da linha {}."
-                    .format(_f(esperado), "acima" if esperado > L else "abaixo", _f(L)))
-    corpo = html_painel(time_a, time_b, sn, _odds_da_linha(tg, time_a, time_b, L), p_mod)
+        st.markdown("**Para ESTE confronto, o modelo espera ~{} {}** (mapa 1) — {} da linha {}."
+                    .format(_f(esperado), un, "acima" if esperado > L else "abaixo", _f(L)))
+    corpo = html_painel(time_a, time_b, sn, _odds_da_linha(tg, time_a, time_b, L, metrica), p_mod)
     try:
         import streamlit.components.v1 as _cmp
         _cmp.html(pagina(corpo), height=600, scrolling=True)
