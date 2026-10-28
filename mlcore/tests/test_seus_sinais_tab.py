@@ -24,8 +24,8 @@ def _tg(tot_a, tot_b, n=10):
 
 
 class TestAba(unittest.TestCase):
-    def test_e_a_primeira_aba_do_lol(self):
-        self.assertEqual(pick_tabs("Fluxo Rápido")[0], "Seus sinais")
+    def test_a_aba_saiu_o_painel_foi_para_a_analise_de_linha(self):
+        self.assertNotIn("Seus sinais", pick_tabs("Fluxo Rápido"))
 
     def test_melhor_odd_por_lado_e_linha_principal(self):
         lk = ss.linhas_de_kills(JOGO, False, ["Stake", "Polymarket"])

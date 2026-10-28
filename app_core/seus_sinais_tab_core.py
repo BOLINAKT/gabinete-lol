@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-"""A aba "SEUS SINAIS" -- a primeira do jogo (28/10/2026, pedido dele).
+"""OS PASSOS DELE no total de kills -- o painel da Analise de Linha (28-29/10/2026).
+
+Foi a aba "Seus sinais" (28/10); em 29/10 ele pediu o painel dentro da Analise de Linha.
 
 Ele: "isso dai e basicamente TUDO o que eu vejo... comecar por ela". Para o total
 de kills do confronto aberto:
@@ -278,114 +280,83 @@ def html_todas(linhas_casa: Dict[float, Dict], resumo: Callable[[float, int, str
             + corpo + '</table>')
 
 
-def render_seus_sinais_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
-    from app_core.modelo_mercado_html_core import pagina
-    from app_core.sinais_linha_core import chance, passam, sinais
-    from app_core.suas_casas_core import CASAS_PADRAO, MARCAS, achar, carregar, chance_do_modelo
-    confronto = ctx.get("confronto") or {}
-    time_a, time_b = str(confronto.get("teamA") or ""), str(confronto.get("teamB") or "")
-    tg = ctx.get("team_games")
-    st.markdown("### Seus sinais · Total de kills")
-    if not (time_a and time_b) or tg is None or getattr(tg, "empty", True):
-        st.info("Abra um jogo (lista \"Jogos\" no topo) para ver os seus sinais.")
-        return
-    raiz = Path(ctx.get("raiz") or ".")
-    # o seletor "Casas que voce usa" mora na aba Modelo x Mercado (a mesma chave nao pode
-    # ter dois widgets); aqui so se le a escolha -- padrao Stake + Polymarket
-    nomes = [n for _, n in MARCAS if n != "Pinnacle"]
-    try:
-        escolhidas = list(st.session_state.get("suas_casas_escolhidas") or [])
-    except Exception:
-        escolhidas = []
-    escolhidas = [n for n in escolhidas if n in nomes] or [n for n in CASAS_PADRAO if n in nomes]
-    doc = carregar(raiz)
-    jogo, inv = achar(doc.get("jogos") or [], time_a, time_b, ctx.get("resolver_time"))
-    linhas_casa = linhas_de_kills(jogo, inv, list(escolhidas or []))
-    opcoes = sorted(linhas_casa)
-    principal = linha_principal(linhas_casa)
-    st.caption(f"**{time_a} × {time_b}** · casas: {', '.join(escolhidas)} (troque na aba Modelo × Mercado) · "
-               + (f"{len(opcoes)} linha(s) de total de kills nas suas casas" if opcoes
-                  else "as suas casas ainda não abriram total de kills para este jogo (OddsPapi, de 3 em 3 h)"))
-    c1, c2 = st.columns([3, 1])
-    with c1:
-        escolha = None
-        if opcoes:
-            rot = {p: (_f(p) + (" ★" if p == principal else "")) for p in opcoes}
-            escolha = st.radio("Linha", opcoes, index=opcoes.index(principal) if principal in opcoes else 0,
-                               format_func=rot.get, horizontal=True, key=f"ss_linha_{time_a}_{time_b}")
-    with c2:
-        livre = st.number_input("Outra linha", min_value=0.0, max_value=80.0, step=1.0,
-                                value=float(escolha if escolha is not None else 27.5), key=f"ss_livre_{time_a}_{time_b}")
-    L = float(livre) if (escolha is None or abs(float(livre) - float(escolha)) > 1e-9) else float(escolha)
-    modo = st.radio("Jogos considerados", ["Todos os mapas", "Só mapa 1"], horizontal=True,
-                    key=f"ss_modo_{time_a}_{time_b}")
-    so_m1 = modo == "Só mapa 1"
-    sn = sinais(tg, time_a, time_b, L, so_mapa1=so_m1)
-    # O MODELO DO CONFRONTO (29/10/2026, ele: "a pior parte e saber se NAQUELE CONFRONTO o
-    # time vai ser over ou under"): o motor de totais cruza o quanto cada time mata com o
-    # quanto deixa matar CONTRA este adversario. O total esperado = o ponto em que ele da
-    # 50% para o Mais.
-    _cache: dict = {}
+# ---- O PAINEL DENTRO DA ANALISE DE LINHA (29/10/2026) --------------------------------
+# Ele: "joga so essa tela para a analise de linha, e nao precisa mais dessa aba". E
+# "quando eu troco de linha, ele nao muda" -- o campo "Outra linha" da aba prendia o
+# valor. Aqui a linha e a que ele ja escolhe na Analise de Linha.
+_CACHE_MODELO: Dict[Any, Any] = {}
 
-    def _p_mod(x):
+
+def _modelo_do_confronto(tg: Any, time_a: str, time_b: str):
+    """Os totais esperados do confronto pelo motor do app (mapa 1, meia-vida 180), ou None."""
+    chave = (id(tg), len(tg), time_a, time_b)
+    if chave not in _CACHE_MODELO:
         try:
-            return chance_do_modelo({"jogo": 1, "periodo": 1, "unidade": "kills", "tipo": "total", "lado": "over",
-                                     "pontos": float(x)}, time_a=time_a, time_b=time_b,
-                                    calcular_totais=ctx.get("calcular_totais"), prob_over=ctx.get("prob_over"),
-                                    _cache=_cache)
+            from app_core.runtime_wrappers_core import _expected_totals_dc
+            from mlcore.lines_engine import Filters, build_profile
+            f = Filters(year=None, league=None, split=None, playoffs=None)
+            pa = build_profile(tg, team=time_a, filters=f, league_mode="all", map_mode="m1",
+                               half_life_days=180.0, max_games=None)
+            pb = build_profile(tg, team=time_b, filters=f, league_mode="all", map_mode="m1",
+                               half_life_days=180.0, max_games=None)
+            _CACHE_MODELO.clear()
+            _CACHE_MODELO[chave] = _expected_totals_dc(tg, pa, pb) if (pa.n_games and pb.n_games) else None
         except Exception:
-            return None
-    p_mod = _p_mod(L)
-    esperado = None
-    if p_mod is not None:
-        lo, hi = 5.0, 70.0
-        for _ in range(30):
-            mid = (lo + hi) / 2
-            pm = _p_mod(mid)
-            if pm is None:
-                break
-            lo, hi = (mid, hi) if pm > 0.5 else (lo, mid)
-        esperado = (lo + hi) / 2
+            _CACHE_MODELO[chave] = None
+    t = _CACHE_MODELO.get(chave)
+    return None if not t else t.get("kills")
+
+
+def _odds_da_linha(tg: Any, time_a: str, time_b: str, L: float) -> Dict[str, Any]:
+    """A melhor odd de Mais/Menos do MAPA 1 nas casas dele, para a linha L."""
+    import json
+    from app_core.schedule_import_core import resolve_schedule_team
+    from app_core.suas_casas_core import CASAS_PADRAO, achar, carregar
+    raiz = Path(__file__).resolve().parents[1]
+    try:
+        apelidos = json.loads((raiz / "user_team_aliases.json").read_text(encoding="utf-8")) or {}
+    except (OSError, ValueError):
+        apelidos = {}
+    times = sorted({str(x) for x in tg["team"].dropna().unique()})
+
+    def _res(n):
+        r = resolve_schedule_team(str(n or ""), times, apelidos)
+        return r[0] if r[1] else n
+    jogo, inv = achar(carregar(raiz).get("jogos") or [], time_a, time_b, _res)
+    try:
+        import streamlit as _st
+        casas = list(_st.session_state.get("suas_casas_escolhidas") or []) or list(CASAS_PADRAO)
+    except Exception:
+        casas = list(CASAS_PADRAO)
+    return (linhas_de_kills(jogo, inv, casas).get(float(L)) or {}).get(1) or {}
+
+
+def render_painel_na_analise(*, st: Any, tg: Any, time_a: str, time_b: str, linha: float, chave: str) -> None:
+    """Os passos dele (Menos | Mais) para a linha da Analise de Linha. So LoL, total de kills."""
+    from app_core.modelo_mercado_html_core import pagina
+    from app_core.sinais_linha_core import sinais
+    L = float(linha)
+    modo = st.radio("Seus passos com", ["Todos os mapas", "Só mapa 1"], horizontal=True, key=f"ss_modo_{chave}")
+    sn = sinais(tg, time_a, time_b, L, so_mapa1=(modo == "Só mapa 1"))
+    total = _modelo_do_confronto(tg, time_a, time_b)
+    p_mod, esperado = None, None
+    if total is not None:
+        try:
+            from mlcore.lines_engine import prob_over_from_total
+            p_mod = float(prob_over_from_total(total, L))
+            lo, hi = 5.0, 70.0
+            for _ in range(30):
+                mid = (lo + hi) / 2
+                lo, hi = (mid, hi) if float(prob_over_from_total(total, mid)) > 0.5 else (lo, mid)
+            esperado = (lo + hi) / 2
+        except Exception:
+            p_mod = esperado = None
     if esperado is not None:
         st.markdown("**Para ESTE confronto, o modelo espera ~{} kills** (mapa 1) — {} da linha {}."
                     .format(_f(esperado), "acima" if esperado > L else "abaixo", _f(L)))
-    odds_m1 = (linhas_casa.get(L) or {}).get(1) or {}
-    corpo = html_painel(time_a, time_b, sn, odds_m1, p_mod)
+    corpo = html_painel(time_a, time_b, sn, _odds_da_linha(tg, time_a, time_b, L), p_mod)
     try:
         import streamlit.components.v1 as _cmp
-        _cmp.html(pagina(corpo), height=640, scrolling=True)
+        _cmp.html(pagina(corpo), height=600, scrolling=True)
     except Exception:
         st.markdown(corpo, unsafe_allow_html=True)
-    st.caption("A FAVOR/CONTRA seguem as suas regras: 1) média recente do lado certo da linha; 2) a média "
-               "ajustada pelos adversários enfrentados do lado certo; 3) 5, 20 e 10 jogos com 60%+ do lado (o ano "
-               "só aparece); 4) no campeonato, a média dos dois do OUTRO lado até 30%. A chance é a do seu método, "
-               "medida no histórico. **ENTRA** = 2 de 4 a favor e a casa paga acima da fair."
-               + (" Só mapa 1: tudo com jogos de mapa 1 (menos jogos, mais ruído)." if so_m1 else ""))
-
-    if linhas_casa:
-        cache: Dict = {}
-
-        def resumo(pts, mapa, lado):
-            ch = (pts, lado)
-            if ch not in cache:
-                g = sinais(tg, time_a, time_b, pts)
-                m = sinais(tg, time_a, time_b, pts, so_mapa1=True)
-                if not g:
-                    cache[ch] = None
-                else:
-                    pg = passam(g, lado)
-                    cache[ch] = {"k": sum(1 for v in pg if v), "tot": sum(1 for v in pg if v is not None),
-                                 "p": chance(g, lado),
-                                 "k1m": None if not m else sum(1 for v in passam(m, lado) if v)}
-            r = cache[ch]
-            if not r:
-                return None
-            return dict(r, k1=r["k1m"] if mapa == 1 else None)
-        st.markdown("#### Todas as linhas das suas casas")
-        tab = html_todas(linhas_casa, resumo)
-        n = tab.count("<tr>") - 1
-        try:
-            import streamlit.components.v1 as _cmp
-            _cmp.html(pagina(tab), height=60 + 44 * max(n, 1), scrolling=n > 25)
-        except Exception:
-            st.markdown(tab, unsafe_allow_html=True)
