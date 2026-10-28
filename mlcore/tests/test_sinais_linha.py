@@ -46,5 +46,17 @@ class TestMetodo(unittest.TestCase):
         self.assertIn("pouco jogo", sl.resumo_html(None, "over"))
 
 
+class TestPorTimeEHandicap(unittest.TestCase):
+    def test_kills_de_um_time_e_handicap(self):
+        tg = _tg(30, 20)                                  # A faz 15 e cede 15; B faz 10 e cede 10
+        sn = sl.sinais_time(tg, "A", "B", 12.5, "kills_time")
+        self.assertAlmostEqual(sn["a"]["media"], 15.0)    # o que A faz
+        self.assertAlmostEqual(sn["b"]["media"], 10.0)    # o que B cede
+        self.assertIn("MAIS 12,5", sn["titulos"]["over"])
+        h = sl.sinais_time(tg, "A", "B", -0.0, "handicap")
+        self.assertEqual(h["titulos"]["over"], "A 0 (cobre)")
+        self.assertIsNotNone(sl.chance(h, "over"))
+
+
 if __name__ == "__main__":
     unittest.main()

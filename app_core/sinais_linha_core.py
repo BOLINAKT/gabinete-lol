@@ -230,3 +230,121 @@ def resumo_html(sn: Optional[Dict[str, Any]], lado: str, rotulo: str = "", odd: 
     fraco = 'style="color:var(--fraco);font-size:11px"'
     return '<span style="white-space:nowrap">{}<b>{}</b> <b style="color:{}">{}/{}</b><span {}>{}</span></span>'.format(
         f'<span {fraco}>{rotulo}</span>' if rotulo else "", marcas, cor, k, tot, fraco, justa)
+
+
+
+# ---- KILLS POR TIME e HANDICAP DE KILLS (29/10/2026) ---------------------------------------
+# Os mesmos 4 passos, com a serie certa (scratchpad metodo_time.py, cego 2026, pesos de 2025):
+#   kills de X:      X = kills que X FEZ; Y = kills que Y CEDEU. Ajuste: o quanto os adversarios
+#                    enfrentados cediam acima da liga (peso 0,5).
+#   handicap de X h: "cobre" = saldo de X maior que -h; X = saldo de X; Y = -saldo de Y. Ajuste:
+#                    o saldo medio dos adversarios enfrentados (peso 0,5).
+# Ganho da fair sobre so o historico: kills por time +0,011; handicap +0,011. Com 3 a favor,
+# linhas perto da media: kills por time 55-60%, handicap 62-68% (4 de 4 quase nao acontece).
+METRICAS["kills_time"] = {"cols": None, "ajuste": 0.5, "unidade": "kills",
+                          "pesos": (0.0906, 0.0836, 0.0206, 0.0581, -0.2789, 0.3634, 0.3431),
+                          "bateu": {"over": {0: 49, 1: 52, 2: 52, 3: 60}, "under": {0: 47, 1: 47, 2: 51, 3: 55}}}
+METRICAS["handicap"] = {"cols": None, "ajuste": 0.5, "unidade": "kills",
+                        "pesos": (0.1225, -0.1242, 0.1278, 0.0860, 0.1236, 0.3745, 0.3939),
+                        "bateu": {"over": {0: 49, 1: 53, 2: 56, 3: 68}, "under": {0: 43, 1: 48, 2: 49, 3: 62}}}
+_CACHE_TIME: Dict[Any, pd.DataFrame] = {}
+
+
+def _com_tend_time(team_games: pd.DataFrame) -> pd.DataFrame:
+    """+ 't_ced' (o adversario do jogo cedia quantas kills acima da liga) e 't_sal' (o saldo
+    medio do adversario), ambos ANTES do jogo."""
+    if "t_ced" in team_games.columns:
+        return team_games
+    chave = (id(team_games), len(team_games))
+    if chave in _CACHE_TIME:
+        return _CACHE_TIME[chave]
+    d = team_games.copy()
+    d["_d"] = pd.to_datetime(d["date"], errors="coerce")
+    d["_kf"] = pd.to_numeric(d["kills_for"], errors="coerce")
+    d["_ka"] = pd.to_numeric(d["kills_against"], errors="coerce")
+    d["_sal"] = d["_kf"] - d["_ka"]
+    d = d.sort_values(["_d", "gameid"])
+    for col, nome in (("_ka", "ced"), ("_sal", "sal")):
+        d[f"_p_{nome}"] = d.groupby("team")[col].transform(lambda x: x.shift(1).rolling(10, min_periods=3).mean())
+    d["_l_ced"] = d.groupby("league")["_ka"].transform(lambda x: x.shift(1).rolling(200, min_periods=30).mean())
+    adv = d[["gameid", "team", "_p_ced", "_p_sal"]].drop_duplicates(["gameid", "team"]).rename(
+        columns={"team": "opponent", "_p_ced": "_a_ced", "_p_sal": "_a_sal"})
+    d = d.merge(adv, on=["gameid", "opponent"], how="left")
+    d["t_ced"] = (d["_a_ced"] - d["_l_ced"]).fillna(0.0)
+    d["t_sal"] = d["_a_sal"].fillna(0.0)
+    d = d.drop(columns=[c for c in d.columns if c.startswith("_") and c != "_d"]).drop(columns=["_d"])
+    _CACHE_TIME.clear()
+    _CACHE_TIME[chave] = d
+    return d
+
+
+def sinais_time(team_games: pd.DataFrame, time_x: str, time_y: str, linha: float, mercado: str,
+                so_mapa1: bool = False) -> Optional[Dict[str, Any]]:
+    """Kills de X (mercado 'kills_time', linha L) ou handicap de X (mercado 'handicap', linha h).
+    Mesmo formato de sinais(); 'over' = Mais (kills) / COBRE (handicap). Pura."""
+    if team_games is None or team_games.empty or mercado not in ("kills_time", "handicap"):
+        return None
+    cfg = METRICAS[mercado]
+    tg = _com_tend_time(team_games)
+    dx, dy = _jogos(tg, time_x, so_mapa1), _jogos(tg, time_y, so_mapa1)
+    if len(dx) < MINIMO_POR_TIME or len(dy) < MINIMO_POR_TIME:
+        return None
+    w = cfg["ajuste"]
+    kf = lambda d: pd.to_numeric(d["kills_for"], errors="coerce")
+    ka = lambda d: pd.to_numeric(d["kills_against"], errors="coerce")
+    if mercado == "kills_time":
+        L = float(linha)
+        sx, ajx = kf(dx), kf(dx) - w * dx["t_ced"]
+        sy, ajy = ka(dy), ka(dy) - w * dy["t_ced"]
+    else:
+        L = -float(linha)                         # cobre h  <=>  saldo > -h
+        sx = kf(dx) - ka(dx)
+        ajx = sx + w * dx["t_sal"]
+        sy = -(kf(dy) - ka(dy))
+        ajy = sy - w * dy["t_sal"]
+
+    def _time(d, serie, aj, rot):
+        tot = serie.dropna()
+        u10 = tot.tail(10)
+        ult = d.iloc[-1]
+        c = d[(d["league"].astype(str) == str(ult["league"])) & (d["split"].astype(str) == str(ult.get("split")))
+              & (d["_d"].dt.year == ult["_d"].year)]
+        cs = serie.reindex(c.index).dropna()
+        return {"media": float(u10.mean()), "media_aj": float(aj.reindex(u10.index).mean()),
+                # positivo = o numero do time esta INFLADO pelos adversarios (cediam mais / eram fracos)
+                "adv": float((u10 - aj.reindex(u10.index)).mean() / (w if w else 1)), "n10": int(len(u10)),
+                "janelas": {n: (int((tot.tail(n) > L).sum()), int(len(tot.tail(n)))) for n in JANELAS},
+                "ano": (int((tot > L).sum()), int(len(tot))), "camp": (int((cs > L).sum()), int(len(cs))),
+                "camp_rotulo": " ".join(str(x) for x in (ult["league"], ult.get("split"))
+                                        if x is not None and str(x) not in ("", "nan")), "rotulo": rot}
+    if mercado == "kills_time":
+        a = _time(dx, sx, ajx, f"{time_x} faz")
+        b = _time(dy, sy, ajy, f"{time_y} cede")
+    else:
+        a = _time(dx, sx, ajx, f"saldo de {time_x}")
+        b = _time(dy, sy, ajy, f"{time_y} (saldo invertido)")
+    media, media_aj = (a["media"] + b["media"]) / 2, (a["media_aj"] + b["media_aj"]) / 2
+    h = {n: (a["janelas"][n][0] + b["janelas"][n][0]) / max(1, a["janelas"][n][1] + b["janelas"][n][1])
+         for n in JANELAS}
+    camp = None
+    if a["camp"][1] >= MINIMO_CAMPEONATO and b["camp"][1] >= MINIMO_CAMPEONATO:
+        camp = (a["camp"][0] / a["camp"][1] + b["camp"][0] / b["camp"][1]) / 2
+    out = {"linha": L, "mapa1": bool(so_mapa1), "metrica": mercado, "a": a, "b": b, "media": media,
+           "media_aj": media_aj, "h": h, "camp_mais": camp, "linha_casa": float(linha)}
+    if mercado == "handicap":
+        out["adv_palavras"] = ("fracos", "fortes")
+    def _n(v, sinal=False):
+        v = 0.0 if abs(v) < 1e-9 else float(v)
+        t = f"{v:g}".replace(".", ",")
+        return ("+" + t) if (sinal and v > 0) else t
+    if mercado == "kills_time":
+        out["titulos"] = {"over": f"{time_x}: MAIS {_n(linha)}", "under": f"{time_x}: MENOS {_n(linha)}"}
+    else:
+        out["titulos"] = {"over": f"{time_x} {_n(linha, True)} (cobre)",
+                          "under": f"{time_y} {_n(-linha, True)} (cobre)"}
+    if camp is not None:
+        b0, wm, wa, w5, w10, w20, wc = cfg["pesos"]
+        z = (b0 + wm * (media - L) + wa * (media_aj - L) + w5 * _lg(h[5]) + w10 * _lg(h[10])
+             + w20 * _lg(h[20]) + wc * _lg(camp))
+        out["p_over"] = 1.0 / (1.0 + math.exp(-z))
+    return out

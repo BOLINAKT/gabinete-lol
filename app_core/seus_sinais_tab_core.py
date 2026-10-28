@@ -124,9 +124,9 @@ def _pct(x: float) -> str:
     return f"{100 * x:.0f}%"
 
 
-def _adv(x: float) -> str:
-    rot = ("pegou adversários <b>over</b>" if x > 0.5 else "pegou adversários <b>under</b>" if x < -0.5
-           else "pegou adversários na média")
+def _adv(x: float, palavras=("over", "under")) -> str:
+    rot = (f"pegou adversários <b>{palavras[0]}</b>" if x > 0.5 else f"pegou adversários <b>{palavras[1]}</b>"
+           if x < -0.5 else "pegou adversários na média")
     return f"{rot} ({'+' if x >= 0 else ''}{_f(x)})"
 
 
@@ -142,10 +142,13 @@ def passos_do_lado(sn: dict, lado: str, time_a: str, time_b: str) -> List[Dict[s
     contra = "abaixo" if mais else "acima"
     # 1. medias
     lado_med = "acima" if sn["media"] > L else "abaixo"
-    t1 = (f"Média recente <b>{_f(sn['media'])}</b> ({ta} {_f(a['media'])} · {tb} {_f(b['media'])}) — "
+    ra = escape(a.get("rotulo") or time_a)
+    rb = escape(b.get("rotulo") or time_b)
+    t1 = (f"Média recente <b>{_f(sn['media'])}</b> ({ra} {_f(a['media'])} · {rb} {_f(b['media'])}) — "
           f"<b>{lado_med}</b> de {_f(L)}.")
     # 2. adversario
-    det = f"{ta} {_adv(a['adv'])} · {tb} {_adv(b['adv'])}. Ajustada: <b>{_f(sn['media_aj'])}</b>"
+    pal = sn.get("adv_palavras") or ("over", "under")
+    det = f"{ta} {_adv(a['adv'], pal)} · {tb} {_adv(b['adv'], pal)}. Ajustada: <b>{_f(sn['media_aj'])}</b>"
     if ok[0] and ok[1]:
         t2 = f"Média já a favor e o ajuste confirma. {det}."
     elif ok[0]:
@@ -205,7 +208,8 @@ def _coluna(sn: dict, lado: str, time_a: str, time_b: str, odd: Any, p_mod: Opti
     val = None if (p is None or not odd) else (p * odd[0] - 1) * 100
     vr = veredito(k, val)
     bat = cfg["bateu"][lado].get(k)
-    nome_lado = "Mais" if lado == "over" else "Menos"
+    nome_lado = ("a aposta" if sn.get("metrica") == "handicap"
+                 else ("o Mais" if lado == "over" else "o Menos"))
     ref = "" if p is None else (' <span class="vb">≥ 58%</span>' if p >= REFERENCIA
                                 else ' <span class="nao">abaixo de 58%</span>')
     mod = "-" if p_mod is None else _f(1 / (p_mod if lado == "over" else 1 - p_mod), 2)
@@ -214,7 +218,7 @@ def _coluna(sn: dict, lado: str, time_a: str, time_b: str, odd: Any, p_mod: Opti
     vd = (f'<span class="ent">{vr}</span>' if vr == VEREDITO_ENTRA
           else f'<span class="{"meio" if k >= 2 else "nao"}">{vr}</span>')
     res = (f'<div class="res"><div class="rk {"k2" if k >= 3 else ("k1" if k == 2 else "k0")}">{k} de 4 a favor</div>'
-           f'<div class="num">no histórico, com {k} de 4 o {nome_lado} bateu {"-" if bat is None else bat}%'
+           f'<div class="num">no histórico, com {k} de 4 {nome_lado} bateu {"-" if bat is None else bat}%'
            + (" (mercado de poucos números: leitura instável)" if cfg.get("instavel") else "") + "</div>"
            f'<div class="rl">Chance pelo seu método <b>{"-" if p is None else _pct(p)}</b>'
            f' · fair <b>{"-" if not p else _f(1 / p, 2)}</b>{ref}</div>'
@@ -223,8 +227,8 @@ def _coluna(sn: dict, lado: str, time_a: str, time_b: str, odd: Any, p_mod: Opti
            + ("" if odd else ' <span class="num" style="display:inline">(suas casas não abriram esta linha)</span>')
            + "</div>"
            f'<div class="vd">{vd}</div></div>')
-    titulo = "MENOS" if lado == "under" else "MAIS"
-    return f'<div class="col"><div class="ct">{titulo} {_f(sn["linha"])}</div>{linhas}{res}</div>'
+    tit = (sn.get("titulos") or {}).get(lado) or f'{"MENOS" if lado == "under" else "MAIS"} {_f(sn["linha"])}'
+    return f'<div class="col"><div class="ct">{escape(tit)}</div>{linhas}{res}</div>'
 
 
 CSS_PASSOS = """
@@ -375,5 +379,71 @@ def render_painel_na_analise(*, st: Any, tg: Any, time_a: str, time_b: str, linh
     try:
         import streamlit.components.v1 as _cmp
         _cmp.html(pagina(corpo), height=600, scrolling=True)
+    except Exception:
+        st.markdown(corpo, unsafe_allow_html=True)
+
+
+def _odds_time(tg: Any, time_x: str, time_a: str, time_b: str, L: float, mercado: str) -> Dict[str, Any]:
+    """Melhor odd (mapa 1) nas casas dele para kills de X (team_total) ou handicap de X (spread).
+    'over' = Mais / X cobre; 'under' = Menos / o outro cobre."""
+    import json
+    from app_core.schedule_import_core import resolve_schedule_team
+    from app_core.suas_casas_core import CASAS_PADRAO, achar, carregar, linhas_de_mapa
+    raiz = Path(__file__).resolve().parents[1]
+    try:
+        apelidos = json.loads((raiz / "user_team_aliases.json").read_text(encoding="utf-8")) or {}
+    except (OSError, ValueError):
+        apelidos = {}
+    times = sorted({str(x) for x in tg["team"].dropna().unique()})
+
+    def _res(n):
+        r = resolve_schedule_team(str(n or ""), times, apelidos)
+        return r[0] if r[1] else n
+    jogo, inv = achar(carregar(raiz).get("jogos") or [], time_a, time_b, _res)
+    if not jogo:
+        return {}
+    try:
+        import streamlit as _st
+        casas = list(_st.session_state.get("suas_casas_escolhidas") or []) or list(CASAS_PADRAO)
+    except Exception:
+        casas = list(CASAS_PADRAO)
+    lado_x = "home" if time_x == time_a else "away"
+    out: Dict[str, Any] = {}
+    for l in linhas_de_mapa(jogo, inv, "lol", casas_dele=casas):
+        if l["unidade"] != "kills" or int(l["periodo"]) != 1 or l["slug"] == "pinnacle":
+            continue
+        chave = None
+        if mercado == "kills_time" and l["tipo"] == "team_total" and l.get("time") == lado_x                 and abs(float(l["pontos"]) - L) < 1e-9:
+            chave = l["lado"]
+        if mercado == "handicap" and l["tipo"] == "spread":
+            if l["lado"] == lado_x and abs(float(l["pontos"]) - L) < 1e-9:
+                chave = "over"
+            elif l["lado"] != lado_x and abs(float(l["pontos"]) + L) < 1e-9:
+                chave = "under"
+        if chave and (chave not in out or l["odd"] > out[chave][0]):
+            out[chave] = (float(l["odd"]), l["casa_aposta"])
+    return out
+
+
+def render_painel_time(*, st: Any, tg: Any, time_a: str, time_b: str, linha: float, chave: str,
+                       mercado: str) -> None:
+    """Kills por time (um painel por time) ou handicap de kills (A cobre | B cobre)."""
+    from app_core.modelo_mercado_html_core import pagina
+    from app_core.sinais_linha_core import sinais_time
+    modo = st.radio("Seus passos com", ["Todos os mapas", "Só mapa 1"], horizontal=True, key=f"ss_modo_{chave}")
+    m1 = modo == "Só mapa 1"
+    blocos = []
+    if mercado == "kills_time":
+        for x, y in ((time_a, time_b), (time_b, time_a)):
+            sn = sinais_time(tg, x, y, float(linha), "kills_time", so_mapa1=m1)
+            blocos.append(html_painel(x, y, sn, _odds_time(tg, x, time_a, time_b, float(linha), mercado), None))
+    else:
+        sn = sinais_time(tg, time_a, time_b, float(linha), "handicap", so_mapa1=m1)
+        blocos.append(html_painel(time_a, time_b, sn, _odds_time(tg, time_a, time_a, time_b, float(linha), mercado),
+                                  None))
+    corpo = "".join(blocos)
+    try:
+        import streamlit.components.v1 as _cmp
+        _cmp.html(pagina(corpo), height=600 * len(blocos), scrolling=True)
     except Exception:
         st.markdown(corpo, unsafe_allow_html=True)
