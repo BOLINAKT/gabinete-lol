@@ -58,6 +58,11 @@ jobs:
             --csv CSV_DIARIO/2026_LoL_esports_match_data_from_OraclesElixir.csv \
             --players players_artifact.json
 
+      # NOTA POR JOGADOR (28/10/2026, aprovada por ele): Elo de cada jogador pelos CSVs;
+      # o app mistura so em jogo de liga nacional. Ver tools/nota_jogadores_lol.py.
+      - name: Nota por jogador
+        run: python tools/nota_jogadores_lol.py
+
       - name: Re-pinar fixtures de regressão no modelo novo
         run: python tools/update_regression_fixtures.py
 
@@ -78,7 +83,7 @@ jobs:
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add ml_artifact.json players_artifact.json mlcore/tests/fixtures/ phase1_data_contract_report.json
+          git add ml_artifact.json players_artifact.json mlcore/tests/fixtures/ phase1_data_contract_report.json nota_jogadores_lol.json
           if git diff --cached --quiet; then
             echo "modelo não mudou (CSV sem jogos novos) — nada a commitar"
           else
