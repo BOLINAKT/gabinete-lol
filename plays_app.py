@@ -2954,6 +2954,7 @@ _secondary_tab_renderers = {
         resumo_renderer=lambda: core_render_resumo_tab(
             st=st,
             ctx={
+                "bo": int(bo),
                 "teamA": teamA,
                 "teamB": teamB,
                 "team_games": team_games,
