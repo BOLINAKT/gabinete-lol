@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-10-28T18:53:12-03:00",
+  "gerado_em": "2026-10-28T23:46:36-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 60,
+    "ja_jogados": 61,
     "passados": 0,
     "indefinidos": 12,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "28/10",
-      "time": "20:00",
-      "league": "Mundial",
-      "teamA_raw": "LYON",
-      "teamB_raw": "Invictus Gaming",
-      "bo": 3,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-28T23:00:00Z"
-    },
     {
       "date": "29/10",
       "time": "17:00",
