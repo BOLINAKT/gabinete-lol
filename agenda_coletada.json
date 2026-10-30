@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-10-29T16:48:53-03:00",
+  "gerado_em": "2026-10-29T21:15:01-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 60,
+    "ja_jogados": 62,
     "passados": 0,
     "indefinidos": 12,
-    "sem_dois_times": 1
+    "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "29/10",
-      "time": "17:00",
-      "league": "Mundial",
-      "teamA_raw": "CTBC Flying Oyster",
-      "teamB_raw": "Karmine Corp",
-      "bo": 3,
-      "estado": "unstarted",
-      "inicio_utc": "2026-10-29T20:00:00Z"
-    },
     {
       "date": "29/10",
       "time": "20:00",
@@ -27,7 +17,7 @@
       "teamA_raw": "BILIBILI GAMING",
       "teamB_raw": "TOP ESPORTS",
       "bo": 3,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-10-29T23:00:00Z"
     },
     {
