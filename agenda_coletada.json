@@ -1,10 +1,10 @@
 {
-  "gerado_em": "2026-10-31T17:39:01-03:00",
+  "gerado_em": "2026-10-31T20:42:07-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 66,
+    "ja_jogados": 67,
     "passados": 0,
     "indefinidos": 9,
     "sem_dois_times": 0
@@ -12,22 +12,12 @@
   "jogos": [
     {
       "date": "31/10",
-      "time": "17:00",
-      "league": "Mundial",
-      "teamA_raw": "LYON",
-      "teamB_raw": "LOS",
-      "bo": 3,
-      "estado": "inProgress",
-      "inicio_utc": "2026-10-31T20:00:00Z"
-    },
-    {
-      "date": "31/10",
       "time": "20:00",
       "league": "Mundial",
-      "teamA_raw": "Hanwha Life Esports",
-      "teamB_raw": "BILIBILI GAMING",
+      "teamA_raw": "BILIBILI GAMING",
+      "teamB_raw": "Hanwha Life Esports",
       "bo": 3,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-10-31T23:00:00Z"
     },
     {
