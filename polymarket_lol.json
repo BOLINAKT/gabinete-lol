@@ -1,5 +1,5 @@
 {
- "coletado_em": "2026-10-30T23:10:45+00:00",
+ "coletado_em": "2026-10-31T02:41:16+00:00",
  "fonte": "https://gamma-api.polymarket.com/events?tag_id=65",
  "partidas": [
   {
@@ -15,6 +15,48 @@
    "torneio": "LCP Promotion Playoffs",
    "inicio_utc": "2026-11-11 09:00:00+00",
    "evento": "lol-gz-fnk-2026-11-11"
+  },
+  {
+   "time_a": "LOS",
+   "time_b": "LYON",
+   "p_a": 0.255,
+   "p_b": 0.745,
+   "fonte_preco": "meio_do_livro",
+   "spread": 0.01,
+   "liquidez": 89299.8674,
+   "volume": 10665.193947999998,
+   "bo": 3,
+   "torneio": "Worlds Group Stage",
+   "inicio_utc": "2026-10-31 17:00:00+00",
+   "evento": "lol-los-ly-2026-10-31"
+  },
+  {
+   "time_a": "Karmine Corp",
+   "time_b": "Movistar KOI",
+   "p_a": 0.585,
+   "p_b": 0.415,
+   "fonte_preco": "meio_do_livro",
+   "spread": 0.01,
+   "liquidez": 80218.6016,
+   "volume": 22400.020634,
+   "bo": 3,
+   "torneio": "Worlds Group Stage",
+   "inicio_utc": "2026-10-31 20:00:00+00",
+   "evento": "lol-kc-mkoi-2026-10-31"
+  },
+  {
+   "time_a": "Hanwha Life Esports",
+   "time_b": "Bilibili Gaming",
+   "p_a": 0.605,
+   "p_b": 0.395,
+   "fonte_preco": "meio_do_livro",
+   "spread": 0.01,
+   "liquidez": 66544.7735,
+   "volume": 46002.10855999999,
+   "bo": 3,
+   "torneio": "Worlds Group Stage",
+   "inicio_utc": "2026-10-31 23:00:00+00",
+   "evento": "lol-hle1-blg-2026-10-31"
   }
  ]
 }
