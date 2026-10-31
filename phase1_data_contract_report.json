@@ -1,6 +1,6 @@
 {
   "version": "phase1_data_contract_v1",
-  "generated_at": "2026-10-31T01:38:06+00:00",
+  "generated_at": "2026-10-31T13:18:07+00:00",
   "decision": "promote",
   "reasons": [],
   "parts": {
@@ -13,7 +13,7 @@
       "csv_files": 3,
       "files_ok": 3,
       "files_fail": 0,
-      "rows_total": 360960,
+      "rows_total": 361116,
       "label_issues_total": 0,
       "critical_issues_total": 0
     },
@@ -135,10 +135,10 @@
         "warnings": [
           "missing_bo_col"
         ],
-        "rows": 117936,
+        "rows": 118092,
         "columns": 165,
         "label_view_mode": "team_rows_only",
-        "label_rows": 19656,
+        "label_rows": 19682,
         "label_cols": {
           "team": "teamname",
           "side": "side",
@@ -149,19 +149,19 @@
         },
         "empty_team_rows": 0,
         "side_counts": {
-          "blue": 9828,
-          "red": 9828
+          "blue": 9841,
+          "red": 9841
         },
         "bo_missing_informational": true,
         "playoffs_counts": {
-          "0": 15542,
-          "1": 4114
+          "0": 15552,
+          "1": 4130
         },
-        "duplicate_gameid_rows": 9828,
+        "duplicate_gameid_rows": 9841,
         "duplicate_gameid_team_rows": 0,
         "game_consistency": {
           "checked": true,
-          "games_checked": 9828,
+          "games_checked": 9841,
           "bad_side_games": 0,
           "bad_result_games": 0
         },
@@ -178,10 +178,10 @@
     "summary": {
       "files_ok": 3,
       "files_total": 3,
-      "rows_total": 360960,
+      "rows_total": 361116,
       "league_count": 72,
       "low_sample_leagues_lt30": 0,
-      "team_rows": 360960,
+      "team_rows": 361116,
       "blank_team_rows": 0,
       "blank_team_rate": 0.0
     },
@@ -204,7 +204,7 @@
       },
       {
         "league": "LAS",
-        "rows": 15828
+        "rows": 15924
       },
       {
         "league": "NACL",
@@ -289,5 +289,5 @@
     ],
     "errors": []
   },
-  "run_log": "$ check_data_leakage_and_labels rc=0\nOK: leakage/label report saved -> data_leakage_label_report.json | decision=promote | files_ok=3/3 rows=360960"
+  "run_log": "$ check_data_leakage_and_labels rc=0\nOK: leakage/label report saved -> data_leakage_label_report.json | decision=promote | files_ok=3/3 rows=361116"
 }
