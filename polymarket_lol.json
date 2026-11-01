@@ -1,20 +1,76 @@
 {
- "coletado_em": "2026-10-31T23:41:01+00:00",
+ "coletado_em": "2026-11-01T06:46:24+00:00",
  "fonte": "https://gamma-api.polymarket.com/events?tag_id=65",
  "partidas": [
   {
    "time_a": "Ground Zero Gaming",
    "time_b": "Frank Esports",
-   "p_a": 0.605,
-   "p_b": 0.395,
+   "p_a": 0.88,
+   "p_b": 0.12,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.03,
-   "liquidez": 250.8737,
-   "volume": 414.82388399999996,
+   "spread": 0.14,
+   "liquidez": 670.7774,
+   "volume": 669.683884,
    "bo": 5,
    "torneio": "LCP Promotion Playoffs",
    "inicio_utc": "2026-11-11 09:00:00+00",
    "evento": "lol-gz-fnk-2026-11-11"
+  },
+  {
+   "time_a": "Dplus KIA",
+   "time_b": "Bilibili Gaming",
+   "p_a": 0.405,
+   "p_b": 0.595,
+   "fonte_preco": "meio_do_livro",
+   "spread": 0.01,
+   "liquidez": 106461.9487,
+   "volume": 31506.146392999995,
+   "bo": 5,
+   "torneio": "Worlds Playoffs",
+   "inicio_utc": "2026-11-05 22:00:00+00",
+   "evento": "lol-dk-blg-2026-11-03"
+  },
+  {
+   "time_a": "Karmine Corp",
+   "time_b": "T1",
+   "p_a": 0.175,
+   "p_b": 0.825,
+   "fonte_preco": "meio_do_livro",
+   "spread": 0.01,
+   "liquidez": 61280.895,
+   "volume": 14851.933732000001,
+   "bo": 5,
+   "torneio": "Worlds Playoffs",
+   "inicio_utc": "2026-11-06 22:00:00+00",
+   "evento": "lol-kc-t1-2026-11-04"
+  },
+  {
+   "time_a": "Gen.G",
+   "time_b": "LYON",
+   "p_a": 0.925,
+   "p_b": 0.075,
+   "fonte_preco": "meio_do_livro",
+   "spread": 0.01,
+   "liquidez": 78319.5907,
+   "volume": 27757.625027,
+   "bo": 5,
+   "torneio": "Worlds Playoffs",
+   "inicio_utc": "2026-11-04 22:00:00+00",
+   "evento": "lol-gen-ly-2026-11-05"
+  },
+  {
+   "time_a": "Top Esports",
+   "time_b": "Invictus Gaming",
+   "p_a": 0.44,
+   "p_b": 0.56,
+   "fonte_preco": "meio_do_livro",
+   "spread": 0.02,
+   "liquidez": 77912.2206,
+   "volume": 10128.560408000001,
+   "bo": 5,
+   "torneio": "Worlds Playoffs",
+   "inicio_utc": "2026-11-03 22:00:00+00",
+   "evento": "lol-tes-ig1-2026-11-06"
   }
  ]
 }
