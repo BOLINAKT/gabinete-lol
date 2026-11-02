@@ -1,24 +1,24 @@
 {
- "generated_at": "2026-10-26T15:31:52",
- "nota_produto": 8.49,
+ "generated_at": "2026-11-02T18:38:07",
+ "nota_produto": 8.39,
  "teto_produto": 8.97,
  "fases": [
   {
    "fase": "Vencedor (ML)",
    "peso": 25,
-   "nota": 8.66,
+   "nota": 8.82,
    "teto": 9.5
   },
   {
    "fase": "Dados/automação",
    "peso": 15,
-   "nota": 10.0,
+   "nota": 9.67,
    "teto": 9.5
   },
   {
    "fase": "Totais",
    "peso": 15,
-   "nota": 6.24,
+   "nota": 6.23,
    "teto": 6.5
   },
   {
@@ -30,13 +30,13 @@
   {
    "fase": "Confiabilidade",
    "peso": 10,
-   "nota": 8.81,
+   "nota": 8.8,
    "teto": 10.0
   },
   {
    "fase": "Código/testes",
    "peso": 10,
-   "nota": 8.41,
+   "nota": 7.59,
    "teto": 9.0
   },
   {
