@@ -1,25 +1,25 @@
 {
- "gerado_em": "2026-10-27T22:12:32",
+ "gerado_em": "2026-11-02T20:35:34",
  "mercado": "Polymarket x Pinnacle (vencedor, BO1)",
  "nota": "diferenca < 0 = Polymarket acerta mais; 'modelo' aqui e a Polymarket",
- "jogos_polymarket": 26,
+ "jogos_polymarket": 34,
  "fora_e_por_que": {
-  "nao_bo1": 11,
+  "nao_bo1": 19,
   "sem_nome": 0,
   "sem_pinnacle": 0,
-  "sem_resultado": 2
+  "sem_resultado": 0
  },
  "polymarket_x_pinnacle": {
-  "apostas": 13,
-  "partidas": 13,
+  "apostas": 15,
+  "partidas": 15,
   "minimo": 200,
-  "logloss_modelo": 0.6522104552955208,
-  "logloss_casa": 0.648927896969162,
-  "diferenca": 0.00328255832635882,
-  "margem_erro": 0.021391589333929078,
-  "bateu": 7,
-  "nota_modelo": 6.285834739134568,
-  "nota_casa": 6.389059843737046,
+  "logloss_modelo": 0.5966974019323898,
+  "logloss_casa": 0.5982560885563494,
+  "diferenca": -0.0015586866239595265,
+  "margem_erro": 0.01953893208044556,
+  "bateu": 9,
+  "nota_modelo": 8.031528241119817,
+  "nota_casa": 7.982512938479581,
   "conclusivo": false
  }
 }
