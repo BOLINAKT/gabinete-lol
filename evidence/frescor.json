@@ -1,102 +1,67 @@
 {
- "gerado_em": "2026-09-06T02:18:09",
+ "gerado_em": "2026-11-02T18:38:55",
  "reguas": [
   {
-   "arquivo": "code_scorecard.json",
-   "rotulo": "regua de codigo (product --run)",
+   "arquivo": "frescor.json",
+   "rotulo": "esta propria varredura",
    "cadencia_dias": 7,
-   "idade_dias": 20.4,
-   "estado": "atrasada"
+   "idade_dias": 57.7,
+   "estado": "VELHA"
   },
   {
-   "arquivo": "data_scorecard.json",
-   "rotulo": "regua de dados (product --run)",
-   "cadencia_dias": 7,
-   "idade_dias": 20.4,
-   "estado": "atrasada"
-  },
-  {
-   "arquivo": "live_scorecard.json",
-   "rotulo": "regua da live (product --run)",
-   "cadencia_dias": 7,
-   "idade_dias": 20.4,
-   "estado": "atrasada"
-  },
-  {
-   "arquivo": "players_scorecard.json",
-   "rotulo": "regua de jogadores (product --run)",
-   "cadencia_dias": 7,
-   "idade_dias": 20.4,
-   "estado": "atrasada"
-  },
-  {
-   "arquivo": "portability_scorecard.json",
-   "rotulo": "regua de portabilidade (product --run)",
-   "cadencia_dias": 7,
-   "idade_dias": 20.4,
-   "estado": "atrasada"
-  },
-  {
-   "arquivo": "reliability_scorecard.json",
-   "rotulo": "regua de confiabilidade (product --run)",
-   "cadencia_dias": 7,
-   "idade_dias": 20.4,
-   "estado": "atrasada"
-  },
-  {
-   "arquivo": "stress_emulator.json",
+   "arquivo": "cadencia_calibrador.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 44.8,
+   "idade_dias": 17.3,
    "estado": "frequencia nao declarada"
   },
   {
-   "arquivo": "gate_calibrador_janela900_reprovada.json",
+   "arquivo": "gate_calibrador_tier.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 1.6,
+   "idade_dias": 17.3,
    "estado": "frequencia nao declarada"
   },
   {
-   "arquivo": "varredura_janela_c4b400.json",
+   "arquivo": "regua_pinnacle_handicap_kills.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 1.6,
+   "idade_dias": 5.9,
    "estado": "frequencia nao declarada"
   },
   {
-   "arquivo": "varredura_janela_c6b250.json",
+   "arquivo": "regua_pinnacle_polymarket.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 1.6,
+   "idade_dias": 5.9,
    "estado": "frequencia nao declarada"
   },
   {
-   "arquivo": "varredura_janela_c8b200.json",
+   "arquivo": "regua_pinnacle_total_kills.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 1.6,
+   "idade_dias": 5.9,
    "estado": "frequencia nao declarada"
   },
   {
-   "arquivo": "varredura_janela_calibrador.json",
+   "arquivo": "regua_pinnacle_vencedor.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 1.6,
+   "idade_dias": 5.9,
    "estado": "frequencia nao declarada"
   },
   {
-   "arquivo": "varredura_janela_calibrador_curta.json",
+   "arquivo": "desempenho.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 1.6,
+   "idade_dias": 0.2,
    "estado": "frequencia nao declarada"
   },
   {
-   "arquivo": "gate_calibrador_final_base_producao.json",
+   "arquivo": "suite_esteira.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.1,
+   "idade_dias": 0.2,
    "estado": "frequencia nao declarada"
   },
   {
@@ -107,31 +72,10 @@
    "estado": "frequencia nao declarada"
   },
   {
-   "arquivo": "equivalence_team_state.json",
-   "rotulo": "(nao declarada)",
-   "cadencia_dias": null,
-   "idade_dias": null,
-   "estado": "frequencia nao declarada"
-  },
-  {
-   "arquivo": "first_x_gap_calib.json",
-   "rotulo": "(nao declarada)",
-   "cadencia_dias": null,
-   "idade_dias": null,
-   "estado": "frequencia nao declarada"
-  },
-  {
    "arquivo": "gate_calibrador_final.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
    "idade_dias": null,
-   "estado": "frequencia nao declarada"
-  },
-  {
-   "arquivo": "gate_calibrador_modelo_06set.json",
-   "rotulo": "(nao declarada)",
-   "cadencia_dias": null,
-   "idade_dias": 0.0,
    "estado": "frequencia nao declarada"
   },
   {
@@ -156,22 +100,36 @@
    "estado": "frequencia nao declarada"
   },
   {
-   "arquivo": "sombra_calibrador_grupo.json",
+   "arquivo": "sonda_polymarket.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.0,
+   "idade_dias": null,
    "estado": "frequencia nao declarada"
   },
   {
-   "arquivo": "frescor.json",
-   "rotulo": "esta propria varredura",
+   "arquivo": "code_scorecard.json",
+   "rotulo": "regua de codigo (product --run)",
    "cadencia_dias": 7,
-   "idade_dias": 1.5,
+   "idade_dias": 0.0,
+   "estado": "ok"
+  },
+  {
+   "arquivo": "data_scorecard.json",
+   "rotulo": "regua de dados (product --run)",
+   "cadencia_dias": 7,
+   "idade_dias": 0.0,
    "estado": "ok"
   },
   {
    "arquivo": "fusion_scorecard.json",
    "rotulo": "nota oficial (vigia semanal)",
+   "cadencia_dias": 7,
+   "idade_dias": 0.0,
+   "estado": "ok"
+  },
+  {
+   "arquivo": "live_scorecard.json",
+   "rotulo": "regua da live (product --run)",
    "cadencia_dias": 7,
    "idade_dias": 0.0,
    "estado": "ok"
@@ -191,8 +149,22 @@
    "estado": "ok"
   },
   {
+   "arquivo": "players_scorecard.json",
+   "rotulo": "regua de jogadores (product --run)",
+   "cadencia_dias": 7,
+   "idade_dias": 0.0,
+   "estado": "ok"
+  },
+  {
    "arquivo": "product_scorecard.json",
    "rotulo": "nota do produto (vigia semanal)",
+   "cadencia_dias": 7,
+   "idade_dias": 0.0,
+   "estado": "ok"
+  },
+  {
+   "arquivo": "reliability_scorecard.json",
+   "rotulo": "regua de confiabilidade (product --run)",
    "cadencia_dias": 7,
    "idade_dias": 0.0,
    "estado": "ok"
