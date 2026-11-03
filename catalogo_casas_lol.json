@@ -1,11 +1,11 @@
 {
- "lido_em": "2026-11-02T19:51:12+00:00",
+ "lido_em": "2026-11-03T03:06:51+00:00",
  "mercados": [
   {
    "nome": "Kills - Over Under First Map",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 377,
+   "linhas": 588,
    "handicaps": [
     17.5,
     18.5,
@@ -28,6 +28,8 @@
     "bet365",
     "bet365-nj",
     "betano",
+    "pinnacle",
+    "polymarket",
     "stake",
     "superbet"
    ],
@@ -39,7 +41,7 @@
    "nome": "Kills - Over Under Third Map",
    "periodo": "p3",
    "jogador": false,
-   "linhas": 371,
+   "linhas": 573,
    "handicaps": [
     17.5,
     18.5,
@@ -60,6 +62,8 @@
    ],
    "casas": [
     "betano",
+    "pinnacle",
+    "polymarket",
     "stake",
     "superbet"
    ],
@@ -71,7 +75,7 @@
    "nome": "Kills - Over Under Second Map",
    "periodo": "p2",
    "jogador": false,
-   "linhas": 368,
+   "linhas": 570,
    "handicaps": [
     17.5,
     18.5,
@@ -92,38 +96,8 @@
    ],
    "casas": [
     "betano",
-    "stake",
-    "superbet"
-   ],
-   "chaves": [
-    "0:None"
-   ]
-  },
-  {
-   "nome": "Kills - Over Under Fifth Map",
-   "periodo": "p5",
-   "jogador": false,
-   "linhas": 319,
-   "handicaps": [
-    18.5,
-    19.5,
-    20.5,
-    21.5,
-    22.5,
-    23.5,
-    24.5,
-    25.5,
-    26.5,
-    27.5,
-    28.5,
-    29.5
-   ],
-   "outcomes": [
-    "Over",
-    "Under"
-   ],
-   "casas": [
-    "betano",
+    "pinnacle",
+    "polymarket",
     "stake",
     "superbet"
    ],
@@ -135,7 +109,7 @@
    "nome": "Kills - Over Under Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 319,
+   "linhas": 500,
    "handicaps": [
     18.5,
     19.5,
@@ -156,6 +130,41 @@
    ],
    "casas": [
     "betano",
+    "pinnacle",
+    "polymarket",
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under Fifth Map",
+   "periodo": "p5",
+   "jogador": false,
+   "linhas": 498,
+   "handicaps": [
+    18.5,
+    19.5,
+    20.5,
+    21.5,
+    22.5,
+    23.5,
+    24.5,
+    25.5,
+    26.5,
+    27.5,
+    28.5,
+    29.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "betano",
+    "pinnacle",
     "stake",
     "superbet"
    ],
@@ -167,7 +176,7 @@
    "nome": "Kills - Handicap First Map",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 117,
+   "linhas": 177,
    "handicaps": [
     -13.5,
     -12.5,
@@ -177,10 +186,10 @@
     -8.5,
     -7.5,
     -6.5,
-    -0.5,
-    0.5,
-    1.5,
-    2.5
+    -5.5,
+    -4.5,
+    -3.5,
+    -2.5
    ],
    "outcomes": [
     "1",
@@ -190,38 +199,7 @@
     "bet365",
     "bet365-nj",
     "betano",
-    "stake",
-    "superbet"
-   ],
-   "chaves": [
-    "0:None"
-   ]
-  },
-  {
-   "nome": "Kills - Handicap Third Map",
-   "periodo": "p3",
-   "jogador": false,
-   "linhas": 111,
-   "handicaps": [
-    -13.5,
-    -12.5,
-    -11.5,
-    -10.5,
-    -9.5,
-    -8.5,
-    -7.5,
-    -6.5,
-    -4.5,
-    -0.5,
-    0.5,
-    1.5
-   ],
-   "outcomes": [
-    "1",
-    "2"
-   ],
-   "casas": [
-    "betano",
+    "pinnacle",
     "stake",
     "superbet"
    ],
@@ -233,7 +211,7 @@
    "nome": "Maps Handicap",
    "periodo": "result",
    "jogador": false,
-   "linhas": 111,
+   "linhas": 173,
    "handicaps": [
     -2.5,
     -1.5,
@@ -249,7 +227,41 @@
     "bet365-nj",
     "betano",
     "blaze",
+    "pinnacle",
     "polymarket",
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Handicap Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 165,
+   "handicaps": [
+    -13.5,
+    -12.5,
+    -11.5,
+    -10.5,
+    -9.5,
+    -8.5,
+    -7.5,
+    -6.5,
+    -5.5,
+    -4.5,
+    -3.5,
+    -2.5
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "betano",
+    "pinnacle",
     "stake",
     "superbet"
    ],
@@ -261,7 +273,7 @@
    "nome": "Kills - Handicap Second Map",
    "periodo": "p2",
    "jogador": false,
-   "linhas": 108,
+   "linhas": 162,
    "handicaps": [
     -13.5,
     -12.5,
@@ -271,10 +283,10 @@
     -8.5,
     -7.5,
     -6.5,
-    -0.5,
-    0.5,
-    1.5,
-    2.5
+    -5.5,
+    -4.5,
+    -3.5,
+    -2.5
    ],
    "outcomes": [
     "1",
@@ -282,6 +294,7 @@
    ],
    "casas": [
     "betano",
+    "pinnacle",
     "stake",
     "superbet"
    ],
@@ -293,14 +306,20 @@
    "nome": "Kills - Handicap Fifth Map",
    "periodo": "p5",
    "jogador": false,
-   "linhas": 69,
+   "linhas": 108,
    "handicaps": [
     -10.5,
     -9.5,
     -8.5,
-    2.5,
-    3.5,
-    4.5
+    -7.5,
+    -6.5,
+    -5.5,
+    -4.5,
+    -3.5,
+    -2.5,
+    -1.5,
+    -0.5,
+    2.5
    ],
    "outcomes": [
     "1",
@@ -308,6 +327,7 @@
    ],
    "casas": [
     "betano",
+    "pinnacle",
     "stake",
     "superbet"
    ],
@@ -319,14 +339,20 @@
    "nome": "Kills - Handicap Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 69,
+   "linhas": 108,
    "handicaps": [
     -10.5,
     -9.5,
     -8.5,
-    2.5,
-    3.5,
-    4.5
+    -7.5,
+    -6.5,
+    -5.5,
+    -4.5,
+    -3.5,
+    -2.5,
+    -1.5,
+    -0.5,
+    2.5
    ],
    "outcomes": [
     "1",
@@ -334,6 +360,7 @@
    ],
    "casas": [
     "betano",
+    "pinnacle",
     "stake",
     "superbet"
    ],
@@ -345,7 +372,7 @@
    "nome": "Total Maps Over Under",
    "periodo": "result",
    "jogador": false,
-   "linhas": 66,
+   "linhas": 105,
    "handicaps": [
     3.5,
     4.5
@@ -359,6 +386,7 @@
     "bet365-nj",
     "betano",
     "blaze",
+    "pinnacle",
     "polymarket",
     "stake",
     "superbet"
@@ -371,7 +399,7 @@
    "nome": "Kills - Over Under",
    "periodo": "result",
    "jogador": false,
-   "linhas": 48,
+   "linhas": 76,
    "handicaps": [
     73.5,
     74.5,
@@ -398,72 +426,10 @@
    ]
   },
   {
-   "nome": "Kills - Over Under Team 2 First Map",
-   "periodo": "p1",
-   "jogador": false,
-   "linhas": 44,
-   "handicaps": [
-    5.5,
-    6.5,
-    7.5,
-    8.5,
-    9.5,
-    10.5,
-    11.5,
-    12.5,
-    13.5,
-    14.5,
-    15.5,
-    16.5
-   ],
-   "outcomes": [
-    "Over",
-    "Under"
-   ],
-   "casas": [
-    "blaze",
-    "superbet"
-   ],
-   "chaves": [
-    "0:None"
-   ]
-  },
-  {
-   "nome": "Kills - Over Under Team 2 Third Map",
-   "periodo": "p3",
-   "jogador": false,
-   "linhas": 44,
-   "handicaps": [
-    5.5,
-    6.5,
-    7.5,
-    8.5,
-    9.5,
-    10.5,
-    11.5,
-    12.5,
-    13.5,
-    14.5,
-    15.5,
-    16.5
-   ],
-   "outcomes": [
-    "Over",
-    "Under"
-   ],
-   "casas": [
-    "blaze",
-    "superbet"
-   ],
-   "chaves": [
-    "0:None"
-   ]
-  },
-  {
    "nome": "Kills - Over Under Team 1 Third Map",
    "periodo": "p3",
    "jogador": false,
-   "linhas": 41,
+   "linhas": 70,
    "handicaps": [
     8.5,
     10.5,
@@ -478,11 +444,16 @@
     20.5
    ],
    "outcomes": [
-    "Over",
-    "Under"
+    "185212",
+    "185216",
+    "185217",
+    "185218",
+    "185219",
+    "185220"
    ],
    "casas": [
     "blaze",
+    "pinnacle",
     "superbet"
    ],
    "chaves": [
@@ -490,10 +461,10 @@
    ]
   },
   {
-   "nome": "Kills - Over Under Team 2 Second Map",
-   "periodo": "p2",
+   "nome": "Kills - Over Under Team 2 First Map",
+   "periodo": "p1",
    "jogador": false,
-   "linhas": 41,
+   "linhas": 69,
    "handicaps": [
     5.5,
     6.5,
@@ -509,11 +480,52 @@
     16.5
    ],
    "outcomes": [
-    "Over",
-    "Under"
+    "184493",
+    "184494",
+    "184495",
+    "184496",
+    "184497",
+    "184499"
    ],
    "casas": [
     "blaze",
+    "pinnacle",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under Team 2 Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 69,
+   "handicaps": [
+    5.5,
+    6.5,
+    7.5,
+    8.5,
+    9.5,
+    10.5,
+    11.5,
+    12.5,
+    13.5,
+    14.5,
+    15.5,
+    16.5
+   ],
+   "outcomes": [
+    "184697",
+    "184698",
+    "184699",
+    "184700",
+    "184701",
+    "184703"
+   ],
+   "casas": [
+    "blaze",
+    "pinnacle",
     "superbet"
    ],
    "chaves": [
@@ -524,7 +536,7 @@
    "nome": "Kills - Handicap",
    "periodo": "result",
    "jogador": false,
-   "linhas": 40,
+   "linhas": 68,
    "handicaps": [
     -30.5,
     -29.5,
@@ -535,9 +547,9 @@
     -24.5,
     -23.5,
     -22.5,
-    -11.5,
-    -10.5,
-    -9.5
+    -19.5,
+    -18.5,
+    -17.5
    ],
    "outcomes": [
     "1",
@@ -554,7 +566,7 @@
    "nome": "Kills - Over Under Team 1 First Map",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 38,
+   "linhas": 67,
    "handicaps": [
     8.5,
     10.5,
@@ -569,11 +581,16 @@
     20.5
    ],
    "outcomes": [
-    "Over",
-    "Under"
+    "185008",
+    "185009",
+    "185011",
+    "185013",
+    "185014",
+    "185015"
    ],
    "casas": [
     "blaze",
+    "pinnacle",
     "superbet"
    ],
    "chaves": [
@@ -584,7 +601,7 @@
    "nome": "Kills - Over Under Team 1 Second Map",
    "periodo": "p2",
    "jogador": false,
-   "linhas": 38,
+   "linhas": 67,
    "handicaps": [
     8.5,
     10.5,
@@ -599,11 +616,52 @@
     20.5
    ],
    "outcomes": [
-    "Over",
-    "Under"
+    "185109",
+    "185113",
+    "185114",
+    "185115",
+    "185116",
+    "185118"
    ],
    "casas": [
     "blaze",
+    "pinnacle",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under Team 2 Second Map",
+   "periodo": "p2",
+   "jogador": false,
+   "linhas": 66,
+   "handicaps": [
+    5.5,
+    6.5,
+    7.5,
+    8.5,
+    9.5,
+    10.5,
+    11.5,
+    12.5,
+    13.5,
+    14.5,
+    15.5,
+    16.5
+   ],
+   "outcomes": [
+    "184595",
+    "184596",
+    "184597",
+    "184598",
+    "184600",
+    "184601"
+   ],
+   "casas": [
+    "blaze",
+    "pinnacle",
     "superbet"
    ],
    "chaves": [
@@ -614,7 +672,7 @@
    "nome": "First Map Winner (incl. overtime)",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 36,
+   "linhas": 57,
    "handicaps": [
     0.0
    ],
@@ -627,6 +685,7 @@
     "bet365-nj",
     "betano",
     "blaze",
+    "pinnacle",
     "polymarket",
     "stake",
     "superbet"
@@ -639,7 +698,7 @@
    "nome": "Second Map Winner (incl. overtime)",
    "periodo": "p2",
    "jogador": false,
-   "linhas": 36,
+   "linhas": 57,
    "handicaps": [
     0.0
    ],
@@ -652,6 +711,7 @@
     "bet365-nj",
     "betano",
     "blaze",
+    "pinnacle",
     "polymarket",
     "stake",
     "superbet"
@@ -664,7 +724,7 @@
    "nome": "Third Map Winner (incl. overtime)",
    "periodo": "p3",
    "jogador": false,
-   "linhas": 36,
+   "linhas": 57,
    "handicaps": [
     0.0
    ],
@@ -677,6 +737,7 @@
     "bet365-nj",
     "betano",
     "blaze",
+    "pinnacle",
     "polymarket",
     "stake",
     "superbet"
@@ -689,7 +750,7 @@
    "nome": "Winner",
    "periodo": "result",
    "jogador": false,
-   "linhas": 36,
+   "linhas": 57,
    "handicaps": [
     0.0
    ],
@@ -702,6 +763,7 @@
     "bet365-nj",
     "betano",
     "blaze",
+    "pinnacle",
     "polymarket",
     "stake",
     "superbet"
@@ -714,7 +776,7 @@
    "nome": "First Baron First Map",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 34,
+   "linhas": 51,
    "handicaps": [
     0.0
    ],
@@ -738,7 +800,7 @@
    "nome": "First Blood First Map",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 34,
+   "linhas": 51,
    "handicaps": [
     0.0
    ],
@@ -762,7 +824,7 @@
    "nome": "First Inhibitor First Map",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 32,
+   "linhas": 48,
    "handicaps": [
     0.0
    ],
@@ -785,7 +847,7 @@
    "nome": "First Baron Second Map",
    "periodo": "p2",
    "jogador": false,
-   "linhas": 28,
+   "linhas": 42,
    "handicaps": [
     0.0
    ],
@@ -807,7 +869,7 @@
    "nome": "First Baron Third Map",
    "periodo": "p3",
    "jogador": false,
-   "linhas": 28,
+   "linhas": 42,
    "handicaps": [
     0.0
    ],
@@ -829,7 +891,7 @@
    "nome": "First Blood Second Map",
    "periodo": "p2",
    "jogador": false,
-   "linhas": 28,
+   "linhas": 42,
    "handicaps": [
     0.0
    ],
@@ -851,7 +913,7 @@
    "nome": "First Blood Third Map",
    "periodo": "p3",
    "jogador": false,
-   "linhas": 28,
+   "linhas": 42,
    "handicaps": [
     0.0
    ],
@@ -870,25 +932,22 @@
    ]
   },
   {
-   "nome": "Turrets - Over Under First Map",
-   "periodo": "p1",
+   "nome": "Fourth Map Winner (incl. overtime)",
+   "periodo": "p4",
    "jogador": false,
-   "linhas": 28,
+   "linhas": 40,
    "handicaps": [
-    9.5,
-    10.5,
-    11.5,
-    12.5,
-    13.5
+    0.0
    ],
    "outcomes": [
-    "Over",
-    "Under"
+    "1",
+    "2"
    ],
    "casas": [
-    "bet365",
-    "bet365-nj",
+    "betano",
     "blaze",
+    "pinnacle",
+    "polymarket",
     "stake",
     "superbet"
    ],
@@ -900,7 +959,7 @@
    "nome": "Correct Map Score",
    "periodo": "result",
    "jogador": false,
-   "linhas": 26,
+   "linhas": 39,
    "handicaps": [
     0.0
    ],
@@ -925,7 +984,7 @@
    "nome": "First Inhibitor Fifth Map",
    "periodo": "p5",
    "jogador": false,
-   "linhas": 26,
+   "linhas": 39,
    "handicaps": [
     0.0
    ],
@@ -946,7 +1005,7 @@
    "nome": "First Inhibitor Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 26,
+   "linhas": 39,
    "handicaps": [
     0.0
    ],
@@ -967,7 +1026,7 @@
    "nome": "First Inhibitor Second Map",
    "periodo": "p2",
    "jogador": false,
-   "linhas": 26,
+   "linhas": 39,
    "handicaps": [
     0.0
    ],
@@ -988,7 +1047,7 @@
    "nome": "First Inhibitor Third Map",
    "periodo": "p3",
    "jogador": false,
-   "linhas": 26,
+   "linhas": 39,
    "handicaps": [
     0.0
    ],
@@ -1009,7 +1068,7 @@
    "nome": "Kills - Odd Even First Map",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 26,
+   "linhas": 39,
    "handicaps": [
     0.0
    ],
@@ -1030,7 +1089,7 @@
    "nome": "Kills - Odd Even Second Map",
    "periodo": "p2",
    "jogador": false,
-   "linhas": 26,
+   "linhas": 39,
    "handicaps": [
     0.0
    ],
@@ -1051,7 +1110,7 @@
    "nome": "Kills - Odd Even Third Map",
    "periodo": "p3",
    "jogador": false,
-   "linhas": 26,
+   "linhas": 39,
    "handicaps": [
     0.0
    ],
@@ -1069,10 +1128,37 @@
    ]
   },
   {
-   "nome": "Fourth Map Winner (incl. overtime)",
-   "periodo": "p4",
+   "nome": "Turrets - Over Under First Map",
+   "periodo": "p1",
    "jogador": false,
-   "linhas": 24,
+   "linhas": 39,
+   "handicaps": [
+    9.5,
+    10.5,
+    11.5,
+    12.5,
+    13.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "bet365",
+    "bet365-nj",
+    "blaze",
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Fifth Map Winner (incl. overtime)",
+   "periodo": "p5",
+   "jogador": false,
+   "linhas": 37,
    "handicaps": [
     0.0
    ],
@@ -1083,8 +1169,9 @@
    "casas": [
     "betano",
     "blaze",
-    "polymarket",
-    "stake"
+    "pinnacle",
+    "stake",
+    "superbet"
    ],
    "chaves": [
     "0:None"
@@ -1094,7 +1181,7 @@
    "nome": "Kills - Odd Even Fifth Map",
    "periodo": "p5",
    "jogador": false,
-   "linhas": 23,
+   "linhas": 36,
    "handicaps": [
     0.0
    ],
@@ -1115,7 +1202,7 @@
    "nome": "Kills - Odd Even Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 23,
+   "linhas": 36,
    "handicaps": [
     0.0
    ],
@@ -1133,31 +1220,10 @@
    ]
   },
   {
-   "nome": "Fifth Map Winner (incl. overtime)",
-   "periodo": "p5",
-   "jogador": false,
-   "linhas": 22,
-   "handicaps": [
-    0.0
-   ],
-   "outcomes": [
-    "1",
-    "2"
-   ],
-   "casas": [
-    "betano",
-    "blaze",
-    "stake"
-   ],
-   "chaves": [
-    "0:None"
-   ]
-  },
-  {
    "nome": "First Baron Fifth Map",
    "periodo": "p5",
    "jogador": false,
-   "linhas": 22,
+   "linhas": 33,
    "handicaps": [
     0.0
    ],
@@ -1178,7 +1244,7 @@
    "nome": "First Baron Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 22,
+   "linhas": 33,
    "handicaps": [
     0.0
    ],
@@ -1199,7 +1265,7 @@
    "nome": "First Blood Fifth Map",
    "periodo": "p5",
    "jogador": false,
-   "linhas": 22,
+   "linhas": 33,
    "handicaps": [
     0.0
    ],
@@ -1220,7 +1286,7 @@
    "nome": "First Blood Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 22,
+   "linhas": 33,
    "handicaps": [
     0.0
    ],
@@ -1241,7 +1307,7 @@
    "nome": "Turrets - Over Under Second Map",
    "periodo": "p2",
    "jogador": false,
-   "linhas": 22,
+   "linhas": 30,
    "handicaps": [
     9.5,
     10.5,
@@ -1266,7 +1332,7 @@
    "nome": "Turrets - Over Under Third Map",
    "periodo": "p3",
    "jogador": false,
-   "linhas": 22,
+   "linhas": 30,
    "handicaps": [
     9.5,
     10.5,
@@ -1291,7 +1357,7 @@
    "nome": "Kills - Over Under Team 2 Fifth Map",
    "periodo": "p5",
    "jogador": false,
-   "linhas": 15,
+   "linhas": 26,
    "handicaps": [
     6.5,
     7.5,
@@ -1307,11 +1373,16 @@
     17.5
    ],
    "outcomes": [
-    "Over",
-    "Under"
+    "184901",
+    "184902",
+    "184903",
+    "184904",
+    "184905",
+    "184906"
    ],
    "casas": [
     "blaze",
+    "pinnacle",
     "superbet"
    ],
    "chaves": [
@@ -1322,7 +1393,7 @@
    "nome": "Kills - Over Under Team 2 Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 15,
+   "linhas": 26,
    "handicaps": [
     6.5,
     7.5,
@@ -1338,34 +1409,16 @@
     17.5
    ],
    "outcomes": [
-    "Over",
-    "Under"
+    "184799",
+    "184800",
+    "184801",
+    "184802",
+    "184804",
+    "184805"
    ],
    "casas": [
     "blaze",
-    "superbet"
-   ],
-   "chaves": [
-    "0:None"
-   ]
-  },
-  {
-   "nome": "Turrets - Handicap First Map",
-   "periodo": "p1",
-   "jogador": false,
-   "linhas": 15,
-   "handicaps": [
-    -7.5,
-    -6.5,
-    2.5
-   ],
-   "outcomes": [
-    "1",
-    "2"
-   ],
-   "casas": [
-    "bet365",
-    "bet365-nj",
+    "pinnacle",
     "superbet"
    ],
    "chaves": [
@@ -1376,7 +1429,7 @@
    "nome": "Kills - Over Under Team 1 Fifth Map",
    "periodo": "p5",
    "jogador": false,
-   "linhas": 14,
+   "linhas": 24,
    "handicaps": [
     10.5,
     11.5,
@@ -1388,11 +1441,16 @@
     17.5
    ],
    "outcomes": [
-    "Over",
-    "Under"
+    "185417",
+    "185421",
+    "185422",
+    "185425",
+    "185426",
+    "Over"
    ],
    "casas": [
     "blaze",
+    "pinnacle",
     "superbet"
    ],
    "chaves": [
@@ -1403,7 +1461,7 @@
    "nome": "Kills - Over Under Team 1 Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 14,
+   "linhas": 24,
    "handicaps": [
     10.5,
     11.5,
@@ -1415,11 +1473,16 @@
     17.5
    ],
    "outcomes": [
-    "Over",
-    "Under"
+    "185313",
+    "185316",
+    "185318",
+    "185319",
+    "185320",
+    "185321"
    ],
    "casas": [
     "blaze",
+    "pinnacle",
     "superbet"
    ],
    "chaves": [
@@ -1430,7 +1493,7 @@
    "nome": "Race To Kills Fifth Map",
    "periodo": "p5",
    "jogador": false,
-   "linhas": 14,
+   "linhas": 21,
    "handicaps": [
     5.0,
     10.0,
@@ -1453,7 +1516,7 @@
    "nome": "Race To Kills First Map",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 14,
+   "linhas": 21,
    "handicaps": [
     5.0,
     10.0,
@@ -1476,7 +1539,7 @@
    "nome": "Race To Kills Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 14,
+   "linhas": 21,
    "handicaps": [
     5.0,
     10.0,
@@ -1499,7 +1562,7 @@
    "nome": "Race To Kills Second Map",
    "periodo": "p2",
    "jogador": false,
-   "linhas": 14,
+   "linhas": 21,
    "handicaps": [
     5.0,
     10.0,
@@ -1522,7 +1585,7 @@
    "nome": "Race To Kills Third Map",
    "periodo": "p3",
    "jogador": false,
-   "linhas": 14,
+   "linhas": 21,
    "handicaps": [
     5.0,
     10.0,
@@ -1542,10 +1605,57 @@
    ]
   },
   {
+   "nome": "Barons - Over Under First Map",
+   "periodo": "p1",
+   "jogador": false,
+   "linhas": 18,
+   "handicaps": [
+    1.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "bet365",
+    "bet365-nj",
+    "blaze",
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Turrets - Handicap First Map",
+   "periodo": "p1",
+   "jogador": false,
+   "linhas": 18,
+   "handicaps": [
+    -7.5,
+    -6.5,
+    2.5,
+    3.5
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "bet365",
+    "bet365-nj",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
    "nome": "Turrets - Over Under Fifth Map",
    "periodo": "p5",
    "jogador": false,
-   "linhas": 13,
+   "linhas": 17,
    "handicaps": [
     10.5,
     11.5,
@@ -1568,7 +1678,7 @@
    "nome": "Turrets - Over Under Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 13,
+   "linhas": 17,
    "handicaps": [
     10.5,
     11.5,
@@ -1588,33 +1698,10 @@
    ]
   },
   {
-   "nome": "Barons - Over Under First Map",
-   "periodo": "p1",
-   "jogador": false,
-   "linhas": 12,
-   "handicaps": [
-    1.5
-   ],
-   "outcomes": [
-    "Over",
-    "Under"
-   ],
-   "casas": [
-    "bet365",
-    "bet365-nj",
-    "blaze",
-    "stake",
-    "superbet"
-   ],
-   "chaves": [
-    "0:None"
-   ]
-  },
-  {
    "nome": "Dragons - Over Under First Map",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 10,
+   "linhas": 15,
    "handicaps": [
     4.5
    ],
@@ -1636,7 +1723,7 @@
    "nome": "Inhibitors - Over Under First Map",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 10,
+   "linhas": 15,
    "handicaps": [
     1.5
    ],
@@ -1658,7 +1745,7 @@
    "nome": "Barons - Over Under Fifth Map",
    "periodo": "p5",
    "jogador": false,
-   "linhas": 6,
+   "linhas": 9,
    "handicaps": [
     1.5
    ],
@@ -1679,7 +1766,7 @@
    "nome": "Barons - Over Under Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 6,
+   "linhas": 9,
    "handicaps": [
     1.5
    ],
@@ -1700,7 +1787,7 @@
    "nome": "Barons - Over Under Second Map",
    "periodo": "p2",
    "jogador": false,
-   "linhas": 6,
+   "linhas": 9,
    "handicaps": [
     1.5
    ],
@@ -1721,7 +1808,7 @@
    "nome": "Barons - Over Under Third Map",
    "periodo": "p3",
    "jogador": false,
-   "linhas": 6,
+   "linhas": 9,
    "handicaps": [
     1.5
    ],
@@ -1742,7 +1829,7 @@
    "nome": "Dragons - Handicap First Map",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 6,
+   "linhas": 9,
    "handicaps": [
     -1.5,
     0.5
@@ -1754,6 +1841,126 @@
    "casas": [
     "bet365",
     "bet365-nj"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Dragons - Over Under Fifth Map",
+   "periodo": "p5",
+   "jogador": false,
+   "linhas": 6,
+   "handicaps": [
+    4.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Dragons - Over Under Fourth Map",
+   "periodo": "p4",
+   "jogador": false,
+   "linhas": 6,
+   "handicaps": [
+    4.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Dragons - Over Under Second Map",
+   "periodo": "p2",
+   "jogador": false,
+   "linhas": 6,
+   "handicaps": [
+    4.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Dragons - Over Under Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 6,
+   "handicaps": [
+    4.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Inhibitors - Over Under Second Map",
+   "periodo": "p2",
+   "jogador": false,
+   "linhas": 6,
+   "handicaps": [
+    1.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "blaze",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Inhibitors - Over Under Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 6,
+   "handicaps": [
+    1.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "blaze",
+    "superbet"
    ],
    "chaves": [
     "0:None"
@@ -1800,130 +2007,10 @@
    ]
   },
   {
-   "nome": "Dragons - Over Under Fifth Map",
-   "periodo": "p5",
-   "jogador": false,
-   "linhas": 4,
-   "handicaps": [
-    4.5
-   ],
-   "outcomes": [
-    "Over",
-    "Under"
-   ],
-   "casas": [
-    "stake",
-    "superbet"
-   ],
-   "chaves": [
-    "0:None"
-   ]
-  },
-  {
-   "nome": "Dragons - Over Under Fourth Map",
-   "periodo": "p4",
-   "jogador": false,
-   "linhas": 4,
-   "handicaps": [
-    4.5
-   ],
-   "outcomes": [
-    "Over",
-    "Under"
-   ],
-   "casas": [
-    "stake",
-    "superbet"
-   ],
-   "chaves": [
-    "0:None"
-   ]
-  },
-  {
-   "nome": "Dragons - Over Under Second Map",
-   "periodo": "p2",
-   "jogador": false,
-   "linhas": 4,
-   "handicaps": [
-    4.5
-   ],
-   "outcomes": [
-    "Over",
-    "Under"
-   ],
-   "casas": [
-    "stake",
-    "superbet"
-   ],
-   "chaves": [
-    "0:None"
-   ]
-  },
-  {
-   "nome": "Dragons - Over Under Third Map",
-   "periodo": "p3",
-   "jogador": false,
-   "linhas": 4,
-   "handicaps": [
-    4.5
-   ],
-   "outcomes": [
-    "Over",
-    "Under"
-   ],
-   "casas": [
-    "stake",
-    "superbet"
-   ],
-   "chaves": [
-    "0:None"
-   ]
-  },
-  {
-   "nome": "Inhibitors - Over Under Second Map",
-   "periodo": "p2",
-   "jogador": false,
-   "linhas": 4,
-   "handicaps": [
-    1.5
-   ],
-   "outcomes": [
-    "Over",
-    "Under"
-   ],
-   "casas": [
-    "blaze",
-    "superbet"
-   ],
-   "chaves": [
-    "0:None"
-   ]
-  },
-  {
-   "nome": "Inhibitors - Over Under Third Map",
-   "periodo": "p3",
-   "jogador": false,
-   "linhas": 4,
-   "handicaps": [
-    1.5
-   ],
-   "outcomes": [
-    "Over",
-    "Under"
-   ],
-   "casas": [
-    "blaze",
-    "superbet"
-   ],
-   "chaves": [
-    "0:None"
-   ]
-  },
-  {
    "nome": "Inhibitors - Over Under Fifth Map",
    "periodo": "p5",
    "jogador": false,
-   "linhas": 3,
+   "linhas": 5,
    "handicaps": [
     1.5
    ],
@@ -1943,7 +2030,7 @@
    "nome": "Inhibitors - Over Under Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 3,
+   "linhas": 5,
    "handicaps": [
     1.5
    ],
@@ -1963,7 +2050,7 @@
    "nome": "Penta Kill Fifth Map",
    "periodo": "p5",
    "jogador": false,
-   "linhas": 2,
+   "linhas": 3,
    "handicaps": [
     0.0
    ],
@@ -1981,7 +2068,7 @@
    "nome": "Penta Kill First Map",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 2,
+   "linhas": 3,
    "handicaps": [
     0.0
    ],
@@ -1999,7 +2086,7 @@
    "nome": "Penta Kill Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 2,
+   "linhas": 3,
    "handicaps": [
     0.0
    ],
@@ -2017,7 +2104,7 @@
    "nome": "Penta Kill Second Map",
    "periodo": "p2",
    "jogador": false,
-   "linhas": 2,
+   "linhas": 3,
    "handicaps": [
     0.0
    ],
@@ -2035,7 +2122,7 @@
    "nome": "Penta Kill Third Map",
    "periodo": "p3",
    "jogador": false,
-   "linhas": 2,
+   "linhas": 3,
    "handicaps": [
     0.0
    ],
@@ -2053,7 +2140,7 @@
    "nome": "Quadra Kill Fifth Map",
    "periodo": "p5",
    "jogador": false,
-   "linhas": 2,
+   "linhas": 3,
    "handicaps": [
     0.0
    ],
@@ -2071,7 +2158,7 @@
    "nome": "Quadra Kill First Map",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 2,
+   "linhas": 3,
    "handicaps": [
     0.0
    ],
@@ -2089,7 +2176,7 @@
    "nome": "Quadra Kill Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 2,
+   "linhas": 3,
    "handicaps": [
     0.0
    ],
@@ -2107,7 +2194,7 @@
    "nome": "Quadra Kill Second Map",
    "periodo": "p2",
    "jogador": false,
-   "linhas": 2,
+   "linhas": 3,
    "handicaps": [
     0.0
    ],
@@ -2125,7 +2212,7 @@
    "nome": "Quadra Kill Third Map",
    "periodo": "p3",
    "jogador": false,
-   "linhas": 2,
+   "linhas": 3,
    "handicaps": [
     0.0
    ],
@@ -2134,6 +2221,101 @@
    ],
    "casas": [
     "stake"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Draw No Bet First Map",
+   "periodo": "p1",
+   "jogador": false,
+   "linhas": 2,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "pinnacle"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Draw No Bet Second Map",
+   "periodo": "p2",
+   "jogador": false,
+   "linhas": 2,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "pinnacle"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Draw No Bet Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 2,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "pinnacle"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Draw No Bet Fifth Map",
+   "periodo": "p5",
+   "jogador": false,
+   "linhas": 1,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "pinnacle"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Draw No Bet Fourth Map",
+   "periodo": "p4",
+   "jogador": false,
+   "linhas": 1,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "pinnacle"
    ],
    "chaves": [
     "0:None"
