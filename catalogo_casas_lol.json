@@ -1,5 +1,5 @@
 {
- "lido_em": "2026-11-04T11:38:16+00:00",
+ "lido_em": "2026-11-04T20:06:36+00:00",
  "mercados": [
   {
    "nome": "Kills - Over Under First Map",
@@ -176,7 +176,7 @@
    "nome": "Kills - Handicap First Map",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 189,
+   "linhas": 192,
    "handicaps": [
     -13.5,
     -12.5,
@@ -211,7 +211,7 @@
    "nome": "Kills - Handicap Third Map",
    "periodo": "p3",
    "jogador": false,
-   "linhas": 171,
+   "linhas": 172,
    "handicaps": [
     -14.5,
     -13.5,
@@ -479,7 +479,7 @@
    "nome": "Kills - Over Under",
    "periodo": "result",
    "jogador": false,
-   "linhas": 75,
+   "linhas": 76,
    "handicaps": [
     73.5,
     74.5,
@@ -662,10 +662,10 @@
    ]
   },
   {
-   "nome": "Kills - Over Under Team 1 Third Map",
-   "periodo": "p3",
+   "nome": "Kills - Over Under Team 1 First Map",
+   "periodo": "p1",
    "jogador": false,
-   "linhas": 63,
+   "linhas": 65,
    "handicaps": [
     10.5,
     11.5,
@@ -679,12 +679,12 @@
     20.5
    ],
    "outcomes": [
-    "185212",
-    "185216",
-    "185217",
-    "185218",
-    "185219",
-    "185220"
+    "185007",
+    "185008",
+    "185009",
+    "185010",
+    "185011",
+    "185012"
    ],
    "casas": [
     "blaze",
@@ -696,8 +696,42 @@
    ]
   },
   {
-   "nome": "Kills - Over Under Team 1 First Map",
-   "periodo": "p1",
+   "nome": "Kills - Over Under Team 1 Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 65,
+   "handicaps": [
+    10.5,
+    11.5,
+    12.5,
+    13.5,
+    14.5,
+    15.5,
+    16.5,
+    17.5,
+    18.5,
+    20.5
+   ],
+   "outcomes": [
+    "185211",
+    "185212",
+    "185213",
+    "185214",
+    "185215",
+    "185216"
+   ],
+   "casas": [
+    "blaze",
+    "pinnacle",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under Team 1 Second Map",
+   "periodo": "p2",
    "jogador": false,
    "linhas": 61,
    "handicaps": [
@@ -713,46 +747,12 @@
     20.5
    ],
    "outcomes": [
-    "185008",
-    "185009",
-    "185011",
-    "185013",
-    "185014",
-    "185015"
-   ],
-   "casas": [
-    "blaze",
-    "pinnacle",
-    "superbet"
-   ],
-   "chaves": [
-    "0:None"
-   ]
-  },
-  {
-   "nome": "Kills - Over Under Team 1 Second Map",
-   "periodo": "p2",
-   "jogador": false,
-   "linhas": 60,
-   "handicaps": [
-    10.5,
-    11.5,
-    12.5,
-    13.5,
-    14.5,
-    15.5,
-    16.5,
-    17.5,
-    18.5,
-    20.5
-   ],
-   "outcomes": [
     "185109",
+    "185110",
+    "185111",
+    "185112",
     "185113",
-    "185114",
-    "185115",
-    "185116",
-    "185118"
+    "185114"
    ],
    "casas": [
     "blaze",
@@ -767,8 +767,9 @@
    "nome": "Kills - Handicap",
    "periodo": "result",
    "jogador": false,
-   "linhas": 50,
+   "linhas": 51,
    "handicaps": [
+    -31.5,
     -30.5,
     -29.5,
     -28.5,
@@ -779,8 +780,7 @@
     -23.5,
     -22.5,
     -21.5,
-    -20.5,
-    -19.5
+    -20.5
    ],
    "outcomes": [
     "1",
@@ -1603,7 +1603,7 @@
    "nome": "Kills - Over Under Team 1 Fifth Map",
    "periodo": "p5",
    "jogador": false,
-   "linhas": 22,
+   "linhas": 23,
    "handicaps": [
     11.5,
     12.5,
@@ -1611,15 +1611,16 @@
     14.5,
     15.5,
     16.5,
-    17.5
+    17.5,
+    18.5
    ],
    "outcomes": [
+    "185415",
+    "185416",
     "185417",
-    "185421",
-    "185422",
-    "185425",
-    "185426",
-    "Over"
+    "185418",
+    "185419",
+    "185420"
    ],
    "casas": [
     "blaze",
@@ -1634,7 +1635,7 @@
    "nome": "Kills - Over Under Team 1 Fourth Map",
    "periodo": "p4",
    "jogador": false,
-   "linhas": 22,
+   "linhas": 23,
    "handicaps": [
     11.5,
     12.5,
@@ -1642,15 +1643,16 @@
     14.5,
     15.5,
     16.5,
-    17.5
+    17.5,
+    18.5
    ],
    "outcomes": [
     "185313",
+    "185314",
+    "185315",
     "185316",
-    "185318",
-    "185319",
-    "185320",
-    "185321"
+    "185317",
+    "185318"
    ],
    "casas": [
     "blaze",
