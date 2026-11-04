@@ -1,5 +1,5 @@
 {
- "coletado_em": "2026-11-03T19:47:05+00:00",
+ "coletado_em": "2026-11-04T00:51:41+00:00",
  "fonte": "https://gamma-api.polymarket.com/events?tag_id=65",
  "partidas": [
   {
@@ -9,7 +9,7 @@
    "p_b": 0.23,
    "fonte_preco": "meio_do_livro",
    "spread": 0.36,
-   "liquidez": 256.9114,
+   "liquidez": 251.8114,
    "volume": 1041.681754,
    "bo": 5,
    "torneio": "LCP Promotion Playoffs",
@@ -23,8 +23,8 @@
    "p_b": 0.585,
    "fonte_preco": "meio_do_livro",
    "spread": 0.01,
-   "liquidez": 179511.064,
-   "volume": 109974.63222600002,
+   "liquidez": 178493.6077,
+   "volume": 112802.09099,
    "bo": 5,
    "torneio": "Worlds Playoffs",
    "inicio_utc": "2026-11-05 22:00:00+00",
@@ -37,8 +37,8 @@
    "p_b": 0.815,
    "fonte_preco": "meio_do_livro",
    "spread": 0.01,
-   "liquidez": 125532.404,
-   "volume": 69758.46846,
+   "liquidez": 132572.4732,
+   "volume": 71849.737626,
    "bo": 5,
    "torneio": "Worlds Playoffs",
    "inicio_utc": "2026-11-06 22:00:00+00",
@@ -47,30 +47,16 @@
   {
    "time_a": "Gen.G",
    "time_b": "LYON",
-   "p_a": 0.915,
-   "p_b": 0.085,
+   "p_a": 0.905,
+   "p_b": 0.095,
    "fonte_preco": "meio_do_livro",
    "spread": 0.01,
-   "liquidez": 109113.8879,
-   "volume": 81639.86796999999,
+   "liquidez": 263009.4057,
+   "volume": 111083.743481,
    "bo": 5,
    "torneio": "Worlds Playoffs",
    "inicio_utc": "2026-11-04 22:00:00+00",
    "evento": "lol-gen-ly-2026-11-05"
-  },
-  {
-   "time_a": "Top Esports",
-   "time_b": "Invictus Gaming",
-   "p_a": 0.445,
-   "p_b": 0.555,
-   "fonte_preco": "meio_do_livro",
-   "spread": 0.01,
-   "liquidez": 975441.6081,
-   "volume": 1030442.529077,
-   "bo": 5,
-   "torneio": "Worlds Playoffs",
-   "inicio_utc": "2026-11-03 22:00:00+00",
-   "evento": "lol-tes-ig1-2026-11-06"
   }
  ]
 }
