@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-11-04T15:50:16-03:00",
+  "gerado_em": "2026-11-04T22:01:53-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 69,
+    "ja_jogados": 70,
     "passados": 0,
-    "indefinidos": 5,
+    "indefinidos": 4,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "04/11",
-      "time": "19:00",
-      "league": "Mundial",
-      "teamA_raw": "Gen.G Esports",
-      "teamB_raw": "LYON",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-11-04T22:00:00Z"
-    },
     {
       "date": "05/11",
       "time": "19:00",
@@ -39,6 +29,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-11-06T22:00:00Z"
+    },
+    {
+      "date": "07/11",
+      "time": "19:00",
+      "league": "Mundial",
+      "teamA_raw": "Gen.G Esports",
+      "teamB_raw": "Invictus Gaming",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-11-07T22:00:00Z"
     },
     {
       "date": "10/11",
