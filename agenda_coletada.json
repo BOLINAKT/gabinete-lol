@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-11-05T15:56:46-03:00",
+  "gerado_em": "2026-11-05T22:06:04-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 70,
+    "ja_jogados": 71,
     "passados": 0,
     "indefinidos": 4,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "05/11",
-      "time": "19:00",
-      "league": "Mundial",
-      "teamA_raw": "Dplus KIA",
-      "teamB_raw": "BILIBILI GAMING",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-11-05T22:00:00Z"
-    },
     {
       "date": "06/11",
       "time": "19:00",
