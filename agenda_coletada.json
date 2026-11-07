@@ -1,13 +1,13 @@
 {
-  "gerado_em": "2026-11-07T13:59:32-03:00",
+  "gerado_em": "2026-11-07T18:04:12-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 72,
+    "ja_jogados": 71,
     "passados": 0,
     "indefinidos": 3,
-    "sem_dois_times": 0
+    "sem_dois_times": 1
   },
   "jogos": [
     {
