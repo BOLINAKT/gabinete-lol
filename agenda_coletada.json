@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-11-06T21:16:56-03:00",
+  "gerado_em": "2026-11-07T06:11:03-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 71,
+    "ja_jogados": 72,
     "passados": 0,
-    "indefinidos": 4,
+    "indefinidos": 3,
     "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "06/11",
-      "time": "19:00",
-      "league": "Mundial",
-      "teamA_raw": "T1",
-      "teamB_raw": "Karmine Corp",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-11-06T22:00:00Z"
-    },
     {
       "date": "07/11",
       "time": "19:00",
@@ -29,6 +19,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-11-07T22:00:00Z"
+    },
+    {
+      "date": "08/11",
+      "time": "19:00",
+      "league": "Mundial",
+      "teamA_raw": "T1",
+      "teamB_raw": "BILIBILI GAMING",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-11-08T22:00:00Z"
     },
     {
       "date": "10/11",
