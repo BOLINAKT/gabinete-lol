@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-11-07T18:04:12-03:00",
+  "gerado_em": "2026-11-07T23:40:29-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 71,
+    "ja_jogados": 73,
     "passados": 0,
     "indefinidos": 3,
-    "sem_dois_times": 1
+    "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "07/11",
-      "time": "19:00",
-      "league": "Mundial",
-      "teamA_raw": "Gen.G Esports",
-      "teamB_raw": "Invictus Gaming",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-11-07T22:00:00Z"
-    },
     {
       "date": "08/11",
       "time": "19:00",
