@@ -1,7 +1,7 @@
 {
- "gerado_em": "2026-11-02T18:38:44",
+ "gerado_em": "2026-11-09T19:01:04",
  "season": 2026,
- "nota_geral": 8.3,
+ "nota_geral": 8.28,
  "min_n": 80,
  "ligas": [
   {
@@ -17,10 +17,10 @@
    "liga": "CBLOL",
    "tier": "T2",
    "n": 275,
-   "nota": 6.52,
-   "logloss": 0.6448,
+   "nota": 6.59,
+   "logloss": 0.6425,
    "acuracia": 0.676,
-   "ece": 0.117
+   "ece": 0.115
   },
   {
    "liga": "CD",
@@ -53,10 +53,10 @@
    "liga": "EWC",
    "tier": "T1",
    "n": 232,
-   "nota": 7.23,
-   "logloss": 0.6222,
-   "acuracia": 0.625,
-   "ece": 0.046
+   "nota": 7.21,
+   "logloss": 0.6227,
+   "acuracia": 0.647,
+   "ece": 0.05
   },
   {
    "liga": "HC",
@@ -97,10 +97,10 @@
   {
    "liga": "LAS",
    "tier": "MINOR",
-   "n": 549,
-   "nota": 9.95,
-   "logloss": 0.5355,
-   "acuracia": 0.738,
+   "n": 558,
+   "nota": 9.74,
+   "logloss": 0.5424,
+   "acuracia": 0.717,
    "ece": 0.041
   },
   {
@@ -108,9 +108,9 @@
    "tier": "T1",
    "n": 502,
    "nota": 6.3,
-   "logloss": 0.6519,
-   "acuracia": 0.612,
-   "ece": 0.063
+   "logloss": 0.6518,
+   "acuracia": 0.6,
+   "ece": 0.075
   },
   {
    "liga": "LCKC",
@@ -134,19 +134,19 @@
    "liga": "LCS",
    "tier": "T2",
    "n": 260,
-   "nota": 7.89,
-   "logloss": 0.6012,
-   "acuracia": 0.685,
-   "ece": 0.059
+   "nota": 7.87,
+   "logloss": 0.6018,
+   "acuracia": 0.658,
+   "ece": 0.06
   },
   {
    "liga": "LEC",
    "tier": "T1",
    "n": 383,
-   "nota": 7.43,
-   "logloss": 0.6159,
+   "nota": 7.38,
+   "logloss": 0.6173,
    "acuracia": 0.666,
-   "ece": 0.054
+   "ece": 0.056
   },
   {
    "liga": "LES",
@@ -188,10 +188,10 @@
    "liga": "LPL",
    "tier": "T1",
    "n": 674,
-   "nota": 6.02,
-   "logloss": 0.6608,
-   "acuracia": 0.617,
-   "ece": 0.036
+   "nota": 5.96,
+   "logloss": 0.6626,
+   "acuracia": 0.616,
+   "ece": 0.037
   },
   {
    "liga": "LPLOL",
@@ -300,6 +300,15 @@
    "logloss": 0.6324,
    "acuracia": 0.606,
    "ece": 0.079
+  },
+  {
+   "liga": "WLDs",
+   "tier": "T1",
+   "n": 92,
+   "nota": 8.26,
+   "logloss": 0.5893,
+   "acuracia": 0.696,
+   "ece": 0.115
   },
   {
    "liga": "WSCI",
