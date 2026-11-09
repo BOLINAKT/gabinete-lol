@@ -1,53 +1,46 @@
 {
- "gerado_em": "2026-11-02T18:38:55",
+ "gerado_em": "2026-11-09T19:01:14",
  "reguas": [
-  {
-   "arquivo": "frescor.json",
-   "rotulo": "esta propria varredura",
-   "cadencia_dias": 7,
-   "idade_dias": 57.7,
-   "estado": "VELHA"
-  },
   {
    "arquivo": "cadencia_calibrador.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 17.3,
+   "idade_dias": 24.3,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "gate_calibrador_tier.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 17.3,
+   "idade_dias": 24.3,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "regua_pinnacle_handicap_kills.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 5.9,
+   "idade_dias": 6.9,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "regua_pinnacle_polymarket.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 5.9,
+   "idade_dias": 6.9,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "regua_pinnacle_total_kills.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 5.9,
+   "idade_dias": 6.9,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "regua_pinnacle_vencedor.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 5.9,
+   "idade_dias": 6.9,
    "estado": "frequencia nao declarada"
   },
   {
@@ -105,6 +98,13 @@
    "cadencia_dias": null,
    "idade_dias": null,
    "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "frescor.json",
+   "rotulo": "esta propria varredura",
+   "cadencia_dias": 7,
+   "idade_dias": 7.0,
+   "estado": "ok"
   },
   {
    "arquivo": "code_scorecard.json",
