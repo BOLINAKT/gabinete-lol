@@ -1,25 +1,15 @@
 {
-  "gerado_em": "2026-11-08T18:20:52-03:00",
+  "gerado_em": "2026-11-08T23:56:25-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 72,
+    "ja_jogados": 74,
     "passados": 0,
-    "indefinidos": 3,
-    "sem_dois_times": 1
+    "indefinidos": 2,
+    "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "08/11",
-      "time": "19:00",
-      "league": "Mundial",
-      "teamA_raw": "T1",
-      "teamB_raw": "BILIBILI GAMING",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-11-08T22:00:00Z"
-    },
     {
       "date": "10/11",
       "time": "02:00",
@@ -49,6 +39,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-11-11T09:00:00Z"
+    },
+    {
+      "date": "14/11",
+      "time": "16:00",
+      "league": "Mundial",
+      "teamA_raw": "Gen.G Esports",
+      "teamB_raw": "BILIBILI GAMING",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-11-14T19:00:00Z"
     }
   ]
 }
