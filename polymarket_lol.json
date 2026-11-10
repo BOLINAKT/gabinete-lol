@@ -1,5 +1,5 @@
 {
- "coletado_em": "2026-11-10T04:46:09+00:00",
+ "coletado_em": "2026-11-10T13:44:17+00:00",
  "fonte": "https://gamma-api.polymarket.com/events?tag_id=65",
  "partidas": [
   {
@@ -8,41 +8,13 @@
    "p_a": 0.815,
    "p_b": 0.185,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.05,
-   "liquidez": 1923.0702,
-   "volume": 1482.4740430000002,
+   "spread": 0.03,
+   "liquidez": 3972.3079,
+   "volume": 1653.6040000000003,
    "bo": 5,
    "torneio": "LCP Promotion Playoffs",
    "inicio_utc": "2026-11-11 09:00:00+00",
    "evento": "lol-gz-fnk-2026-11-11"
-  },
-  {
-   "time_a": "FENNEL",
-   "time_b": "Nothin'Here",
-   "p_a": 0.945,
-   "p_b": 0.055,
-   "fonte_preco": "meio_do_livro",
-   "spread": 0.01,
-   "liquidez": 28280.3481,
-   "volume": 26071.717615,
-   "bo": 5,
-   "torneio": "LCP Promotion Playoffs",
-   "inicio_utc": "2026-11-10 05:00:00+00",
-   "evento": "lol-fnl-nh1-2026-11-10"
-  },
-  {
-   "time_a": "Saigon Warriors",
-   "time_b": "Gromp Esports",
-   "p_a": 0.945,
-   "p_b": 0.055,
-   "fonte_preco": "meio_do_livro",
-   "spread": 0.01,
-   "liquidez": 12140.7345,
-   "volume": 6759.602836,
-   "bo": 5,
-   "torneio": "LCP Promotion Playoffs",
-   "inicio_utc": "2026-11-10 09:00:00+00",
-   "evento": "lol-sgw-grompe-2026-11-10"
   },
   {
    "time_a": "Bilibili Gaming",
@@ -51,12 +23,26 @@
    "p_b": 0.625,
    "fonte_preco": "meio_do_livro",
    "spread": 0.01,
-   "liquidez": 915286.7649,
-   "volume": 276715.17978400004,
+   "liquidez": 1096338.9303,
+   "volume": 326709.722795,
    "bo": 5,
    "torneio": "Worlds Playoffs",
    "inicio_utc": "2026-11-14 19:00:00+00",
    "evento": "lol-blg-gen-2026-11-14"
+  },
+  {
+   "time_a": "Nothin'Here",
+   "time_b": "Saigon Warriors",
+   "p_a": 0.22,
+   "p_b": 0.78,
+   "fonte_preco": "meio_do_livro",
+   "spread": 0.32,
+   "liquidez": 1120.7194,
+   "volume": null,
+   "bo": 5,
+   "torneio": "LCP Promotion Playoffs",
+   "inicio_utc": "2026-11-12 09:00:00+00",
+   "evento": "lol-nh1-sgw-2026-11-12"
   }
  ]
 }
