@@ -1,35 +1,15 @@
 {
-  "gerado_em": "2026-11-10T01:46:42-03:00",
+  "gerado_em": "2026-11-10T10:43:59-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 73,
+    "ja_jogados": 76,
     "passados": 0,
-    "indefinidos": 2,
-    "sem_dois_times": 1
+    "indefinidos": 1,
+    "sem_dois_times": 0
   },
   "jogos": [
-    {
-      "date": "10/11",
-      "time": "02:00",
-      "league": "LCP P&R",
-      "teamA_raw": "FENNEL",
-      "teamB_raw": "Nothin'Here",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-11-10T05:00:00Z"
-    },
-    {
-      "date": "10/11",
-      "time": "06:00",
-      "league": "LCP P&R",
-      "teamA_raw": "Saigon Warrior",
-      "teamB_raw": "Team Gromp",
-      "bo": 5,
-      "estado": "unstarted",
-      "inicio_utc": "2026-11-10T09:00:00Z"
-    },
     {
       "date": "11/11",
       "time": "06:00",
@@ -39,6 +19,16 @@
       "bo": 5,
       "estado": "unstarted",
       "inicio_utc": "2026-11-11T09:00:00Z"
+    },
+    {
+      "date": "12/11",
+      "time": "06:00",
+      "league": "LCP P&R",
+      "teamA_raw": "Saigon Warrior",
+      "teamB_raw": "Nothin'Here",
+      "bo": 5,
+      "estado": "unstarted",
+      "inicio_utc": "2026-11-12T09:00:00Z"
     },
     {
       "date": "14/11",
