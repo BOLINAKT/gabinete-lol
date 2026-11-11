@@ -1,34 +1,24 @@
 {
-  "gerado_em": "2026-11-11T09:55:51-03:00",
+  "gerado_em": "2026-11-11T18:31:06-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 76,
+    "ja_jogados": 77,
     "passados": 0,
     "indefinidos": 1,
     "sem_dois_times": 0
   },
   "jogos": [
     {
-      "date": "11/11",
-      "time": "06:00",
-      "league": "LCP P&R",
-      "teamA_raw": "Frank Esports",
-      "teamB_raw": "Ground Zero Gaming",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-11-11T09:00:00Z"
-    },
-    {
       "date": "12/11",
-      "time": "06:00",
+      "time": "03:00",
       "league": "LCP P&R",
       "teamA_raw": "Saigon Warrior",
       "teamB_raw": "Nothin'Here",
       "bo": 5,
       "estado": "unstarted",
-      "inicio_utc": "2026-11-12T09:00:00Z"
+      "inicio_utc": "2026-11-12T06:00:00Z"
     },
     {
       "date": "14/11",
