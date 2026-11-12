@@ -1,24 +1,24 @@
 {
-  "gerado_em": "2026-11-12T01:07:01-03:00",
+  "gerado_em": "2026-11-12T10:57:42-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 77,
+    "ja_jogados": 78,
     "passados": 0,
-    "indefinidos": 1,
+    "indefinidos": 0,
     "sem_dois_times": 0
   },
   "jogos": [
     {
-      "date": "12/11",
+      "date": "13/11",
       "time": "03:00",
       "league": "LCP P&R",
       "teamA_raw": "Saigon Warrior",
-      "teamB_raw": "Nothin'Here",
+      "teamB_raw": "DetonatioN FocusMe",
       "bo": 5,
       "estado": "unstarted",
-      "inicio_utc": "2026-11-12T06:00:00Z"
+      "inicio_utc": "2026-11-13T06:00:00Z"
     },
     {
       "date": "14/11",
