@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-11-14T09:27:46-03:00",
+  "gerado_em": "2026-11-14T16:27:05-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
@@ -17,7 +17,7 @@
       "teamA_raw": "Gen.G Esports",
       "teamB_raw": "BILIBILI GAMING",
       "bo": 5,
-      "estado": "unstarted",
+      "estado": "inProgress",
       "inicio_utc": "2026-11-14T19:00:00Z"
     }
   ]
