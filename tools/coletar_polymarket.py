@@ -1,26 +1,30 @@
 # -*- coding: utf-8 -*-
-"""COLETOR DA POLYMARKET: preco de vencedor das partidas de LoL (23/10/2026).
+"""COLETOR DA POLYMARKET: precos das partidas de LoL e de Dota 2 (23/10/2026; Dota e os
+mercados alem do vencedor em 15/11/2026). Arquivo identico nos dois repositorios: o esporte
+sai de onde ele roda (dota_paths.py na raiz = Dota).
 
-Segunda referencia de mercado ao lado da Pinnacle, pedida por ele para a tela
-de oportunidades. Medido antes (tools/sonda_polymarket.py, rodada de 23/10 no
-robo): o LoL e o esporte id 39, tag 65; cada partida e um EVENTO de titulo
-"LoL: <A> vs <B> (BO<n>) - <torneio>", e o vencedor esta no mercado com
-sportsMarketType == "moneyline" (outcomes = [A, B], gameStartTime = inicio).
-Ex. lido: "LoL: LOS vs T1 (BO1) - Worlds Group Stage", 23/10 23:00 UTC.
+Medido pelas sondas (tools/sonda_polymarket.py, 23/10; tools/sonda_polymarket_dota.py, 15/11):
+  LoL  = esporte id 39, tag 65,     titulo "LoL: <A> vs <B> (BO<n>) - <torneio>"
+  Dota = esporte id 38, tag 102366, titulo "Dota 2: <A> vs <B> (BO<n>) - <torneio>"
+Cada partida e um EVENTO; os mercados dele, pelo campo sportsMarketType:
+  moneyline             vencedor da serie          outcomes = [A, B]
+  child_moneyline       "... - Game N Winner"      outcomes = [A, B]
+  totals                "Games Total: O/U 2.5"     outcomes = [Over, Under], line = 2.5
+  map_handicap          "Game Handicap: X (-1.5) vs Y (+1.5)"  outcomes = [X, Y], line = -1.5 (de X)
+  kill_over_under_game  "Total Kills Over/Under 24.5 in Game 1?"  outcomes = [Over, Under], line
+Os demais (baron, roshan, rampage...) nao tem conta no modelo e ficam de fora.
 
-O PRECO. Polymarket e bolsa, nao casa: nao ha margem embutida, ha o spread
-entre a melhor compra e a melhor venda. Usamos o MEIO do livro
-((bestBid + bestAsk) / 2) como probabilidade do time A; sem livro, o
-outcomePrices. O spread e a liquidez vao junto: preco de mercado vazio nao
-vale o mesmo que o de mercado cheio, e a tela tem que poder dizer isso.
+O PRECO. Polymarket e bolsa, nao casa: nao ha margem embutida, ha o spread entre a melhor
+compra e a melhor venda. Guardamos o MEIO do livro ((bestBid + bestAsk) / 2) como
+probabilidade do primeiro lado; sem livro, o outcomePrices. O spread e a liquidez vao junto:
+quem le decide se o livro esta cheio o bastante (app_core/polymarket_casa_core.py).
 
-Os dominios da Polymarket nao resolvem no Brasil (conferido 23/10): roda no
-robo do GitHub (EUA), .github/workflows/polymarket.yml.
+Os dominios da Polymarket nao resolvem no Brasil (conferido 23/10): roda no robo do GitHub
+(EUA), .github/workflows/polymarket.yml.
 
-FONTES: API Gamma publica (https://gamma-api.polymarket.com), formato medido
-pela sonda em evidence/sonda_polymarket.json (23/10/2026). A documentacao
-oficial nao abre daqui; nomes de parametro vieram de clientes de terceiros
-(polyte-gamma e polyoxide-gamma em docs.rs, cliente OCaml em ocaml.org).
+FONTES: API Gamma publica (https://gamma-api.polymarket.com), formato medido pelas sondas
+(evidence/sonda_polymarket.json e o log da sonda do Dota de 15/11/2026). Desde 12/11/2026 ela
+exige "Accept-Encoding: gzip" para paginas com limit > 50 (406 gzip_required).
 
 Uso: python tools/coletar_polymarket.py     (sai 75 se a rede falhar)
 """
@@ -37,16 +41,19 @@ from pathlib import Path
 
 BASE = "https://gamma-api.polymarket.com"
 TAG_LOL = 65
+TAG_DOTA = 102366
 RAIZ = Path(__file__).resolve().parent.parent
-ATUAL = RAIZ / "polymarket_lol.json"
-HISTORICO = RAIZ / "polymarket_lol_historico.jsonl"
-_TITULO = re.compile(r"^LoL:\s*(?P<a>.+?)\s+vs\.?\s+(?P<b>.+?)\s*\(BO(?P<bo>\d)\)\s*(?:-\s*(?P<torneio>.+))?$")
+ESPORTE = "dota" if (RAIZ / "dota_paths.py").exists() else "lol"
+TAG = TAG_DOTA if ESPORTE == "dota" else TAG_LOL
+ATUAL = RAIZ / f"polymarket_{ESPORTE}.json"
+HISTORICO = RAIZ / f"polymarket_{ESPORTE}_historico.jsonl"
+_TITULO = re.compile(r"^(?:LoL|Dota 2):\s*(?P<a>.+?)\s+vs\.?\s+(?P<b>.+?)\s*\(BO(?P<bo>\d)\)\s*(?:-\s*(?P<torneio>.+))?$")
+TIPOS_GUARDADOS = ("child_moneyline", "totals", "map_handicap", "kill_over_under_game")
+_GAME = re.compile(r"\bGame\s+(\d)\b", re.I)
 
 
 def _get(caminho: str, **params):
     url = f"{BASE}/{caminho}?{urllib.parse.urlencode(params)}"
-    # 15/11/2026: desde 12/11 a Gamma responde 406 "gzip_required" a paginas com limit > 50 sem este
-    # cabecalho -- os precos ficaram 3 dias parados sem ninguem ver. Pede comprimido e descomprime.
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 gabinete", "Accept": "application/json",
                                                "Accept-Encoding": "gzip"})
     with urllib.request.urlopen(req, timeout=30) as r:
@@ -89,6 +96,17 @@ def _ja_comecou(inicio, agora: datetime) -> bool:
         return False
 
 
+def _preco(x: dict):
+    """(p do primeiro lado, fonte, spread) de um mercado, ou None. Pura."""
+    precos = [_f(p) for p in _lista(x.get("outcomePrices"))]
+    bid, ask = _f(x.get("bestBid")), _f(x.get("bestAsk"))
+    if bid is not None and ask is not None and 0 < bid <= ask < 1:
+        return (bid + ask) / 2, "meio_do_livro", round(ask - bid, 4)
+    if len(precos) == 2 and precos[0] is not None and 0 < precos[0] < 1:
+        return precos[0], "ultimo_preco", None
+    return None
+
+
 def ler_partida(ev: dict, agora: datetime | None = None) -> dict | None:
     """Evento da Gamma -> partida com preco do time A. Pura.
 
@@ -101,18 +119,19 @@ def ler_partida(ev: dict, agora: datetime | None = None) -> dict | None:
     if not ml or ml.get("closed"):
         return None
     times = [str(t) for t in _lista(ml.get("outcomes"))]
-    precos = [_f(p) for p in _lista(ml.get("outcomePrices"))]
     if len(times) != 2:
         return None
     if _ja_comecou(ml.get("gameStartTime") or ev.get("startDate"), agora or datetime.now(timezone.utc)):
         return None
+    pr = _preco(ml)
+    if pr is None:
+        precos = [_f(p) for p in _lista(ml.get("outcomePrices"))]     # compat.: 0 ou 1 de ultimo preco
+        if len(precos) == 2 and precos[0] is not None:
+            pr = (precos[0], "ultimo_preco", None)
+        else:
+            return None
+    p_a, fonte, spread = pr
     bid, ask = _f(ml.get("bestBid")), _f(ml.get("bestAsk"))
-    if bid is not None and ask is not None and 0 < bid <= ask < 1:
-        p_a, fonte = (bid + ask) / 2, "meio_do_livro"
-    elif len(precos) == 2 and precos[0] is not None:
-        p_a, fonte = precos[0], "ultimo_preco"
-    else:
-        return None
     return {
         "time_a": times[0], "time_b": times[1],
         "p_a": round(p_a, 4), "p_b": round(1 - p_a, 4),
@@ -122,23 +141,59 @@ def ler_partida(ev: dict, agora: datetime | None = None) -> dict | None:
         "bo": int(m.group("bo")), "torneio": (m.group("torneio") or "").strip(),
         "inicio_utc": ml.get("gameStartTime") or ev.get("startDate"),
         "evento": ev.get("slug"),
+        "mercados": outros_mercados(ev),
     }
+
+
+def outros_mercados(ev: dict) -> list:
+    """Pura: os mercados do evento alem do vencedor da serie que o modelo sabe precificar
+    (TIPOS_GUARDADOS). Cada um: tipo, mapa (0 = serie), linha, os dois lados, o preco do
+    PRIMEIRO lado (meio do livro; sem livro, o ultimo preco), spread e liquidez."""
+    fora = []
+    for x in ev.get("markets") or []:
+        tipo = x.get("sportsMarketType")
+        if tipo not in TIPOS_GUARDADOS or x.get("closed"):
+            continue
+        lados = [str(t) for t in _lista(x.get("outcomes"))]
+        pr = _preco(x)
+        if len(lados) != 2 or pr is None:
+            continue
+        g = _GAME.search(str(x.get("question") or ""))
+        mapa = int(g.group(1)) if g and tipo in ("child_moneyline", "kill_over_under_game") else 0
+        if tipo in ("child_moneyline", "kill_over_under_game") and not mapa:
+            continue
+        linha = _f(x.get("line"))
+        if tipo != "child_moneyline" and linha is None:
+            continue
+        fora.append({"tipo": tipo, "mapa": mapa, "linha": linha, "lados": lados,
+                     "p1": round(pr[0], 4), "fonte_preco": pr[1], "spread": pr[2],
+                     "liquidez": _f(x.get("liquidity"))})
+    return fora
 
 
 def main() -> int:
     try:
-        evs = _get("events", tag_id=TAG_LOL, closed="false", limit=300)
+        evs = []
+        for pagina in range(4):                       # ate 400 eventos (ha mercados que nao sao jogo)
+            lote = _get("events", tag_id=TAG, closed="false", limit=100, offset=100 * pagina)
+            lote = lote if isinstance(lote, list) else []
+            evs += lote
+            if len(lote) < 100:
+                break
     except (urllib.error.URLError, OSError, ValueError) as e:
         print(f"[polymarket] rede/API falhou: {type(e).__name__}: {e}")
         return 75
-    agora = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    partidas = [p for p in (ler_partida(e, datetime.now(timezone.utc)) for e in (evs if isinstance(evs, list) else [])) if p]
-    ATUAL.write_text(json.dumps({"coletado_em": agora, "fonte": f"{BASE}/events?tag_id={TAG_LOL}",
+    agora = datetime.now(timezone.utc)
+    quando = agora.isoformat(timespec="seconds")
+    partidas = [p for p in (ler_partida(e, agora) for e in evs) if p]
+    ATUAL.write_text(json.dumps({"coletado_em": quando, "fonte": f"{BASE}/events?tag_id={TAG}",
                                  "partidas": partidas}, ensure_ascii=False, indent=1), encoding="utf-8")
     with HISTORICO.open("a", encoding="utf-8") as f:
-        for p in partidas:
-            f.write(json.dumps({"coletado_em": agora, **p}, ensure_ascii=False) + "\n")
-    print(f"[polymarket] {len(partidas)} partida(s) de LoL com preco de vencedor")
+        for p in partidas:                            # o historico guarda so o vencedor (o arquivo cresce a cada hora)
+            f.write(json.dumps({"coletado_em": quando, **{k: v for k, v in p.items() if k != "mercados"}},
+                               ensure_ascii=False) + "\n")
+    n_merc = sum(len(p["mercados"]) for p in partidas)
+    print(f"[polymarket {ESPORTE}] {len(partidas)} partida(s) com preco de vencedor; {n_merc} outros mercados")
     return 0
 
 
