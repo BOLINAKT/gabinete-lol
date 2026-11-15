@@ -45,9 +45,20 @@ _TITULO = re.compile(r"^LoL:\s*(?P<a>.+?)\s+vs\.?\s+(?P<b>.+?)\s*\(BO(?P<bo>\d)\
 
 def _get(caminho: str, **params):
     url = f"{BASE}/{caminho}?{urllib.parse.urlencode(params)}"
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 gabinete", "Accept": "application/json"})
+    # 15/11/2026: desde 12/11 a Gamma responde 406 "gzip_required" a paginas com limit > 50 sem este
+    # cabecalho -- os precos ficaram 3 dias parados sem ninguem ver. Pede comprimido e descomprime.
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 gabinete", "Accept": "application/json",
+                                               "Accept-Encoding": "gzip"})
     with urllib.request.urlopen(req, timeout=30) as r:
-        return json.loads(r.read().decode("utf-8"))
+        return json.loads(_corpo(r.read(), r.headers.get("Content-Encoding")).decode("utf-8"))
+
+
+def _corpo(dados: bytes, codificacao) -> bytes:
+    """Pura: o corpo da resposta, descomprimido se veio em gzip."""
+    if "gzip" in str(codificacao or "").lower() or dados[:2] == b"\x1f\x8b":
+        import gzip
+        return gzip.decompress(dados)
+    return dados
 
 
 def _lista(v):
