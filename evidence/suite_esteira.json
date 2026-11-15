@@ -1,13 +1,13 @@
 {
  "testes": 5975,
- "segundos": 363.165,
+ "segundos": 209.17,
  "status": "FAILED",
  "falhas": 1,
  "erros": 0,
  "pulados": 15,
  "ok": false,
- "gerado_em": "2026-11-14T11:54:10",
- "duracao_total_s": 366.3,
+ "gerado_em": "2026-11-15T12:22:59",
+ "duracao_total_s": 212.2,
  "primeiras_falhas": [
   "test_os_coletados_vem_PRIMEIRO (test_agenda_no_seletor.TestOsColetadosAPARECEM.test_os_coletados_vem_PRIMEIRO)"
  ]
