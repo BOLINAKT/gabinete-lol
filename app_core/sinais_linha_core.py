@@ -67,6 +67,44 @@ COLUNA_PARA_METRICA = {"total_kills": "kills", "mv2_total_kills": "kills", "mv2_
                        "mv2_total_barons": "barons", "total_nashors": "barons",
                        "mv2_total_inhibitors": "inhibitors", "total_inhibitors": "inhibitors",
                        "game_time_min": "time"}
+
+
+# DOTA (15/11/2026). Arquivo identico nos dois repositorios; no Dota (dota_paths.py na raiz) a
+# tabela e a MEDIDA NO DOTA, mesma receita: pesos e ajuste em 2025, cego em 2026 (10,6 mil linhas
+# de 3,6 mil jogos, linhas perto da media). Ganho da fair sobre so o historico:
+#   kills +0,0024 IC95 [+0,0008; +0,0041]   roshans +0,0027 [+0,0011; +0,0044]   (passaram)
+#   torres +0,0013 [-0,0007; +0,0034]   tempo +0,0010 [-0,0008; +0,0029]   barracas -0,0005
+#   (empatam com o historico: a fair nao piora, mas o ganho nao esta provado)
+# Os passos separam como no LoL: com 3-4 a favor bate 58-69%. Roshans e barracas tem poucos
+# valores possiveis (linha 0,5 / 1,5 / 2,5): contagem de passos instavel, o painel avisa.
+# "barons" = Roshans e "inhibitors" = barracas (os nomes das colunas do CSV do Dota).
+def _e_dota() -> bool:
+    from pathlib import Path
+    return (Path(__file__).resolve().parents[1] / "dota_paths.py").exists()
+
+
+E_DOTA = _e_dota()
+METRICAS_DOTA: Dict[str, Dict[str, Any]] = {
+    "kills": {"cols": ("kills_for", "kills_against"), "ajuste": 0.15, "unidade": "kills",
+              "pesos": (-0.0817, -0.0563, 0.1239, 0.0465, -0.3811, 0.5141, 0.1468),
+              "bateu": {"over": {0: 40, 1: 47, 2: 51, 3: 58, 4: 66}, "under": {0: 47, 1: 54, 2: 58, 3: 62, 4: 62}}},
+    "towers": {"cols": ("towers_for", "towers_against"), "ajuste": 0.60, "unidade": "torres",
+               "pesos": (-0.0461, 0.0904, 0.2015, -0.0145, -0.2672, 0.4977, 0.2035),
+               "bateu": {"over": {0: 39, 1: 51, 2: 56, 3: 66, 4: 66}, "under": {0: 40, 1: 49, 2: 58, 3: 63, 4: 66}}},
+    "barons": {"cols": ("barons_for", "barons_against"), "ajuste": 0.75, "unidade": "roshans", "instavel": True,
+               "pesos": (-0.0358, 0.3255, 0.3613, -0.0028, -0.1569, 0.5660, 0.2123),
+               "bateu": {"over": {0: 22, 1: 46, 2: 58, 3: 69, 4: 84}, "under": {0: 24, 1: 55, 2: 63, 3: 69, 4: 82}}},
+    "inhibitors": {"cols": ("inhibitors_for", "inhibitors_against"), "ajuste": 0.90, "unidade": "barracas",
+                   "instavel": True,
+                   "pesos": (-0.0161, -0.0458, 0.2417, -0.0239, -0.1207, 0.5718, 0.2308),
+                   "bateu": {"over": {0: 41, 1: 52, 2: 60, 3: 69, 4: 73}, "under": {0: 33, 1: 42, 2: 53, 3: 56, 4: 82}}},
+    "time": {"cols": None, "ajuste": 0.30, "unidade": "min",
+             "pesos": (-0.0577, -0.0157, 0.0953, -0.0304, -0.3071, 0.5926, 0.2245),
+             "bateu": {"over": {0: 40, 1: 46, 2: 50, 3: 59, 4: 68}, "under": {0: 48, 1: 54, 2: 57, 3: 62, 4: 65}}},
+}
+if E_DOTA:
+    METRICAS = dict(METRICAS_DOTA)
+    COLUNA_PARA_METRICA = {k: v for k, v in COLUNA_PARA_METRICA.items() if v in METRICAS_DOTA}
 PESOS = METRICAS["kills"]["pesos"]            # compatibilidade
 _CACHE_TEND: Dict[Any, pd.DataFrame] = {}
 
@@ -91,7 +129,7 @@ def com_tendencia(team_games: pd.DataFrame, met: str) -> pd.DataFrame:
     ANTES do jogo (seus 10 anteriores menos os ultimos 200 da liga). Kills reaproveita a coluna
     de cruzamento_estatistica_core."""
     col = f"tend_{met}"
-    if met == "kills":
+    if met == "kills" and not E_DOTA:         # no Dota a medicao usou a conta geral, abaixo
         from app_core.cruzamento_estatistica_core import com_tendencia_dos_adversarios
         d = com_tendencia_dos_adversarios(team_games)
         if "tend_adv_kills" in d.columns and col not in d.columns:
@@ -241,6 +279,8 @@ def resumo_html(sn: Optional[Dict[str, Any]], lado: str, rotulo: str = "", odd: 
 #                    o saldo medio dos adversarios enfrentados (peso 0,5).
 # Ganho da fair sobre so o historico: kills por time +0,011; handicap +0,011. Com 3 a favor,
 # linhas perto da media: kills por time 55-60%, handicap 62-68% (4 de 4 quase nao acontece).
+# (so LoL: no Dota kills por time e handicap ainda nao foram medidos -- ficam com os numeros do
+#  LoL apenas para o modulo carregar; nenhuma tela do Dota os usa.)
 METRICAS["kills_time"] = {"cols": None, "ajuste": 0.5, "unidade": "kills",
                           "pesos": (0.0906, 0.0836, 0.0206, 0.0581, -0.2789, 0.3634, 0.3431),
                           "bateu": {"over": {0: 49, 1: 52, 2: 52, 3: 60}, "under": {0: 47, 1: 47, 2: 51, 3: 55}}}
