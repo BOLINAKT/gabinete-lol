@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-02-19T14:06:20",
+  "method": "laplace_wr_ratio_v1",
+  "anchors": [
+    {
+      "key": "we_vs_tes",
+      "ok": true,
+      "team_a": "Team WE",
+      "team_b": "Top Esports",
+      "league_a": "LPL",
+      "league_b": "LPL",
+      "games_a": 25,
+      "games_b": 30,
+      "p_a": 0.5423728813559322,
+      "odd_a": 1.84375,
+      "odd_b": 2.185185185185185
+    },
+    {
+      "key": "lng_vs_tt",
+      "ok": true,
+      "team_a": "LNG Esports",
+      "team_b": "ThunderTalk Gaming",
+      "league_a": "LPL",
+      "league_b": "LPL",
+      "games_a": 21,
+      "games_b": 16,
+      "p_a": 0.8693181818181818,
+      "odd_a": 1.150326797385621,
+      "odd_b": 7.652173913043475
+    },
+    {
+      "key": "geng_vs_t1",
+      "ok": true,
+      "team_a": "Gen.G",
+      "team_b": "T1",
+      "league_a": "LCK",
+      "league_b": "LCK",
+      "games_a": 15,
+      "games_b": 18,
+      "p_a": 0.5758157389635317,
+      "odd_a": 1.7366666666666666,
+      "odd_b": 2.3574660633484164
+    },
+    {
+      "key": "fearx_vs_dns",
+      "ok": true,
+      "team_a": "BNK FEARX",
+      "team_b": "DN SOOPers",
+      "league_a": "LCK",
+      "league_b": "LCK",
+      "games_a": 23,
+      "games_b": 29,
+      "p_a": 0.5535714285714285,
+      "odd_a": 1.806451612903226,
+      "odd_b": 2.2399999999999998
+    }
+  ]
+}

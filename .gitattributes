@@ -1,0 +1,25 @@
+# Normaliza line-endings entre máquinas (evita corromper código/encoding ao
+# trocar entre o PC de cada um). Sem isso, o Windows pode reescrever LF<->CRLF
+# e quebrar diffs/execução.
+* text=auto
+
+# Código Python sempre LF (consistente em qualquer SO).
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
+*.cfg text eol=lf
+*.toml text eol=lf
+
+# Scripts PowerShell preferem CRLF no Windows.
+*.ps1 text eol=crlf
+
+# CSVs: texto, mas podem ser grandes — manter LF e não tentar diff binário.
+*.csv text eol=lf
+
+# Artefatos binários/imagens: nunca normalizar.
+*.png binary
+*.jpg binary
+*.ico binary
+*.xlsx binary
+*.parquet binary

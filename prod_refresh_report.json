@@ -1,0 +1,271 @@
+{
+  "version": "prod_refresh_v1",
+  "generated_at": "2026-03-03T18:09:31+00:00",
+  "mode": "quick",
+  "phase12_speed": "fast",
+  "phase12_fit": true,
+  "promote_on_pass": true,
+  "auto_rollback_on_reject": true,
+  "steps": [
+    {
+      "name": "phase1_data_contract",
+      "cmd": [
+        "C:\\Users\\steam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "tools/run_phase1_data_contract.py",
+        "--timeout",
+        "600"
+      ],
+      "started_at": "2026-03-03T17:39:04+00:00",
+      "finished_at": "2026-03-03T17:39:26+00:00",
+      "returncode": 0,
+      "status": "ok",
+      "report_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\phase1_data_contract_report.json",
+      "decision": "promote",
+      "stdout_tail": "OK: phase1 data contract -> phase1_data_contract_report.json | decision=promote | leak=promote cov=promote\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "phase12_roster_continuity",
+      "cmd": [
+        "C:\\Users\\steam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "tools/eval_roster_continuity_phase12.py",
+        "--speed",
+        "fast",
+        "--fit",
+        "--write-params"
+      ],
+      "started_at": "2026-03-03T17:39:26+00:00",
+      "finished_at": "2026-03-03T17:43:06+00:00",
+      "returncode": 0,
+      "status": "ok",
+      "report_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\phase12_roster_continuity_report.json",
+      "decision": "promote",
+      "stdout_tail": "[backtest_abc] loaded game parts=3 in 39.7s\n[backtest_abc] speed=fast -> games tail cap=3500\n[backtest_abc] player rows loaded in 3.3s\n[backtest_abc] samples built=3500 in 32.7s\n[backtest_abc] team_games loaded=43980 in 3.6s\n[backtest_abc] rows=200/3500 (5.7%) elapsed=4.4s cache_profiles=156\n[backtest_abc] rows=400/3500 (11.4%) elapsed=8.2s cache_profiles=260\n[backtest_abc] rows=600/3500 (17.1%) elapsed=12.1s cache_profiles=374\n[backtest_abc] rows=800/3500 (22.9%) elapsed=15.7s cache_profiles=483\n[backtest_abc] rows=1000/3500 (28.6%) elapsed=20.2s cache_profiles=630\n[backtest_abc] rows=1200/3500 (34.3%) elapsed=25.1s cache_profiles=832\n[backtest_abc] rows=1400/3500 (40.0%) elapsed=29.3s cache_profiles=972\n[backtest_abc] rows=1600/3500 (45.7%) elapsed=33.6s cache_profiles=1116\n[backtest_abc] rows=1800/3500 (51.4%) elapsed=37.5s cache_profiles=1279\n[backtest_abc] rows=2000/3500 (57.1%) elapsed=41.5s cache_profiles=1498\n[backtest_abc] rows=2200/3500 (62.9%) elapsed=45.4s cache_profiles=1729\n[backtest_abc] rows=2400/3500 (68.6%) elapsed=49.4s cache_profiles=1927\n[backtest_abc] rows=2600/3500 (74.3%) elapsed=53.2s cache_profiles=2118\n[backtest_abc] rows=2800/3500 (80.0%) elapsed=57.1s cache_profiles=2302\n[backtest_abc] rows=3000/3500 (85.7%) elapsed=60.9s cache_profiles=2474\n[backtest_abc] rows=3200/3500 (91.4%) elapsed=65.1s cache_profiles=2647\n[backtest_abc] rows=3400/3500 (97.1%) elapsed=69.1s cache_profiles=2803\nOK: phase1.2 roster continuity report -> phase12_roster_continuity_report.json | decision=promote | rows=3500 | applied_rate=95.3% | gain_ll=-0.000054\n",
+      "stderr_tail": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\tools\\backtest_pipeline_abc_by_league.py:376: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.\n  games = pd.concat(g_parts, ignore_index=True)\n"
+    },
+    {
+      "name": "phase2_areal_gate",
+      "cmd": [
+        "C:\\Users\\steam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "tools/run_phase2_areal_gate.py"
+      ],
+      "started_at": "2026-03-03T17:43:06+00:00",
+      "finished_at": "2026-03-03T17:55:53+00:00",
+      "returncode": 0,
+      "status": "ok",
+      "report_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\phase2_areal_report.json",
+      "decision": "promote",
+      "stdout_tail": "OK: phase2 areal -> phase2_areal_report.json | decision=promote | ok=10/10 | applied_rate=100.0% | avg_abs=2.4102225299822946\n",
+      "stderr_tail": "MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:54:35.955 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:54:42.064 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:54:50.265 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:54:50.265 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:54:50.265 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:54:50.266 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:54:50.266 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:54:56.367 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:04.264 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:04.264 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:04.264 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:04.265 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:04.265 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:10.336 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:18.226 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:18.226 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:18.226 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:18.226 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:18.226 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:24.774 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:32.635 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:32.635 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:32.635 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:32.635 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:32.635 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:38.744 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:46.640 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:46.641 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:46.641 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:46.641 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:55:46.641 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n"
+    },
+    {
+      "name": "phase2b_areal_tuning_gate",
+      "cmd": [
+        "C:\\Users\\steam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "tools/run_phase2b_areal_tuning_gate.py",
+        "--speed",
+        "fast",
+        "--write-params"
+      ],
+      "started_at": "2026-03-03T17:55:54+00:00",
+      "finished_at": "2026-03-03T17:56:18+00:00",
+      "returncode": 0,
+      "status": "ok",
+      "report_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\phase2b_areal_tuning_report.json",
+      "decision": "promote",
+      "stdout_tail": "OK: phase2b areal tuning -> phase2b_areal_tuning_report.json | decision=promote | gain_ll=0.000974 | best(b=1.2,q=0.22)\nOK: phase2b areal tuning mu_q=1.0\nOK: phase2b areal tuning qwl_mix=0.7\nOK: phase2b areal tuning qwl_extra(throw=1.0,comeback=0.65,phase_dyn=0.35,opp_ctx=0.3)\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "phase3_breal_gate",
+      "cmd": [
+        "C:\\Users\\steam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "tools/run_phase3_breal_gate.py"
+      ],
+      "started_at": "2026-03-03T17:56:18+00:00",
+      "finished_at": "2026-03-03T18:00:01+00:00",
+      "returncode": 0,
+      "status": "ok",
+      "report_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\phase3_breal_report.json",
+      "decision": "promote",
+      "stdout_tail": "OK: phase3 breal -> phase3_breal_report.json | decision=promote | ok=15/15 | applied_rate=100.0% | context_rate=53.3% | avg_abs=1.8064323993940237\n",
+      "stderr_tail": "MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:58:42.822 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:58:49.050 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:58:57.414 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:58:57.415 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:58:57.415 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:58:57.415 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:58:57.415 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:03.621 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:11.526 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:11.526 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:11.527 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:11.527 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:11.527 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:17.733 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:25.587 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:25.587 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:25.587 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:25.587 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:25.588 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:32.231 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:40.280 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:40.280 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:40.280 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:40.281 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:40.281 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:46.341 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:54.270 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:54.270 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:54.270 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:54.270 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 14:59:54.270 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n"
+    },
+    {
+      "name": "phase4_ranksos_gate",
+      "cmd": [
+        "C:\\Users\\steam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "tools/run_phase4_ranksos_gate.py"
+      ],
+      "started_at": "2026-03-03T18:00:01+00:00",
+      "finished_at": "2026-03-03T18:03:44+00:00",
+      "returncode": 0,
+      "status": "ok",
+      "report_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\phase4_ranksos_report.json",
+      "decision": "promote",
+      "stdout_tail": "OK: phase4 ranksos -> phase4_ranksos_report.json | decision=promote | ok=12/12 | eligible=12 | applied_rate=100.0% | avg_abs=0.9958039782075402\n",
+      "stderr_tail": "MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:02:25.819 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:02:31.894 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:02:40.287 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:02:40.287 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:02:40.287 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:02:40.287 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:02:40.287 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:02:46.486 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:02:54.534 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:02:54.534 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:02:54.534 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:02:54.534 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:02:54.534 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:00.376 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:08.333 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:08.333 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:08.333 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:08.333 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:08.333 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:14.828 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:23.059 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:23.059 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:23.059 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:23.059 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:23.059 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:29.257 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:37.252 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:37.252 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:37.252 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:37.252 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:03:37.252 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n"
+    },
+    {
+      "name": "phase4b_marginal_tuning_gate",
+      "cmd": [
+        "C:\\Users\\steam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "tools/run_phase4b_marginal_tuning_gate.py",
+        "--speed",
+        "fast",
+        "--max-cases",
+        "14",
+        "--write-params"
+      ],
+      "started_at": "2026-03-03T18:03:44+00:00",
+      "finished_at": "2026-03-03T18:07:17+00:00",
+      "returncode": 0,
+      "status": "ok",
+      "report_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\phase4b_marginal_tuning_report.json",
+      "decision": "promote",
+      "stdout_tail": "OK: phase4b marginal tuning -> phase4b_marginal_tuning_report.json | decision=promote | samples=14 | gain_ll=0.006637\n",
+      "stderr_tail": "MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:23.899 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:23.899 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:23.899 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:23.899 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:30.624 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:39.503 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:39.504 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:39.504 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:39.504 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:39.504 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:39.504 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:39.504 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:39.504 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:45.473 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:54.887 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:54.888 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:54.888 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:54.888 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:54.888 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:54.888 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:54.888 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:06:54.888 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:00.939 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:09.675 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:09.675 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:09.675 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:09.675 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:09.675 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:09.675 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:09.675 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:09.675 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n"
+    },
+    {
+      "name": "phase5_hier_calibration_gate",
+      "cmd": [
+        "C:\\Users\\steam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "tools/run_phase5_hier_calibration_gate.py"
+      ],
+      "started_at": "2026-03-03T18:07:17+00:00",
+      "finished_at": "2026-03-03T18:07:17+00:00",
+      "returncode": 0,
+      "status": "ok",
+      "report_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\phase5_hier_calibration_report.json",
+      "decision": "promote",
+      "stdout_tail": "OK: phase5 gate -> phase5_hier_calibration_report.json | decision=promote | ok=8/8 | by_segment=396\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "phase6_series_bo_gate",
+      "cmd": [
+        "C:\\Users\\steam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "tools/run_phase6_series_bo_gate.py"
+      ],
+      "started_at": "2026-03-03T18:07:18+00:00",
+      "finished_at": "2026-03-03T18:07:18+00:00",
+      "returncode": 0,
+      "status": "ok",
+      "report_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\phase6_series_bo_report.json",
+      "decision": "promote",
+      "stdout_tail": "OK: phase6 gate -> phase6_series_bo_report.json | decision=promote | ok=8/8\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "phase7_layer_uncertainty_gate",
+      "cmd": [
+        "C:\\Users\\steam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "tools/run_phase7_layer_uncertainty_gate.py"
+      ],
+      "started_at": "2026-03-03T18:07:18+00:00",
+      "finished_at": "2026-03-03T18:07:18+00:00",
+      "returncode": 0,
+      "status": "ok",
+      "report_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\phase7_layer_uncertainty_report.json",
+      "decision": "promote",
+      "stdout_tail": "OK: phase7 gate -> phase7_layer_uncertainty_report.json | decision=promote | ok=3/3\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "anchor_regression_pre_promotion",
+      "cmd": [
+        "C:\\Users\\steam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "tools/anchor_regression_suite.py",
+        "--mode",
+        "app",
+        "--out",
+        "anchor_regression_report.json",
+        "--timeout",
+        "420"
+      ],
+      "started_at": "2026-03-03T18:07:18+00:00",
+      "finished_at": "2026-03-03T18:07:58+00:00",
+      "returncode": 0,
+      "status": "ok",
+      "report_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\anchor_regression_report.json",
+      "decision": "promote",
+      "stdout_tail": "OK: anchor regression saved -> anchor_regression_report.json | ok=3/3 fail=0\n",
+      "stderr_tail": "2026-03-03 15:07:19.892 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:19.892 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:19.892 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:19.892 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:26.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:26.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:26.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:26.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:26.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:34.001 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:34.002 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:34.002 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:34.002 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:38.286 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:38.286 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:38.286 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:38.286 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:38.286 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:46.278 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:46.278 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:46.278 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:46.278 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:50.807 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:50.807 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:50.807 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:50.807 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:07:50.807 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n"
+    },
+    {
+      "name": "lacuna_guardrail_strict",
+      "cmd": [
+        "C:\\Users\\steam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "tools/run_lacuna_guardrails.py",
+        "--strict-phase-coverage",
+        "--skip-runs"
+      ],
+      "started_at": "2026-03-03T18:07:58+00:00",
+      "finished_at": "2026-03-03T18:08:08+00:00",
+      "returncode": 0,
+      "status": "ok",
+      "report_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\lacuna_guardrail_report.json",
+      "decision": "promote",
+      "stdout_tail": "OK: lacuna guardrail -> lacuna_guardrail_report.json | decision=promote | bt=promote ar=promote leak=promote cov=promote art=promote\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "phase8_operations_gate",
+      "cmd": [
+        "C:\\Users\\steam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "tools/run_phase8_operations_gate.py",
+        "--skip-runs"
+      ],
+      "started_at": "2026-03-03T18:08:08+00:00",
+      "finished_at": "2026-03-03T18:08:08+00:00",
+      "returncode": 0,
+      "status": "ok",
+      "report_path": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\phase8_operations_report.json",
+      "decision": "promote",
+      "stdout_tail": "OK: phase8 operations gate -> phase8_operations_report.json | decision=promote | ok=8/8\n",
+      "stderr_tail": ""
+    }
+  ],
+  "final_decision": "promote",
+  "action": "promote_baseline",
+  "action_ok": true,
+  "action_detail": {
+    "returncode": 0,
+    "stdout_tail": "[ok] Promocao aprovada: C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\ops\\baselines\\2026-03-03_prod_refresh_20260303_173904\n",
+    "stderr_tail": "",
+    "tag": "prod_refresh_20260303_173904"
+  },
+  "actions": [
+    {
+      "name": "promote_baseline",
+      "returncode": 0,
+      "stdout_tail": "[ok] Promocao aprovada: C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\ops\\baselines\\2026-03-03_prod_refresh_20260303_173904\n",
+      "stderr_tail": "",
+      "tag": "prod_refresh_20260303_173904"
+    },
+    {
+      "name": "anchor_regression_post_promotion",
+      "returncode": 0,
+      "stdout_tail": "OK: anchor regression saved -> anchor_regression_report.post_promotion.json | ok=3/3 fail=0\n",
+      "stderr_tail": "Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:08:58.356 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:08:58.356 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:08:58.356 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:08:58.356 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:08:58.356 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:06.367 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:06.367 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:06.367 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:06.368 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:11.593 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:11.593 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:11.593 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:11.593 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:11.593 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:18.599 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:18.599 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:18.599 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:18.599 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:22.936 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:22.936 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:22.936 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:22.936 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n2026-03-03 15:09:22.936 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.\n",
+      "report": {
+        "ok": true,
+        "decision": "promote",
+        "fail": 0,
+        "total": 3
+      }
+    }
+  ],
+  "anchor_pre": {
+    "ok": true,
+    "decision": "promote",
+    "fail": 0,
+    "total": 3
+  },
+  "anchor_post": {
+    "ok": true,
+    "decision": "promote",
+    "fail": 0,
+    "total": 3
+  }
+}

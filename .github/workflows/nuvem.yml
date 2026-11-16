@@ -1,0 +1,68 @@
+# BRANCH DA NUVEM (23/10/2026). O Streamlit Cloud parou de conseguir clonar o
+# master: cada tentativa morria em ~70 s no "Cloning repository...", em loop,
+# mesmo com o app apagado e recriado. O historico passou de 260 MB porque os
+# robos regravam todo dia CSVs de ~78 MB. Daqui o clone leva 22 s; la, nao.
+# A branch `nuvem` tem SO a versao atual (um commit, sem historico): 114 MB,
+# clona em 9 s, e o app abriu na primeira tentativa.
+#
+# Este robo refaz a `nuvem` a partir do master a cada push e de hora em hora
+# (os robos de dados empurram com o token padrao, que nao dispara outro
+# workflow -- por isso o horario). O master e o historico nao sao tocados; a
+# `nuvem` e descartavel e sempre reconstruida do zero (push --force SO nela).
+name: Branch da nuvem (Streamlit)
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: branch-nuvem
+  cancel-in-progress: true
+
+jobs:
+  nuvem:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 1
+
+      - name: Atualizar a branch nuvem com a versao atual
+        # 23/10/2026: refazer a branch do zero a cada hora (push --force) fazia
+        # a nuvem reinstalar o app e perder o que estava no disco dela (os
+        # apelidos de time salvos). Agora cada atualizacao e UM commit novo em
+        # cima do anterior (a nuvem so puxa a diferenca), e a branch so e
+        # refeita do zero quando passa de 60 commits, para nao voltar a pesar.
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          origem=$(git rev-parse --short HEAD)
+          arvore=$(git rev-parse HEAD^{tree})
+          msg="Nuvem: copia do master $origem"
+          atual=$(git ls-remote origin refs/heads/nuvem | cut -c1-40)
+          if [ -z "$atual" ]; then
+            novo=$(git commit-tree "$arvore" -m "$msg, sem historico")
+            git push -q origin "$novo:refs/heads/nuvem"
+            echo "nuvem criada ($origem)"; exit 0
+          fi
+          git fetch -q --depth 60 origin nuvem
+          if [ "$(git rev-parse FETCH_HEAD^{tree})" = "$arvore" ]; then
+            echo "nuvem ja igual ao master ($origem) -- nada a fazer"; exit 0
+          fi
+          n=$(git rev-list --count FETCH_HEAD)
+          if [ "$n" -ge 60 ]; then
+            novo=$(git commit-tree "$arvore" -m "$msg, sem historico (recomeco: $n commits)")
+            git push -q --force origin "$novo:refs/heads/nuvem"
+            echo "nuvem recomecada do zero ($n commits)"
+          else
+            novo=$(git commit-tree "$arvore" -p FETCH_HEAD -m "$msg")
+            git push -q origin "$novo:refs/heads/nuvem"
+            echo "nuvem +1 commit ($origem; $((n+1)) no total)"
+          fi

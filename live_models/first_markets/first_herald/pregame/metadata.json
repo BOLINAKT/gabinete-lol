@@ -1,0 +1,33 @@
+{
+  "market": "first_herald",
+  "best_iteration": 128,
+  "base_rate_blue": 0.6110492314546669,
+  "feature_cols": [
+    "z_pre",
+    "league_tier",
+    "league_strength",
+    "bo",
+    "playoffs"
+  ],
+  "train_metadata": {
+    "market": "first_herald",
+    "n_train": 17956,
+    "n_val": 2283,
+    "base_rate_blue": 0.6110492314546669,
+    "best_iteration": 128,
+    "feature_names": [
+      "z_pre",
+      "league_tier",
+      "league_strength",
+      "bo",
+      "playoffs"
+    ],
+    "feature_importance": {
+      "z_pre": 8043.74675104022,
+      "league_tier": 150.4633518755436,
+      "league_strength": 1098.6222052238882,
+      "bo": 433.798670142889,
+      "playoffs": 100.65654587745667
+    }
+  }
+}

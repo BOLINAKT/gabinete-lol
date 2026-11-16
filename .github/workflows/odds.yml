@@ -1,0 +1,199 @@
+# Robô das ODDS: lê o preço da Pinnacle e guarda o movimento dele.
+#
+# PARA QUE SERVE
+# A Pinnacle trabalha com margem baixa e limite alto e aceita dinheiro afiado
+# em vez de barrar a conta — o preço dela é o mais próximo de probabilidade
+# verdadeira que o mercado oferece. Guardado COM HORA, ele vira a régua
+# externa que este projeto não tem: medir se o modelo bate o fechamento (CLV)
+# é a única medição que responde se existe lucro. Todas as réguas de hoje
+# comparam o modelo com ele mesmo.
+#
+# DE ONDE VEM, SEM DISFARCE
+# É a API interna do site DELES, aberta e sem credencial — a porta dos fundos,
+# não a oficial (que fechou ao público e, para esports, exige autorização
+# especial). Ele decidiu usá-la sabendo disso, em 15/09/2026.
+#
+# O risco NÃO é a conta de aposta dele: nada aqui usa login. É bloqueio de IP,
+# que tiraria o acesso ao site de onde ele aposta. Por isso a educação é parte
+# do desenho, não enfeite:
+#   - DUAS requisições por corrida para o retrato geral, mais uma varredura
+#     dos jogos que estão para começar, com TETO de 40 chamadas e pausa entre
+#     elas. No pior caso 42 por corrida. Na prática são ~4: medido em
+#     16/09/2026, uma corrida leu 10 séries e 322 linhas com quatro pedidos.
+#   - PEDIMOS 34 janelas por dia. O GITHUB ENTREGA ~9. Medido no diario ao
+#     longo de 4,1 dias: 142 esperadas, 34 aconteceram — 76% perdidas.
+#
+#     E pedir mais quase nao ajuda: com 21 janelas/dia vinham ~7 leituras;
+#     dobrando para 34, vieram ~9. Duas leituras a mais por dobrar o pedido.
+#
+#     A causa nao e o minuto escolhido (essa foi a minha primeira aposta, e
+#     estava errada): e COTA. O GitHub aloca prioridade de agendamento por
+#     idade de conta e historico do repositorio, e poe conta nova numa fila
+#     de baixa prioridade. Pagar NAO resolve — nao ha evidencia de que Pro
+#     ou Team mudem isso; a limitacao e da plataforma.
+#
+#     DECISAO DELE (21/09/2026), sabendo disso: fica assim. O contorno seria
+#     trocar `schedule` por `workflow_dispatch` chamado por um cron externo,
+#     e ele preferiu nao criar essa dependencia.
+#
+#     CONSEQUENCIA HONESTA, para quem for medir CLV depois: a ultima leitura
+#     antes de um jogo cai a uma distancia VARIAVEL do apito — as vezes 10
+#     minutos, as vezes 2 horas. Nao trate a ultima leitura como "fechamento"
+#     sem olhar quanto tempo antes ela foi. O historico tem a hora de cada
+#     uma; a distancia e calculavel, e precisa entrar na conta.
+#   - User-Agent que diz quem é e para quê.
+#   - 403/429 PARA na hora e sai com rc=75. Não insiste, não tenta contornar,
+#     não troca de identidade. Se eles não quiserem, a resposta é parar.
+#
+# POR QUE OS MINUTOS SÃO ESSES
+# Deslocados das janelas dos outros robôs (:57/:03/:21 do retreino, :40 da
+# agenda) para não disputarem runner — e, mais importante, para as duas
+# requisições nunca saírem no mesmo instante de outra corrida.
+#
+# ONDE ESTAVAM KILLS (15/09/2026)
+# Os mercados de kills, mapa a mapa, JÁ VINHAM nas duas requisições do retrato
+# geral — como um confronto "filho" chamado `Fuego (Kills)` × `9z (Kills)`. O
+# coletor os descartava. Hoje entram sem custar requisição nenhuma. Torre e
+# tempo devem chegar do mesmo jeito, e são pegos sozinhos quando chegarem.
+#
+# O QUE ELE COMMITA
+# `odds_pinnacle.json` (o retrato de agora), `odds_pinnacle_historico.jsonl`
+# (só o que MUDOU), `odds_pinnacle_partidas.jsonl` (QUEM jogava em cada
+# partida — o histórico de preços só guarda o ID, e sem isto saber quem era
+# exige escavar o histórico do git, como precisei fazer em 21/09/2026)
+# e `odds_coletas.jsonl` (o DIÁRIO: uma linha por corrida,
+# tenha ela dado certo ou não — é o que permite distinguir "a casa bloqueou"
+# de "a janela nem rodou"). O histórico cresce devagar de propósito: guardar o retrato
+# inteiro a cada corrida daria ~9 MB/mês, e o que o CLV precisa é o movimento.
+name: Odds (preço da Pinnacle)
+
+on:
+  schedule:
+    # BASE, de 3 em 3 horas: constroi o histórico de movimento do preço.
+    - cron: "25 0,3,6,9,12,15,18,21 * * *"
+    # PERTO DO APITO, aos :50 de cada hora entre 08h e 20h UTC.
+    #
+    # POR QUE (16/09/2026). Ele observou: "você pode estar pegando algo que na
+    # realidade já mudou de odd já tem um tempo... até porque você não pega a
+    # abertura". Está certo — e a pesquisa que ele mandou fazer mostrou que o
+    # buraco de verdade é OUTRO:
+    #
+    #   · o CLV só precisa do preço que ele pegou e do FECHAMENTO —
+    #     "Opening odds are irrelevant to calculating CLV";
+    #   · o fechamento é MAIS afiado que a abertura, não o contrário;
+    #   · e a abertura da Pinnacle já é quase tão eficiente quanto o
+    #     fechamento dela: "almost no difference in market efficiency between
+    #     Pinnacle's opening and closing prices", em 147.629 jogos
+    #     (football-data.co.uk/blog/opening_price_wisdom.php).
+    #
+    # Ou seja: não pegar a abertura não quebra a régua. Não pegar o FECHAMENTO
+    # quebra. E com o cron antigo a última leitura antes de um jogo podia
+    # ficar 2h35 atrás dele.
+    #
+    # MEDIDO na agenda: os jogos de LoL começam na HORA CHEIA (09, 10, 12, 14,
+    # 15, 16 e 20 UTC). Lendo aos :50, a última leitura fica ~10 minutos antes
+    # do apito — isso é linha de fechamento de verdade, não aproximação.
+    #
+    # Os :50 e não :55 de propósito: o agendador do GitHub atrasa, e uma
+    # leitura que chega depois do apito não pega nada (o mercado pré-jogo
+    # some, e o coletor descarta o que está ao vivo).
+    #
+    # DUAS TENTATIVAS, EM MINUTOS POUCO DISPUTADOS (17/09/2026).
+    #
+    # A primeira versao disto usava `50 8-20`, e MEDIDO pelo diario: de 21
+    # janelas esperadas, 7 aconteceram -- 67% perdidas. Nenhum bloqueio da
+    # casa, nenhum erro: elas simplesmente nao dispararam.
+    #
+    # A documentacao do GitHub explica, e o :50 era o pior minuto possivel:
+    #   "The schedule event can be delayed during periods of high loads...
+    #    If the load is sufficiently high enough, some queued jobs may be
+    #    dropped. HIGH LOAD TIMES INCLUDE THE START OF EVERY HOUR."
+    #   docs.github.com/en/actions/reference/.../events-that-trigger-workflows
+    #
+    # Entao: :43 e :53, minutos menos disputados que :00/:15/:30/:45, e DUAS
+    # tentativas por hora -- se uma cair na fila, a outra ainda pega o jogo.
+    # A de :53 e a mais perto do apito; a de :43 e a rede de seguranca.
+    #
+    # Isto e uma TENTATIVA, nao uma certeza: o GitHub nao promete entregar. A
+    # diferenca e que agora o diario mede, e em um dia da para dizer se
+    # melhorou em vez de supor.
+    - cron: "43,53 8-20 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: odds
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependências
+        run: pip install --quiet -r requirements.txt
+
+      - name: Ler as odds
+        id: coleta
+        run: |
+          set +e
+          python tools/coletar_odds.py
+          rc=$?
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          if [ "$rc" -eq 75 ]; then
+            echo "::notice::A casa bloqueou ou a rede caiu. Nada escrito; tenta na próxima janela."
+            exit 0
+          fi
+          exit "$rc"
+
+      # COMMITA SEMPRE, MESMO QUANDO A CORRIDA PAROU.
+      #
+      # Ele perguntou (16/09/2026) se tudo tinha funcionado durante a noite.
+      # As odds deviam ser lidas 4 vezes; o histórico tinha UMA leitura. E eu
+      # não consegui responder por quê — porque uma janela BLOQUEADA ficava
+      # idêntica a uma janela que nem rodou. As duas não deixavam rastro.
+      #
+      # Agora o diário (`odds_coletas.jsonl`) sobe em qualquer desfecho: ok,
+      # bloqueado, rede fora, formato mudou. Os arquivos de ODDS continuam
+      # subindo só quando a leitura deu certo — dado ruim não entra.
+      - name: Commitar
+        if: always() && steps.coleta.outputs.rc != ''
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add odds_coletas.jsonl || true
+          if [ "${{ steps.coleta.outputs.rc }}" = "0" ]; then
+            git add odds_pinnacle.json odds_pinnacle_historico.jsonl odds_pinnacle_partidas.jsonl
+            MSG="Robô: odds da Pinnacle atualizadas"
+          else
+            MSG="Robô: corrida de odds sem leitura (rc=${{ steps.coleta.outputs.rc }})"
+          fi
+          if git diff --cached --quiet; then
+            echo "nada mudou — nada a commitar"
+          else
+            git commit -m "$MSG"
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado (concorrência) — rebase e retry $i/3"
+              git pull --rebase --autostash || exit 1
+            done
+            git push
+          fi
+
+      - name: Se falhou, dizer o que fazer
+        if: failure()
+        run: |
+          echo "::error::A leitura das odds falhou com erro de verdade (não foi bloqueio nem rede)."
+          echo "O mais provável é a API interna ter mudado de formato — o coletor"
+          echo "recusa gravar quando não reconhece a resposta, de propósito."
+          echo "O retrato anterior continua no repositório."
+          echo "Para investigar: python tools/coletar_odds.py"

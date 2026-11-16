@@ -1,0 +1,227 @@
+{
+  "generated_at": "2026-05-28T23:55:35+00:00",
+  "holdout_n": 1313,
+  "train_n": 3941,
+  "holdout_days": 180,
+  "layers": [
+    {
+      "layer": "L0  Elo base",
+      "n": 1313,
+      "logloss": 0.6556043910244359,
+      "ece": 0.10012697516914905,
+      "brier": 0.23170708769653428
+    },
+    {
+      "layer": "L1  Elo + Platt cal",
+      "n": 1313,
+      "logloss": 0.6405571664059171,
+      "ece": 0.03897693480614893,
+      "brier": 0.22502906409678597
+    },
+    {
+      "layer": "L2  + Players fusion",
+      "n": 1313,
+      "logloss": 0.6384745487067512,
+      "ece": 0.10243980305424381,
+      "brier": 0.22362547198406832
+    },
+    {
+      "layer": "L3  + Microseg cal",
+      "n": 1313,
+      "logloss": 0.6283220912593228,
+      "ece": 0.11920748710839876,
+      "brier": 0.21876966300240827
+    },
+    {
+      "layer": "L4  + OOF Platt fused",
+      "n": 1313,
+      "logloss": 0.6202385096104103,
+      "ece": 0.052736806241603026,
+      "brier": 0.215696415083258
+    }
+  ],
+  "by_league": [
+    {
+      "league": "PRM",
+      "n": 37,
+      "logloss_base": 0.6447222492519239,
+      "logloss_fused": 0.5622720297844287,
+      "delta_logloss_pp": 8.245
+    },
+    {
+      "league": "HM",
+      "n": 46,
+      "logloss_base": 0.6645484634795225,
+      "logloss_fused": 0.5997512515564083,
+      "delta_logloss_pp": 6.48
+    },
+    {
+      "league": "LCK",
+      "n": 89,
+      "logloss_base": 0.579316068952837,
+      "logloss_fused": 0.5195065172438974,
+      "delta_logloss_pp": 5.981
+    },
+    {
+      "league": "EBL",
+      "n": 35,
+      "logloss_base": 0.6391924518429449,
+      "logloss_fused": 0.5861051730011033,
+      "delta_logloss_pp": 5.309
+    },
+    {
+      "league": "LCP",
+      "n": 39,
+      "logloss_base": 0.6317765695962708,
+      "logloss_fused": 0.5798491266578456,
+      "delta_logloss_pp": 5.193
+    },
+    {
+      "league": "RL",
+      "n": 36,
+      "logloss_base": 0.6517501881852061,
+      "logloss_fused": 0.6028534720617303,
+      "delta_logloss_pp": 4.89
+    },
+    {
+      "league": "LJL",
+      "n": 43,
+      "logloss_base": 0.6647492391634712,
+      "logloss_fused": 0.6171087448538292,
+      "delta_logloss_pp": 4.764
+    },
+    {
+      "league": "TCL",
+      "n": 47,
+      "logloss_base": 0.6522779600863976,
+      "logloss_fused": 0.6050373618960698,
+      "delta_logloss_pp": 4.724
+    },
+    {
+      "league": "VCS",
+      "n": 34,
+      "logloss_base": 0.6771962202974107,
+      "logloss_fused": 0.6314586352170113,
+      "delta_logloss_pp": 4.574
+    },
+    {
+      "league": "LEC",
+      "n": 42,
+      "logloss_base": 0.6162605918666074,
+      "logloss_fused": 0.5722978309153737,
+      "delta_logloss_pp": 4.396
+    },
+    {
+      "league": "LCKC",
+      "n": 90,
+      "logloss_base": 0.634912300884729,
+      "logloss_fused": 0.59547986114198,
+      "delta_logloss_pp": 3.943
+    },
+    {
+      "league": "NL",
+      "n": 32,
+      "logloss_base": 0.6808550102085426,
+      "logloss_fused": 0.6422198846895065,
+      "delta_logloss_pp": 3.864
+    },
+    {
+      "league": "EWC",
+      "n": 91,
+      "logloss_base": 0.6339779735423307,
+      "logloss_fused": 0.5959901176847584,
+      "delta_logloss_pp": 3.799
+    },
+    {
+      "league": "AL",
+      "n": 31,
+      "logloss_base": 0.66461676975504,
+      "logloss_fused": 0.6314492641141947,
+      "delta_logloss_pp": 3.317
+    },
+    {
+      "league": "ROL",
+      "n": 31,
+      "logloss_base": 0.6814290848861139,
+      "logloss_fused": 0.6482544578696562,
+      "delta_logloss_pp": 3.317
+    },
+    {
+      "league": "LIT",
+      "n": 48,
+      "logloss_base": 0.675206417920498,
+      "logloss_fused": 0.6420948253382067,
+      "delta_logloss_pp": 3.311
+    },
+    {
+      "league": "LAS",
+      "n": 45,
+      "logloss_base": 0.6299917109907401,
+      "logloss_fused": 0.6004563948442971,
+      "delta_logloss_pp": 2.954
+    },
+    {
+      "league": "CD",
+      "n": 70,
+      "logloss_base": 0.6677922436037117,
+      "logloss_fused": 0.6407711907658048,
+      "delta_logloss_pp": 2.702
+    },
+    {
+      "league": "LCS",
+      "n": 39,
+      "logloss_base": 0.6595062781133615,
+      "logloss_fused": 0.6398487529076322,
+      "delta_logloss_pp": 1.966
+    },
+    {
+      "league": "CBLOL",
+      "n": 37,
+      "logloss_base": 0.7030293345453146,
+      "logloss_fused": 0.6846931805330538,
+      "delta_logloss_pp": 1.834
+    },
+    {
+      "league": "NACL",
+      "n": 44,
+      "logloss_base": 0.6836638380768989,
+      "logloss_fused": 0.6686810418669824,
+      "delta_logloss_pp": 1.498
+    },
+    {
+      "league": "LPL",
+      "n": 88,
+      "logloss_base": 0.6853105312411245,
+      "logloss_fused": 0.6968567017820049,
+      "delta_logloss_pp": -1.155
+    },
+    {
+      "league": "HC",
+      "n": 39,
+      "logloss_base": 0.6910436758284163,
+      "logloss_fused": 0.6808707488683191,
+      "delta_logloss_pp": 1.017
+    },
+    {
+      "league": "HLL",
+      "n": 38,
+      "logloss_base": 0.6990920723702977,
+      "logloss_fused": 0.6918107994401765,
+      "delta_logloss_pp": 0.728
+    }
+  ],
+  "stage_contributions": [
+    {
+      "stage": "Players fusion",
+      "delta_logloss_pp": 1.713
+    },
+    {
+      "stage": "Microseg cal",
+      "delta_logloss_pp": 1.0152
+    },
+    {
+      "stage": "OOF Platt fused",
+      "delta_logloss_pp": 0.8084
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "market": "player_kills",
+  "best_iteration": 152,
+  "residual_sigma": 2.5869669858610256,
+  "feature_cols": [
+    "player_kills_mean",
+    "player_kills_std",
+    "champ_kills_mean_pos",
+    "position_id",
+    "league_tier",
+    "bo",
+    "playoffs",
+    "z_pre"
+  ],
+  "train_metadata": {
+    "market": "player_kills",
+    "n_train": 202520,
+    "n_val": 23800,
+    "best_iteration": 152,
+    "residual_sigma": 2.5869669858610256,
+    "feature_names": [
+      "player_kills_mean",
+      "player_kills_std",
+      "champ_kills_mean_pos",
+      "position_id",
+      "league_tier",
+      "bo",
+      "playoffs",
+      "z_pre"
+    ],
+    "feature_importance": {
+      "player_kills_mean": 416088.4227294922,
+      "player_kills_std": 64283.35403418541,
+      "champ_kills_mean_pos": 4949992.524265289,
+      "position_id": 28269.94034576416,
+      "league_tier": 66944.93633460999,
+      "bo": 39348.103982925415,
+      "playoffs": 6445.142181396484,
+      "z_pre": 290010.39862012863
+    }
+  }
+}

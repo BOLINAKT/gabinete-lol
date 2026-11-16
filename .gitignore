@@ -1,0 +1,135 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Ambiente virtual
+.venv/
+venv/
+env/
+ENV/
+
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Dados e artefatos pesados (não são código; ficam só no disco, fora do git)
+ops/
+# CSVs de dados são VERSIONADOS (projeto app-online 15/07): o robô do GitHub
+# Actions atualiza o diário e commita; PCs se atualizam com git pull.
+# Ingest/estado continuam fora (regra 2: estado != código).
+CSV_DIARIO/*.json
+CSV_HISTORICO/*.json
+backups/
+evidence/*
+# Exceção: a nota por liga NÃO é evidência, é dado que o app LÊ na tela
+# (badge no confronto + tabela na aba Rankings). Sem versionar, a Streamlit
+# Cloud fica sem — ela só puxa do git.
+!evidence/nota_por_liga.json
+# A nota do produto tambem e versionada: o vigia semanal re-mede as 8 fases na
+# nuvem, e sem commitar o resultado a medicao morria no runner — era por isso que
+# as fases apareciam com 26-29 dias por aqui.
+!evidence/product_scorecard.json
+# A regua dos totais tambem: a aba Analise de Linha agora LE dela para dizer
+# em que mercado o numero presta (ganho sobre a taxa-base). Sem versionar, a
+# nuvem nao tem o arquivo e o aviso some calado — o mesmo bug do live_models.
+!evidence/totals_scorecard.json
+# O livro-caixa PRECISA ser versionado: e nele que mora o carimbo de
+# 'visto pela primeira vez'. Ignorado, a idade zera a cada rodada e o
+# ledger nunca envelhece — que e a funcao inteira dele.
+!evidence/livro_caixa.json
+!evidence/gate_calibradores_lol.json
+!evidence/auditoria_pre_jogo.json
+!evidence/gate_calibrador_final.json
+# O placar "modelo x Pinnacle" (25/09/2026): a aba Oportunidades LE dele, e o
+# robo semanal (reguas_pinnacle.yml) o atualiza. Sem versionar, o site nao ve.
+!evidence/regua_pinnacle_*.json
+!evidence/frescor.json
+!evidence/regua_28.json
+tmp/
+# live_models/ é VERSIONADO (23/07): o app roda na Streamlit Cloud, que só puxa
+# do git e NÃO consegue treinar (1GB de RAM). Sem os modelos no repo, o painel
+# "Durante o mapa" + mercados ficavam N/A pra sempre na nuvem. São só ~10MB.
+# O robô do GitHub Actions retreina e commita; a nuvem só carrega, nunca treina.
+# Só o lixo de runtime fica de fora:
+live_models/*.pid
+live_models/*.log
+live_models/last_auto_retrain.txt
+.ruff_cache/
+
+# Backups locais (nunca versionar)
+*.bak
+# Backups datados feitos a mao antes de mexer numa configuracao
+# (ex.: .gabinete_settings.json.bak_antes_patchguard_20260911).
+*.bak_*
+
+# Artefatos ML pesados (gerados automaticamente)
+ml_trace_last.json
+
+# Cache e logs
+*.log
+bootstrap_cache/
+*.monitoring.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Linhas por confronto: agora sao so-de-sessao (nao persistir)
+user_lines_store.json
+
+# Estado/relatorios gerados em runtime (mudam a cada execucao - nao versionar)
+csv_bootstrap_*.json
+*.csv_ingest.json
+data_leakage_label_report.json
+# Artifacts do MODELO agora sao VERSIONADOS (projeto app-online 15/07): o
+# clone da nuvem (Streamlit Cloud) precisa nascer com o cerebro, e o robo
+# fase 2 retreina e commita. Estado de maquina (locks, caches, schedules)
+# continua fora.
+
+# Backups locais do artefato pre-deploy (nao versionar)
+*.pre_sos
+*.pre_dynk
+*.pre_*
+
+# Bundles de release (modelo+dados pra enviar) - nao versionar
+release/
+
+# lixo de editor (LibreOffice abre o CSV e cria trava)
+.~lock.*#
+
+# bytecode RECUPERADO carregado em runtime (fonte perdida) - PRECISA viajar
+!mlcore/_recovered/*.pyc
+
+# Estado de maquina (overrides com caminho absoluto) - NUNCA versionar
+.gabinete_settings.json
+
+# As DECLARACOES da regua das 28 sao ENTRADA, nao saida: e o que o repo afirma
+# sobre si mesmo. Sem versionar, a esteira roda com zero declaracoes e a nota
+# despenca sozinha na nuvem sem nada ter mudado.
+!evidence/regua_28_declaracoes.json
+
+# Lixo de execucao e area de rascunho (11/09/2026)
+scratchpad/
+.coverage
+anchor_regression_report.promotion.json
+rank_snapshot.json
+phase0_ml_v3_baseline_report.full.*.json

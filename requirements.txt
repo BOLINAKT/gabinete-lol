@@ -1,0 +1,25 @@
+# ESPELHO do venv que roda o app na máquina dele (2026-07-15).
+# Regra: a nuvem (Streamlit Cloud) instala EXATAMENTE o ambiente que
+# funciona local — divergência de versão já causou diferença de
+# comportamento. Ao atualizar pacote local, atualizar aqui junto.
+# (matplotlib/scikit-image/scikit-learn saíram: nada importa e não
+# existem no venv local — eram pins aspiracionais antigos.)
+altair==6.0.0
+click==8.3.1
+# live/in-game ML (guardado: pre-jogo roda sem ele; necessario p/ live-bet)
+lightgbm==4.6.0
+numpy==2.4.0
+pandas==2.3.3
+pillow==12.1.0
+python-dateutil==2.9.0.post0
+pytz==2025.2
+requests==2.32.5
+scipy==1.17.1
+streamlit==1.52.2
+tqdm==4.68.4
+tzdata==2025.3
+coverage==7.15.2
+pyflakes==3.4.0
+radon==6.0.1
+vulture==2.16
+PyYAML==6.0.3

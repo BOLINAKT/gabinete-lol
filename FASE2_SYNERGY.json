@@ -1,0 +1,98 @@
+{
+  "generated_at": "2026-05-29T14:24:06+00:00",
+  "version": "phase2_synergy_v1",
+  "split": {
+    "train": {
+      "n": 20252,
+      "date_range": [
+        "2024-01-01",
+        "2025-12-29"
+      ]
+    },
+    "val": {
+      "n": 2427,
+      "date_range": [
+        "2026-01-08",
+        "2026-03-31"
+      ],
+      "cutoff_start": "2026-01-01"
+    },
+    "test": {
+      "n": 2827,
+      "date_range": [
+        "2026-04-01",
+        "2026-05-28"
+      ],
+      "cutoff_start": "2026-04-01"
+    }
+  },
+  "baseline_metrics": {
+    "logloss": {
+      "metric": "logloss",
+      "point": 0.6153699588148087,
+      "ci_low": 0.6049122812426416,
+      "ci_high": 0.6264669414398375,
+      "n": 2827,
+      "n_bootstrap": 1000
+    },
+    "ece": {
+      "metric": "ece",
+      "point": 0.05938486405248276,
+      "ci_low": 0.042877124787355156,
+      "ci_high": 0.07792331660401726,
+      "n": 2827,
+      "n_bootstrap": 1000
+    }
+  },
+  "candidate_metrics": {
+    "logloss": {
+      "metric": "logloss",
+      "point": 0.6145515267844076,
+      "ci_low": 0.603714382770828,
+      "ci_high": 0.6258592398974187,
+      "n": 2827,
+      "n_bootstrap": 1000
+    },
+    "ece": {
+      "metric": "ece",
+      "point": 0.04547557303004223,
+      "ci_low": 0.0330054630475482,
+      "ci_high": 0.06406697064807396,
+      "n": 2827,
+      "n_bootstrap": 1000
+    }
+  },
+  "best_scale": 2.0,
+  "val_logloss_with_best_scale": 0.6556539710649477,
+  "gate_decision": {
+    "accept": false,
+    "reason": "insufficient_logloss_gain (delta=0.082pp < min=0.200pp)",
+    "delta_logloss": 0.0008184320304011061,
+    "delta_logloss_ci_low": -0.0015431204649618557,
+    "delta_logloss_ci_high": 0.0031814413961168686,
+    "p_value": 0.478,
+    "delta_ece": 0.013909291022440526,
+    "n": 2827,
+    "n_bootstrap": 1000,
+    "thresholds": {
+      "min_delta_logloss": 0.002,
+      "alpha": 0.05,
+      "ece_tolerance": 0.005,
+      "n_bootstrap": 1000
+    }
+  },
+  "synergy_table_metadata": {
+    "n_rows": 40504,
+    "n_combos": 10289,
+    "reference_date": "2025-12-29 10:52:27",
+    "global_prior": 0.49995062216077424,
+    "n_league_priors": 64
+  },
+  "synergy_diagnostics": {
+    "n_with_synergy": 2827,
+    "n_total": 2827,
+    "abs_mean": 0.055201292971277904,
+    "abs_max": 0.25134958470886026,
+    "abs_median": 0.04681281007258772
+  }
+}

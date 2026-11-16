@@ -1,0 +1,104 @@
+# Robô de RETREINO (fase 2 do app-online, aprovado por ele 16/07): sempre que
+# o CSV diário mudar no repositório — não importa se veio do robô de dados,
+# do upload dele ou do amigo — o modelo se atualiza sozinho e o site renasce
+# com CSV E modelo frescos. Sem PC de ninguém.
+#
+# v1 deliberadamente simples e segura:
+# - incremental (mlcore.update_incremental): o MESMO comando que o app roda
+#   no boot; aplica só os jogos novos, segundos de CPU, risco ~zero.
+# - fixtures de regressão re-pinadas junto (suite dos PCs segue verde pós-pull).
+# - full retrain/params continuam nos ciclos maiores (PC ou evolução futura).
+name: Retreino (modelo segue o CSV)
+
+on:
+  push:
+    paths:
+      - "CSV_DIARIO/*.csv"
+  # Rede de segurança SEM depender do secret GH_PAT: mesmo que um commit de
+  # CSV não dispare o push-trigger (anti-loop do GitHub p/ commits de robô),
+  # estas janelas passam ~40min depois das do robô de dados e aplicam o
+  # incremental (no-op barato quando não há nada novo).
+  schedule:
+    - cron: "57 9 * * *"
+    - cron: "3 16 * * *"
+    - cron: "21 22 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: retreino
+  cancel-in-progress: false
+
+jobs:
+  incremental:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # anti-eco: commits do próprio robô de retreino não tocam CSV_DIARIO,
+    # então não redisparam este workflow.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependências
+        run: pip install --quiet -r requirements.txt
+
+      - name: Contrato de dados (CSV novo bloqueia o modelo se vazar/quebrar)
+        # sai != 0 quando o contrato nao promove: o job para e o modelo antigo fica
+        run: python tools/run_phase1_data_contract.py
+
+      - name: Incremental (aplica jogos novos ao modelo)
+        run: |
+          python -m mlcore.update_incremental \
+            --artifact ml_artifact.json \
+            --csv CSV_DIARIO/2026_LoL_esports_match_data_from_OraclesElixir.csv \
+            --players players_artifact.json
+
+      # NOTA POR JOGADOR (28/10/2026, aprovada por ele): Elo de cada jogador pelos CSVs;
+      # o app mistura so em jogo de liga nacional. Ver tools/nota_jogadores_lol.py.
+      - name: Nota por jogador
+        run: python tools/nota_jogadores_lol.py
+
+      # SUPER-LIVE (16/11/2026): tabelas da camada pos-draft (campeao e jogador-campeao) com os
+      # jogos novos; os coeficientes medidos ficam. Falhar aqui nao barra o modelo.
+      - name: Camada pos-draft (SUPER-LIVE)
+        continue-on-error: true
+        run: python tools/camada_draft.py
+
+      - name: Re-pinar fixtures de regressão no modelo novo
+        run: python tools/update_regression_fixtures.py
+
+      - name: Guardas pós-retreino (nunca publicar modelo quebrado)
+        run: |
+          python -m unittest \
+            mlcore.tests.test_live_artifact_complete \
+            mlcore.tests.test_odds_regression \
+            mlcore.tests.test_odds_regression_40 -v 2>&1 | tail -5
+
+      # CANARIO (23/10/2026): o modelo novo preve parecido com o que esta no ar,
+      # nos mesmos jogos? Barrou: o job para aqui e o modelo anterior fica.
+      # Tetos medidos no historico do git (ver a ferramenta).
+      - name: Canario (modelo novo x modelo no ar)
+        run: python tools/canario_modelo.py
+
+      - name: Commitar modelo atualizado
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add ml_artifact.json players_artifact.json mlcore/tests/fixtures/ phase1_data_contract_report.json nota_jogadores_lol.json camada_draft_lol.json
+          if git diff --cached --quiet; then
+            echo "modelo não mudou (CSV sem jogos novos) — nada a commitar"
+          else
+            git commit -m "Robô: modelo atualizado (incremental pós-CSV novo)"
+            # push com retry: upload/robô podem commitar ao mesmo tempo
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado (concorrência) — rebase e retry $i/3"
+              git pull --rebase --autostash || exit 1
+            done
+            git push
+          fi

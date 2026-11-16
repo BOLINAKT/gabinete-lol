@@ -1,0 +1,112 @@
+# REGUAS "MODELO x PINNACLE", TODA SEMANA (25/09/2026)
+#
+# Ele perguntou a nota do modelo "em relacao as notas da pinnacle". As reguas
+# ja existiam (tools/abates_contra_a_casa.py e tools/handicap_contra_a_casa.py),
+# mas so rodavam quando eu rodava. Com 23 a 26 partidas a resposta ainda e
+# "nao da para concluir"; o minimo e 60. Os robos de odds juntam partidas
+# sozinhos -- este so refaz a conta toda semana e grava o placar em
+# evidence/regua_pinnacle_*.json, que a aba Oportunidades mostra.
+#
+# O VENCEDOR ENTROU AQUI (16/10/2026). Ate entao ele nao rodava no robo porque
+# precisa da regua da nota honesta, que morava so na maquina dele -- e a regua
+# ficou parada em 25/09 com 25 partidas, abaixo do minimo de 100. Rodada a mao
+# em 16/10, com 132 partidas, ela deu a primeira resposta conclusiva: a
+# Pinnacle acerta mais que o modelo no vencedor do mapa 1.
+#
+# Agora o robo refaz a nota honesta SO no periodo que tem odds da Pinnacle
+# (coleta comecou em 13/09/2026), em dobras de 30 dias, com TETO de 6 dobras:
+# a regua passa a olhar os ultimos ~180 dias. Sem o teto o tempo cresceria
+# para sempre; e uma janela movel mostra degradacao recente que a acumulada
+# esconde. O mesmo arquivo (marca base_agree) alimenta a versao "com vitoria"
+# do handicap, que tambem nao rodava aqui.
+# FONTES (abertas em 16/10/2026):
+# - Shankar, Herman, Parameswaran, "Rethinking Streaming Machine Learning
+#   Evaluation", https://arxiv.org/pdf/2205.11473 -- janela acumulada "often
+#   leads to evaluation that treats distant data points equally to more recent
+#   ones"; no exemplo deles, "The cumulative window barely registers the
+#   accuracy drop."
+# - Hyndman & Athanasopoulos, FPP3 5.10, https://otexts.com/fpp3/tscv.html --
+#   origem rolante: "The corresponding training set consists only of
+#   observations that occurred prior to the observation that forms the test
+#   set." E o que a nota honesta faz, e por isso juntar as dobras e valido.
+name: Reguas (modelo x Pinnacle)
+
+on:
+  schedule:
+    # segunda-feira, 10:17 UTC -- longe dos minutos disputados e dos outros robos
+    - cron: "17 10 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reguas-pinnacle
+  cancel-in-progress: false
+
+jobs:
+  medir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependencias
+        run: pip install --quiet -r requirements.txt
+
+      # A NOTA HONESTA DO PERIODO COM ODDS (16/10/2026): cada jogo pontuado
+      # por um modelo que nao o viu. E o que o vencedor e o handicap "com
+      # vitoria" comparam com a Pinnacle. ~12 min por dobra no robo.
+      - name: Nota honesta do periodo com odds (alimenta vencedor e handicap com vitoria)
+        continue-on-error: true
+        timeout-minutes: 100
+        run: |
+          N=$(python -c "import datetime, math; d = (datetime.date.today() - datetime.date(2026, 9, 13)).days; print(max(1, min(6, math.ceil(d / 30))))")
+          echo "dobras de 30 dias: $N"
+          python tools/nota_honesta.py --marca base_agree --dobras "$N" --cadencia diaria --com-hybrid --com-form
+
+      # O REAJUSTE SEMANAL DO TOTAL DE KILLS (25/09/2026): refeito com os
+      # ultimos 60 dias ANTES das reguas, para elas ja medirem a conta nova.
+      # O motor ignora o arquivo se ele tiver mais de 21 dias.
+      - name: Reajuste semanal do total de kills
+        continue-on-error: true
+        run: python tools/gerar_kills_recalibrado.py
+
+      - name: Total de kills contra a Pinnacle
+        continue-on-error: true
+        run: python tools/abates_contra_a_casa.py
+
+      - name: Handicap de kills contra a Pinnacle
+        continue-on-error: true
+        run: python tools/handicap_contra_a_casa.py
+
+      - name: Vencedor contra a Pinnacle
+        continue-on-error: true
+        run: python tools/modelo_contra_a_casa.py
+
+      # POLYMARKET x PINNACLE (26/10/2026): as duas casas nos mesmos jogos BO1,
+      # contra o resultado. Minimo 200 partidas antes de concluir.
+      - name: Polymarket contra a Pinnacle
+        continue-on-error: true
+        run: python tools/polymarket_contra_pinnacle.py
+
+      - name: Commitar o placar
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add kills_recalibrado.json evidence/regua_pinnacle_total_kills.json evidence/regua_pinnacle_handicap_kills.json evidence/regua_pinnacle_vencedor.json evidence/regua_pinnacle_polymarket.json || true
+          if git diff --cached --quiet; then
+            echo "nada mudou - nada a commitar"
+          else
+            git commit -m "Robo: reajuste semanal dos kills e reguas modelo x Pinnacle"
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado (concorrencia) - rebase e nova tentativa $i/3"
+              git pull --rebase --autostash || exit 1
+            done
+            git push
+          fi

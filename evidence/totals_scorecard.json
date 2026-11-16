@@ -1,0 +1,21 @@
+{
+ "generated_at": "2026-11-16T18:32:48",
+ "nota_totais": 6.22,
+ "por_mercado": {
+  "kills": 8.37,
+  "towers": 5.33,
+  "dragons": 5.65,
+  "barons": 6.54,
+  "inhibitors": 5.09,
+  "time": 6.36
+ },
+ "season": 2026,
+ "ganho_vs_base": {
+  "kills": 0.0182,
+  "towers": 0.0038,
+  "dragons": 0.005,
+  "barons": -0.0027,
+  "inhibitors": -0.0012,
+  "time": 0.0062
+ }
+}

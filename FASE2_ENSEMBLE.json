@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-05-29T14:53:55+00:00",
+  "version": "phase2_ensemble_v1",
+  "split": {
+    "train": {
+      "n": 20252,
+      "date_range": [
+        "2024-01-01",
+        "2025-12-29"
+      ]
+    },
+    "val": {
+      "n": 2427,
+      "date_range": [
+        "2026-01-08",
+        "2026-03-31"
+      ],
+      "cutoff_start": "2026-01-01"
+    },
+    "test": {
+      "n": 2827,
+      "date_range": [
+        "2026-04-01",
+        "2026-05-28"
+      ],
+      "cutoff_start": "2026-04-01"
+    }
+  },
+  "best_synergy_scale": 1.5,
+  "best_counter_scale": 2.0,
+  "val_logloss_with_best_scales": 0.6552037139874037,
+  "baseline_metrics": {
+    "logloss": {
+      "metric": "logloss",
+      "point": 0.6153699588148087,
+      "ci_low": 0.6049122812426416,
+      "ci_high": 0.6264669414398375,
+      "n": 2827,
+      "n_bootstrap": 1000
+    },
+    "ece": {
+      "metric": "ece",
+      "point": 0.05938486405248276,
+      "ci_low": 0.042877124787355156,
+      "ci_high": 0.07792331660401726,
+      "n": 2827,
+      "n_bootstrap": 1000
+    }
+  },
+  "candidate_metrics": {
+    "logloss": {
+      "metric": "logloss",
+      "point": 0.6139895102803032,
+      "ci_low": 0.6030187014415764,
+      "ci_high": 0.6251485611934473,
+      "n": 2827,
+      "n_bootstrap": 1000
+    },
+    "ece": {
+      "metric": "ece",
+      "point": 0.049272582390313145,
+      "ci_low": 0.03563467424694941,
+      "ci_high": 0.06727616729621481,
+      "n": 2827,
+      "n_bootstrap": 1000
+    }
+  },
+  "gate_decision": {
+    "accept": false,
+    "reason": "insufficient_logloss_gain (delta=0.138pp < min=0.200pp)",
+    "delta_logloss": 0.001380448534505474,
+    "delta_logloss_ci_low": -0.0009741967534965257,
+    "delta_logloss_ci_high": 0.003571420980114537,
+    "p_value": 0.246,
+    "delta_ece": 0.010112281662169612,
+    "n": 2827,
+    "n_bootstrap": 1000,
+    "thresholds": {
+      "min_delta_logloss": 0.002,
+      "alpha": 0.05,
+      "ece_tolerance": 0.005,
+      "n_bootstrap": 1000
+    }
+  }
+}

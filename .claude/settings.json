@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(python -c \"import ast; src = open\\('plays_app.py', encoding='utf-8-sig'\\).read\\(\\); ast.parse\\(src\\); print\\(f'plays_app.py: {len\\(src.splitlines\\(\\)\\)} linhas, OK'\\)\")",
+      "Bash(.venv\\\\Scripts\\\\python.exe -m pytest mlcore/tests/test_shared_formatters.py mlcore/tests/test_text_normalization.py mlcore/tests/test_matchup_filters_core.py -v)",
+      "Bash(python -m pytest mlcore/tests/test_shared_formatters.py mlcore/tests/test_text_normalization.py mlcore/tests/test_matchup_filters_core.py -v)",
+      "PowerShell(cd \"c:\\\\Users\\\\steam\\\\Desktop\\\\gabinetelolweb3.1\"; $files = @\\(\"app_core/stats_config.py\",\"app_core/stats_scope_core.py\",\"app_core/stats_builders_core.py\",\"app_core/championship_stats_core.py\",\"mlcore/tests/test_championship_stats_core.py\"\\); foreach \\($f in $files\\) { .\\\\.venv\\\\Scripts\\\\python.exe -c \"import ast; ast.parse\\(open\\('$f', encoding='utf-8-sig'\\).read\\(\\)\\); print\\('OK  $f'\\)\" 2>&1 })",
+      "PowerShell(cd c:\\\\Users\\\\steam\\\\Desktop\\\\gabinetelolweb3.1 ; \\(Get-Content app_core\\\\identity_registry_core.py\\).Count; \\(Get-Content app_core\\\\league_transfer_features_core.py\\).Count)",
+      "Bash(.venv\\\\Scripts\\\\python.exe -c \"import app_core.live_bet_shared_core; print\\('shared_core OK'\\)\")",
+      "Bash(.venv\\\\Scripts\\\\python.exe -c \"import app_core.live_bet_analysis_core; print\\('analysis_core OK'\\)\")",
+      "Bash(.venv\\\\Scripts\\\\python.exe -c \"import app_core.live_bet_tab_core; print\\('tab_core OK'\\)\")",
+      "Bash(python3)",
+      "Bash(ls \"c:/Users/steam/.claude/projects/c--Users-steam-Desktop-gabinetelolweb3-1/memory/\")",
+      "Read(//c/Users/steam/.claude/projects/c--Users-steam-Desktop-gabinetelolweb3-1/memory/**)",
+      "PowerShell(\\(Get-Content \"c:\\\\Users\\\\steam\\\\Desktop\\\\gabinetelolweb3.1\\\\app_core\\\\live_bet_tab_core.py\"\\).Count)",
+      "Bash(.venv/Scripts/python.exe -m unittest discover -s mlcore/tests -p \"test_*.py\")",
+      "Bash(.venv/Scripts/python.exe -c \"from app_core.players_elo_core import elo_rank_table; print\\('ok'\\)\")",
+      "Bash(python -c *)",
+      "Bash(python -m pytest mlcore/tests/test_fit_runtime_core.py -q)",
+      "Bash(python -m unittest mlcore.tests.test_fit_runtime_core -v)",
+      "Bash(python -m unittest mlcore.tests.test_analysis_runtime_state_core -v)",
+      "Bash(python -m unittest mlcore.tests.test_fit_runtime_core mlcore.tests.test_analysis_runtime_state_core mlcore.tests.test_ml_session_runtime_core -v)",
+      "Bash(python -m pytest mlcore/tests/test_confidence_governor_e2e.py -v)",
+      "Bash(python -m unittest mlcore/tests/test_confidence_governor_e2e.py -v)",
+      "Bash(python -m unittest mlcore/tests/test_improvements_regression.py -v)",
+      "PowerShell(cd c:\\Users\\steam\\Desktop\\gabinetelolweb3.1 ; .venv\\Scripts\\python.exe -m unittest *)",
+      "PowerShell(cd \"c:\\Users\\steam\\Desktop\\gabinetelolweb3.1\"; .venv\\Scripts\\python.exe -m unittest *)",
+      "PowerShell(cd \"c:\\Users\\steam\\Desktop\\gabinetelolweb3.1\"; .\\.venv\\Scripts\\python.exe -m unittest *)",
+      "PowerShell(cd c:\\Users\\steam\\Desktop\\gabinetelolweb3.1; .venv\\Scripts\\python.exe -m unittest *)",
+      "PowerShell(.venv\\Scripts\\python.exe -m unittest discover *)",
+      "PowerShell(.venv\\Scripts\\python.exe -m unittest mlcore.tests.*)",
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(Select-String *)",
+      "PowerShell((Get-Content *).Count)",
+      "Bash(.venv/Scripts/python.exe -m unittest mlcore.tests.*)",
+      "Bash(.venv\\Scripts\\python.exe -m unittest mlcore.tests.*)"
+    ]
+  }
+}

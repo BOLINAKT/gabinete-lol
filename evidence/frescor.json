@@ -1,0 +1,180 @@
+{
+ "gerado_em": "2026-11-16T18:48:58",
+ "reguas": [
+  {
+   "arquivo": "cadencia_calibrador.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 31.3,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "gate_calibrador_tier.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 31.3,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "regua_pinnacle_handicap_kills.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 6.9,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "regua_pinnacle_polymarket.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 6.9,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "regua_pinnacle_total_kills.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 6.9,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "regua_pinnacle_vencedor.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 6.9,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "desempenho.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.2,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "suite_esteira.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.2,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "auditoria_pre_jogo.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": null,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "gate_calibrador_final.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": null,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "gate_calibradores_lol.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": null,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "regua_28.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.0,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "regua_28_declaracoes.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": null,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "sonda_polymarket.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": null,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "frescor.json",
+   "rotulo": "esta propria varredura",
+   "cadencia_dias": 7,
+   "idade_dias": 7.0,
+   "estado": "ok"
+  },
+  {
+   "arquivo": "code_scorecard.json",
+   "rotulo": "regua de codigo (product --run)",
+   "cadencia_dias": 7,
+   "idade_dias": 0.0,
+   "estado": "ok"
+  },
+  {
+   "arquivo": "data_scorecard.json",
+   "rotulo": "regua de dados (product --run)",
+   "cadencia_dias": 7,
+   "idade_dias": 0.0,
+   "estado": "ok"
+  },
+  {
+   "arquivo": "fusion_scorecard.json",
+   "rotulo": "nota oficial (vigia semanal)",
+   "cadencia_dias": 7,
+   "idade_dias": 0.0,
+   "estado": "ok"
+  },
+  {
+   "arquivo": "live_scorecard.json",
+   "rotulo": "regua da live (product --run)",
+   "cadencia_dias": 7,
+   "idade_dias": 0.0,
+   "estado": "ok"
+  },
+  {
+   "arquivo": "livro_caixa.json",
+   "rotulo": "livro-caixa do silencio",
+   "cadencia_dias": 7,
+   "idade_dias": 0.0,
+   "estado": "ok"
+  },
+  {
+   "arquivo": "nota_por_liga.json",
+   "rotulo": "nota por liga — APARECE NA TELA",
+   "cadencia_dias": 7,
+   "idade_dias": 0.0,
+   "estado": "ok"
+  },
+  {
+   "arquivo": "players_scorecard.json",
+   "rotulo": "regua de jogadores (product --run)",
+   "cadencia_dias": 7,
+   "idade_dias": 0.0,
+   "estado": "ok"
+  },
+  {
+   "arquivo": "product_scorecard.json",
+   "rotulo": "nota do produto (vigia semanal)",
+   "cadencia_dias": 7,
+   "idade_dias": 0.0,
+   "estado": "ok"
+  },
+  {
+   "arquivo": "reliability_scorecard.json",
+   "rotulo": "regua de confiabilidade (product --run)",
+   "cadencia_dias": 7,
+   "idade_dias": 0.0,
+   "estado": "ok"
+  },
+  {
+   "arquivo": "totals_scorecard.json",
+   "rotulo": "regua dos totais (vigia semanal)",
+   "cadencia_dias": 7,
+   "idade_dias": 0.0,
+   "estado": "ok"
+  }
+ ]
+}

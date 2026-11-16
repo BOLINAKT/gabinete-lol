@@ -1,0 +1,844 @@
+{
+  "generated_at": "2026-03-05T11:06:05",
+  "cfg_used": {
+    "strength": 0.25,
+    "team_shrink_mult": 1.0,
+    "players_alpha_mult": 1.0,
+    "min_coverage": 0.3,
+    "weight_cap": 0.12
+  },
+  "rows_total": 3500,
+  "applied_rows": 3312,
+  "applied_rate": 0.9462857142857143,
+  "mean_abs_diff_pp_when_applied": 0.06631084624652664,
+  "global": {
+    "off": {
+      "n": 3500,
+      "logloss": 0.6607806096809979,
+      "brier": 0.23439874529802557
+    },
+    "on": {
+      "n": 3500,
+      "logloss": 0.6608480228426392,
+      "brier": 0.23442749132870364
+    },
+    "gain_logloss": -6.741316164127209e-05,
+    "gain_brier": -2.8746030678067358e-05
+  },
+  "by_league": {
+    "LPL": {
+      "rows": 271,
+      "off": {
+        "n": 271,
+        "logloss": 0.6417220395796762,
+        "brier": 0.2254309916588981
+      },
+      "on": {
+        "n": 271,
+        "logloss": 0.641804140880847,
+        "brier": 0.22545717624237352
+      },
+      "gain_logloss": -8.21013011708116e-05
+    },
+    "EM": {
+      "rows": 217,
+      "off": {
+        "n": 217,
+        "logloss": 0.6809656336170643,
+        "brier": 0.2434531876354315
+      },
+      "on": {
+        "n": 217,
+        "logloss": 0.6809027820098628,
+        "brier": 0.24343234954577658
+      },
+      "gain_logloss": 6.28516072015417e-05
+    },
+    "LAS": {
+      "rows": 209,
+      "off": {
+        "n": 209,
+        "logloss": 0.5993957305176917,
+        "brier": 0.2072076930104027
+      },
+      "on": {
+        "n": 209,
+        "logloss": 0.5995169192137008,
+        "brier": 0.20726535600708704
+      },
+      "gain_logloss": -0.000121188696009078
+    },
+    "LCK": {
+      "rows": 202,
+      "off": {
+        "n": 202,
+        "logloss": 0.640836872910524,
+        "brier": 0.22496049151425335
+      },
+      "on": {
+        "n": 202,
+        "logloss": 0.6408088108346045,
+        "brier": 0.22494954787952537
+      },
+      "gain_logloss": 2.8062075919543794e-05
+    },
+    "LCKC": {
+      "rows": 187,
+      "off": {
+        "n": 187,
+        "logloss": 0.6857199982779411,
+        "brier": 0.2459297988795172
+      },
+      "on": {
+        "n": 187,
+        "logloss": 0.6854905122932511,
+        "brier": 0.24583946275810656
+      },
+      "gain_logloss": 0.00022948598468996995
+    },
+    "LCP": {
+      "rows": 151,
+      "off": {
+        "n": 151,
+        "logloss": 0.6535128651465133,
+        "brier": 0.23098466084378821
+      },
+      "on": {
+        "n": 151,
+        "logloss": 0.6536284024436017,
+        "brier": 0.23103663979880926
+      },
+      "gain_logloss": -0.00011553729708835281
+    },
+    "LJL": {
+      "rows": 142,
+      "off": {
+        "n": 142,
+        "logloss": 0.6265378927483392,
+        "brier": 0.21761501675329412
+      },
+      "on": {
+        "n": 142,
+        "logloss": 0.6264959879338947,
+        "brier": 0.21759607276224943
+      },
+      "gain_logloss": 4.190481444443783e-05
+    },
+    "LEC": {
+      "rows": 141,
+      "off": {
+        "n": 141,
+        "logloss": 0.684574458873632,
+        "brier": 0.24553217916545328
+      },
+      "on": {
+        "n": 141,
+        "logloss": 0.6847688496793728,
+        "brier": 0.24562889174645433
+      },
+      "gain_logloss": -0.00019439080574079615
+    },
+    "LFL": {
+      "rows": 131,
+      "off": {
+        "n": 131,
+        "logloss": 0.6805078225144261,
+        "brier": 0.24389580768121003
+      },
+      "on": {
+        "n": 131,
+        "logloss": 0.6804818250971153,
+        "brier": 0.24388190546527613
+      },
+      "gain_logloss": 2.5997417310796855e-05
+    },
+    "AL": {
+      "rows": 127,
+      "off": {
+        "n": 127,
+        "logloss": 0.6419642720077222,
+        "brier": 0.22479998591654327
+      },
+      "on": {
+        "n": 127,
+        "logloss": 0.6425004907750463,
+        "brier": 0.22505554712039225
+      },
+      "gain_logloss": -0.0005362187673241259
+    },
+    "LIT": {
+      "rows": 103,
+      "off": {
+        "n": 103,
+        "logloss": 0.6454796944574155,
+        "brier": 0.22698148528523948
+      },
+      "on": {
+        "n": 103,
+        "logloss": 0.6457270904963035,
+        "brier": 0.2270776580167533
+      },
+      "gain_logloss": -0.00024739603888801476
+    },
+    "WLDs": {
+      "rows": 96,
+      "off": {
+        "n": 96,
+        "logloss": 0.6862987011201437,
+        "brier": 0.24597509075144655
+      },
+      "on": {
+        "n": 96,
+        "logloss": 0.6862376896854542,
+        "brier": 0.2459394621565781
+      },
+      "gain_logloss": 6.1011434689506316e-05
+    },
+    "HW": {
+      "rows": 95,
+      "off": {
+        "n": 95,
+        "logloss": 0.6740829019903711,
+        "brier": 0.2406594062424113
+      },
+      "on": {
+        "n": 95,
+        "logloss": 0.6739570394690277,
+        "brier": 0.24059693801989931
+      },
+      "gain_logloss": 0.0001258625213433895
+    },
+    "ROL": {
+      "rows": 90,
+      "off": {
+        "n": 90,
+        "logloss": 0.650648435019414,
+        "brier": 0.23082548793155316
+      },
+      "on": {
+        "n": 90,
+        "logloss": 0.6506551027942089,
+        "brier": 0.23078286529399597
+      },
+      "gain_logloss": -6.667774794855141e-06
+    },
+    "HLL": {
+      "rows": 88,
+      "off": {
+        "n": 88,
+        "logloss": 0.6321049444974673,
+        "brier": 0.22042956973846592
+      },
+      "on": {
+        "n": 88,
+        "logloss": 0.6324440859887263,
+        "brier": 0.22058463770474693
+      },
+      "gain_logloss": -0.0003391414912589097
+    },
+    "NLC": {
+      "rows": 83,
+      "off": {
+        "n": 83,
+        "logloss": 0.6519685817673588,
+        "brier": 0.23074661627010898
+      },
+      "on": {
+        "n": 83,
+        "logloss": 0.6523772358295878,
+        "brier": 0.23092037048943842
+      },
+      "gain_logloss": -0.000408654062229008
+    },
+    "LPLOL": {
+      "rows": 79,
+      "off": {
+        "n": 79,
+        "logloss": 0.644499875507391,
+        "brier": 0.2267095875872963
+      },
+      "on": {
+        "n": 79,
+        "logloss": 0.6450803517076731,
+        "brier": 0.22695608602615266
+      },
+      "gain_logloss": -0.0005804762002821207
+    },
+    "TCL": {
+      "rows": 79,
+      "off": {
+        "n": 79,
+        "logloss": 0.6624731254563079,
+        "brier": 0.2350788833036847
+      },
+      "on": {
+        "n": 79,
+        "logloss": 0.6623226382372109,
+        "brier": 0.23499335519910605
+      },
+      "gain_logloss": 0.00015048721909693974
+    },
+    "DCup": {
+      "rows": 75,
+      "off": {
+        "n": 75,
+        "logloss": 0.7405259613683907,
+        "brier": 0.27258978903049436
+      },
+      "on": {
+        "n": 75,
+        "logloss": 0.7402911037176623,
+        "brier": 0.27248269974915107
+      },
+      "gain_logloss": 0.00023485765072839282
+    },
+    "CBLOL": {
+      "rows": 68,
+      "off": {
+        "n": 68,
+        "logloss": 0.6907471507242356,
+        "brier": 0.24871011816441047
+      },
+      "on": {
+        "n": 68,
+        "logloss": 0.690811942678328,
+        "brier": 0.2487428155992625
+      },
+      "gain_logloss": -6.479195409236915e-05
+    },
+    "CD": {
+      "rows": 67,
+      "off": {
+        "n": 67,
+        "logloss": 0.6651912794974338,
+        "brier": 0.23626351131546877
+      },
+      "on": {
+        "n": 67,
+        "logloss": 0.6653540551905934,
+        "brier": 0.2363431986754448
+      },
+      "gain_logloss": -0.00016277569315958917
+    },
+    "EBL": {
+      "rows": 67,
+      "off": {
+        "n": 67,
+        "logloss": 0.6295220044435512,
+        "brier": 0.21985310901975505
+      },
+      "on": {
+        "n": 67,
+        "logloss": 0.6302730017027154,
+        "brier": 0.22017748631868456
+      },
+      "gain_logloss": -0.0007509972591641656
+    },
+    "Asia Master": {
+      "rows": 66,
+      "off": {
+        "n": 66,
+        "logloss": 0.7017244162591445,
+        "brier": 0.25354098208932807
+      },
+      "on": {
+        "n": 66,
+        "logloss": 0.7016962539516424,
+        "brier": 0.253523363781738
+      },
+      "gain_logloss": 2.816230750213311e-05
+    },
+    "LCS": {
+      "rows": 59,
+      "off": {
+        "n": 59,
+        "logloss": 0.6806484705139146,
+        "brier": 0.24394878944688458
+      },
+      "on": {
+        "n": 59,
+        "logloss": 0.6807030623969751,
+        "brier": 0.2439801365860506
+      },
+      "gain_logloss": -5.459188306045082e-05
+    },
+    "KeSPA": {
+      "rows": 56,
+      "off": {
+        "n": 56,
+        "logloss": 0.6719502912956008,
+        "brier": 0.2382153422631623
+      },
+      "on": {
+        "n": 56,
+        "logloss": 0.6719105725033296,
+        "brier": 0.23820260991688183
+      },
+      "gain_logloss": 3.9718792271159487e-05
+    },
+    "RL": {
+      "rows": 52,
+      "off": {
+        "n": 52,
+        "logloss": 0.6353017414366455,
+        "brier": 0.22133577028432988
+      },
+      "on": {
+        "n": 52,
+        "logloss": 0.6360132088761887,
+        "brier": 0.22168941551566457
+      },
+      "gain_logloss": -0.0007114674395432008
+    },
+    "LTA S": {
+      "rows": 50,
+      "off": {
+        "n": 50,
+        "logloss": 0.6648881315018272,
+        "brier": 0.23610600147423752
+      },
+      "on": {
+        "n": 50,
+        "logloss": 0.6650193036643219,
+        "brier": 0.23616752252862797
+      },
+      "gain_logloss": -0.0001311721624946971
+    },
+    "PRM": {
+      "rows": 49,
+      "off": {
+        "n": 49,
+        "logloss": 0.6695405877899236,
+        "brier": 0.23848220470010154
+      },
+      "on": {
+        "n": 49,
+        "logloss": 0.6695433755925744,
+        "brier": 0.23848231824454957
+      },
+      "gain_logloss": -2.7878026507277553e-06
+    },
+    "LTA N": {
+      "rows": 48,
+      "off": {
+        "n": 48,
+        "logloss": 0.6873239952728548,
+        "brier": 0.24668033983959003
+      },
+      "on": {
+        "n": 48,
+        "logloss": 0.6870852064198832,
+        "brier": 0.2465705435791911
+      },
+      "gain_logloss": 0.00023878885297157204
+    },
+    "NACL": {
+      "rows": 44,
+      "off": {
+        "n": 44,
+        "logloss": 0.691973911145349,
+        "brier": 0.24949418094805498
+      },
+      "on": {
+        "n": 44,
+        "logloss": 0.6918584222639214,
+        "brier": 0.24943933837985136
+      },
+      "gain_logloss": 0.00011548888142765001
+    },
+    "ASI": {
+      "rows": 42,
+      "off": {
+        "n": 42,
+        "logloss": 0.7466990112050721,
+        "brier": 0.27601789129007104
+      },
+      "on": {
+        "n": 42,
+        "logloss": 0.7466705400516049,
+        "brier": 0.27599993416365465
+      },
+      "gain_logloss": 2.8471153467157784e-05
+    },
+    "CCWS": {
+      "rows": 40,
+      "off": {
+        "n": 40,
+        "logloss": 0.6706421443160868,
+        "brier": 0.23907467859017664
+      },
+      "on": {
+        "n": 40,
+        "logloss": 0.6706689350526885,
+        "brier": 0.2390861265094554
+      },
+      "gain_logloss": -2.679073660172282e-05
+    },
+    "LFL2": {
+      "rows": 37,
+      "off": {
+        "n": 37,
+        "logloss": 0.6797037178469286,
+        "brier": 0.24349878244228815
+      },
+      "on": {
+        "n": 37,
+        "logloss": 0.6796858217688807,
+        "brier": 0.24348808241097153
+      },
+      "gain_logloss": 1.7896078047918706e-05
+    },
+    "HC": {
+      "rows": 30,
+      "off": {
+        "n": 30,
+        "logloss": 0.6635416699003458,
+        "brier": 0.23521909041607653
+      },
+      "on": {
+        "n": 30,
+        "logloss": 0.6635193069062795,
+        "brier": 0.23520618060171755
+      },
+      "gain_logloss": 2.2362994066327246e-05
+    },
+    "IC": {
+      "rows": 28,
+      "off": {
+        "n": 28,
+        "logloss": 0.6747639231619847,
+        "brier": 0.24096323665144284
+      },
+      "on": {
+        "n": 28,
+        "logloss": 0.6744715353305956,
+        "brier": 0.24081778493342165
+      },
+      "gain_logloss": 0.0002923878313891848
+    },
+    "LES": {
+      "rows": 25,
+      "off": {
+        "n": 25,
+        "logloss": 0.712198655877928,
+        "brier": 0.2592766203633875
+      },
+      "on": {
+        "n": 25,
+        "logloss": 0.7118373644489414,
+        "brier": 0.25910155718066874
+      },
+      "gain_logloss": 0.0003612914289865543
+    },
+    "LTA": {
+      "rows": 22,
+      "off": {
+        "n": 22,
+        "logloss": 0.6319890953575841,
+        "brier": 0.21942572777719604
+      },
+      "on": {
+        "n": 22,
+        "logloss": 0.6316760213021241,
+        "brier": 0.219270164173453
+      },
+      "gain_logloss": 0.00031307405545999423
+    },
+    "LVP SL": {
+      "rows": 22,
+      "off": {
+        "n": 22,
+        "logloss": 0.6869384383116214,
+        "brier": 0.24723886228072017
+      },
+      "on": {
+        "n": 22,
+        "logloss": 0.6866547851155193,
+        "brier": 0.24709800625805564
+      },
+      "gain_logloss": 0.00028365319610212936
+    },
+    "LRS": {
+      "rows": 17,
+      "off": {
+        "n": 17,
+        "logloss": 0.7028549634633885,
+        "brier": 0.25464120969064913
+      },
+      "on": {
+        "n": 17,
+        "logloss": 0.7021934302739538,
+        "brier": 0.25431657518356915
+      },
+      "gain_logloss": 0.0006615331894347376
+    },
+    "LRN": {
+      "rows": 14,
+      "off": {
+        "n": 14,
+        "logloss": 0.6710197278822732,
+        "brier": 0.23886379966303575
+      },
+      "on": {
+        "n": 14,
+        "logloss": 0.671402410454003,
+        "brier": 0.23905534005614057
+      },
+      "gain_logloss": -0.0003826825717297977
+    },
+    "PCS": {
+      "rows": 11,
+      "off": {
+        "n": 11,
+        "logloss": 0.5717533349257147,
+        "brier": 0.19083515725022251
+      },
+      "on": {
+        "n": 11,
+        "logloss": 0.5720023220142213,
+        "brier": 0.19094654399461522
+      },
+      "gain_logloss": -0.00024898708850662477
+    },
+    "VCS": {
+      "rows": 10,
+      "off": {
+        "n": 10,
+        "logloss": 0.6935781540378544,
+        "brier": 0.25023773465735744
+      },
+      "on": {
+        "n": 10,
+        "logloss": 0.6936312471101096,
+        "brier": 0.2502638070679447
+      },
+      "gain_logloss": -5.3093072255205875e-05
+    },
+    "HM": {
+      "rows": 6,
+      "off": {
+        "n": 6,
+        "logloss": 0.5497404796754732,
+        "brier": 0.17906315050492486
+      },
+      "on": {
+        "n": 6,
+        "logloss": 0.5498807076924683,
+        "brier": 0.1791342355008724
+      },
+      "gain_logloss": -0.00014022801699509202
+    },
+    "PRMP": {
+      "rows": 4,
+      "off": {
+        "n": 4,
+        "logloss": 0.6480410359573803,
+        "brier": 0.22709739180733923
+      },
+      "on": {
+        "n": 4,
+        "logloss": 0.648109056369131,
+        "brier": 0.22712449888750752
+      },
+      "gain_logloss": -6.802041175069107e-05
+    }
+  },
+  "major_drawdowns": [],
+  "neutral_zone": {
+    "gain_logloss_eps": 0.0002,
+    "gain_brier_eps": 8e-05,
+    "near_gain_logloss_eps": 0.0005,
+    "near_gain_brier_eps": 0.0002
+  },
+  "decision": "promote",
+  "reasons": [
+    "promovido_por_zona_neutra_sem_drawdown"
+  ],
+  "fit": {
+    "best": {
+      "cfg": {
+        "strength": 0.25,
+        "team_shrink_mult": 1.0,
+        "players_alpha_mult": 1.0,
+        "min_coverage": 0.3,
+        "weight_cap": 0.12
+      },
+      "decision": "promote",
+      "gain_logloss": -6.741316164127209e-05,
+      "gain_brier": -2.8746030678067358e-05,
+      "applied_rate": 0.9462857142857143
+    },
+    "top_trials": [
+      {
+        "cfg": {
+          "strength": 0.25,
+          "team_shrink_mult": 1.0,
+          "players_alpha_mult": 1.0,
+          "min_coverage": 0.3,
+          "weight_cap": 0.12
+        },
+        "decision": "promote",
+        "gain_logloss": -6.741316164127209e-05,
+        "gain_brier": -2.8746030678067358e-05,
+        "applied_rate": 0.9462857142857143
+      },
+      {
+        "cfg": {
+          "strength": 0.25,
+          "team_shrink_mult": 1.0,
+          "players_alpha_mult": 1.0,
+          "min_coverage": 0.3,
+          "weight_cap": 0.16
+        },
+        "decision": "promote",
+        "gain_logloss": -6.741316164127209e-05,
+        "gain_brier": -2.8746030678067358e-05,
+        "applied_rate": 0.9462857142857143
+      },
+      {
+        "cfg": {
+          "strength": 0.25,
+          "team_shrink_mult": 1.0,
+          "players_alpha_mult": 1.0,
+          "min_coverage": 0.3,
+          "weight_cap": 0.2
+        },
+        "decision": "promote",
+        "gain_logloss": -6.741316164127209e-05,
+        "gain_brier": -2.8746030678067358e-05,
+        "applied_rate": 0.9462857142857143
+      },
+      {
+        "cfg": {
+          "strength": 0.25,
+          "team_shrink_mult": 1.0,
+          "players_alpha_mult": 1.0,
+          "min_coverage": 0.25,
+          "weight_cap": 0.12
+        },
+        "decision": "promote",
+        "gain_logloss": -7.165645266438148e-05,
+        "gain_brier": -3.073694999655707e-05,
+        "applied_rate": 0.9537142857142857
+      },
+      {
+        "cfg": {
+          "strength": 0.25,
+          "team_shrink_mult": 1.0,
+          "players_alpha_mult": 1.0,
+          "min_coverage": 0.25,
+          "weight_cap": 0.16
+        },
+        "decision": "promote",
+        "gain_logloss": -7.165645266438148e-05,
+        "gain_brier": -3.073694999655707e-05,
+        "applied_rate": 0.9537142857142857
+      },
+      {
+        "cfg": {
+          "strength": 0.25,
+          "team_shrink_mult": 1.0,
+          "players_alpha_mult": 1.0,
+          "min_coverage": 0.25,
+          "weight_cap": 0.2
+        },
+        "decision": "promote",
+        "gain_logloss": -7.165645266438148e-05,
+        "gain_brier": -3.073694999655707e-05,
+        "applied_rate": 0.9537142857142857
+      },
+      {
+        "cfg": {
+          "strength": 0.25,
+          "team_shrink_mult": 0.7,
+          "players_alpha_mult": 1.0,
+          "min_coverage": 0.3,
+          "weight_cap": 0.12
+        },
+        "decision": "promote",
+        "gain_logloss": -7.252224956566522e-05,
+        "gain_brier": -3.091731115481555e-05,
+        "applied_rate": 0.9462857142857143
+      },
+      {
+        "cfg": {
+          "strength": 0.25,
+          "team_shrink_mult": 0.7,
+          "players_alpha_mult": 1.0,
+          "min_coverage": 0.3,
+          "weight_cap": 0.16
+        },
+        "decision": "promote",
+        "gain_logloss": -7.252224956566522e-05,
+        "gain_brier": -3.091731115481555e-05,
+        "applied_rate": 0.9462857142857143
+      },
+      {
+        "cfg": {
+          "strength": 0.25,
+          "team_shrink_mult": 0.7,
+          "players_alpha_mult": 1.0,
+          "min_coverage": 0.3,
+          "weight_cap": 0.2
+        },
+        "decision": "promote",
+        "gain_logloss": -7.252224956566522e-05,
+        "gain_brier": -3.091731115481555e-05,
+        "applied_rate": 0.9462857142857143
+      },
+      {
+        "cfg": {
+          "strength": 0.25,
+          "team_shrink_mult": 0.5,
+          "players_alpha_mult": 1.0,
+          "min_coverage": 0.3,
+          "weight_cap": 0.12
+        },
+        "decision": "promote",
+        "gain_logloss": -7.594001188560018e-05,
+        "gain_brier": -3.236950642937497e-05,
+        "applied_rate": 0.9462857142857143
+      },
+      {
+        "cfg": {
+          "strength": 0.25,
+          "team_shrink_mult": 0.5,
+          "players_alpha_mult": 1.0,
+          "min_coverage": 0.3,
+          "weight_cap": 0.16
+        },
+        "decision": "promote",
+        "gain_logloss": -7.594001188560018e-05,
+        "gain_brier": -3.236950642937497e-05,
+        "applied_rate": 0.9462857142857143
+      },
+      {
+        "cfg": {
+          "strength": 0.25,
+          "team_shrink_mult": 0.5,
+          "players_alpha_mult": 1.0,
+          "min_coverage": 0.3,
+          "weight_cap": 0.2
+        },
+        "decision": "promote",
+        "gain_logloss": -7.594001188560018e-05,
+        "gain_brier": -3.236950642937497e-05,
+        "applied_rate": 0.9462857142857143
+      }
+    ],
+    "n_trials": 540
+  },
+  "inputs": {
+    "artifact": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\ml_artifact.json",
+    "players_artifact": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\players_artifact.json",
+    "params": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\params_fitted.json",
+    "csvs": [
+      "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\CSV_HISTORICO\\2024_LoL_esports_match_data_from_OraclesElixir.csv",
+      "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\CSV_HISTORICO\\2025_LoL_esports_match_data_from_OraclesElixir.csv",
+      "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\CSV_DIARIO\\2026_LoL_esports_match_data_from_OraclesElixir.csv"
+    ],
+    "speed": "fast",
+    "max_rows": 0
+  },
+  "params_updated": "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\params_fitted.json"
+}

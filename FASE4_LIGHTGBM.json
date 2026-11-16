@@ -1,0 +1,101 @@
+{
+  "generated_at": "2026-05-29T15:13:54+00:00",
+  "version": "phase4_lightgbm_v1",
+  "split": {
+    "train": {
+      "n": 20252,
+      "date_range": [
+        "2024-01-01",
+        "2025-12-29"
+      ]
+    },
+    "val": {
+      "n": 2427,
+      "date_range": [
+        "2026-01-08",
+        "2026-03-31"
+      ],
+      "cutoff_start": "2026-01-01"
+    },
+    "test": {
+      "n": 2827,
+      "date_range": [
+        "2026-04-01",
+        "2026-05-28"
+      ],
+      "cutoff_start": "2026-04-01"
+    }
+  },
+  "best_lgb_weight": 0.5,
+  "lgb_best_iter": 50,
+  "lgb_best_val_logloss": 0.6570394434169124,
+  "feature_importance": {
+    "z_baseline": 28167.941816806793,
+    "counter_score": 7766.236891746521,
+    "bo": 6572.154636383057,
+    "synergy_delta": 5540.093941688538,
+    "n_players_eff": 1900.6292595863342,
+    "n_team_eff": 1517.6131796836853,
+    "archetype_score": 628.0482897758484,
+    "playoffs": 437.08217000961304,
+    "league_tier": 406.74901008605957
+  },
+  "baseline_metrics": {
+    "logloss": {
+      "metric": "logloss",
+      "point": 0.6153699588148087,
+      "ci_low": 0.6049122812426416,
+      "ci_high": 0.6264669414398375,
+      "n": 2827,
+      "n_bootstrap": 1000
+    },
+    "ece": {
+      "metric": "ece",
+      "point": 0.05938486405248276,
+      "ci_low": 0.042877124787355156,
+      "ci_high": 0.07792331660401726,
+      "n": 2827,
+      "n_bootstrap": 1000
+    }
+  },
+  "candidate_metrics": {
+    "logloss": {
+      "metric": "logloss",
+      "point": 0.6120978536833427,
+      "ci_low": 0.6028126432263041,
+      "ci_high": 0.6214658598529651,
+      "n": 2827,
+      "n_bootstrap": 1000
+    },
+    "ece": {
+      "metric": "ece",
+      "point": 0.06118445841623252,
+      "ci_low": 0.045444441657035754,
+      "ci_high": 0.07846862406639636,
+      "n": 2827,
+      "n_bootstrap": 1000
+    }
+  },
+  "gate_decision": {
+    "accept": false,
+    "reason": "not_significant (p=0.1160 >= alpha=0.0500)",
+    "delta_logloss": 0.00327210513146603,
+    "delta_logloss_ci_low": -0.0007244054587813853,
+    "delta_logloss_ci_high": 0.0071780386352180425,
+    "p_value": 0.116,
+    "delta_ece": -0.001799594363749761,
+    "n": 2827,
+    "n_bootstrap": 1000,
+    "thresholds": {
+      "min_delta_logloss": 0.002,
+      "alpha": 0.05,
+      "ece_tolerance": 0.005,
+      "n_bootstrap": 1000
+    }
+  },
+  "draft_features_meta": {
+    "synergy_n_combos": 10289,
+    "counter_n_pairs": 1379,
+    "archetype_n_games": 20252
+  }
+}

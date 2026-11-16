@@ -1,0 +1,110 @@
+{
+  "version": "phase8_operations_gate_v1",
+  "generated_at": "2026-03-05T15:17:53+00:00",
+  "decision": "promote",
+  "reasons": [],
+  "summary": {
+    "ok": 9,
+    "total": 9,
+    "anchors_fail": 0,
+    "anchors_delta_fail": 0,
+    "anchors_delta_alert": true,
+    "monitoring_bands": 5,
+    "monitoring_major_present": [
+      "CBLOL",
+      "LCK",
+      "LCP",
+      "LEC",
+      "LPL"
+    ]
+  },
+  "checks": [
+    {
+      "check": "phase1_data_contract",
+      "decision": "promote",
+      "ok": true
+    },
+    {
+      "check": "phase4b_marginal_tuning",
+      "decision": "promote",
+      "ok": true
+    },
+    {
+      "check": "phase6_series_bo",
+      "decision": "promote",
+      "ok": true
+    },
+    {
+      "check": "phase7_layer_uncertainty",
+      "decision": "promote",
+      "ok": true
+    },
+    {
+      "check": "lacuna_guardrail",
+      "decision": "promote",
+      "ok": true
+    },
+    {
+      "check": "anchor_semantic_regression",
+      "decision": "promote",
+      "ok": true,
+      "detail": {
+        "fail": 0,
+        "ok": 10,
+        "total": 10
+      }
+    },
+    {
+      "check": "anchor_delta_regression",
+      "decision": "promote",
+      "ok": true,
+      "non_blocking": true,
+      "detail": {
+        "observed_decision": "unknown",
+        "fail": 0,
+        "ok": 0,
+        "total": 0,
+        "allowed_fail": 1,
+        "alert": true
+      }
+    },
+    {
+      "check": "monitoring_global_odd_bands",
+      "decision": "promote",
+      "ok": true,
+      "detail": "bands=5"
+    },
+    {
+      "check": "monitoring_by_league_coverage",
+      "decision": "promote",
+      "ok": true,
+      "detail": {
+        "required": [
+          "CBLOL",
+          "LCK",
+          "LCP",
+          "LEC",
+          "LPL"
+        ],
+        "present": [
+          "CBLOL",
+          "LCK",
+          "LCP",
+          "LEC",
+          "LPL"
+        ]
+      }
+    }
+  ],
+  "sources": {
+    "phase1": "phase1_data_contract_report.json",
+    "phase4b": "phase4b_marginal_tuning_report.json",
+    "phase6": "phase6_series_bo_report.json",
+    "phase7": "phase7_layer_uncertainty_report.json",
+    "lacuna": "lacuna_guardrail_report.json",
+    "anchors": "anchor_regression_report.json",
+    "anchors_delta": "odd_delta_guardrail_report.json",
+    "backtest": "backtest_pipeline_abc_by_league_report.json"
+  },
+  "run_log": ""
+}

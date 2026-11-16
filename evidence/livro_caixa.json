@@ -1,0 +1,157 @@
+{
+ "gerado_em": "2026-11-16T18:48:58",
+ "itens": [
+  {
+   "familia": "continue_on_error",
+   "item": "nota_semanal.yml: Re-medir a nota por liga (o aviso do confronto)",
+   "onde": ".github/workflows/nota_semanal.yml:94",
+   "chave": "continue_on_error|nota_semanal.yml: Re-medir a nota por liga (o aviso do confronto)",
+   "visto_em": "2026-08-26",
+   "idade_dias": 82
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "nota_semanal.yml: Re-medir as demais fases (totais + as baratas) e consolidar",
+   "onde": ".github/workflows/nota_semanal.yml:82",
+   "chave": "continue_on_error|nota_semanal.yml: Re-medir as demais fases (totais + as baratas) e consolidar",
+   "visto_em": "2026-08-26",
+   "idade_dias": 82
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "nota_semanal.yml: Registro de campeoes em dia? (conserta sozinho se faltar)",
+   "onde": ".github/workflows/nota_semanal.yml:55",
+   "chave": "continue_on_error|nota_semanal.yml: Registro de campeoes em dia? (conserta sozinho se faltar)",
+   "visto_em": "2026-08-26",
+   "idade_dias": 82
+  },
+  {
+   "familia": "lido_nao_versionado",
+   "item": "ml_trace_last.json",
+   "onde": "app_core/ml_session_runtime_core.py:423",
+   "chave": "lido_nao_versionado|ml_trace_last.json",
+   "visto_em": "2026-08-26",
+   "idade_dias": 82
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "nota_semanal.yml: Livro-caixa do silencio",
+   "onde": ".github/workflows/nota_semanal.yml:145",
+   "chave": "continue_on_error|nota_semanal.yml: Livro-caixa do silencio",
+   "visto_em": "2026-08-27",
+   "idade_dias": 81
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "nota_semanal.yml: Frescor das reguas",
+   "onde": ".github/workflows/nota_semanal.yml:154",
+   "chave": "continue_on_error|nota_semanal.yml: Frescor das reguas",
+   "visto_em": "2026-09-06",
+   "idade_dias": 71
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "nota_semanal.yml: Regua das 28",
+   "onde": ".github/workflows/nota_semanal.yml:141",
+   "chave": "continue_on_error|nota_semanal.yml: Regua das 28",
+   "visto_em": "2026-09-06",
+   "idade_dias": 71
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "nota_semanal.yml: Alarme de qualidade pos-retreino",
+   "onde": ".github/workflows/nota_semanal.yml:107",
+   "chave": "continue_on_error|nota_semanal.yml: Alarme de qualidade pos-retreino",
+   "visto_em": "2026-10-26",
+   "idade_dias": 21
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "reguas_pinnacle.yml: Handicap de kills contra a Pinnacle",
+   "onde": ".github/workflows/reguas_pinnacle.yml:84",
+   "chave": "continue_on_error|reguas_pinnacle.yml: Handicap de kills contra a Pinnacle",
+   "visto_em": "2026-10-26",
+   "idade_dias": 21
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "reguas_pinnacle.yml: Nota honesta do periodo com odds (alimenta vencedor e handicap com vitoria)",
+   "onde": ".github/workflows/reguas_pinnacle.yml:65",
+   "chave": "continue_on_error|reguas_pinnacle.yml: Nota honesta do periodo com odds (alimenta vencedor e handicap com vitoria)",
+   "visto_em": "2026-10-26",
+   "idade_dias": 21
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "reguas_pinnacle.yml: Polymarket contra a Pinnacle",
+   "onde": ".github/workflows/reguas_pinnacle.yml:94",
+   "chave": "continue_on_error|reguas_pinnacle.yml: Polymarket contra a Pinnacle",
+   "visto_em": "2026-10-26",
+   "idade_dias": 21
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "reguas_pinnacle.yml: Reajuste semanal do total de kills",
+   "onde": ".github/workflows/reguas_pinnacle.yml:76",
+   "chave": "continue_on_error|reguas_pinnacle.yml: Reajuste semanal do total de kills",
+   "visto_em": "2026-10-26",
+   "idade_dias": 21
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "reguas_pinnacle.yml: Total de kills contra a Pinnacle",
+   "onde": ".github/workflows/reguas_pinnacle.yml:80",
+   "chave": "continue_on_error|reguas_pinnacle.yml: Total de kills contra a Pinnacle",
+   "visto_em": "2026-10-26",
+   "idade_dias": 21
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "reguas_pinnacle.yml: Vencedor contra a Pinnacle",
+   "onde": ".github/workflows/reguas_pinnacle.yml:88",
+   "chave": "continue_on_error|reguas_pinnacle.yml: Vencedor contra a Pinnacle",
+   "visto_em": "2026-10-26",
+   "idade_dias": 21
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "retreino_completo.yml: Reajuste trimestral do calibrador com grupo (jan/abr/jul/out)",
+   "onde": ".github/workflows/retreino_completo.yml:111",
+   "chave": "continue_on_error|retreino_completo.yml: Reajuste trimestral do calibrador com grupo (jan/abr/jul/out)",
+   "visto_em": "2026-10-26",
+   "idade_dias": 21
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "suite.yml: Medir desempenho computacional",
+   "onde": ".github/workflows/suite.yml:50",
+   "chave": "continue_on_error|suite.yml: Medir desempenho computacional",
+   "visto_em": "2026-10-26",
+   "idade_dias": 21
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "suite.yml: Rodar a suite inteira",
+   "onde": ".github/workflows/suite.yml:43",
+   "chave": "continue_on_error|suite.yml: Rodar a suite inteira",
+   "visto_em": "2026-10-26",
+   "idade_dias": 21
+  },
+  {
+   "familia": "lido_nao_versionado",
+   "item": "rank_snapshot.json",
+   "onde": "app_core/rankings_tab_core.py:388",
+   "chave": "lido_nao_versionado|rank_snapshot.json",
+   "visto_em": "2026-10-26",
+   "idade_dias": 21
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "nota_semanal.yml: Publicar o livro-caixa e o frescor",
+   "onde": ".github/workflows/nota_semanal.yml:158",
+   "chave": "continue_on_error|nota_semanal.yml: Publicar o livro-caixa e o frescor",
+   "visto_em": "2026-11-02",
+   "idade_dias": 14
+  }
+ ]
+}

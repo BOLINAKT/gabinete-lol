@@ -1,0 +1,166 @@
+{
+ "gerado_em": "2026-10-16T11:25:14",
+ "meses": [
+  "2026-04",
+  "2026-05",
+  "2026-06",
+  "2026-07",
+  "2026-08",
+  "2026-09",
+  "2026-10"
+ ],
+ "janela": 2500,
+ "alfa_bonferroni": 0.016666666666666666,
+ "calibradores": {
+  "inicio": {
+   "agrupamento": "formato + fase",
+   "l2": 10.0,
+   "n": 2430
+  },
+  "2026-04": {
+   "agrupamento": "formato + fase",
+   "l2": 10.0,
+   "n": 2430
+  },
+  "2026-05": {
+   "agrupamento": "formato + fase",
+   "l2": 3.0,
+   "n": 2500
+  },
+  "2026-06": {
+   "agrupamento": "formato + fase",
+   "l2": 1.0,
+   "n": 2500
+  },
+  "2026-07": {
+   "agrupamento": "formato + fase",
+   "l2": 0.3,
+   "n": 2500
+  },
+  "2026-08": {
+   "agrupamento": "formato + fase",
+   "l2": 1.0,
+   "n": 2500
+  },
+  "2026-09": {
+   "agrupamento": "formato BO",
+   "l2": 0.3,
+   "n": 2500
+  },
+  "2026-10": {
+   "agrupamento": "formato + fase",
+   "l2": 3.0,
+   "n": 2500
+  }
+ },
+ "politicas": {
+  "nunca": {
+   "logloss": 0.579335,
+   "reajustes": [],
+   "gatilho": []
+  },
+  "mensal": {
+   "logloss": 0.573209,
+   "reajustes": [
+    "2026-04",
+    "2026-05",
+    "2026-06",
+    "2026-07",
+    "2026-08",
+    "2026-09",
+    "2026-10"
+   ],
+   "gatilho": []
+  },
+  "trimestral": {
+   "logloss": 0.572108,
+   "reajustes": [
+    "2026-04",
+    "2026-07",
+    "2026-10"
+   ],
+   "gatilho": []
+  },
+  "gatilho": {
+   "logloss": 0.572844,
+   "reajustes": [
+    "2026-05",
+    "2026-06",
+    "2026-07",
+    "2026-09",
+    "2026-10"
+   ],
+   "gatilho": [
+    {
+     "mes": "2026-05",
+     "olhou": "2026-04",
+     "intercepto": 0.111,
+     "inclinacao": 1.313,
+     "disparou": true
+    },
+    {
+     "mes": "2026-06",
+     "olhou": "2026-05",
+     "intercepto": -0.104,
+     "inclinacao": 1.215,
+     "disparou": true
+    },
+    {
+     "mes": "2026-07",
+     "olhou": "2026-06",
+     "intercepto": 0.322,
+     "inclinacao": 1.115,
+     "disparou": true
+    },
+    {
+     "mes": "2026-08",
+     "olhou": "2026-07",
+     "intercepto": -0.031,
+     "inclinacao": 0.967,
+     "disparou": false
+    },
+    {
+     "mes": "2026-09",
+     "olhou": "2026-08",
+     "intercepto": 0.214,
+     "inclinacao": 1.173,
+     "disparou": true
+    },
+    {
+     "mes": "2026-10",
+     "olhou": "2026-09",
+     "intercepto": -0.144,
+     "inclinacao": 0.654,
+     "disparou": true
+    }
+   ]
+  }
+ },
+ "contra_nunca": {
+  "mensal": {
+   "ganho": 0.006126,
+   "ic_lo": 0.0007,
+   "ic_hi": 0.010661,
+   "p": 0.017139,
+   "passa": false,
+   "reajustes": 7
+  },
+  "trimestral": {
+   "ganho": 0.007226,
+   "ic_lo": 0.002995,
+   "ic_hi": 0.010696,
+   "p": 0.000386,
+   "passa": true,
+   "reajustes": 3
+  },
+  "gatilho": {
+   "ganho": 0.006491,
+   "ic_lo": 0.001148,
+   "ic_hi": 0.010949,
+   "p": 0.011815,
+   "passa": true,
+   "reajustes": 5
+  }
+ },
+ "escolhida": "trimestral"
+}

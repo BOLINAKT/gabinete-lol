@@ -1,0 +1,469 @@
+{
+  "generated_at": "2026-05-29T13:29:01+00:00",
+  "version": "phase1_validation_v1",
+  "split": {
+    "train": {
+      "n": 20252,
+      "date_range": [
+        "2024-01-01",
+        "2025-12-29"
+      ]
+    },
+    "val": {
+      "n": 2427,
+      "date_range": [
+        "2026-01-08",
+        "2026-03-31"
+      ],
+      "cutoff_start": "2026-01-01"
+    },
+    "test": {
+      "n": 2827,
+      "date_range": [
+        "2026-04-01",
+        "2026-05-28"
+      ],
+      "cutoff_start": "2026-04-01"
+    }
+  },
+  "baseline_metrics": {
+    "logloss": {
+      "metric": "logloss",
+      "point": 0.6175486351466704,
+      "ci_low": 0.6074399249542937,
+      "ci_high": 0.6279625222172868,
+      "n": 2827,
+      "n_bootstrap": 1000
+    },
+    "ece": {
+      "metric": "ece",
+      "point": 0.06615917547526574,
+      "ci_low": 0.051147957401790185,
+      "ci_high": 0.0841800437499858,
+      "n": 2827,
+      "n_bootstrap": 1000
+    },
+    "brier": {
+      "metric": "brier",
+      "point": 0.21436604783135052,
+      "ci_low": 0.20972381678879523,
+      "ci_high": 0.21862781837775777,
+      "n": 2827,
+      "n_bootstrap": 1000
+    }
+  },
+  "candidates": [
+    {
+      "name": "post_fusion_cal",
+      "description": "Production (pre-fusion cal) + extra Microseg + Platt AFTER team+players fusion",
+      "decision": {
+        "accept": true,
+        "reason": "passed_all_checks",
+        "delta_logloss": 0.0021786763318616398,
+        "delta_logloss_ci_low": 0.0003443656647375004,
+        "delta_logloss_ci_high": 0.0038072497765061497,
+        "p_value": 0.008,
+        "delta_ece": 0.006774311422782987,
+        "n": 2827,
+        "n_bootstrap": 1000,
+        "thresholds": {
+          "min_delta_logloss": 0.002,
+          "alpha": 0.05,
+          "ece_tolerance": 0.005,
+          "n_bootstrap": 1000
+        }
+      }
+    },
+    {
+      "name": "uncertainty_enabled",
+      "description": "Retroactive: enable Uncertainty layer with old defaults (strength=0.55, prior=22)",
+      "decision": {
+        "accept": false,
+        "reason": "insufficient_logloss_gain (delta=-1.042pp < min=0.200pp)",
+        "delta_logloss": -0.010417720278944609,
+        "delta_logloss_ci_low": -0.01241691736674666,
+        "delta_logloss_ci_high": -0.008293375672245418,
+        "p_value": 0.0,
+        "delta_ece": -0.021087131449591554,
+        "n": 2827,
+        "n_bootstrap": 1000,
+        "thresholds": {
+          "min_delta_logloss": 0.002,
+          "alpha": 0.05,
+          "ece_tolerance": 0.005,
+          "n_bootstrap": 1000
+        }
+      },
+      "interpretation": "REJECT = baseline (disabled) is correct; ACCEPT = should re-enable"
+    },
+    {
+      "name": "marginal_trust_enabled",
+      "description": "Retroactive: enable Marginal Trust with old defaults (strength=0.70, prior=28)",
+      "decision": {
+        "accept": false,
+        "reason": "insufficient_logloss_gain (delta=-0.704pp < min=0.200pp)",
+        "delta_logloss": -0.0070448577868823525,
+        "delta_logloss_ci_low": -0.008428191645913685,
+        "delta_logloss_ci_high": -0.005591262625317395,
+        "p_value": 0.0,
+        "delta_ece": -0.014163502838297412,
+        "n": 2827,
+        "n_bootstrap": 1000,
+        "thresholds": {
+          "min_delta_logloss": 0.002,
+          "alpha": 0.05,
+          "ece_tolerance": 0.005,
+          "n_bootstrap": 1000
+        }
+      },
+      "interpretation": "REJECT = baseline (disabled) is correct; ACCEPT = should re-enable"
+    },
+    {
+      "name": "series_gamma_per_league",
+      "description": "Fit per-league gammas on train (54 pairs), apply on test BO3/5",
+      "decision": {
+        "accept": false,
+        "reason": "not_significant (p=0.0660 >= alpha=0.0500)",
+        "delta_logloss": 0.007266163038328943,
+        "delta_logloss_ci_low": -0.00029650599682640166,
+        "delta_logloss_ci_high": 0.014669472798178984,
+        "p_value": 0.066,
+        "delta_ece": 0.009302255605085907,
+        "n": 1278,
+        "n_bootstrap": 1000,
+        "thresholds": {
+          "min_delta_logloss": 0.002,
+          "alpha": 0.05,
+          "ece_tolerance": 0.005,
+          "n_bootstrap": 1000
+        }
+      },
+      "fitted_gammas": [
+        {
+          "league": "LCKC",
+          "bo": 3,
+          "gamma": 0.6,
+          "n_train": 597
+        },
+        {
+          "league": "LCK",
+          "bo": 3,
+          "gamma": 0.6,
+          "n_train": 514
+        },
+        {
+          "league": "PCS",
+          "bo": 3,
+          "gamma": 0.75,
+          "n_train": 285
+        },
+        {
+          "league": "NACL",
+          "bo": 3,
+          "gamma": 1.25,
+          "n_train": 379
+        },
+        {
+          "league": "LPL",
+          "bo": 3,
+          "gamma": 0.65,
+          "n_train": 805
+        },
+        {
+          "league": "LLA",
+          "bo": 3,
+          "gamma": 1.4,
+          "n_train": 70
+        },
+        {
+          "league": "VCS",
+          "bo": 3,
+          "gamma": 1.35,
+          "n_train": 161
+        },
+        {
+          "league": "LDL",
+          "bo": 3,
+          "gamma": 1.15,
+          "n_train": 320
+        },
+        {
+          "league": "LEC",
+          "bo": 3,
+          "gamma": 0.85,
+          "n_train": 220
+        },
+        {
+          "league": "LEC",
+          "bo": 5,
+          "gamma": 0.6,
+          "n_train": 60
+        },
+        {
+          "league": "LJL",
+          "bo": 3,
+          "gamma": 0.6,
+          "n_train": 70
+        },
+        {
+          "league": "CBLOLA",
+          "bo": 3,
+          "gamma": 1.95,
+          "n_train": 71
+        },
+        {
+          "league": "HM",
+          "bo": 3,
+          "gamma": 0.65,
+          "n_train": 140
+        },
+        {
+          "league": "ESLOL",
+          "bo": 3,
+          "gamma": 0.6,
+          "n_train": 109
+        },
+        {
+          "league": "HC",
+          "bo": 3,
+          "gamma": 1.15,
+          "n_train": 162
+        },
+        {
+          "league": "EBL",
+          "bo": 3,
+          "gamma": 1.75,
+          "n_train": 95
+        },
+        {
+          "league": "NLC",
+          "bo": 5,
+          "gamma": 0.6,
+          "n_train": 55
+        },
+        {
+          "league": "NLC",
+          "bo": 3,
+          "gamma": 1.75,
+          "n_train": 174
+        },
+        {
+          "league": "LIT",
+          "bo": 3,
+          "gamma": 1.95,
+          "n_train": 86
+        },
+        {
+          "league": "LPLOL",
+          "bo": 3,
+          "gamma": 1.95,
+          "n_train": 68
+        },
+        {
+          "league": "LCS",
+          "bo": 3,
+          "gamma": 1.45,
+          "n_train": 68
+        },
+        {
+          "league": "PCS",
+          "bo": 5,
+          "gamma": 0.6,
+          "n_train": 55
+        },
+        {
+          "league": "LVP SL",
+          "bo": 3,
+          "gamma": 1.0,
+          "n_train": 111
+        },
+        {
+          "league": "LFL2",
+          "bo": 3,
+          "gamma": 1.95,
+          "n_train": 52
+        },
+        {
+          "league": "TCL",
+          "bo": 3,
+          "gamma": 0.6,
+          "n_train": 72
+        },
+        {
+          "league": "TCL",
+          "bo": 5,
+          "gamma": 0.6,
+          "n_train": 65
+        },
+        {
+          "league": "PRM",
+          "bo": 3,
+          "gamma": 0.8,
+          "n_train": 205
+        },
+        {
+          "league": "LFL",
+          "bo": 3,
+          "gamma": 0.7,
+          "n_train": 191
+        },
+        {
+          "league": "PRM",
+          "bo": 5,
+          "gamma": 0.6,
+          "n_train": 65
+        },
+        {
+          "league": "NEXO",
+          "bo": 3,
+          "gamma": 1.95,
+          "n_train": 53
+        },
+        {
+          "league": "LIT",
+          "bo": 5,
+          "gamma": 0.6,
+          "n_train": 50
+        },
+        {
+          "league": "AL",
+          "bo": 3,
+          "gamma": 1.2,
+          "n_train": 176
+        },
+        {
+          "league": "LCK",
+          "bo": 5,
+          "gamma": 0.6,
+          "n_train": 75
+        },
+        {
+          "league": "LPL",
+          "bo": 5,
+          "gamma": 0.6,
+          "n_train": 135
+        },
+        {
+          "league": "LCKC",
+          "bo": 5,
+          "gamma": 0.6,
+          "n_train": 70
+        },
+        {
+          "league": "LFL2",
+          "bo": 5,
+          "gamma": 0.6,
+          "n_train": 65
+        },
+        {
+          "league": "EM",
+          "bo": 3,
+          "gamma": 0.75,
+          "n_train": 350
+        },
+        {
+          "league": "EM",
+          "bo": 5,
+          "gamma": 0.6,
+          "n_train": 70
+        },
+        {
+          "league": "MSI",
+          "bo": 3,
+          "gamma": 1.65,
+          "n_train": 80
+        },
+        {
+          "league": "MSI",
+          "bo": 5,
+          "gamma": 0.6,
+          "n_train": 61
+        },
+        {
+          "league": "LRN",
+          "bo": 3,
+          "gamma": 1.0,
+          "n_train": 87
+        },
+        {
+          "league": "LRS",
+          "bo": 3,
+          "gamma": 1.45,
+          "n_train": 90
+        },
+        {
+          "league": "CT",
+          "bo": 3,
+          "gamma": 1.95,
+          "n_train": 53
+        },
+        {
+          "league": "LAS",
+          "bo": 3,
+          "gamma": 0.6,
+          "n_train": 255
+        },
+        {
+          "league": "WLDs",
+          "bo": 3,
+          "gamma": 0.7,
+          "n_train": 112
+        },
+        {
+          "league": "HW",
+          "bo": 3,
+          "gamma": 0.95,
+          "n_train": 87
+        },
+        {
+          "league": "LCP",
+          "bo": 3,
+          "gamma": 1.45,
+          "n_train": 160
+        },
+        {
+          "league": "LTA S",
+          "bo": 3,
+          "gamma": 0.6,
+          "n_train": 135
+        },
+        {
+          "league": "RL",
+          "bo": 3,
+          "gamma": 0.7,
+          "n_train": 109
+        },
+        {
+          "league": "LTA N",
+          "bo": 3,
+          "gamma": 0.6,
+          "n_train": 98
+        },
+        {
+          "league": "CD",
+          "bo": 3,
+          "gamma": 0.6,
+          "n_train": 139
+        },
+        {
+          "league": "ROL",
+          "bo": 3,
+          "gamma": 1.95,
+          "n_train": 111
+        },
+        {
+          "league": "HLL",
+          "bo": 3,
+          "gamma": 1.95,
+          "n_train": 78
+        },
+        {
+          "league": "Asia Master",
+          "bo": 3,
+          "gamma": 0.7,
+          "n_train": 66
+        }
+      ]
+    }
+  ]
+}

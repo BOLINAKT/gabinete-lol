@@ -1,0 +1,50 @@
+{
+ "generated_at": "2026-11-16T18:47:00",
+ "nota_produto": 7.99,
+ "teto_produto": 8.97,
+ "fases": [
+  {
+   "fase": "Vencedor (ML)",
+   "peso": 25,
+   "nota": 8.82,
+   "teto": 9.5
+  },
+  {
+   "fase": "Dados/automação",
+   "peso": 15,
+   "nota": 7.31,
+   "teto": 9.5
+  },
+  {
+   "fase": "Totais",
+   "peso": 15,
+   "nota": 6.22,
+   "teto": 6.5
+  },
+  {
+   "fase": "Live",
+   "peso": 10,
+   "nota": 8.89,
+   "teto": 9.5
+  },
+  {
+   "fase": "Confiabilidade",
+   "peso": 10,
+   "nota": 8.8,
+   "teto": 10.0
+  },
+  {
+   "fase": "Código/testes",
+   "peso": 10,
+   "nota": 7.58,
+   "teto": 9.0
+  },
+  {
+   "fase": "Players",
+   "peso": 5,
+   "nota": 8.64,
+   "teto": 9.0
+  }
+ ],
+ "stale": []
+}

@@ -1,0 +1,8387 @@
+{
+  "meta": {
+    "source": "Riot Data Dragon + Oracle player rows",
+    "version": "16.16.1",
+    "champion_count": 173,
+    "csv_files": [
+      "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\CSV_HISTORICO\\2024_LoL_esports_match_data_from_OraclesElixir.csv",
+      "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\CSV_HISTORICO\\2025_LoL_esports_match_data_from_OraclesElixir.csv",
+      "C:\\Users\\steam\\Desktop\\gabinetelolweb3.1\\CSV_DIARIO\\2026_LoL_esports_match_data_from_OraclesElixir.csv"
+    ]
+  },
+  "aliases": {
+    "aatrox": "aatrox",
+    "ahri": "ahri",
+    "akali": "akali",
+    "akshan": "akshan",
+    "alistar": "alistar",
+    "ambessa": "ambessa",
+    "amumu": "amumu",
+    "anivia": "anivia",
+    "annie": "annie",
+    "aphelios": "aphelios",
+    "ashe": "ashe",
+    "aurelionsol": "aurelionsol",
+    "aurora": "aurora",
+    "azir": "azir",
+    "bard": "bard",
+    "belveth": "belveth",
+    "blitzcrank": "blitzcrank",
+    "brand": "brand",
+    "braum": "braum",
+    "briar": "briar",
+    "caitlyn": "caitlyn",
+    "camille": "camille",
+    "cassiopeia": "cassiopeia",
+    "chogath": "chogath",
+    "corki": "corki",
+    "darius": "darius",
+    "diana": "diana",
+    "draven": "draven",
+    "drmundo": "drmundo",
+    "ekko": "ekko",
+    "elise": "elise",
+    "evelynn": "evelynn",
+    "ezreal": "ezreal",
+    "fiddlesticks": "fiddlesticks",
+    "fiora": "fiora",
+    "fizz": "fizz",
+    "galio": "galio",
+    "gangplank": "gangplank",
+    "garen": "garen",
+    "gnar": "gnar",
+    "gragas": "gragas",
+    "graves": "graves",
+    "gwen": "gwen",
+    "hecarim": "hecarim",
+    "heimerdinger": "heimerdinger",
+    "hwei": "hwei",
+    "illaoi": "illaoi",
+    "irelia": "irelia",
+    "ivern": "ivern",
+    "janna": "janna",
+    "jarvaniv": "jarvaniv",
+    "jax": "jax",
+    "jayce": "jayce",
+    "jhin": "jhin",
+    "jinx": "jinx",
+    "kaisa": "kaisa",
+    "kalista": "kalista",
+    "karma": "karma",
+    "karthus": "karthus",
+    "kassadin": "kassadin",
+    "katarina": "katarina",
+    "kayle": "kayle",
+    "kayn": "kayn",
+    "kennen": "kennen",
+    "khazix": "khazix",
+    "kindred": "kindred",
+    "kled": "kled",
+    "kogmaw": "kogmaw",
+    "ksante": "ksante",
+    "leblanc": "leblanc",
+    "leesin": "leesin",
+    "leona": "leona",
+    "lillia": "lillia",
+    "lissandra": "lissandra",
+    "locke": "locke",
+    "lucian": "lucian",
+    "lulu": "lulu",
+    "lux": "lux",
+    "malphite": "malphite",
+    "malzahar": "malzahar",
+    "maokai": "maokai",
+    "masteryi": "masteryi",
+    "mel": "mel",
+    "milio": "milio",
+    "missfortune": "missfortune",
+    "wukong": "wukong",
+    "monkeyking": "wukong",
+    "mordekaiser": "mordekaiser",
+    "morgana": "morgana",
+    "naafiri": "naafiri",
+    "nami": "nami",
+    "nasus": "nasus",
+    "nautilus": "nautilus",
+    "neeko": "neeko",
+    "nidalee": "nidalee",
+    "nilah": "nilah",
+    "nocturne": "nocturne",
+    "nunuwillump": "nunuwillump",
+    "nunu": "nunuwillump",
+    "olaf": "olaf",
+    "orianna": "orianna",
+    "ornn": "ornn",
+    "pantheon": "pantheon",
+    "poppy": "poppy",
+    "pyke": "pyke",
+    "qiyana": "qiyana",
+    "quinn": "quinn",
+    "rakan": "rakan",
+    "rammus": "rammus",
+    "reksai": "reksai",
+    "rell": "rell",
+    "renataglasc": "renataglasc",
+    "renata": "renataglasc",
+    "renekton": "renekton",
+    "rengar": "rengar",
+    "riven": "riven",
+    "rumble": "rumble",
+    "ryze": "ryze",
+    "samira": "samira",
+    "sejuani": "sejuani",
+    "senna": "senna",
+    "seraphine": "seraphine",
+    "sett": "sett",
+    "shaco": "shaco",
+    "shen": "shen",
+    "shyvana": "shyvana",
+    "singed": "singed",
+    "sion": "sion",
+    "sivir": "sivir",
+    "skarner": "skarner",
+    "smolder": "smolder",
+    "sona": "sona",
+    "soraka": "soraka",
+    "swain": "swain",
+    "sylas": "sylas",
+    "syndra": "syndra",
+    "tahmkench": "tahmkench",
+    "taliyah": "taliyah",
+    "talon": "talon",
+    "taric": "taric",
+    "teemo": "teemo",
+    "thresh": "thresh",
+    "tristana": "tristana",
+    "trundle": "trundle",
+    "tryndamere": "tryndamere",
+    "twistedfate": "twistedfate",
+    "twitch": "twitch",
+    "udyr": "udyr",
+    "urgot": "urgot",
+    "varus": "varus",
+    "vayne": "vayne",
+    "veigar": "veigar",
+    "velkoz": "velkoz",
+    "vex": "vex",
+    "vi": "vi",
+    "viego": "viego",
+    "viktor": "viktor",
+    "vladimir": "vladimir",
+    "volibear": "volibear",
+    "warwick": "warwick",
+    "xayah": "xayah",
+    "xerath": "xerath",
+    "xinzhao": "xinzhao",
+    "yasuo": "yasuo",
+    "yone": "yone",
+    "yorick": "yorick",
+    "yunara": "yunara",
+    "yuumi": "yuumi",
+    "zaahen": "zaahen",
+    "zac": "zac",
+    "zed": "zed",
+    "zeri": "zeri",
+    "ziggs": "ziggs",
+    "zilean": "zilean",
+    "zoe": "zoe",
+    "zyra": "zyra"
+  },
+  "champions": {
+    "aatrox": {
+      "id": "Aatrox",
+      "key": "266",
+      "name": "Aatrox",
+      "tags": [
+        "Fighter"
+      ],
+      "partype": "Blood Well",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng",
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 2931,
+        "mid": 7,
+        "jng": 392,
+        "bot": 1
+      },
+      "window": "mid",
+      "styles": [
+        "skirmish",
+        "teamfight",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.0,
+        "mid": 1.7999999999999998,
+        "late": 0.8,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 2.2,
+        "teamfight": 1.5,
+        "objective_control": 0.0,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "ahri": {
+      "id": "Ahri",
+      "key": "103",
+      "name": "Ahri",
+      "tags": [
+        "Mage",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "top",
+        "bot"
+      ],
+      "observed_roles": {
+        "mid": 4062,
+        "top": 6,
+        "bot": 1
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "poke",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 3.0,
+        "late": 1.5,
+        "lane_priority": 0.4,
+        "all_in": 1.2,
+        "poke": 1.6,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 3.0,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 2.3,
+        "execution": 1.8,
+        "range": 0.8
+      }
+    },
+    "akali": {
+      "id": "Akali",
+      "key": "84",
+      "name": "Akali",
+      "tags": [
+        "Assassin"
+      ],
+      "partype": "Energy",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "top",
+        "bot"
+      ],
+      "observed_roles": {
+        "mid": 1978,
+        "top": 142,
+        "bot": 10
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.0,
+        "mid": 1.7,
+        "late": -0.4,
+        "lane_priority": 0.4,
+        "all_in": 1.2,
+        "poke": 0.0,
+        "waveclear": 0.5,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 2.3,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 0.0,
+        "objective_control": 0.0,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "akshan": {
+      "id": "Akshan",
+      "key": "166",
+      "name": "Akshan",
+      "tags": [
+        "Marksman",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "top",
+        "bot"
+      ],
+      "observed_roles": {
+        "mid": 29,
+        "top": 4,
+        "bot": 1
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "siege",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.1,
+        "mid": 2.8,
+        "late": 1.8000000000000003,
+        "lane_priority": 0.4,
+        "all_in": 1.2,
+        "poke": 0.0,
+        "waveclear": 0.5,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 2.3,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 1.6,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.0,
+        "objective_control": 1.4,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 1.8
+      }
+    },
+    "alistar": {
+      "id": "Alistar",
+      "key": "12",
+      "name": "Alistar",
+      "tags": [
+        "Tank",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "jng",
+        "bot"
+      ],
+      "observed_roles": {
+        "sup": 4851,
+        "top": 1,
+        "jng": 2,
+        "bot": 2
+      },
+      "window": "balanced",
+      "styles": [
+        "engage",
+        "frontline",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.6,
+        "late": 1.7999999999999996,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 3.0,
+        "peel": 2.0999999999999996,
+        "pick": 0.4,
+        "dive": 0.0,
+        "frontline": 3.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "ambessa": {
+      "id": "Ambessa",
+      "key": "799",
+      "name": "Ambessa",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Energy",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng",
+        "mid"
+      ],
+      "observed_roles": {
+        "mid": 83,
+        "top": 3616,
+        "jng": 300,
+        "bot": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "dive",
+        "pick",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 3.0,
+        "mid": 3.0,
+        "late": 0.0,
+        "lane_priority": 1.4,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 3.0,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 0.7,
+        "objective_control": 0.0,
+        "mobility": 2.9,
+        "execution": 2.4,
+        "range": 0.0
+      }
+    },
+    "amumu": {
+      "id": "Amumu",
+      "key": "32",
+      "name": "Amumu",
+      "tags": [
+        "Tank",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "sup",
+        "top"
+      ],
+      "observed_roles": {
+        "jng": 226,
+        "sup": 75,
+        "top": 1
+      },
+      "window": "late",
+      "styles": [
+        "engage",
+        "teamfight",
+        "frontline"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.6,
+        "late": 2.0999999999999996,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 3.0,
+        "peel": 1.4,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 2.7,
+        "objective_control": 1.6,
+        "mobility": 0.4,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "anivia": {
+      "id": "Anivia",
+      "key": "34",
+      "name": "Anivia",
+      "tags": [
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "top",
+        "sup"
+      ],
+      "observed_roles": {
+        "mid": 589,
+        "top": 115,
+        "bot": 5,
+        "sup": 99
+      },
+      "window": "late",
+      "styles": [
+        "teamfight",
+        "pick",
+        "poke"
+      ],
+      "traits": {
+        "early": -0.8,
+        "mid": 1.4,
+        "late": 3.0,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 3.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.0,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 1.3
+      }
+    },
+    "annie": {
+      "id": "Annie",
+      "key": "1",
+      "name": "Annie",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "sup",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 1419,
+        "top": 11,
+        "sup": 13,
+        "bot": 3
+      },
+      "window": "balanced",
+      "styles": [
+        "pick",
+        "teamfight",
+        "peel"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 1.9000000000000001,
+        "lane_priority": 0.4,
+        "all_in": 0.6,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 1.2000000000000002,
+        "peel": 1.4,
+        "pick": 2.1,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.1,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "aphelios": {
+      "id": "Aphelios",
+      "key": "523",
+      "name": "Aphelios",
+      "tags": [
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "sup"
+      ],
+      "observed_roles": {
+        "bot": 1502,
+        "mid": 1,
+        "sup": 1
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight"
+      ],
+      "traits": {
+        "early": -0.4,
+        "mid": 1.1,
+        "late": 3.0,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.8,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.6,
+        "range": 2.6
+      }
+    },
+    "ashe": {
+      "id": "Ashe",
+      "key": "22",
+      "name": "Ashe",
+      "tags": [
+        "Marksman",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "sup",
+        "mid"
+      ],
+      "observed_roles": {
+        "sup": 457,
+        "bot": 3130,
+        "mid": 2
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight",
+        "peel"
+      ],
+      "traits": {
+        "early": 0.5,
+        "mid": 1.9000000000000001,
+        "late": 3.0,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.8,
+        "waveclear": 0.0,
+        "engage": 0.8,
+        "peel": 1.4,
+        "pick": 1.2,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.9,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 2.6
+      }
+    },
+    "aurelionsol": {
+      "id": "AurelionSol",
+      "key": "136",
+      "name": "Aurelion Sol",
+      "tags": [
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "bot",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 465,
+        "bot": 4,
+        "top": 3
+      },
+      "window": "balanced",
+      "styles": [
+        "pick",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.4,
+        "late": 1.5,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "aurora": {
+      "id": "Aurora",
+      "key": "893",
+      "name": "Aurora",
+      "tags": [
+        "Mage",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "top",
+        "bot"
+      ],
+      "observed_roles": {
+        "mid": 2410,
+        "top": 651,
+        "bot": 2
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 3.0,
+        "late": 1.9000000000000001,
+        "lane_priority": 0.4,
+        "all_in": 1.2,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 3.0,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 2.1,
+        "execution": 2.4,
+        "range": 0.8
+      }
+    },
+    "azir": {
+      "id": "Azir",
+      "key": "268",
+      "name": "Azir",
+      "tags": [
+        "Mage",
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "top",
+        "bot"
+      ],
+      "observed_roles": {
+        "mid": 4823,
+        "top": 4,
+        "bot": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "siege",
+        "pick"
+      ],
+      "traits": {
+        "early": -0.19999999999999996,
+        "mid": 3.0,
+        "late": 3.0,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.2,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 1.4,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 3.0
+      }
+    },
+    "bard": {
+      "id": "Bard",
+      "key": "432",
+      "name": "Bard",
+      "tags": [
+        "Support",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "top"
+      ],
+      "observed_roles": {
+        "sup": 2392,
+        "top": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "pick"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 2.0999999999999996,
+        "pick": 1.7000000000000002,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.5,
+        "objective_control": 0.0,
+        "mobility": 0.8,
+        "execution": 0.8,
+        "range": 0.8
+      }
+    },
+    "belveth": {
+      "id": "Belveth",
+      "key": "200",
+      "name": "Bel'Veth",
+      "tags": [
+        "Fighter"
+      ],
+      "partype": "",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top"
+      ],
+      "observed_roles": {
+        "jng": 153,
+        "top": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "skirmish",
+        "dive",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 1.0,
+        "mid": 1.2,
+        "late": 0.4,
+        "lane_priority": 1.0,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 0.7,
+        "objective_control": 1.0,
+        "mobility": 1.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "blitzcrank": {
+      "id": "Blitzcrank",
+      "key": "53",
+      "name": "Blitzcrank",
+      "tags": [
+        "Tank",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [],
+      "observed_roles": {
+        "sup": 586
+      },
+      "window": "late",
+      "styles": [
+        "engage",
+        "teamfight",
+        "frontline"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.6,
+        "late": 2.0999999999999996,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 3.0,
+        "peel": 2.0999999999999996,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "brand": {
+      "id": "Brand",
+      "key": "63",
+      "name": "Brand",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "bot",
+        "mid"
+      ],
+      "observed_roles": {
+        "jng": 972,
+        "sup": 2,
+        "mid": 21,
+        "bot": 38,
+        "top": 3
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 1.4,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 2.1,
+        "objective_control": 1.0,
+        "mobility": 0.4,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "braum": {
+      "id": "Braum",
+      "key": "201",
+      "name": "Braum",
+      "tags": [
+        "Tank",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [],
+      "observed_roles": {
+        "sup": 3032
+      },
+      "window": "late",
+      "styles": [
+        "peel",
+        "frontline",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.6,
+        "late": 2.4999999999999996,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 2.9,
+        "peel": 3.0,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 3.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "briar": {
+      "id": "Briar",
+      "key": "233",
+      "name": "Briar",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Fury",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top"
+      ],
+      "observed_roles": {
+        "jng": 16,
+        "top": 1
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "skirmish",
+        "pick"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.0,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 0.7,
+        "objective_control": 1.0,
+        "mobility": 2.6999999999999997,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "caitlyn": {
+      "id": "Caitlyn",
+      "key": "51",
+      "name": "Caitlyn",
+      "tags": [
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "sup"
+      ],
+      "observed_roles": {
+        "bot": 1581,
+        "sup": 7,
+        "mid": 9
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 1.5,
+        "mid": 1.1,
+        "late": 2.4000000000000004,
+        "lane_priority": 1.0,
+        "all_in": 0.0,
+        "poke": 0.5,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 3.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.0,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 2.6
+      }
+    },
+    "camille": {
+      "id": "Camille",
+      "key": "164",
+      "name": "Camille",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "sup",
+        "jng"
+      ],
+      "observed_roles": {
+        "top": 998,
+        "sup": 456,
+        "bot": 1,
+        "mid": 1,
+        "jng": 3
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "pick",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.4,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 0.7,
+        "objective_control": 0.0,
+        "mobility": 2.3,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "cassiopeia": {
+      "id": "Cassiopeia",
+      "key": "69",
+      "name": "Cassiopeia",
+      "tags": [
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "bot",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 996,
+        "top": 44,
+        "bot": 65,
+        "sup": 1
+      },
+      "window": "late",
+      "styles": [
+        "teamfight",
+        "pick",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.0,
+        "mid": 1.4,
+        "late": 2.5,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.0,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "chogath": {
+      "id": "Chogath",
+      "key": "31",
+      "name": "Cho'Gath",
+      "tags": [
+        "Tank",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid",
+        "sup"
+      ],
+      "observed_roles": {
+        "sup": 7,
+        "top": 323,
+        "mid": 28,
+        "bot": 3,
+        "jng": 7
+      },
+      "window": "late",
+      "styles": [
+        "teamfight",
+        "frontline",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.0,
+        "mid": 2.2,
+        "late": 2.9,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.15,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "corki": {
+      "id": "Corki",
+      "key": "42",
+      "name": "Corki",
+      "tags": [
+        "Marksman",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 2892,
+        "bot": 3284,
+        "top": 17,
+        "sup": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "siege",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": -0.09999999999999998,
+        "mid": 3.0,
+        "late": 3.0,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 2.2,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.8000000000000003,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.2,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 3.0
+      }
+    },
+    "darius": {
+      "id": "Darius",
+      "key": "122",
+      "name": "Darius",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng"
+      ],
+      "observed_roles": {
+        "top": 258,
+        "jng": 38
+      },
+      "window": "balanced",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 2.5,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "diana": {
+      "id": "Diana",
+      "key": "131",
+      "name": "Diana",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "mid",
+        "top"
+      ],
+      "observed_roles": {
+        "jng": 136,
+        "mid": 24,
+        "top": 3
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "skirmish",
+        "pick"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.0,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 0.7,
+        "objective_control": 1.0,
+        "mobility": 2.6999999999999997,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "draven": {
+      "id": "Draven",
+      "key": "119",
+      "name": "Draven",
+      "tags": [
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "sup"
+      ],
+      "observed_roles": {
+        "bot": 605,
+        "mid": 23,
+        "sup": 1,
+        "top": 1
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 0.1,
+        "mid": 1.1,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.0,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 2.6
+      }
+    },
+    "drmundo": {
+      "id": "DrMundo",
+      "key": "36",
+      "name": "Dr. Mundo",
+      "tags": [
+        "Tank",
+        "Fighter"
+      ],
+      "partype": "None",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top",
+        "bot"
+      ],
+      "observed_roles": {
+        "jng": 561,
+        "top": 282,
+        "bot": 6,
+        "mid": 1
+      },
+      "window": "late",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 2.8,
+        "lane_priority": 0.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 2.3,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 3.0,
+        "siege": 0.0,
+        "splitpush": 0.95,
+        "skirmish": 2.2,
+        "teamfight": 2.5,
+        "objective_control": 1.6,
+        "mobility": 1.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "ekko": {
+      "id": "Ekko",
+      "key": "245",
+      "name": "Ekko",
+      "tags": [
+        "Assassin",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "jng",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 51,
+        "jng": 5,
+        "top": 1
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 3.0,
+        "late": 1.1,
+        "lane_priority": 0.4,
+        "all_in": 1.2,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 3.0,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 0.8
+      }
+    },
+    "elise": {
+      "id": "Elise",
+      "key": "60",
+      "name": "Elise",
+      "tags": [
+        "Assassin",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "jng"
+      ],
+      "observed_roles": {
+        "jng": 41,
+        "sup": 272
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "teamfight",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 3.0,
+        "late": 1.1,
+        "lane_priority": 0.0,
+        "all_in": 1.2,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.5,
+        "peel": 0.7,
+        "pick": 2.6,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.6,
+        "objective_control": 0.0,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 0.8
+      }
+    },
+    "evelynn": {
+      "id": "Evelynn",
+      "key": "28",
+      "name": "Evelynn",
+      "tags": [
+        "Assassin",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [],
+      "observed_roles": {
+        "jng": 12
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 3.0,
+        "late": 1.1,
+        "lane_priority": 0.0,
+        "all_in": 1.2,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 2.6,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 1.2,
+        "objective_control": 1.0,
+        "mobility": 2.1,
+        "execution": 1.8,
+        "range": 0.8
+      }
+    },
+    "ezreal": {
+      "id": "Ezreal",
+      "key": "81",
+      "name": "Ezreal",
+      "tags": [
+        "Marksman",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "sup"
+      ],
+      "observed_roles": {
+        "bot": 6095,
+        "mid": 286,
+        "sup": 10,
+        "top": 1,
+        "jng": 1
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.30000000000000004,
+        "mid": 2.5,
+        "late": 3.0,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 2.1,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.2,
+        "objective_control": 2.0,
+        "mobility": 0.5,
+        "execution": 0.0,
+        "range": 3.0
+      }
+    },
+    "fiddlesticks": {
+      "id": "Fiddlesticks",
+      "key": "9",
+      "name": "Fiddlesticks",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "jng",
+        "top"
+      ],
+      "observed_roles": {
+        "top": 3,
+        "jng": 21,
+        "sup": 40
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 2.0999999999999996,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.5,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "fiora": {
+      "id": "Fiora",
+      "key": "114",
+      "name": "Fiora",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 351,
+        "mid": 9
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "pick",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.4,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 0.7,
+        "objective_control": 0.0,
+        "mobility": 2.3,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "fizz": {
+      "id": "Fizz",
+      "key": "105",
+      "name": "Fizz",
+      "tags": [
+        "Assassin",
+        "Fighter"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "jng"
+      ],
+      "observed_roles": {
+        "mid": 8,
+        "jng": 1
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "pick",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.4,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.5,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 2.3,
+        "dive": 2.5999999999999996,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 1.4,
+        "teamfight": 0.7,
+        "objective_control": 0.0,
+        "mobility": 2.3,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "galio": {
+      "id": "Galio",
+      "key": "3",
+      "name": "Galio",
+      "tags": [
+        "Tank",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "top",
+        "sup"
+      ],
+      "observed_roles": {
+        "mid": 1615,
+        "sup": 110,
+        "top": 406,
+        "bot": 4
+      },
+      "window": "late",
+      "styles": [
+        "teamfight",
+        "engage",
+        "frontline"
+      ],
+      "traits": {
+        "early": 0.0,
+        "mid": 2.2,
+        "late": 2.9,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.5,
+        "engage": 2.6,
+        "peel": 0.0,
+        "pick": 1.7000000000000002,
+        "dive": 0.0,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "gangplank": {
+      "id": "Gangplank",
+      "key": "41",
+      "name": "Gangplank",
+      "tags": [
+        "Fighter"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 183,
+        "mid": 2
+      },
+      "window": "balanced",
+      "styles": [
+        "skirmish",
+        "dive",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 1.0,
+        "mid": 1.2,
+        "late": 0.4,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 0.7,
+        "objective_control": 0.0,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "garen": {
+      "id": "Garen",
+      "key": "86",
+      "name": "Garen",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "None",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 172,
+        "mid": 13
+      },
+      "window": "balanced",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 2.5,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "gnar": {
+      "id": "Gnar",
+      "key": "150",
+      "name": "Gnar",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Rage",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng",
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 3735,
+        "jng": 2,
+        "mid": 2,
+        "bot": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "frontline",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 2.1999999999999997,
+        "lane_priority": 2.2,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.8,
+        "skirmish": 1.4,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "gragas": {
+      "id": "Gragas",
+      "key": "79",
+      "name": "Gragas",
+      "tags": [
+        "Fighter",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "sup",
+        "jng"
+      ],
+      "observed_roles": {
+        "top": 1064,
+        "mid": 41,
+        "jng": 57,
+        "sup": 71
+      },
+      "window": "mid",
+      "styles": [
+        "teamfight",
+        "skirmish",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 2.5999999999999996,
+        "late": 1.9,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 1.2,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 1.9,
+        "objective_control": 0.0,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "graves": {
+      "id": "Graves",
+      "key": "104",
+      "name": "Graves",
+      "tags": [
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top",
+        "mid"
+      ],
+      "observed_roles": {
+        "jng": 209,
+        "mid": 1,
+        "top": 3
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 0.1,
+        "mid": 1.1,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 1.6,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 1.0,
+        "objective_control": 2.4,
+        "mobility": 0.4,
+        "execution": 0.0,
+        "range": 1.8
+      }
+    },
+    "gwen": {
+      "id": "Gwen",
+      "key": "887",
+      "name": "Gwen",
+      "tags": [
+        "Fighter"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng",
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 2198,
+        "jng": 133,
+        "mid": 16
+      },
+      "window": "balanced",
+      "styles": [
+        "skirmish",
+        "splitpush",
+        "dive"
+      ],
+      "traits": {
+        "early": 0.7,
+        "mid": 1.2,
+        "late": 1.5,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 1.3,
+        "skirmish": 1.4,
+        "teamfight": 1.1,
+        "objective_control": 0.0,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "hecarim": {
+      "id": "Hecarim",
+      "key": "120",
+      "name": "Hecarim",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [],
+      "observed_roles": {
+        "jng": 71
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "frontline",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.0,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 2.3,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 2.5,
+        "objective_control": 1.6,
+        "mobility": 1.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "heimerdinger": {
+      "id": "Heimerdinger",
+      "key": "74",
+      "name": "Heimerdinger",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "bot",
+        "top"
+      ],
+      "observed_roles": {
+        "sup": 46,
+        "bot": 13,
+        "top": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 2.0999999999999996,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.5,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "hwei": {
+      "id": "Hwei",
+      "key": "910",
+      "name": "Hwei",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "sup",
+        "bot"
+      ],
+      "observed_roles": {
+        "bot": 75,
+        "mid": 2499,
+        "sup": 76,
+        "top": 2
+      },
+      "window": "late",
+      "styles": [
+        "poke",
+        "teamfight",
+        "peel"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 3.0,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 2.2,
+        "waveclear": 3.0,
+        "engage": 0.8,
+        "peel": 1.4,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.1,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.4,
+        "range": 0.8
+      }
+    },
+    "illaoi": {
+      "id": "Illaoi",
+      "key": "420",
+      "name": "Illaoi",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 57,
+        "mid": 3
+      },
+      "window": "balanced",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 2.5,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "irelia": {
+      "id": "Irelia",
+      "key": "39",
+      "name": "Irelia",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid"
+      ],
+      "observed_roles": {
+        "mid": 105,
+        "top": 186
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "pick",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.4,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 0.7,
+        "objective_control": 0.0,
+        "mobility": 2.3,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "ivern": {
+      "id": "Ivern",
+      "key": "427",
+      "name": "Ivern",
+      "tags": [
+        "Support",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "mid",
+        "sup"
+      ],
+      "observed_roles": {
+        "jng": 877,
+        "mid": 4,
+        "sup": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 1.4,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 2.1,
+        "objective_control": 1.0,
+        "mobility": 0.4,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "janna": {
+      "id": "Janna",
+      "key": "40",
+      "name": "Janna",
+      "tags": [
+        "Support",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "bot"
+      ],
+      "observed_roles": {
+        "sup": 88,
+        "bot": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 2.0999999999999996,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.5,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "jarvaniv": {
+      "id": "JarvanIV",
+      "key": "59",
+      "name": "Jarvan IV",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "sup",
+        "top"
+      ],
+      "observed_roles": {
+        "jng": 3417,
+        "top": 2,
+        "sup": 3,
+        "mid": 1
+      },
+      "window": "mid",
+      "styles": [
+        "engage",
+        "teamfight",
+        "frontline"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 0.4999999999999998,
+        "lane_priority": 1.0,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 3.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 2.2,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 2.2,
+        "teamfight": 2.5,
+        "objective_control": 2.0,
+        "mobility": 1.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "jax": {
+      "id": "Jax",
+      "key": "24",
+      "name": "Jax",
+      "tags": [
+        "Fighter"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng",
+        "sup"
+      ],
+      "observed_roles": {
+        "top": 2544,
+        "jng": 429,
+        "bot": 2,
+        "sup": 9,
+        "mid": 1
+      },
+      "window": "late",
+      "styles": [
+        "splitpush",
+        "skirmish",
+        "dive"
+      ],
+      "traits": {
+        "early": 0.6,
+        "mid": 1.2,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 1.6,
+        "skirmish": 1.4,
+        "teamfight": 0.49999999999999994,
+        "objective_control": 0.0,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "jayce": {
+      "id": "Jayce",
+      "key": "126",
+      "name": "Jayce",
+      "tags": [
+        "Fighter",
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid",
+        "jng"
+      ],
+      "observed_roles": {
+        "top": 2294,
+        "mid": 702,
+        "jng": 215,
+        "bot": 4
+      },
+      "window": "balanced",
+      "styles": [
+        "siege",
+        "teamfight",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 2.3,
+        "mid": 2.3,
+        "late": 2.2,
+        "lane_priority": 2.4,
+        "all_in": 1.3,
+        "poke": 1.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 0.5,
+        "siege": 2.1,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 1.7,
+        "objective_control": 1.4,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 1.8
+      }
+    },
+    "jhin": {
+      "id": "Jhin",
+      "key": "202",
+      "name": "Jhin",
+      "tags": [
+        "Marksman",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "sup"
+      ],
+      "observed_roles": {
+        "bot": 3804,
+        "sup": 1,
+        "mid": 8
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.30000000000000004,
+        "mid": 2.5,
+        "late": 3.0,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.9,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.6,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.2,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 3.0
+      }
+    },
+    "jinx": {
+      "id": "Jinx",
+      "key": "222",
+      "name": "Jinx",
+      "tags": [
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "sup"
+      ],
+      "observed_roles": {
+        "bot": 1956,
+        "mid": 1,
+        "sup": 1
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight"
+      ],
+      "traits": {
+        "early": -0.5,
+        "mid": 1.1,
+        "late": 3.0,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 3.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.8,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 2.6
+      }
+    },
+    "kaisa": {
+      "id": "Kaisa",
+      "key": "145",
+      "name": "Kai'Sa",
+      "tags": [
+        "Marksman",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "sup"
+      ],
+      "observed_roles": {
+        "bot": 4361,
+        "mid": 53,
+        "top": 2,
+        "sup": 3,
+        "jng": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "siege",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.30000000000000004,
+        "mid": 3.0,
+        "late": 3.0,
+        "lane_priority": 0.0,
+        "all_in": 0.4,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.8,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.2,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.4,
+        "range": 3.0
+      }
+    },
+    "kalista": {
+      "id": "Kalista",
+      "key": "429",
+      "name": "Kalista",
+      "tags": [
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "sup",
+        "mid"
+      ],
+      "observed_roles": {
+        "bot": 2128,
+        "sup": 17,
+        "top": 2,
+        "mid": 5
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 0.1,
+        "mid": 1.1,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.0,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 2.6
+      }
+    },
+    "karma": {
+      "id": "Karma",
+      "key": "43",
+      "name": "Karma",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "mid",
+        "top"
+      ],
+      "observed_roles": {
+        "sup": 1854,
+        "mid": 658,
+        "bot": 3,
+        "top": 79,
+        "jng": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "peel",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 1.9000000000000001,
+        "lane_priority": 0.8,
+        "all_in": 0.0,
+        "poke": 2.1,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 2.5999999999999996,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.5,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "karthus": {
+      "id": "Karthus",
+      "key": "30",
+      "name": "Karthus",
+      "tags": [
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "bot",
+        "mid"
+      ],
+      "observed_roles": {
+        "jng": 360,
+        "bot": 10,
+        "top": 1,
+        "mid": 2
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "poke",
+        "pick"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.4,
+        "late": 1.5,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 1.2,
+        "objective_control": 1.0,
+        "mobility": 0.4,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "kassadin": {
+      "id": "Kassadin",
+      "key": "38",
+      "name": "Kassadin",
+      "tags": [
+        "Assassin",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 77,
+        "top": 2
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 3.0,
+        "late": 1.1,
+        "lane_priority": 0.4,
+        "all_in": 1.2,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 3.0,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 0.8
+      }
+    },
+    "katarina": {
+      "id": "Katarina",
+      "key": "55",
+      "name": "Katarina",
+      "tags": [
+        "Assassin",
+        "Mage"
+      ],
+      "partype": "None",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "bot"
+      ],
+      "observed_roles": {
+        "mid": 17,
+        "bot": 1
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 3.0,
+        "late": 1.1,
+        "lane_priority": 0.4,
+        "all_in": 1.2,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 3.0,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 0.8
+      }
+    },
+    "kayle": {
+      "id": "Kayle",
+      "key": "10",
+      "name": "Kayle",
+      "tags": [
+        "Mage",
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 42,
+        "mid": 8
+      },
+      "window": "late",
+      "styles": [
+        "teamfight",
+        "siege",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.30000000000000004,
+        "mid": 2.5,
+        "late": 3.0,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.5,
+        "siege": 1.6,
+        "splitpush": 0.15,
+        "skirmish": 0.0,
+        "teamfight": 2.2,
+        "objective_control": 1.4,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 2.6
+      }
+    },
+    "kayn": {
+      "id": "Kayn",
+      "key": "141",
+      "name": "Kayn",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top"
+      ],
+      "observed_roles": {
+        "jng": 52,
+        "top": 8
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "skirmish",
+        "pick"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.0,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 0.7,
+        "objective_control": 1.0,
+        "mobility": 2.6999999999999997,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "kennen": {
+      "id": "Kennen",
+      "key": "85",
+      "name": "Kennen",
+      "tags": [
+        "Mage"
+      ],
+      "partype": "Energy",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid",
+        "sup"
+      ],
+      "observed_roles": {
+        "top": 798,
+        "mid": 7,
+        "sup": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "poke",
+        "pick"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.4,
+        "late": 1.5,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.15,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "khazix": {
+      "id": "Khazix",
+      "key": "121",
+      "name": "Kha'Zix",
+      "tags": [
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [],
+      "observed_roles": {
+        "jng": 186
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 1.0,
+        "mid": 1.7,
+        "late": -0.4,
+        "lane_priority": 0.0,
+        "all_in": 1.2,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 0.0,
+        "objective_control": 1.0,
+        "mobility": 2.1,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "kindred": {
+      "id": "Kindred",
+      "key": "203",
+      "name": "Kindred",
+      "tags": [
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [],
+      "observed_roles": {
+        "jng": 428
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 0.1,
+        "mid": 1.1,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 1.6,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 1.0,
+        "objective_control": 2.4,
+        "mobility": 0.4,
+        "execution": 0.0,
+        "range": 1.8
+      }
+    },
+    "kled": {
+      "id": "Kled",
+      "key": "240",
+      "name": "Kled",
+      "tags": [
+        "Fighter"
+      ],
+      "partype": "Courage",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 120,
+        "mid": 3
+      },
+      "window": "balanced",
+      "styles": [
+        "skirmish",
+        "dive",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 1.0,
+        "mid": 1.2,
+        "late": 0.4,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 0.7,
+        "objective_control": 0.0,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "kogmaw": {
+      "id": "KogMaw",
+      "key": "96",
+      "name": "Kog'Maw",
+      "tags": [
+        "Marksman",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 66,
+        "bot": 176,
+        "top": 1
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.30000000000000004,
+        "mid": 2.5,
+        "late": 3.0,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.2,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 3.0
+      }
+    },
+    "ksante": {
+      "id": "KSante",
+      "key": "897",
+      "name": "K'Sante",
+      "tags": [
+        "Tank",
+        "Fighter"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid",
+        "sup"
+      ],
+      "observed_roles": {
+        "top": 7182,
+        "mid": 41,
+        "sup": 4,
+        "bot": 1
+      },
+      "window": "late",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 2.4,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 3.0,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.6,
+        "range": 0.0
+      }
+    },
+    "leblanc": {
+      "id": "Leblanc",
+      "key": "7",
+      "name": "LeBlanc",
+      "tags": [
+        "Assassin",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "sup",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 1257,
+        "sup": 12,
+        "top": 7
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 3.0,
+        "late": 1.1,
+        "lane_priority": 0.4,
+        "all_in": 1.2,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 3.0,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 0.8
+      }
+    },
+    "leesin": {
+      "id": "LeeSin",
+      "key": "64",
+      "name": "Lee Sin",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Energy",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top",
+        "mid"
+      ],
+      "observed_roles": {
+        "jng": 2386,
+        "sup": 6,
+        "mid": 15,
+        "bot": 6,
+        "top": 28
+      },
+      "window": "balanced",
+      "styles": [
+        "dive",
+        "skirmish",
+        "pick"
+      ],
+      "traits": {
+        "early": 3.0,
+        "mid": 3.0,
+        "late": -0.8,
+        "lane_priority": 1.0,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 0.7,
+        "objective_control": 1.0,
+        "mobility": 3.0,
+        "execution": 2.6,
+        "range": 0.0
+      }
+    },
+    "leona": {
+      "id": "Leona",
+      "key": "89",
+      "name": "Leona",
+      "tags": [
+        "Tank",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "bot"
+      ],
+      "observed_roles": {
+        "sup": 5072,
+        "bot": 1
+      },
+      "window": "mid",
+      "styles": [
+        "engage",
+        "teamfight",
+        "frontline"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.6,
+        "late": 0.9999999999999996,
+        "lane_priority": 0.0,
+        "all_in": 0.8,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 3.0,
+        "peel": 1.8999999999999997,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "lillia": {
+      "id": "Lillia",
+      "key": "876",
+      "name": "Lillia",
+      "tags": [
+        "Fighter",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top",
+        "mid"
+      ],
+      "observed_roles": {
+        "jng": 1205,
+        "top": 1,
+        "mid": 1
+      },
+      "window": "mid",
+      "styles": [
+        "skirmish",
+        "teamfight",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 2.5999999999999996,
+        "late": 1.9,
+        "lane_priority": 1.0,
+        "all_in": 1.3,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 1.2,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 1.9,
+        "objective_control": 1.0,
+        "mobility": 1.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "lissandra": {
+      "id": "Lissandra",
+      "key": "127",
+      "name": "Lissandra",
+      "tags": [
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "sup",
+        "top"
+      ],
+      "observed_roles": {
+        "sup": 12,
+        "mid": 200,
+        "top": 2
+      },
+      "window": "balanced",
+      "styles": [
+        "pick",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.4,
+        "late": 1.5,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "locke": {
+      "id": "Locke",
+      "key": "805",
+      "name": "Locke",
+      "tags": [
+        "Assassin",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "bot",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 147,
+        "bot": 12,
+        "top": 3,
+        "jng": 3
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 3.0,
+        "late": 1.1,
+        "lane_priority": 0.4,
+        "all_in": 1.2,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 3.0,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 0.8
+      }
+    },
+    "lucian": {
+      "id": "Lucian",
+      "key": "236",
+      "name": "Lucian",
+      "tags": [
+        "Marksman",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "top"
+      ],
+      "observed_roles": {
+        "bot": 2892,
+        "mid": 629,
+        "top": 7
+      },
+      "window": "balanced",
+      "styles": [
+        "siege",
+        "pick",
+        "dive"
+      ],
+      "traits": {
+        "early": 2.5,
+        "mid": 2.8,
+        "late": 1.0000000000000002,
+        "lane_priority": 1.0,
+        "all_in": 1.7999999999999998,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.0,
+        "objective_control": 2.0,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 2.6
+      }
+    },
+    "lulu": {
+      "id": "Lulu",
+      "key": "117",
+      "name": "Lulu",
+      "tags": [
+        "Support",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "mid",
+        "bot"
+      ],
+      "observed_roles": {
+        "sup": 1972,
+        "mid": 4,
+        "bot": 2,
+        "top": 2
+      },
+      "window": "late",
+      "styles": [
+        "peel",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 3.0,
+        "lane_priority": -0.2,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.9,
+        "peel": 3.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.5,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "lux": {
+      "id": "Lux",
+      "key": "99",
+      "name": "Lux",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "mid",
+        "bot"
+      ],
+      "observed_roles": {
+        "sup": 118,
+        "mid": 64,
+        "bot": 18,
+        "top": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 2.0999999999999996,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.5,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "malphite": {
+      "id": "Malphite",
+      "key": "54",
+      "name": "Malphite",
+      "tags": [
+        "Tank",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng",
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 444,
+        "mid": 16,
+        "jng": 136
+      },
+      "window": "late",
+      "styles": [
+        "teamfight",
+        "frontline",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.0,
+        "mid": 2.2,
+        "late": 2.9,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.15,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "malzahar": {
+      "id": "Malzahar",
+      "key": "90",
+      "name": "Malzahar",
+      "tags": [
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 52,
+        "top": 2
+      },
+      "window": "balanced",
+      "styles": [
+        "pick",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.4,
+        "late": 1.5,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "maokai": {
+      "id": "Maokai",
+      "key": "57",
+      "name": "Maokai",
+      "tags": [
+        "Tank",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "sup",
+        "top"
+      ],
+      "observed_roles": {
+        "jng": 3084,
+        "sup": 599,
+        "top": 136,
+        "bot": 3
+      },
+      "window": "late",
+      "styles": [
+        "engage",
+        "frontline",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.6,
+        "late": 2.4999999999999996,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 3.0,
+        "peel": 1.4,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 3.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 2.7,
+        "objective_control": 2.1,
+        "mobility": 0.4,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "masteryi": {
+      "id": "MasterYi",
+      "key": "11",
+      "name": "Master Yi",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top"
+      ],
+      "observed_roles": {
+        "jng": 10,
+        "top": 2
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "skirmish",
+        "pick"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.0,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 0.7,
+        "objective_control": 1.0,
+        "mobility": 2.6999999999999997,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "mel": {
+      "id": "Mel",
+      "key": "800",
+      "name": "Mel",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "bot",
+        "sup"
+      ],
+      "observed_roles": {
+        "mid": 509,
+        "bot": 218,
+        "top": 1,
+        "sup": 12
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "pick"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.8,
+        "peel": 1.4,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.1,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "milio": {
+      "id": "Milio",
+      "key": "902",
+      "name": "Milio",
+      "tags": [
+        "Support",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [],
+      "observed_roles": {
+        "sup": 1523
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 2.0999999999999996,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.5,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "missfortune": {
+      "id": "MissFortune",
+      "key": "21",
+      "name": "Miss Fortune",
+      "tags": [
+        "Marksman",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "sup"
+      ],
+      "observed_roles": {
+        "bot": 2636,
+        "mid": 5,
+        "sup": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "siege",
+        "poke"
+      ],
+      "traits": {
+        "early": 1.1,
+        "mid": 3.0,
+        "late": 3.0,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.5,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.8000000000000003,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 3.0
+      }
+    },
+    "wukong": {
+      "id": "MonkeyKing",
+      "key": "62",
+      "name": "Wukong",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top",
+        "sup"
+      ],
+      "observed_roles": {
+        "jng": 3813,
+        "top": 51,
+        "sup": 3,
+        "bot": 2,
+        "mid": 1
+      },
+      "window": "mid",
+      "styles": [
+        "engage",
+        "teamfight",
+        "frontline"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.8,
+        "late": 1.9999999999999998,
+        "lane_priority": 1.0,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 3.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 3.0,
+        "objective_control": 1.6,
+        "mobility": 1.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "mordekaiser": {
+      "id": "Mordekaiser",
+      "key": "82",
+      "name": "Mordekaiser",
+      "tags": [
+        "Fighter",
+        "Mage"
+      ],
+      "partype": "Shield",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng",
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 315,
+        "jng": 10,
+        "mid": 3
+      },
+      "window": "mid",
+      "styles": [
+        "teamfight",
+        "skirmish",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 2.5999999999999996,
+        "late": 1.9,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 1.2,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 1.9,
+        "objective_control": 0.0,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "morgana": {
+      "id": "Morgana",
+      "key": "25",
+      "name": "Morgana",
+      "tags": [
+        "Support",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "mid",
+        "sup"
+      ],
+      "observed_roles": {
+        "jng": 70,
+        "sup": 23,
+        "mid": 48
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 1.4,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 2.1,
+        "objective_control": 1.0,
+        "mobility": 0.4,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "naafiri": {
+      "id": "Naafiri",
+      "key": "950",
+      "name": "Naafiri",
+      "tags": [
+        "Assassin",
+        "Fighter"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "mid",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 27,
+        "jng": 1681,
+        "top": 18,
+        "bot": 1
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "skirmish",
+        "pick"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.0,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 0.7,
+        "objective_control": 1.0,
+        "mobility": 2.6999999999999997,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "nami": {
+      "id": "Nami",
+      "key": "267",
+      "name": "Nami",
+      "tags": [
+        "Support",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "mid"
+      ],
+      "observed_roles": {
+        "sup": 1822,
+        "mid": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "peel",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 1.4000000000000001,
+        "mid": 2.2,
+        "late": 2.0,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.9,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 2.6999999999999997,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.5,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "nasus": {
+      "id": "Nasus",
+      "key": "75",
+      "name": "Nasus",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid",
+        "jng"
+      ],
+      "observed_roles": {
+        "sup": 1,
+        "mid": 40,
+        "top": 78,
+        "bot": 2,
+        "jng": 35
+      },
+      "window": "balanced",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 2.5,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "nautilus": {
+      "id": "Nautilus",
+      "key": "111",
+      "name": "Nautilus",
+      "tags": [
+        "Tank",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "bot",
+        "jng"
+      ],
+      "observed_roles": {
+        "sup": 7650,
+        "bot": 17,
+        "jng": 16,
+        "top": 8,
+        "mid": 4
+      },
+      "window": "balanced",
+      "styles": [
+        "engage",
+        "frontline",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.6,
+        "late": 1.7999999999999996,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 3.0,
+        "peel": 2.0999999999999996,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 3.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "neeko": {
+      "id": "Neeko",
+      "key": "518",
+      "name": "Neeko",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "mid",
+        "jng"
+      ],
+      "observed_roles": {
+        "mid": 573,
+        "sup": 2377,
+        "jng": 16,
+        "top": 5
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "engage",
+        "peel"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.0,
+        "engage": 2.1,
+        "peel": 2.0999999999999996,
+        "pick": 1.4,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "nidalee": {
+      "id": "Nidalee",
+      "key": "76",
+      "name": "Nidalee",
+      "tags": [
+        "Assassin",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top",
+        "sup"
+      ],
+      "observed_roles": {
+        "jng": 934,
+        "top": 107,
+        "sup": 14,
+        "mid": 2
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 3.0,
+        "late": 1.1,
+        "lane_priority": 0.0,
+        "all_in": 1.2,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 2.6,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 1.2,
+        "objective_control": 1.0,
+        "mobility": 2.1,
+        "execution": 1.8,
+        "range": 0.8
+      }
+    },
+    "nilah": {
+      "id": "Nilah",
+      "key": "895",
+      "name": "Nilah",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [],
+      "observed_roles": {
+        "bot": 99
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "pick",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.0,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.0,
+        "siege": 0.8,
+        "splitpush": 0.25,
+        "skirmish": 1.4,
+        "teamfight": 0.7,
+        "objective_control": 0.6,
+        "mobility": 2.3,
+        "execution": 1.8,
+        "range": 0.8
+      }
+    },
+    "nocturne": {
+      "id": "Nocturne",
+      "key": "56",
+      "name": "Nocturne",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top",
+        "sup"
+      ],
+      "observed_roles": {
+        "jng": 2441,
+        "top": 1,
+        "sup": 1,
+        "mid": 1
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "pick",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 3.0,
+        "late": -0.2,
+        "lane_priority": 1.0,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 2.7,
+        "dive": 3.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 0.7,
+        "objective_control": 1.0,
+        "mobility": 2.6999999999999997,
+        "execution": 2.2,
+        "range": 0.0
+      }
+    },
+    "nunuwillump": {
+      "id": "Nunu",
+      "key": "20",
+      "name": "Nunu & Willump",
+      "tags": [
+        "Tank",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [],
+      "observed_roles": {
+        "jng": 58
+      },
+      "window": "late",
+      "styles": [
+        "teamfight",
+        "frontline",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.0,
+        "mid": 2.2,
+        "late": 2.9,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 2.3,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 3.0,
+        "objective_control": 1.6,
+        "mobility": 0.4,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "olaf": {
+      "id": "Olaf",
+      "key": "2",
+      "name": "Olaf",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng",
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 718,
+        "jng": 156,
+        "mid": 1,
+        "bot": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 2.5,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "orianna": {
+      "id": "Orianna",
+      "key": "61",
+      "name": "Orianna",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "bot",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 4563,
+        "bot": 8,
+        "sup": 2,
+        "top": 3
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "pick"
+      ],
+      "traits": {
+        "early": 0.20000000000000007,
+        "mid": 3.0,
+        "late": 3.0,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.8,
+        "peel": 1.7,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "ornn": {
+      "id": "Ornn",
+      "key": "516",
+      "name": "Ornn",
+      "tags": [
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "sup",
+        "bot"
+      ],
+      "observed_roles": {
+        "top": 1992,
+        "sup": 166,
+        "mid": 12,
+        "bot": 15,
+        "jng": 5
+      },
+      "window": "late",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": -1.5999999999999999,
+        "mid": 0.8,
+        "late": 3.0,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 2.6,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 3.0,
+        "siege": 0.0,
+        "splitpush": 0.15,
+        "skirmish": 0.0,
+        "teamfight": 2.8,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "pantheon": {
+      "id": "Pantheon",
+      "key": "80",
+      "name": "Pantheon",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "sup",
+        "top"
+      ],
+      "observed_roles": {
+        "top": 65,
+        "sup": 133,
+        "mid": 18,
+        "jng": 2762
+      },
+      "window": "balanced",
+      "styles": [
+        "dive",
+        "pick",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 3.0,
+        "mid": 2.9,
+        "late": -1.0,
+        "lane_priority": 1.0,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 2.8,
+        "dive": 3.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 2.2,
+        "teamfight": 0.7,
+        "objective_control": 1.0,
+        "mobility": 2.6999999999999997,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "poppy": {
+      "id": "Poppy",
+      "key": "78",
+      "name": "Poppy",
+      "tags": [
+        "Tank",
+        "Fighter"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "jng",
+        "top"
+      ],
+      "observed_roles": {
+        "jng": 1055,
+        "top": 487,
+        "sup": 1119
+      },
+      "window": "balanced",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.9999999999999998,
+        "lane_priority": 1.0,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 2.3,
+        "peel": 0.7,
+        "pick": 0.4,
+        "dive": 1.2,
+        "frontline": 3.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.0,
+        "teamfight": 2.9,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "pyke": {
+      "id": "Pyke",
+      "key": "555",
+      "name": "Pyke",
+      "tags": [
+        "Support",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "mid",
+        "bot"
+      ],
+      "observed_roles": {
+        "sup": 621,
+        "mid": 3,
+        "bot": 1
+      },
+      "window": "mid",
+      "styles": [
+        "peel",
+        "pick",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.4,
+        "mid": 2.5,
+        "late": 0.29999999999999993,
+        "lane_priority": 0.0,
+        "all_in": 1.2,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.3,
+        "peel": 2.0999999999999996,
+        "pick": 1.8,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.3,
+        "objective_control": 0.0,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "qiyana": {
+      "id": "Qiyana",
+      "key": "246",
+      "name": "Qiyana",
+      "tags": [
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "mid",
+        "bot"
+      ],
+      "observed_roles": {
+        "mid": 21,
+        "bot": 1,
+        "jng": 459,
+        "top": 1
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 1.0,
+        "mid": 1.7,
+        "late": -1.0,
+        "lane_priority": 0.0,
+        "all_in": 1.2,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 3.0,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 0.0,
+        "objective_control": 1.0,
+        "mobility": 2.9000000000000004,
+        "execution": 2.8,
+        "range": 0.0
+      }
+    },
+    "quinn": {
+      "id": "Quinn",
+      "key": "133",
+      "name": "Quinn",
+      "tags": [
+        "Marksman",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid",
+        "bot"
+      ],
+      "observed_roles": {
+        "top": 21,
+        "mid": 3,
+        "bot": 1
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "siege",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.1,
+        "mid": 2.8,
+        "late": 1.8000000000000003,
+        "lane_priority": 0.4,
+        "all_in": 1.2,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 1.4,
+        "frontline": 0.5,
+        "siege": 1.6,
+        "splitpush": 0.15,
+        "skirmish": 0.0,
+        "teamfight": 1.0,
+        "objective_control": 1.4,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 1.8
+      }
+    },
+    "rakan": {
+      "id": "Rakan",
+      "key": "497",
+      "name": "Rakan",
+      "tags": [
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "mid"
+      ],
+      "observed_roles": {
+        "sup": 4926,
+        "mid": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "peel",
+        "engage",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 0.4,
+        "mid": 0.8,
+        "late": 0.7,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 2.3,
+        "peel": 2.4999999999999996,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.1,
+        "objective_control": 0.0,
+        "mobility": 0.7,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "rammus": {
+      "id": "Rammus",
+      "key": "33",
+      "name": "Rammus",
+      "tags": [
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "sup",
+        "bot"
+      ],
+      "observed_roles": {
+        "bot": 1,
+        "jng": 11,
+        "sup": 2
+      },
+      "window": "late",
+      "styles": [
+        "frontline",
+        "engage",
+        "teamfight"
+      ],
+      "traits": {
+        "early": -0.2,
+        "mid": 0.8,
+        "late": 1.4,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 2.3,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 1.8,
+        "objective_control": 1.6,
+        "mobility": 0.4,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "reksai": {
+      "id": "RekSai",
+      "key": "421",
+      "name": "Rek'Sai",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Rage",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng"
+      ],
+      "observed_roles": {
+        "top": 316,
+        "jng": 203
+      },
+      "window": "balanced",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 2.1,
+        "mid": 2.0,
+        "late": 0.8999999999999998,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.7,
+        "dive": 1.2,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 2.5,
+        "objective_control": 0.6,
+        "mobility": 1.2,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "rell": {
+      "id": "Rell",
+      "key": "526",
+      "name": "Rell",
+      "tags": [
+        "Tank",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "jng",
+        "bot"
+      ],
+      "observed_roles": {
+        "jng": 651,
+        "sup": 7148,
+        "bot": 2
+      },
+      "window": "late",
+      "styles": [
+        "engage",
+        "frontline",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.6,
+        "late": 2.3,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 3.0,
+        "peel": 2.0999999999999996,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 3.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "renataglasc": {
+      "id": "Renata",
+      "key": "888",
+      "name": "Renata Glasc",
+      "tags": [
+        "Support",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [],
+      "observed_roles": {
+        "sup": 1719
+      },
+      "window": "late",
+      "styles": [
+        "peel",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.9000000000000004,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.0,
+        "peel": 3.0,
+        "pick": 1.1,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.5,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "renekton": {
+      "id": "Renekton",
+      "key": "58",
+      "name": "Renekton",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Fury",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 4577,
+        "mid": 53
+      },
+      "window": "early",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "dive"
+      ],
+      "traits": {
+        "early": 2.6,
+        "mid": 2.0,
+        "late": 0.5999999999999999,
+        "lane_priority": 2.8,
+        "all_in": 2.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.9,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 2.5,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "rengar": {
+      "id": "Rengar",
+      "key": "107",
+      "name": "Rengar",
+      "tags": [
+        "Assassin",
+        "Fighter"
+      ],
+      "partype": "Ferocity",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top",
+        "bot"
+      ],
+      "observed_roles": {
+        "jng": 55,
+        "top": 5,
+        "bot": 1
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "skirmish",
+        "pick"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.0,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 0.7,
+        "objective_control": 1.0,
+        "mobility": 2.6999999999999997,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "riven": {
+      "id": "Riven",
+      "key": "92",
+      "name": "Riven",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "None",
+      "primary_role": "top",
+      "secondary_roles": [
+        "bot",
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 62,
+        "bot": 4,
+        "mid": 1
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "pick",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.4,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 0.7,
+        "objective_control": 0.0,
+        "mobility": 2.3,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "rumble": {
+      "id": "Rumble",
+      "key": "68",
+      "name": "Rumble",
+      "tags": [
+        "Fighter",
+        "Mage"
+      ],
+      "partype": "Heat",
+      "primary_role": "top",
+      "secondary_roles": [
+        "sup",
+        "jng"
+      ],
+      "observed_roles": {
+        "top": 5357,
+        "jng": 87,
+        "bot": 4,
+        "sup": 110,
+        "mid": 11
+      },
+      "window": "mid",
+      "styles": [
+        "teamfight",
+        "skirmish",
+        "dive"
+      ],
+      "traits": {
+        "early": 2.2,
+        "mid": 3.0,
+        "late": 1.9,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 1.2,
+        "waveclear": 1.9000000000000001,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 1.2,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 1.4,
+        "teamfight": 2.8,
+        "objective_control": 0.0,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "ryze": {
+      "id": "Ryze",
+      "key": "13",
+      "name": "Ryze",
+      "tags": [
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "top",
+        "sup"
+      ],
+      "observed_roles": {
+        "top": 79,
+        "mid": 3249,
+        "sup": 1,
+        "bot": 1
+      },
+      "window": "late",
+      "styles": [
+        "pick",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": -0.09999999999999998,
+        "mid": 2.2,
+        "late": 2.6,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.9000000000000004,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.6,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "samira": {
+      "id": "Samira",
+      "key": "360",
+      "name": "Samira",
+      "tags": [
+        "Marksman",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [],
+      "observed_roles": {
+        "bot": 68
+      },
+      "window": "mid",
+      "styles": [
+        "siege",
+        "pick",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.1,
+        "mid": 2.8,
+        "late": 1.8000000000000003,
+        "lane_priority": 0.0,
+        "all_in": 1.2,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.0,
+        "objective_control": 2.0,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 2.6
+      }
+    },
+    "sejuani": {
+      "id": "Sejuani",
+      "key": "113",
+      "name": "Sejuani",
+      "tags": [
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top",
+        "sup"
+      ],
+      "observed_roles": {
+        "jng": 3885,
+        "top": 71,
+        "sup": 17,
+        "bot": 2,
+        "mid": 2
+      },
+      "window": "late",
+      "styles": [
+        "engage",
+        "frontline",
+        "teamfight"
+      ],
+      "traits": {
+        "early": -0.2,
+        "mid": 0.8,
+        "late": 1.7999999999999998,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 3.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 3.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 1.8,
+        "objective_control": 1.9000000000000001,
+        "mobility": 0.4,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "senna": {
+      "id": "Senna",
+      "key": "235",
+      "name": "Senna",
+      "tags": [
+        "Support",
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "sup",
+        "mid"
+      ],
+      "observed_roles": {
+        "sup": 285,
+        "bot": 1804,
+        "mid": 1,
+        "top": 1
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight",
+        "peel"
+      ],
+      "traits": {
+        "early": 0.5,
+        "mid": 1.9000000000000001,
+        "late": 2.9000000000000004,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.8,
+        "peel": 1.4,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.9,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 2.6
+      }
+    },
+    "seraphine": {
+      "id": "Seraphine",
+      "key": "147",
+      "name": "Seraphine",
+      "tags": [
+        "Support",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "bot",
+        "mid"
+      ],
+      "observed_roles": {
+        "bot": 204,
+        "sup": 1255,
+        "mid": 29
+      },
+      "window": "late",
+      "styles": [
+        "teamfight",
+        "peel",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 3.0,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.2,
+        "engage": 1.3,
+        "peel": 2.8999999999999995,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "sett": {
+      "id": "Sett",
+      "key": "875",
+      "name": "Sett",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Grit",
+      "primary_role": "top",
+      "secondary_roles": [
+        "sup",
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 123,
+        "sup": 28,
+        "mid": 14,
+        "jng": 2
+      },
+      "window": "balanced",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 2.5,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "shaco": {
+      "id": "Shaco",
+      "key": "35",
+      "name": "Shaco",
+      "tags": [
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "sup",
+        "mid"
+      ],
+      "observed_roles": {
+        "sup": 5,
+        "jng": 16,
+        "mid": 1
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 1.0,
+        "mid": 1.7,
+        "late": -0.4,
+        "lane_priority": 0.0,
+        "all_in": 1.2,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 0.0,
+        "objective_control": 1.0,
+        "mobility": 2.1,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "shen": {
+      "id": "Shen",
+      "key": "98",
+      "name": "Shen",
+      "tags": [
+        "Tank"
+      ],
+      "partype": "Energy",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "top",
+        "jng"
+      ],
+      "observed_roles": {
+        "top": 388,
+        "sup": 421,
+        "jng": 33,
+        "mid": 1
+      },
+      "window": "late",
+      "styles": [
+        "frontline",
+        "engage",
+        "teamfight"
+      ],
+      "traits": {
+        "early": -0.2,
+        "mid": 0.8,
+        "late": 1.4,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 2.3,
+        "peel": 0.7,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.2,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "shyvana": {
+      "id": "Shyvana",
+      "key": "102",
+      "name": "Shyvana",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Fury",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top"
+      ],
+      "observed_roles": {
+        "jng": 147,
+        "top": 27
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "frontline",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.0,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 2.3,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 2.5,
+        "objective_control": 1.6,
+        "mobility": 1.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "singed": {
+      "id": "Singed",
+      "key": "27",
+      "name": "Singed",
+      "tags": [
+        "Tank",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "sup",
+        "bot"
+      ],
+      "observed_roles": {
+        "top": 27,
+        "sup": 1,
+        "bot": 1,
+        "mid": 1,
+        "jng": 1
+      },
+      "window": "late",
+      "styles": [
+        "teamfight",
+        "frontline",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.0,
+        "mid": 2.2,
+        "late": 2.9,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.15,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "sion": {
+      "id": "Sion",
+      "key": "14",
+      "name": "Sion",
+      "tags": [
+        "Tank",
+        "Fighter"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid",
+        "bot"
+      ],
+      "observed_roles": {
+        "top": 3355,
+        "bot": 18,
+        "mid": 94,
+        "sup": 8,
+        "jng": 7
+      },
+      "window": "late",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 2.5,
+        "lane_priority": 0.8999999999999999,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 3.0,
+        "siege": 0.6,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 2.5,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "sivir": {
+      "id": "Sivir",
+      "key": "15",
+      "name": "Sivir",
+      "tags": [
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid"
+      ],
+      "observed_roles": {
+        "bot": 2023,
+        "mid": 4
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 0.1,
+        "mid": 1.1,
+        "late": 2.8000000000000003,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.8,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 3.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.0,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 2.6
+      }
+    },
+    "skarner": {
+      "id": "Skarner",
+      "key": "72",
+      "name": "Skarner",
+      "tags": [
+        "Tank",
+        "Fighter"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top",
+        "sup"
+      ],
+      "observed_roles": {
+        "jng": 2064,
+        "top": 632,
+        "sup": 37,
+        "mid": 4
+      },
+      "window": "balanced",
+      "styles": [
+        "engage",
+        "frontline",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.0,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 3.0,
+        "peel": 0.0,
+        "pick": 1.2,
+        "dive": 1.2,
+        "frontline": 3.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 2.5,
+        "objective_control": 1.6,
+        "mobility": 1.4,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "smolder": {
+      "id": "Smolder",
+      "key": "901",
+      "name": "Smolder",
+      "tags": [
+        "Marksman",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 317,
+        "bot": 1195,
+        "top": 59
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.30000000000000004,
+        "mid": 2.5,
+        "late": 3.0,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.2,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 3.0
+      }
+    },
+    "sona": {
+      "id": "Sona",
+      "key": "37",
+      "name": "Sona",
+      "tags": [
+        "Support",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [],
+      "observed_roles": {
+        "sup": 38
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 2.0999999999999996,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.5,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "soraka": {
+      "id": "Soraka",
+      "key": "16",
+      "name": "Soraka",
+      "tags": [
+        "Support",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "mid",
+        "bot"
+      ],
+      "observed_roles": {
+        "sup": 96,
+        "mid": 3,
+        "bot": 1,
+        "top": 1
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 2.0999999999999996,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.5,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "swain": {
+      "id": "Swain",
+      "key": "50",
+      "name": "Swain",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "top",
+        "bot"
+      ],
+      "observed_roles": {
+        "mid": 120,
+        "bot": 19,
+        "sup": 4,
+        "top": 45
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "pick"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.8,
+        "peel": 1.4,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.1,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "sylas": {
+      "id": "Sylas",
+      "key": "517",
+      "name": "Sylas",
+      "tags": [
+        "Mage",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "jng",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 1506,
+        "top": 54,
+        "jng": 93,
+        "sup": 15,
+        "bot": 7
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 3.0,
+        "late": 1.1,
+        "lane_priority": 0.4,
+        "all_in": 1.2,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 3.0,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 0.8
+      }
+    },
+    "syndra": {
+      "id": "Syndra",
+      "key": "134",
+      "name": "Syndra",
+      "tags": [
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "bot",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 1989,
+        "bot": 131,
+        "top": 1
+      },
+      "window": "late",
+      "styles": [
+        "pick",
+        "poke",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.4,
+        "late": 2.2,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.9,
+        "waveclear": 2.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 2.1,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "tahmkench": {
+      "id": "TahmKench",
+      "key": "223",
+      "name": "Tahm Kench",
+      "tags": [
+        "Tank",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "bot",
+        "top"
+      ],
+      "observed_roles": {
+        "sup": 562,
+        "bot": 12,
+        "top": 10,
+        "jng": 1
+      },
+      "window": "late",
+      "styles": [
+        "engage",
+        "teamfight",
+        "frontline"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.6,
+        "late": 2.0999999999999996,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 3.0,
+        "peel": 2.0999999999999996,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "taliyah": {
+      "id": "Taliyah",
+      "key": "163",
+      "name": "Taliyah",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "jng",
+        "bot"
+      ],
+      "observed_roles": {
+        "jng": 430,
+        "mid": 4411,
+        "bot": 49,
+        "sup": 3,
+        "top": 1
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "teamfight",
+        "peel"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 3.0,
+        "late": 2.1,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.8,
+        "peel": 1.4,
+        "pick": 2.1,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.1,
+        "objective_control": 0.4,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "talon": {
+      "id": "Talon",
+      "key": "91",
+      "name": "Talon",
+      "tags": [
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "mid"
+      ],
+      "observed_roles": {
+        "mid": 7,
+        "jng": 29
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 1.0,
+        "mid": 1.7,
+        "late": -0.4,
+        "lane_priority": 0.0,
+        "all_in": 1.2,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 0.0,
+        "objective_control": 1.0,
+        "mobility": 2.1,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "taric": {
+      "id": "Taric",
+      "key": "44",
+      "name": "Taric",
+      "tags": [
+        "Support",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "jng",
+        "top"
+      ],
+      "observed_roles": {
+        "sup": 142,
+        "jng": 4,
+        "top": 1
+      },
+      "window": "late",
+      "styles": [
+        "engage",
+        "teamfight",
+        "frontline"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.6,
+        "late": 2.0999999999999996,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 3.0,
+        "peel": 2.0999999999999996,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "teemo": {
+      "id": "Teemo",
+      "key": "17",
+      "name": "Teemo",
+      "tags": [
+        "Marksman",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng"
+      ],
+      "observed_roles": {
+        "top": 9,
+        "jng": 2
+      },
+      "window": "late",
+      "styles": [
+        "teamfight",
+        "siege",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.30000000000000004,
+        "mid": 2.5,
+        "late": 3.0,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.5,
+        "siege": 1.6,
+        "splitpush": 0.15,
+        "skirmish": 0.0,
+        "teamfight": 2.2,
+        "objective_control": 1.4,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 2.6
+      }
+    },
+    "thresh": {
+      "id": "Thresh",
+      "key": "412",
+      "name": "Thresh",
+      "tags": [
+        "Support",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [],
+      "observed_roles": {
+        "sup": 548
+      },
+      "window": "mid",
+      "styles": [
+        "engage",
+        "teamfight",
+        "peel"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.6,
+        "late": 1.0999999999999996,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 3.0,
+        "peel": 2.8999999999999995,
+        "pick": 1.0,
+        "dive": 0.0,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 3.0,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.5,
+        "range": 0.0
+      }
+    },
+    "tristana": {
+      "id": "Tristana",
+      "key": "18",
+      "name": "Tristana",
+      "tags": [
+        "Marksman",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "bot",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 2171,
+        "bot": 672,
+        "top": 41
+      },
+      "window": "balanced",
+      "styles": [
+        "pick",
+        "siege",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.8,
+        "mid": 3.0,
+        "late": 2.7,
+        "lane_priority": 0.4,
+        "all_in": 1.2,
+        "poke": 0.0,
+        "waveclear": 0.5,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 2.3,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 2.2,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.0,
+        "objective_control": 1.4,
+        "mobility": 2.2,
+        "execution": 1.8,
+        "range": 1.8
+      }
+    },
+    "trundle": {
+      "id": "Trundle",
+      "key": "48",
+      "name": "Trundle",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top",
+        "sup"
+      ],
+      "observed_roles": {
+        "jng": 1474,
+        "top": 17,
+        "sup": 8,
+        "mid": 1
+      },
+      "window": "mid",
+      "styles": [
+        "skirmish",
+        "teamfight",
+        "frontline"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.5999999999999999,
+        "lane_priority": 1.0,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 2.3,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.65,
+        "skirmish": 2.8000000000000003,
+        "teamfight": 2.5,
+        "objective_control": 2.1,
+        "mobility": 1.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "tryndamere": {
+      "id": "Tryndamere",
+      "key": "23",
+      "name": "Tryndamere",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Fury",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid",
+        "jng"
+      ],
+      "observed_roles": {
+        "top": 44,
+        "mid": 36,
+        "jng": 4
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "pick",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.4,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 0.7,
+        "objective_control": 0.0,
+        "mobility": 2.3,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "twistedfate": {
+      "id": "TwistedFate",
+      "key": "4",
+      "name": "Twisted Fate",
+      "tags": [
+        "Mage",
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid",
+        "bot"
+      ],
+      "observed_roles": {
+        "mid": 410,
+        "bot": 39,
+        "top": 535
+      },
+      "window": "late",
+      "styles": [
+        "teamfight",
+        "siege",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.30000000000000004,
+        "mid": 2.5,
+        "late": 3.0,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.5,
+        "siege": 1.6,
+        "splitpush": 0.15,
+        "skirmish": 0.0,
+        "teamfight": 2.2,
+        "objective_control": 1.4,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 2.6
+      }
+    },
+    "twitch": {
+      "id": "Twitch",
+      "key": "29",
+      "name": "Twitch",
+      "tags": [
+        "Marksman",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "sup"
+      ],
+      "observed_roles": {
+        "bot": 84,
+        "sup": 1
+      },
+      "window": "mid",
+      "styles": [
+        "siege",
+        "pick",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.1,
+        "mid": 2.8,
+        "late": 1.8000000000000003,
+        "lane_priority": 0.0,
+        "all_in": 1.2,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.0,
+        "objective_control": 2.0,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 2.6
+      }
+    },
+    "udyr": {
+      "id": "Udyr",
+      "key": "77",
+      "name": "Udyr",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng",
+        "bot"
+      ],
+      "observed_roles": {
+        "top": 880,
+        "bot": 1,
+        "jng": 86
+      },
+      "window": "balanced",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 2.5,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "urgot": {
+      "id": "Urgot",
+      "key": "6",
+      "name": "Urgot",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng"
+      ],
+      "observed_roles": {
+        "top": 136,
+        "jng": 4
+      },
+      "window": "balanced",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 2.5,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "varus": {
+      "id": "Varus",
+      "key": "110",
+      "name": "Varus",
+      "tags": [
+        "Marksman",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "top",
+        "mid"
+      ],
+      "observed_roles": {
+        "bot": 5985,
+        "sup": 12,
+        "top": 247,
+        "mid": 67
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.30000000000000004,
+        "mid": 2.5,
+        "late": 3.0,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 2.2,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.6,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.2,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 3.0
+      }
+    },
+    "vayne": {
+      "id": "Vayne",
+      "key": "67",
+      "name": "Vayne",
+      "tags": [
+        "Marksman",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "bot",
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 412,
+        "mid": 14,
+        "bot": 119
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "siege",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.1,
+        "mid": 2.8,
+        "late": 1.8000000000000003,
+        "lane_priority": 0.4,
+        "all_in": 1.2,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 1.4,
+        "frontline": 0.5,
+        "siege": 1.6,
+        "splitpush": 0.15,
+        "skirmish": 0.0,
+        "teamfight": 1.0,
+        "objective_control": 1.4,
+        "mobility": 1.7,
+        "execution": 1.8,
+        "range": 1.8
+      }
+    },
+    "veigar": {
+      "id": "Veigar",
+      "key": "45",
+      "name": "Veigar",
+      "tags": [
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "bot",
+        "sup"
+      ],
+      "observed_roles": {
+        "mid": 103,
+        "sup": 4,
+        "top": 1,
+        "bot": 7
+      },
+      "window": "balanced",
+      "styles": [
+        "pick",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.4,
+        "late": 1.5,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "velkoz": {
+      "id": "Velkoz",
+      "key": "161",
+      "name": "Vel'Koz",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "bot",
+        "sup"
+      ],
+      "observed_roles": {
+        "mid": 48,
+        "bot": 14,
+        "sup": 5
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "pick"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.8,
+        "peel": 1.4,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.1,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "vex": {
+      "id": "Vex",
+      "key": "711",
+      "name": "Vex",
+      "tags": [
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "top",
+        "bot"
+      ],
+      "observed_roles": {
+        "mid": 99,
+        "bot": 1,
+        "top": 8
+      },
+      "window": "balanced",
+      "styles": [
+        "pick",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.4,
+        "late": 1.5,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "vi": {
+      "id": "Vi",
+      "key": "254",
+      "name": "Vi",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top",
+        "sup"
+      ],
+      "observed_roles": {
+        "jng": 5323,
+        "top": 11,
+        "sup": 1
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 3.0,
+        "late": -0.2,
+        "lane_priority": 1.0,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 3.0,
+        "dive": 3.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 0.7,
+        "objective_control": 1.0,
+        "mobility": 2.6999999999999997,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "viego": {
+      "id": "Viego",
+      "key": "234",
+      "name": "Viego",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "None",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "mid",
+        "top"
+      ],
+      "observed_roles": {
+        "jng": 2339,
+        "top": 12,
+        "mid": 19,
+        "sup": 3,
+        "bot": 1
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "skirmish",
+        "pick"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.0,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 0.7,
+        "objective_control": 1.0,
+        "mobility": 2.6999999999999997,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "viktor": {
+      "id": "Viktor",
+      "key": "112",
+      "name": "Viktor",
+      "tags": [
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "bot",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 2514,
+        "top": 4,
+        "bot": 137
+      },
+      "window": "late",
+      "styles": [
+        "teamfight",
+        "pick",
+        "poke"
+      ],
+      "traits": {
+        "early": -0.3,
+        "mid": 1.4,
+        "late": 2.9,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 3.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.0,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "vladimir": {
+      "id": "Vladimir",
+      "key": "8",
+      "name": "Vladimir",
+      "tags": [
+        "Mage",
+        "Fighter"
+      ],
+      "partype": "Crimson Rush",
+      "primary_role": "top",
+      "secondary_roles": [
+        "mid",
+        "bot"
+      ],
+      "observed_roles": {
+        "top": 133,
+        "mid": 93,
+        "bot": 15
+      },
+      "window": "mid",
+      "styles": [
+        "teamfight",
+        "skirmish",
+        "dive"
+      ],
+      "traits": {
+        "early": 1.2,
+        "mid": 2.5999999999999996,
+        "late": 1.9,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 1.2,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 1.9,
+        "objective_control": 0.0,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "volibear": {
+      "id": "Volibear",
+      "key": "106",
+      "name": "Volibear",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "top"
+      ],
+      "observed_roles": {
+        "jng": 681,
+        "top": 234
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "frontline",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.0,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 2.3,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 2.2,
+        "teamfight": 2.5,
+        "objective_control": 1.6,
+        "mobility": 1.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "warwick": {
+      "id": "Warwick",
+      "key": "19",
+      "name": "Warwick",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng"
+      ],
+      "observed_roles": {
+        "top": 34,
+        "jng": 7
+      },
+      "window": "balanced",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 2.5,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "xayah": {
+      "id": "Xayah",
+      "key": "498",
+      "name": "Xayah",
+      "tags": [
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "top"
+      ],
+      "observed_roles": {
+        "bot": 2310,
+        "top": 1,
+        "mid": 3
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight"
+      ],
+      "traits": {
+        "early": -0.1,
+        "mid": 1.1,
+        "late": 3.0,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.6,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.7,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 2.6
+      }
+    },
+    "xerath": {
+      "id": "Xerath",
+      "key": "101",
+      "name": "Xerath",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "bot",
+        "sup"
+      ],
+      "observed_roles": {
+        "mid": 125,
+        "sup": 7,
+        "bot": 22
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "pick"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.8,
+        "peel": 1.4,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.1,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "xinzhao": {
+      "id": "XinZhao",
+      "key": "5",
+      "name": "Xin Zhao",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "mid",
+        "top"
+      ],
+      "observed_roles": {
+        "jng": 6478,
+        "sup": 1,
+        "mid": 5,
+        "top": 5
+      },
+      "window": "balanced",
+      "styles": [
+        "skirmish",
+        "engage",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 1.9000000000000001,
+        "mid": 2.0,
+        "late": 1.4,
+        "lane_priority": 1.0,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 2.9,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.4,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 3.0,
+        "teamfight": 2.5,
+        "objective_control": 1.6,
+        "mobility": 1.0,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "yasuo": {
+      "id": "Yasuo",
+      "key": "157",
+      "name": "Yasuo",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Flow",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "top",
+        "bot"
+      ],
+      "observed_roles": {
+        "sup": 9,
+        "bot": 58,
+        "mid": 265,
+        "top": 105
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "pick",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.4,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.5,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 2.3,
+        "dive": 2.5999999999999996,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 1.4,
+        "teamfight": 0.7,
+        "objective_control": 0.0,
+        "mobility": 2.3,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "yone": {
+      "id": "Yone",
+      "key": "777",
+      "name": "Yone",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Flow",
+      "primary_role": "mid",
+      "secondary_roles": [
+        "top",
+        "bot"
+      ],
+      "observed_roles": {
+        "top": 279,
+        "mid": 2502,
+        "bot": 4,
+        "jng": 1
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "pick",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 1.0,
+        "lane_priority": 1.4,
+        "all_in": 3.0,
+        "poke": 0.0,
+        "waveclear": 0.5,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 2.3,
+        "dive": 2.5999999999999996,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.25,
+        "skirmish": 1.4,
+        "teamfight": 0.7,
+        "objective_control": 0.0,
+        "mobility": 3.0,
+        "execution": 2.4,
+        "range": 0.0
+      }
+    },
+    "yorick": {
+      "id": "Yorick",
+      "key": "83",
+      "name": "Yorick",
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng",
+        "mid"
+      ],
+      "observed_roles": {
+        "top": 1097,
+        "jng": 3,
+        "mid": 1
+      },
+      "window": "late",
+      "styles": [
+        "frontline",
+        "splitpush",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 2.5999999999999996,
+        "lane_priority": 1.5999999999999999,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 1.9,
+        "skirmish": 1.4,
+        "teamfight": 1.9,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "yunara": {
+      "id": "Yunara",
+      "key": "804",
+      "name": "Yunara",
+      "tags": [
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [],
+      "observed_roles": {
+        "bot": 2201
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 0.1,
+        "mid": 1.1,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.0,
+        "objective_control": 2.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 2.6
+      }
+    },
+    "yuumi": {
+      "id": "Yuumi",
+      "key": "350",
+      "name": "Yuumi",
+      "tags": [
+        "Support",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [],
+      "observed_roles": {
+        "sup": 145
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 2.0999999999999996,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.5,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "zaahen": {
+      "id": "Zaahen",
+      "key": "904",
+      "name": "Zaahen",
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "Mana",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng",
+        "sup"
+      ],
+      "observed_roles": {
+        "top": 463,
+        "jng": 268,
+        "sup": 1
+      },
+      "window": "mid",
+      "styles": [
+        "dive",
+        "pick",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 2.0,
+        "mid": 2.9,
+        "late": 0.0,
+        "lane_priority": 1.4,
+        "all_in": 2.5,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 2.5999999999999996,
+        "frontline": 0.5,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 0.7,
+        "objective_control": 0.0,
+        "mobility": 2.3,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "zac": {
+      "id": "Zac",
+      "key": "154",
+      "name": "Zac",
+      "tags": [
+        "Tank",
+        "Fighter"
+      ],
+      "partype": "None",
+      "primary_role": "top",
+      "secondary_roles": [
+        "jng",
+        "sup"
+      ],
+      "observed_roles": {
+        "jng": 109,
+        "mid": 2,
+        "top": 257,
+        "sup": 30,
+        "bot": 3
+      },
+      "window": "balanced",
+      "styles": [
+        "frontline",
+        "teamfight",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.8,
+        "mid": 2.0,
+        "late": 1.7999999999999998,
+        "lane_priority": 1.4,
+        "all_in": 1.3,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 1.8,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 1.2,
+        "frontline": 2.9,
+        "siege": 0.0,
+        "splitpush": 0.4,
+        "skirmish": 1.4,
+        "teamfight": 2.5,
+        "objective_control": 0.6,
+        "mobility": 0.6,
+        "execution": 0.0,
+        "range": 0.0
+      }
+    },
+    "zed": {
+      "id": "Zed",
+      "key": "238",
+      "name": "Zed",
+      "tags": [
+        "Assassin"
+      ],
+      "partype": "Energy",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "mid",
+        "top"
+      ],
+      "observed_roles": {
+        "mid": 104,
+        "jng": 170,
+        "top": 2
+      },
+      "window": "mid",
+      "styles": [
+        "pick",
+        "dive",
+        "skirmish"
+      ],
+      "traits": {
+        "early": 1.0,
+        "mid": 1.7,
+        "late": -0.4,
+        "lane_priority": 0.0,
+        "all_in": 1.2,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.5,
+        "peel": 0.0,
+        "pick": 1.8,
+        "dive": 1.4,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 0.0,
+        "objective_control": 1.0,
+        "mobility": 2.1,
+        "execution": 1.8,
+        "range": 0.0
+      }
+    },
+    "zeri": {
+      "id": "Zeri",
+      "key": "221",
+      "name": "Zeri",
+      "tags": [
+        "Marksman"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "top"
+      ],
+      "observed_roles": {
+        "bot": 2374,
+        "mid": 248,
+        "top": 17
+      },
+      "window": "late",
+      "styles": [
+        "siege",
+        "teamfight"
+      ],
+      "traits": {
+        "early": -0.7000000000000001,
+        "mid": 1.1,
+        "late": 3.0,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 0.0,
+        "waveclear": 0.0,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.0,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 2.4000000000000004,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.0,
+        "objective_control": 2.0,
+        "mobility": 0.8,
+        "execution": 0.6,
+        "range": 2.6
+      }
+    },
+    "ziggs": {
+      "id": "Ziggs",
+      "key": "115",
+      "name": "Ziggs",
+      "tags": [
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "bot",
+      "secondary_roles": [
+        "mid",
+        "top"
+      ],
+      "observed_roles": {
+        "bot": 1132,
+        "mid": 268,
+        "sup": 1,
+        "top": 2
+      },
+      "window": "late",
+      "styles": [
+        "poke",
+        "siege",
+        "teamfight"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.4,
+        "late": 2.0,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 2.0,
+        "waveclear": 2.6,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 1.9000000000000001,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.6,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 1.6
+      }
+    },
+    "zilean": {
+      "id": "Zilean",
+      "key": "26",
+      "name": "Zilean",
+      "tags": [
+        "Support",
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "sup",
+      "secondary_roles": [
+        "mid",
+        "top"
+      ],
+      "observed_roles": {
+        "sup": 55,
+        "mid": 16,
+        "top": 3
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 2.0999999999999996,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 2.5,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "zoe": {
+      "id": "Zoe",
+      "key": "142",
+      "name": "Zoe",
+      "tags": [
+        "Mage"
+      ],
+      "partype": "Mana",
+      "primary_role": "mid",
+      "secondary_roles": [],
+      "observed_roles": {
+        "mid": 221
+      },
+      "window": "balanced",
+      "styles": [
+        "pick",
+        "teamfight",
+        "poke"
+      ],
+      "traits": {
+        "early": 0.2,
+        "mid": 1.4,
+        "late": 1.5,
+        "lane_priority": 0.4,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 2.1,
+        "engage": 0.0,
+        "peel": 0.0,
+        "pick": 1.3,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.0,
+        "teamfight": 1.2,
+        "objective_control": 0.0,
+        "mobility": 0.0,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    },
+    "zyra": {
+      "id": "Zyra",
+      "key": "143",
+      "name": "Zyra",
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "Mana",
+      "primary_role": "jng",
+      "secondary_roles": [
+        "sup",
+        "mid"
+      ],
+      "observed_roles": {
+        "sup": 43,
+        "jng": 1216,
+        "bot": 1,
+        "mid": 2
+      },
+      "window": "balanced",
+      "styles": [
+        "teamfight",
+        "peel",
+        "engage"
+      ],
+      "traits": {
+        "early": 0.6000000000000001,
+        "mid": 2.2,
+        "late": 2.2,
+        "lane_priority": 0.0,
+        "all_in": 0.0,
+        "poke": 1.2,
+        "waveclear": 1.6,
+        "engage": 1.3,
+        "peel": 1.4,
+        "pick": 0.8,
+        "dive": 0.0,
+        "frontline": 0.0,
+        "siege": 0.0,
+        "splitpush": 0.0,
+        "skirmish": 0.8,
+        "teamfight": 2.1,
+        "objective_control": 1.0,
+        "mobility": 0.4,
+        "execution": 0.0,
+        "range": 0.8
+      }
+    }
+  }
+}

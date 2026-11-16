@@ -1,0 +1,135 @@
+{
+  "version": "anchor_regression_v1",
+  "artifact": "ml_artifact.json",
+  "expectations": "ops/key_matchup_expectations.json",
+  "mode": "app",
+  "summary": {
+    "total": 10,
+    "ok": 10,
+    "fail": 0,
+    "pass_rate": 1.0
+  },
+  "decision": "promote",
+  "cases": [
+    {
+      "name": "TT_vs_LNG_bo5_LNG_favorito",
+      "team_a": "ThunderTalk Gaming",
+      "team_b": "LNG Esports",
+      "market": "bo5",
+      "side": "b",
+      "odd_value": 1.1351613181541145,
+      "min_odd": 1.01,
+      "max_odd": 1.271,
+      "ok": true,
+      "error": ""
+    },
+    {
+      "name": "WE_vs_TES_bo5_TES",
+      "team_a": "Team WE",
+      "team_b": "Top Esports",
+      "market": "bo5",
+      "side": "b",
+      "odd_value": 1.3440554192587824,
+      "min_odd": 1.183,
+      "max_odd": 1.505,
+      "ok": true,
+      "error": ""
+    },
+    {
+      "name": "GEN_vs_T1_bo5_GEN",
+      "team_a": "Gen.G",
+      "team_b": "T1",
+      "market": "bo5",
+      "side": "a",
+      "odd_value": 1.2858805383093561,
+      "min_odd": 1.132,
+      "max_odd": 1.44,
+      "ok": true,
+      "error": ""
+    },
+    {
+      "name": "HLE_vs_DK_bo5_HLE",
+      "team_a": "Hanwha Life Esports",
+      "team_b": "Dplus Kia",
+      "market": "bo5",
+      "side": "a",
+      "odd_value": 1.577898344874409,
+      "min_odd": 1.389,
+      "max_odd": 1.767,
+      "ok": true,
+      "error": ""
+    },
+    {
+      "name": "BLG_vs_JDG_bo5_BLG",
+      "team_a": "Bilibili Gaming",
+      "team_b": "JD Gaming",
+      "market": "bo5",
+      "side": "a",
+      "odd_value": 1.3988423599604145,
+      "min_odd": 1.231,
+      "max_odd": 1.567,
+      "ok": true,
+      "error": ""
+    },
+    {
+      "name": "G2_vs_FNC_bo5_G2",
+      "team_a": "G2 Esports",
+      "team_b": "Fnatic",
+      "market": "bo5",
+      "side": "a",
+      "odd_value": 1.1962418139332058,
+      "min_odd": 1.053,
+      "max_odd": 1.34,
+      "ok": true,
+      "error": ""
+    },
+    {
+      "name": "C9_vs_FLY_bo3_C9",
+      "team_a": "Cloud9",
+      "team_b": "FlyQuest",
+      "market": "bo3",
+      "side": "a",
+      "odd_value": 1.271652773987896,
+      "min_odd": 1.119,
+      "max_odd": 1.424,
+      "ok": true,
+      "error": ""
+    },
+    {
+      "name": "KT_vs_DK_bo3_KT",
+      "team_a": "KT Rolster",
+      "team_b": "Dplus Kia",
+      "market": "bo3",
+      "side": "a",
+      "odd_value": 2.3168727720320144,
+      "min_odd": 1.853,
+      "max_odd": 2.78,
+      "ok": true,
+      "error": ""
+    },
+    {
+      "name": "CFO_vs_GAM_bo3_CFO",
+      "team_a": "CTBC Flying Oyster",
+      "team_b": "GAM Esports",
+      "market": "bo3",
+      "side": "a",
+      "odd_value": 1.9419000338289274,
+      "min_odd": 1.709,
+      "max_odd": 2.175,
+      "ok": true,
+      "error": ""
+    },
+    {
+      "name": "FURIA_vs_LOUD_bo5_FURIA",
+      "team_a": "FURIA",
+      "team_b": "LOUD",
+      "market": "bo5",
+      "side": "a",
+      "odd_value": 2.338500669373351,
+      "min_odd": 1.871,
+      "max_odd": 2.806,
+      "ok": true,
+      "error": ""
+    }
+  ]
+}

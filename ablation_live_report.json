@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-05-29T00:02:36+00:00",
+  "holdout_n": 1313,
+  "train_n": 3941,
+  "layers": [
+    {
+      "layer": "L0 Base (p_fused_oof)",
+      "logloss": 0.6202385096104103,
+      "ece": 0.052736806241603026,
+      "brier": 0.215696415083258,
+      "pct_changed": 0.0,
+      "mean_shift_pp": 0.0,
+      "delta_logloss_pp": 0.0
+    },
+    {
+      "layer": "L1 + Uncertainty",
+      "logloss": 0.6332774617634364,
+      "ece": 0.07966976681682832,
+      "brier": 0.2214627623276582,
+      "pct_changed": 100.0,
+      "mean_shift_pp": 3.3319349076013687,
+      "delta_logloss_pp": -0.013038952153026084
+    },
+    {
+      "layer": "L2 + Marginal Trust",
+      "logloss": 0.6409990895668184,
+      "ece": 0.09319877134879452,
+      "brier": 0.22493028858450387,
+      "pct_changed": 100.0,
+      "mean_shift_pp": 1.3529004531966229,
+      "delta_logloss_pp": -0.007721627803382036
+    },
+    {
+      "layer": "L3 + Microseg",
+      "logloss": 0.6309856300573394,
+      "ece": 0.1275848493685885,
+      "brier": 0.22015548599242363,
+      "pct_changed": 100.0,
+      "mean_shift_pp": 1.8504525769629088,
+      "delta_logloss_pp": 0.010013459509478961
+    },
+    {
+      "layer": "L4 Series Gamma (BO3/5)",
+      "logloss": 0.6729790078881345,
+      "logloss_base": 0.6729790078881346,
+      "n_eligible": 751,
+      "pct_changed": 0.0,
+      "mean_shift_pp": 1.82203712097271e-15,
+      "delta_logloss_pp": 1.1102230246251565e-16
+    },
+    {
+      "layer": "L5 Series Coherence (BO3/5)",
+      "logloss": 0.6729790078881346,
+      "logloss_base": 0.6729790078881346,
+      "n_eligible": 751,
+      "pct_changed": 0.0,
+      "mean_shift_pp": 0.0,
+      "delta_logloss_pp": 0.0
+    }
+  ]
+}

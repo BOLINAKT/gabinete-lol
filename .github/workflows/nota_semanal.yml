@@ -1,0 +1,222 @@
+# Vigia da NOTA (fase 2 da campanha — confiabilidade): roda o scorecard
+# oficial (fusion) toda semana na nuvem e ABRE ISSUE (GitHub manda e-mail)
+# se a nota cair do piso. Proteção contra o incidente holdout-180 (modelo
+# degradado 4 dias sem ninguém ver, 06/2026) agora que retreino é autônomo.
+name: Nota semanal (vigia de qualidade)
+
+on:
+  schedule:
+    - cron: "11 8 * * 1"  # segunda de manhã
+  workflow_dispatch: {}
+
+# PERMISSAO DE ESCRITA (consertado em 16/10/2026). De 17/07 a 16/10 isto era
+# `contents: read`, e o vigia NUNCA publicou: o push era recusado e o laco de
+# retry engolia a recusa (break so no sucesso, e o ultimo comando era um
+# `git pull --rebase` que da certo), entao o passo ficava verde sem gravar nada.
+# A nota do produto e o frescor ficaram parados em 07/09 (ultimo commit A MAO).
+# Os outros 6 robos deste repo tem `contents: write` e publicam todo dia.
+# FONTES (abertas em 16/10/2026):
+# - https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
+#   "If you specify the access for any of these permissions, all of those that
+#   are not specified are set to `none`." / "`contents: read` permits an action
+#   to list the commits" -- `read` nao inclui escrita. A pagina nao diz com
+#   essas palavras que push exige `write`: isso e a prova empirica acima.
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  scorecard:
+    runs-on: ubuntu-latest
+    # 60 -> 90: o passo das demais fases sozinho ja pode levar 50 min, e agora
+    # ha mais um de 25. Estourar o teto do JOB mataria junto o passo que abre
+    # a issue quando a nota cai — que e o motivo deste workflow existir.
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependências
+        run: pip install --quiet -r requirements.txt
+
+      - name: Rodar scorecard oficial (fusion)
+        run: |
+          python tools/ml_fusion_scorecard.py 2>&1 | tee scorecard_out.txt
+
+      # Campeao novo nao pode faltar CALADO: ele foi montar um draft em
+      # 16/08/2026 e o Locke nao estava la — o registro estava 10 patches atras
+      # e nada avisava (nada quebra, nenhum teste falha, so a tela fica sem o
+      # boneco e o Radar le a composicao errado). --fix roda o gerador sozinho:
+      # o dado vem do Riot e dos CSVs, entao nao ha o que revisar a mao.
+      - name: Registro de campeoes em dia? (conserta sozinho se faltar)
+        continue-on-error: true
+        run: python tools/check_champion_registry.py --fix 2>&1 | tee campeoes_out.txt
+
+      - name: Publicar registro de campeoes se mudou
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add champion_knowledge_registry.json
+          if git diff --cached --quiet; then
+            echo "registro de campeoes sem mudanca"
+          else
+            git commit -m "Robô: registro de campeões atualizado (campeão novo no Data Dragon)"
+            # mesmo laco dos outros robos: se as 3 tentativas falharem, o
+            # `git push` final FALHA o passo -- antes a recusa sumia calada.
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado -- rebase e retry $i/3"
+              git pull --rebase --autostash || exit 1
+            done
+            git push
+          fi
+
+      # Ate 16/08/2026 o vigia media SO a fase Vencedor. As outras sete so eram
+      # medidas quando ele rodava a mao no PC — resultado: a nota do produto
+      # estava sendo anunciada com fases de 26-29 dias, uma foto de julho, e o
+      # aviso de "regua velha" nem disparava porque o limite era 30 dias.
+      - name: Re-medir as demais fases (totais + as baratas) e consolidar
+        continue-on-error: true
+        timeout-minutes: 50
+        run: |
+          python tools/totals_scorecard.py || echo "totals falhou — segue"
+          python tools/product_scorecard.py --run --strict 2>&1 | tee produto_out.txt
+
+      # A nota POR LIGA e o aviso que aparece no confronto ("calibracao 0.19,
+      # DESCONFIE"). So era gerada quando eu rodava a mao — o aviso da tela
+      # congelava e virava mentira com cara de medicao. Passo SEPARADO de
+      # proposito: junto com totals+produto ele estouraria o teto de 50 min
+      # do passo anterior e morreria calado.
+      - name: Re-medir a nota por liga (o aviso do confronto)
+        continue-on-error: true
+        timeout-minutes: 25
+        run: python tools/nota_por_liga.py
+
+      # ALARME DE QUALIDADE (22/10/2026). tools/ml_quality_check.py nasceu do
+      # incidente de 06/2026 (nota despencou 4 dias sem aviso), mas so rodava
+      # na manutencao feita pelo app -- a ultima vez foi 14/07. E o baseline
+      # morava em ops/ (fora do git): no robo, "sem baseline" fixava o atual e
+      # dizia ok, entao o alarme nunca dispararia. Agora o baseline e
+      # versionado e o alarme roda aqui toda semana; "fail" abre issue.
+      # Re-fixado em 22/10 no estado de hoje: o de 08/07 comparava outra
+      # janela de 45 dias (jogos diferentes), nao o mesmo conjunto.
+      - name: Alarme de qualidade pos-retreino
+        continue-on-error: true
+        run: python tools/ml_quality_check.py 2>&1 | tee qualidade_out.txt
+
+      - name: Publicar a nota do produto (a nuvem e o PC dele so leem do git)
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add -f ops/monitoring/ml_quality_baseline.json evidence/product_scorecard.json evidence/nota_por_liga.json evidence/totals_scorecard.json evidence/regua_28.json evidence/frescor.json evidence/livro_caixa.json
+          if git diff --cached --quiet; then
+            echo "nota do produto sem mudanca — sem commit"
+          else
+            git commit -m "Robô: nota do produto re-medida (vigia semanal)"
+            # mesmo laco dos outros robos: se as 3 tentativas falharem, o
+            # `git push` final FALHA o passo -- antes a recusa sumia calada.
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado -- rebase e retry $i/3"
+              git pull --rebase --autostash || exit 1
+            done
+            git push
+          fi
+
+      # LIVRO-CAIXA DO SILENCIO. Severidade em camadas: reporta sempre, e
+      # escala (issue -> e-mail) so quando um item passa de 30 dias tolerado.
+      # Nao bloqueia nada — aviso que ninguem e obrigado a resolver vira ruido
+      # ignorado, entao a forca vem da idade, nao de derrubar a esteira.
+      # FRESCOR: a nota e um programa que so roda quando alguem roda. Velha,
+      # ela repete o numero antigo com toda a confianca. Aqui o vigia e
+      # EXTERNO a quem executa, que e o ponto do dead man's switch.
+      # REGUA DAS 28 (ML Test Score do Google). Nota = MINIMO das quatro
+      # areas, para a nossa forca em modelo nao esconder que monitoramento
+      # esta baixo. Roda aqui porque regua que so roda a mao vale METADE,
+      # pelo criterio do proprio artigo.
+      - name: Regua das 28
+        continue-on-error: true
+        run: python tools/regua_28.py 2>&1 | tee regua_out.txt
+
+      - name: Livro-caixa do silencio
+        continue-on-error: true
+        run: python tools/livro_caixa.py 2>&1 | tee livro_out.txt
+
+      # FRESCOR POR ULTIMO (26/10/2026): ele mede a idade dos outros arquivos,
+      # entao tem de rodar DEPOIS do livro-caixa -- antes media o livro-caixa
+      # da semana anterior. E o frescor.json nunca entrava no git: o "git add"
+      # do passo da nota rodava antes de ele existir, e ele se acusava VELHO
+      # (50 dias) toda semana. Agora vai no commit abaixo.
+      - name: Frescor das reguas
+        continue-on-error: true
+        run: python tools/frescor.py 2>&1 | tee frescor_out.txt
+
+      - name: Publicar o livro-caixa e o frescor
+        continue-on-error: true
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add -f evidence/livro_caixa.json evidence/frescor.json
+          if git diff --cached --quiet; then
+            echo "livro-caixa e frescor sem mudanca"
+          else
+            git commit -m "Robô: livro-caixa do silêncio e frescor atualizados"
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              git pull --rebase --autostash || exit 1
+            done
+            git push
+          fi
+
+      - name: Avaliar piso e alertar se cair
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PISO: "8.5"
+        run: |
+          nota=$(grep -oE "NOTA FUSAO \(real\).*: *[0-9]+\.[0-9]+" scorecard_out.txt | grep -oE "[0-9]+\.[0-9]+" | tail -1)
+          echo "nota medida: ${nota:-NAO_ENCONTRADA}"
+          if [ -z "$nota" ]; then
+            titulo="🚨 Vigia da nota: scorecard não produziu nota"
+            corpo="O workflow semanal rodou mas não conseguiu extrair a NOTA do scorecard. Ver logs do run."
+          elif [ "$(echo "$nota < $PISO" | bc -l)" = "1" ]; then
+            titulo="🚨 Vigia da nota: caiu para $nota (piso $PISO)"
+            corpo="A nota oficial (fusion scorecard, replay cego na temporada) caiu para **$nota**. Últimas suspeitas de praxe: retreino com CSV truncado, calibrador achatado, artifact incompleto. Rodar tools/ml_quality_diagnose.py no PC."
+          elif grep -q "verdict=fail" qualidade_out.txt 2>/dev/null; then
+            motivo=$(grep -oE "verdict=fail.*" qualidade_out.txt | head -1 | head -c 400)
+            titulo="🚨 Alarme de qualidade: o modelo piorou de repente"
+            corpo="O alarme pos-retreino (tools/ml_quality_check.py) acusou queda alem de +0,020 de logloss contra o baseline: $motivo. Suspeitas de praxe: retreino com CSV truncado, holdout errado, cutoff."
+          elif grep -q "régua(s) velha(s)" produto_out.txt 2>/dev/null; then
+            velhas=$(grep -oE "réguas VELHAS.*" produto_out.txt | head -1)
+            titulo="⚠️ Vigia da nota: régua(s) do produto envelhecendo"
+            corpo="A nota do vencedor está ok (**$nota**), mas alguma fase não foi re-medida a tempo: $velhas. A nota do produto está sendo calculada com número velho — ver logs do run para saber qual régua falhou."
+          elif grep -qE "regua\(s\) VELHA|regua\(s\) SEM CARIMBO" frescor_out.txt 2>/dev/null; then
+            titulo="⚠️ Frescor: régua velha ou sem carimbo"
+            corpo="A nota está ok (**$nota**), mas alguma régua passou de 3x a própria cadência, ou não tem carimbo de data. Régua velha repete o número antigo com toda a confiança — foi assim que a nota caiu sem ninguém ver. Ver evidence/frescor.json."
+          elif grep -q -e "declaracao(oes) VENCIDA" -e "declaracoes RECUSADAS" regua_out.txt 2>/dev/null; then
+            quais=$(grep -A 6 "VENCIDA(s) ou sem data" regua_out.txt | tr -s " \n" ' ' | head -c 400)
+            titulo="Regua das 28: declaracao vencida"
+            corpo="A nota esta ok (**$nota**), mas alguma declaracao da regua das 28 passou dos 90 dias. Ela vale ZERO ate alguem reverificar, entao a nota da regua caiu sozinha sem nada ter mudado no sistema - isso e de proposito, carimbo que ninguem confere e decoracao. Itens: $quais Reverificar e atualizar evidence/regua_28_declaracoes.json."
+          elif grep -q "item(ns) com 30 dias ou mais" livro_out.txt 2>/dev/null; then
+            velhos=$(grep -oE "[0-9]+ item\(ns\) com 30 dias ou mais" livro_out.txt | head -1)
+            titulo="⚠️ Livro-caixa: $velhos sem decisão"
+            corpo="A nota está ok (**$nota**), mas o livro-caixa do silêncio tem item tolerado há 30 dias ou mais sem decisão. O que machuca não é quebrar, é ficar semanas quebrado sem ninguém ver — a aba StatsCamps do Dota ficou morta 6 semanas assim. Ver evidence/livro_caixa.json, ordenado por idade."
+          # Faixa de AVISO do frescor. Fica por ULTIMO de proposito: e o nivel
+          # mais baixo da cadeia, abaixo de todos os alarmes de erro acima.
+          # Ate 04/09/2026 esta faixa nao existia aqui, e o CI so olhava VELHA
+          # e SEM CARIMBO — o mesmo ponto cego que o proprio frescor.py tinha
+          # (divida D6). Regua atrasada nao gerava aviso nenhum.
+          elif grep -qE "regua\(s\) ATRASADA" frescor_out.txt 2>/dev/null; then
+            quantas=$(grep -oE "[0-9]+ regua\(s\) ATRASADA" frescor_out.txt | head -1)
+            titulo="Frescor: $quantas — hora de rodar"
+            corpo="A nota está ok (**$nota**), e nada está velho ainda. Mas $quantas passou de 2x a própria cadência, que é a faixa de AVISO — existe justamente para dar tempo de agir antes de virar régua VELHA, que é quando o número antigo passa a ser repetido com confiança. Não é emergência: é o lembrete de rodar. Ver evidence/frescor.json."
+          else
+            echo "nota $nota >= piso $PISO — tudo certo"; exit 0
+          fi
+          curl -s -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/issues" \
+            -d "{\"title\": $(python -c "import json,sys; print(json.dumps(sys.argv[1]))" "$titulo"), \"body\": $(python -c "import json,sys; print(json.dumps(sys.argv[1]))" "$corpo")}"
