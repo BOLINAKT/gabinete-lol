@@ -409,6 +409,6 @@
  "janela_dias": 60,
  "jogos": 1451,
  "dados_ate": "2026-11-04",
- "gerado_em": "2026-11-09",
+ "gerado_em": "2026-11-16",
  "_o_que_e": "total real de kills ~ coef[0] + coef[1] x media servida, e os quantis do erro; mlcore/lines_engine usa se tiver ate 21 dias"
 }
