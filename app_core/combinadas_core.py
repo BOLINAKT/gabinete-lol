@@ -13,6 +13,11 @@ o adversario PERDEU (encolhido para o marginal com poucos jogos), contra multipl
 pernas independentes -- placar conjunto: tempo +0,011, torres +0,009, dragoes +0,014
 (IC95 todos acima de zero); kills -0,001 (empate). Por isso: condicional em tempo,
 torres e dragoes; kills (e baroes/inibidores, nao medidos) multiplicam as pernas.
+
+DOTA (15/11/2026; arquivo identico nos dois repositorios). Mesma medicao, cego 2026 (3,5 mil
+jogos, linha central): a condicional NAO bate multiplicar as pernas em nenhum mercado -- kills
+-0,0000, torres +0,0015, roshans -0,0032, barracas +0,0021, tempo +0,0022, todos com IC95
+cruzando o zero. No Dota a combinada e sempre o produto das pernas (vencedor x total do metodo).
 """
 from __future__ import annotations
 
@@ -22,7 +27,12 @@ from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
-CONDICIONAL = {"time", "towers", "dragons"}
+def _e_dota() -> bool:
+    from pathlib import Path
+    return (Path(__file__).resolve().parents[1] / "dota_paths.py").exists()
+
+
+CONDICIONAL = set() if _e_dota() else {"time", "towers", "dragons"}
 JANELA = 10
 
 
