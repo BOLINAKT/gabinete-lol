@@ -1,24 +1,13 @@
 {
-  "gerado_em": "2026-11-14T16:27:05-03:00",
+  "gerado_em": "2026-11-15T21:48:47-03:00",
   "fonte": "https://esports-api.lolesports.com/persisted/gw/getSchedule",
   "fuso": "America/Sao_Paulo",
   "n_eventos_recebidos": 80,
   "descartes": {
-    "ja_jogados": 79,
+    "ja_jogados": 80,
     "passados": 0,
     "indefinidos": 0,
     "sem_dois_times": 0
   },
-  "jogos": [
-    {
-      "date": "14/11",
-      "time": "16:00",
-      "league": "Mundial",
-      "teamA_raw": "Gen.G Esports",
-      "teamB_raw": "BILIBILI GAMING",
-      "bo": 5,
-      "estado": "inProgress",
-      "inicio_utc": "2026-11-14T19:00:00Z"
-    }
-  ]
+  "jogos": []
 }
