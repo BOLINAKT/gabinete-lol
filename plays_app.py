@@ -1937,6 +1937,19 @@ if nav_page == "Meta":
     st.stop()
 
 
+# SUPER-LIVE (16/11/2026): quem esta na vantagem no mapa -- pre-jogo, pos-draft e ao vivo,
+# puxando o jogo da lolesports (digitacao como reserva). Ver app_core/super_live_tab_core.py.
+if nav_page == "SUPER-LIVE":
+    try:
+        from app_core.gaveta_jogos_core import resolver_padrao as _sl_resolver
+        from app_core.super_live_tab_core import render_super_live as _render_super_live
+        _render_super_live(st, raiz=APP_ROOT, esporte="lol", times=list(teams or []),
+                           resolver=_sl_resolver(list(teams or []), APP_ROOT))
+    except Exception as _e_sl:
+        st.error("O SUPER-LIVE não abriu: {}: {}".format(type(_e_sl).__name__, _e_sl))
+    st.stop()
+
+
 # Se pediu reset manual do confronto, aplica ANTES dos widgets (evita erro de session_state)
 if core_consume_pending_reset_matchup(st.session_state):
     _reset_flow(keep_config=True)

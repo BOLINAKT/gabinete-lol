@@ -63,6 +63,12 @@ jobs:
       - name: Nota por jogador
         run: python tools/nota_jogadores_lol.py
 
+      # SUPER-LIVE (16/11/2026): tabelas da camada pos-draft (campeao e jogador-campeao) com os
+      # jogos novos; os coeficientes medidos ficam. Falhar aqui nao barra o modelo.
+      - name: Camada pos-draft (SUPER-LIVE)
+        continue-on-error: true
+        run: python tools/camada_draft.py
+
       - name: Re-pinar fixtures de regressão no modelo novo
         run: python tools/update_regression_fixtures.py
 
@@ -83,7 +89,7 @@ jobs:
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add ml_artifact.json players_artifact.json mlcore/tests/fixtures/ phase1_data_contract_report.json nota_jogadores_lol.json
+          git add ml_artifact.json players_artifact.json mlcore/tests/fixtures/ phase1_data_contract_report.json nota_jogadores_lol.json camada_draft_lol.json
           if git diff --cached --quiet; then
             echo "modelo não mudou (CSV sem jogos novos) — nada a commitar"
           else

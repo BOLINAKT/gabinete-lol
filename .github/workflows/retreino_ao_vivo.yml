@@ -49,6 +49,10 @@ jobs:
             --n-bootstrap 500 \
             --phases 6,7,8,10
 
+      # SUPER-LIVE (16/11/2026): os mesmos modelos de estado so com o que o feed ao vivo entrega.
+      - name: Retreinar os modelos ao vivo so-feed (SUPER-LIVE)
+        run: python tools/treinar_ao_vivo_feed.py
+
       - name: Guarda — carregar e prever cada modelo (nunca commitar quebrado)
         run: |
           python - <<'PY'
@@ -75,7 +79,8 @@ jobs:
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add live_models/ FASE6_LIVE.json FASE7_MARKETS.json FASE8_FIRST_MARKETS.json FASE10_PLAYER_PROPS.json
+          git add -f evidence/ao_vivo_feed.json || true
+          git add live_models/ live_models_feed/ FASE6_LIVE.json FASE7_MARKETS.json FASE8_FIRST_MARKETS.json FASE10_PLAYER_PROPS.json
           if git diff --cached --quiet; then
             echo "modelos ao vivo não mudaram — nada a commitar"
           else

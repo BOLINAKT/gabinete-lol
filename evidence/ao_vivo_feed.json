@@ -1,0 +1,299 @@
+{
+  "generated_at": "2026-11-16T21:32:28+00:00",
+  "version": "phase6_live_v1",
+  "split": {
+    "train": {
+      "n": 20252,
+      "date_range": [
+        "2024-01-01",
+        "2025-12-29"
+      ]
+    },
+    "val": {
+      "n": 2430,
+      "date_range": [
+        "2026-01-01",
+        "2026-03-31"
+      ],
+      "cutoff_start": "2026-01-01"
+    },
+    "test": {
+      "n": 7434,
+      "date_range": [
+        "2026-04-01",
+        "2026-11-04"
+      ],
+      "cutoff_start": "2026-04-01"
+    }
+  },
+  "snapshots": [
+    {
+      "minute": 10,
+      "n_train": 36086,
+      "n_val": 4644,
+      "n_test": 14734,
+      "best_iteration": 148,
+      "baseline_metrics": {
+        "logloss": {
+          "metric": "logloss",
+          "point": 0.5926625307300114,
+          "ci_low": 0.5878242809465317,
+          "ci_high": 0.5973697920366068,
+          "n": 14734,
+          "n_bootstrap": 200
+        },
+        "ece": {
+          "metric": "ece",
+          "point": 0.06518364382764325,
+          "ci_low": 0.05729574219666824,
+          "ci_high": 0.07293609419333238,
+          "n": 14734,
+          "n_bootstrap": 200
+        }
+      },
+      "candidate_metrics": {
+        "logloss": {
+          "metric": "logloss",
+          "point": 0.5225828497720473,
+          "ci_low": 0.5148571529028515,
+          "ci_high": 0.5299850043834814,
+          "n": 14734,
+          "n_bootstrap": 200
+        },
+        "ece": {
+          "metric": "ece",
+          "point": 0.01935435260759167,
+          "ci_low": 0.013253101445252623,
+          "ci_high": 0.027264152031720588,
+          "n": 14734,
+          "n_bootstrap": 200
+        }
+      },
+      "gate_decision": {
+        "accept": true,
+        "reason": "passed_all_checks",
+        "delta_logloss": 0.07007968095796413,
+        "delta_logloss_ci_low": 0.06384232900217679,
+        "delta_logloss_ci_high": 0.07583117390236149,
+        "p_value": 0.0,
+        "delta_ece": 0.045829291220051575,
+        "n": 14734,
+        "n_bootstrap": 200,
+        "thresholds": {
+          "min_delta_logloss": 0.002,
+          "alpha": 0.05,
+          "ece_tolerance": 0.005,
+          "n_bootstrap": 200
+        }
+      },
+      "feature_importance": {
+        "gold_diff": 85327.09297384671,
+        "z_pre": 52931.29190598428,
+        "cs_diff": 15911.521333187819,
+        "kills_diff": 7087.789084017277,
+        "league_tier": 2636.1875516176224
+      }
+    },
+    {
+      "minute": 15,
+      "n_train": 36084,
+      "n_val": 4644,
+      "n_test": 14736,
+      "best_iteration": 110,
+      "baseline_metrics": {
+        "logloss": {
+          "metric": "logloss",
+          "point": 0.5926756459629196,
+          "ci_low": 0.588584380619432,
+          "ci_high": 0.597395414187353,
+          "n": 14736,
+          "n_bootstrap": 200
+        },
+        "ece": {
+          "metric": "ece",
+          "point": 0.06524239611263138,
+          "ci_low": 0.05857214910032637,
+          "ci_high": 0.07194783679023288,
+          "n": 14736,
+          "n_bootstrap": 200
+        }
+      },
+      "candidate_metrics": {
+        "logloss": {
+          "metric": "logloss",
+          "point": 0.47624034571731677,
+          "ci_low": 0.46958862263292706,
+          "ci_high": 0.4827044635835166,
+          "n": 14736,
+          "n_bootstrap": 200
+        },
+        "ece": {
+          "metric": "ece",
+          "point": 0.017050449709133723,
+          "ci_low": 0.013529427288182171,
+          "ci_high": 0.024473007619727975,
+          "n": 14736,
+          "n_bootstrap": 200
+        }
+      },
+      "gate_decision": {
+        "accept": true,
+        "reason": "passed_all_checks",
+        "delta_logloss": 0.11643530024560278,
+        "delta_logloss_ci_low": 0.11042691126937376,
+        "delta_logloss_ci_high": 0.12287475709726214,
+        "p_value": 0.0,
+        "delta_ece": 0.048191946403497665,
+        "n": 14736,
+        "n_bootstrap": 200,
+        "thresholds": {
+          "min_delta_logloss": 0.002,
+          "alpha": 0.05,
+          "ece_tolerance": 0.005,
+          "n_bootstrap": 200
+        }
+      },
+      "feature_importance": {
+        "gold_diff": 142210.37902092934,
+        "z_pre": 28305.45660495758,
+        "cs_diff": 25440.675545096397,
+        "kills_diff": 15314.18531703949,
+        "deaths_diff": 2478.5494565963745
+      }
+    },
+    {
+      "minute": 20,
+      "n_train": 35994,
+      "n_val": 4632,
+      "n_test": 14694,
+      "best_iteration": 111,
+      "baseline_metrics": {
+        "logloss": {
+          "metric": "logloss",
+          "point": 0.5935566016314507,
+          "ci_low": 0.5891163275029132,
+          "ci_high": 0.5981459985929899,
+          "n": 14694,
+          "n_bootstrap": 200
+        },
+        "ece": {
+          "metric": "ece",
+          "point": 0.0650986812620295,
+          "ci_low": 0.056960750411414664,
+          "ci_high": 0.0720065753847139,
+          "n": 14694,
+          "n_bootstrap": 200
+        }
+      },
+      "candidate_metrics": {
+        "logloss": {
+          "metric": "logloss",
+          "point": 0.4148415487053532,
+          "ci_low": 0.4085293776939702,
+          "ci_high": 0.42345145258118455,
+          "n": 14694,
+          "n_bootstrap": 200
+        },
+        "ece": {
+          "metric": "ece",
+          "point": 0.01067767888015649,
+          "ci_low": 0.010614780384094209,
+          "ci_high": 0.018572925854519477,
+          "n": 14694,
+          "n_bootstrap": 200
+        }
+      },
+      "gate_decision": {
+        "accept": true,
+        "reason": "passed_all_checks",
+        "delta_logloss": 0.17871505292609752,
+        "delta_logloss_ci_low": 0.1706554231376653,
+        "delta_logloss_ci_high": 0.18697028494899226,
+        "p_value": 0.0,
+        "delta_ece": 0.05442100238187301,
+        "n": 14694,
+        "n_bootstrap": 200,
+        "thresholds": {
+          "min_delta_logloss": 0.002,
+          "alpha": 0.05,
+          "ece_tolerance": 0.005,
+          "n_bootstrap": 200
+        }
+      },
+      "feature_importance": {
+        "gold_diff": 212998.37136411667,
+        "cs_diff": 18861.168264389038,
+        "kills_diff": 18455.800407409668,
+        "deaths_diff": 17303.790196418762,
+        "z_pre": 15795.097949504852
+      }
+    },
+    {
+      "minute": 25,
+      "n_train": 34012,
+      "n_val": 4368,
+      "n_test": 13596,
+      "best_iteration": 115,
+      "baseline_metrics": {
+        "logloss": {
+          "metric": "logloss",
+          "point": 0.6094438306933015,
+          "ci_low": 0.6047680281854748,
+          "ci_high": 0.6154365152971515,
+          "n": 13596,
+          "n_bootstrap": 200
+        },
+        "ece": {
+          "metric": "ece",
+          "point": 0.05394513289918444,
+          "ci_low": 0.046773700092209186,
+          "ci_high": 0.061934803593444596,
+          "n": 13596,
+          "n_bootstrap": 200
+        }
+      },
+      "candidate_metrics": {
+        "logloss": {
+          "metric": "logloss",
+          "point": 0.34705037631761054,
+          "ci_low": 0.33864497988453096,
+          "ci_high": 0.3570398552640864,
+          "n": 13596,
+          "n_bootstrap": 200
+        },
+        "ece": {
+          "metric": "ece",
+          "point": 0.009372986943449022,
+          "ci_low": 0.009344414355610172,
+          "ci_high": 0.016907623774913106,
+          "n": 13596,
+          "n_bootstrap": 200
+        }
+      },
+      "gate_decision": {
+        "accept": true,
+        "reason": "passed_all_checks",
+        "delta_logloss": 0.262393454375691,
+        "delta_logloss_ci_low": 0.2540922386895302,
+        "delta_logloss_ci_high": 0.27207995098662313,
+        "p_value": 0.0,
+        "delta_ece": 0.04457214595573542,
+        "n": 13596,
+        "n_bootstrap": 200,
+        "thresholds": {
+          "min_delta_logloss": 0.002,
+          "alpha": 0.05,
+          "ece_tolerance": 0.005,
+          "n_bootstrap": 200
+        }
+      },
+      "feature_importance": {
+        "gold_diff": 266877.16030049324,
+        "kills_diff": 42935.47019225359,
+        "cs_diff": 12050.769971609116,
+        "deaths_diff": 9240.470616877079,
+        "z_pre": 8872.671884536743
+      }
+    }
+  ]
+}
