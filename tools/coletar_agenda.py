@@ -229,6 +229,30 @@ def _quantos_ja_tem(caminho: Path) -> int:
         return 0
 
 
+def agenda_anterior_ja_passou(caminho: Path, agora: datetime, folga_h: float = 12.0) -> bool:
+    """Todos os jogos da agenda gravada ja comecaram ha mais de `folga_h` horas? Pura (fora a
+    leitura). 15/11/2026: depois da final do Mundial (14/11) a API devolveu 80 eventos, todos ja
+    jogados; a coleta vazia era a VERDADE (entressafra), mas o robo recusava gravar e falhava em
+    vermelho de 3 em 3 horas, com a final de ontem presa na agenda."""
+    try:
+        d = json.loads(caminho.read_text(encoding="utf-8"))
+        jogos = d.get("jogos") or []
+    except (OSError, ValueError, AttributeError):
+        return False
+    if not jogos:
+        return False
+    for j in jogos:
+        try:
+            t = datetime.fromisoformat(str(j.get("inicio_utc")).replace("Z", "+00:00"))
+        except (TypeError, ValueError):
+            return False
+        if t.tzinfo is None:
+            t = t.replace(tzinfo=timezone.utc)
+        if agora - t < timedelta(hours=folga_h):
+            return False
+    return True
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Coleta a agenda de jogos de LoL.")
     ap.add_argument("--saida", default=str(DESTINO))
@@ -270,7 +294,10 @@ def main() -> int:
     saida = Path(str(args.saida)).expanduser()
     tinha = _quantos_ja_tem(saida)
 
-    if not jogos:
+    if not jogos and tinha and eventos and agenda_anterior_ja_passou(saida, datetime.now(timezone.utc)):
+        print("[agenda] nenhum jogo por vir ({} eventos recebidos, todos ja jogados) e a agenda gravada "
+              "so tinha jogo que ja aconteceu: gravo a agenda vazia (entressafra).".format(len(eventos)))
+    elif not jogos:
         if tinha:
             print("[agenda] ERRO: coleta veio VAZIA e ja existe agenda com {} jogo(s).".format(tinha))
             print("[agenda] Nao vou substituir. Agenda vazia num dia de jogo e pior que agenda velha.")
