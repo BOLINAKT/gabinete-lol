@@ -1,23 +1,23 @@
 {
   "version": "live_models_manifest_v1",
-  "last_trained_at": "2026-11-16T21:32:30+00:00",
+  "last_trained_at": "2026-11-23T18:58:59+00:00",
   "csv_signatures": [
     {
-      "path": "C:\\Gabinetes\\_lol_conferencia\\CSV_HISTORICO\\2024_LoL_esports_match_data_from_OraclesElixir.csv",
+      "path": "/home/runner/work/gabinete-lol/gabinete-lol/CSV_HISTORICO/2024_LoL_esports_match_data_from_OraclesElixir.csv",
       "size": 78791971,
-      "mtime_ns": 1792155215429110600,
+      "mtime_ns": 1795459077416429682,
       "n_games": 10199
     },
     {
-      "path": "C:\\Gabinetes\\_lol_conferencia\\CSV_HISTORICO\\2025_LoL_esports_match_data_from_OraclesElixir.csv",
+      "path": "/home/runner/work/gabinete-lol/gabinete-lol/CSV_HISTORICO/2025_LoL_esports_match_data_from_OraclesElixir.csv",
       "size": 78889037,
-      "mtime_ns": 1792155215698052800,
+      "mtime_ns": 1795459077681426480,
       "n_games": 10053
     },
     {
-      "path": "C:\\Gabinetes\\_lol_conferencia\\CSV_DIARIO\\2026_LoL_esports_match_data_from_OraclesElixir.csv",
+      "path": "/home/runner/work/gabinete-lol/gabinete-lol/CSV_DIARIO/2026_LoL_esports_match_data_from_OraclesElixir.csv",
       "size": 79027426,
-      "mtime_ns": 1793895533652766400,
+      "mtime_ns": 1795459077150432895,
       "n_games": 9864
     }
   ],
@@ -29,7 +29,7 @@
   ],
   "n_games_at_train": 30116,
   "last_gate": {
-    "report": "C:\\Gabinetes\\_lol_conferencia\\evidence\\ao_vivo_feed.json",
+    "report": "/home/runner/work/gabinete-lol/gabinete-lol/evidence/ao_vivo_feed.json",
     "accepted": 4,
     "total": 4
   }
