@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T21:32:28+00:00",
+  "generated_at": "2026-11-23T18:58:57+00:00",
   "version": "phase6_live_v1",
   "split": {
     "train": {
@@ -178,7 +178,7 @@
         },
         "ece": {
           "metric": "ece",
-          "point": 0.0650986812620295,
+          "point": 0.06509868126202947,
           "ci_low": 0.056960750411414664,
           "ci_high": 0.0720065753847139,
           "n": 14694,
@@ -210,7 +210,7 @@
         "delta_logloss_ci_low": 0.1706554231376653,
         "delta_logloss_ci_high": 0.18697028494899226,
         "p_value": 0.0,
-        "delta_ece": 0.05442100238187301,
+        "delta_ece": 0.05442100238187298,
         "n": 14694,
         "n_bootstrap": 200,
         "thresholds": {
