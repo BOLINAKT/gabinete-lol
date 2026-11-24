@@ -108,3 +108,21 @@ jobs:
             done
             git push
           fi
+
+      # STATUS (24/11/2026): roda SEMPRE e grava status_coleta_lol.json (resultado e motivo); a faixa do
+      # topo do app le -- ele nunca mais fica sem saber que o modelo parou de se atualizar.
+      - name: Registrar o resultado (sempre)
+        if: always()
+        run: |
+          python tools/completude_lol.py || true
+          python tools/status_coleta.py --esporte lol --resultado "${{ job.status }}" || true
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add status_coleta_lol.json
+          git add -f evidence/completude_lol.json 2>/dev/null || true
+          git diff --cached --quiet && exit 0
+          git commit -m "Robo: status da atualizacao do LoL (${{ job.status }})" --only status_coleta_lol.json $(git diff --cached --name-only | grep completude || true)
+          for i in 1 2 3; do
+            git push && exit 0
+            git pull --rebase --autostash || true
+          done
