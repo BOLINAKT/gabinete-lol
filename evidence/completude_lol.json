@@ -1,32 +1,7 @@
 {
- "quando": "2026-11-24T20:33:13+00:00",
+ "quando": "2026-11-24T20:40:23+00:00",
  "fonte": "lolesports getSchedule",
  "janela_dias": 21,
  "series_conferidas": 12,
- "faltando": [
-  {
-   "inicio": "2026-11-10T09:00:00+00:00",
-   "a": "Saigon Warrior",
-   "b": "Team Gromp ",
-   "liga": "LCP P&R",
-   "placar": "3-0",
-   "motivo": "time não reconhecido na base: Saigon Warrior"
-  },
-  {
-   "inicio": "2026-11-12T06:00:00+00:00",
-   "a": "Nothin'Here",
-   "b": "Saigon Warrior",
-   "liga": "LCP P&R",
-   "placar": "0-3",
-   "motivo": "time não reconhecido na base: Saigon Warrior"
-  },
-  {
-   "inicio": "2026-11-13T06:00:00+00:00",
-   "a": "Saigon Warrior",
-   "b": "DetonatioN FocusMe",
-   "liga": "LCP P&R",
-   "placar": "3-1",
-   "motivo": "time não reconhecido na base: Saigon Warrior"
-  }
- ]
+ "faltando": []
 }
