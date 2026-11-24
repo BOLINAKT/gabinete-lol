@@ -1,6 +1,6 @@
 {
   "version": "phase1_data_contract_v1",
-  "generated_at": "2026-11-24T20:27:10+00:00",
+  "generated_at": "2026-11-24T20:32:21+00:00",
   "decision": "promote",
   "reasons": [],
   "parts": {
@@ -13,7 +13,7 @@
       "csv_files": 3,
       "files_ok": 3,
       "files_fail": 0,
-      "rows_total": 361392,
+      "rows_total": 362436,
       "label_issues_total": 0,
       "critical_issues_total": 0
     },
@@ -135,10 +135,10 @@
         "warnings": [
           "missing_bo_col"
         ],
-        "rows": 118368,
+        "rows": 119412,
         "columns": 165,
         "label_view_mode": "team_rows_only",
-        "label_rows": 19728,
+        "label_rows": 19902,
         "label_cols": {
           "team": "teamname",
           "side": "side",
@@ -149,19 +149,19 @@
         },
         "empty_team_rows": 0,
         "side_counts": {
-          "blue": 9864,
-          "red": 9864
+          "blue": 9951,
+          "red": 9951
         },
         "bo_missing_informational": true,
         "playoffs_counts": {
-          "0": 15580,
-          "1": 4148
+          "0": 15718,
+          "1": 4184
         },
-        "duplicate_gameid_rows": 9864,
+        "duplicate_gameid_rows": 9951,
         "duplicate_gameid_team_rows": 0,
         "game_consistency": {
           "checked": true,
-          "games_checked": 9864,
+          "games_checked": 9951,
           "bad_side_games": 0,
           "bad_result_games": 0
         },
@@ -178,10 +178,10 @@
     "summary": {
       "files_ok": 3,
       "files_total": 3,
-      "rows_total": 361392,
+      "rows_total": 362436,
       "league_count": 72,
       "low_sample_leagues_lt30": 0,
-      "team_rows": 361392,
+      "team_rows": 362436,
       "blank_team_rows": 0,
       "blank_team_rate": 0.0
     },
@@ -204,7 +204,7 @@
       },
       {
         "league": "LAS",
-        "rows": 16032
+        "rows": 16248
       },
       {
         "league": "NACL",
@@ -228,7 +228,7 @@
       },
       {
         "league": "AL",
-        "rows": 9552
+        "rows": 9732
       },
       {
         "league": "PCS",
@@ -244,7 +244,7 @@
       },
       {
         "league": "LCP",
-        "rows": 6888
+        "rows": 7104
       },
       {
         "league": "LIT",
@@ -289,5 +289,5 @@
     ],
     "errors": []
   },
-  "run_log": "$ check_data_leakage_and_labels rc=0\nOK: leakage/label report saved -> data_leakage_label_report.json | decision=promote | files_ok=3/3 rows=361392"
+  "run_log": "$ check_data_leakage_and_labels rc=0\nOK: leakage/label report saved -> data_leakage_label_report.json | decision=promote | files_ok=3/3 rows=362436"
 }
