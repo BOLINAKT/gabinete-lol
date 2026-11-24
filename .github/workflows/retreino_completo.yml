@@ -1,4 +1,4 @@
-# Retreino COMPLETO, mensal.
+# Retreino COMPLETO, SEMANAL (domingo) desde 24/11/2026 -- era mensal.
 #
 # POR QUE ESTE ROBO EXISTE (11/09/2026)
 # O robo de retreino (retreino.yml) roda 3x ao dia, mas so faz atualizacao
@@ -13,12 +13,14 @@
 # foram disparados a mao, por acaso. Quanto o ganho decai nesse intervalo nao
 # foi medido; o ponto e que ninguem estava olhando.
 #
-# POR QUE MENSAL, e nao semanal ou diario
-# O treino completo leva ~15 minutos e reconstroi tudo do zero. A cadencia
-# mensal acompanha o ritmo com que os treinos completos ja aconteciam na
-# pratica (agosto, julho, junho) e cabe folgado no limite do runner. Semanal
-# so faria sentido se o ganho decaisse rapido, e isso NAO FOI MEDIDO — medir
-# antes de apertar a cadencia e a ordem certa.
+# POR QUE SEMANAL (medido em 24/11/2026, a pergunta dele: "como voce chegou nesses resultados?")
+# Ate 24/11 era mensal, sem medicao (o proprio arquivo dizia). Medido as cegas em abr-set/2026, 5.279 jogos
+# (C:\Gabinetes\_medicoes\medir_retreino_completo_lol.py): treino completo no dia 1o + incremental no mes
+# x treino completo a cada 7 dias + incremental na semana, nos jogos do dia 8 em diante:
+#   semanal ganha +0,0060 de logloss, IC95 [+0,0022; +0,0101] -- passa a regua (> 0,002 e IC > 0), e
+#   o ganho apareceu em todos os meses. Mede o motor (sem a camada de jogadores, igual nos dois bracos).
+# Domingo 05:30 UTC: longe dos robos de segunda (ao vivo 06:30, nota 08:11, reguas 10:17); o grupo de
+# concurrency "retreino" e o mesmo do incremental, entao os dois nunca rodam juntos.
 #
 # A TRAVA
 # O modelo novo so substitui o que esta no ar depois de passar por
@@ -31,7 +33,7 @@ on:
   schedule:
     # Dia 1 de cada mes, 05:30 UTC (~02:30 em Brasilia) — longe das janelas
     # do robo incremental (09:57, 16:03, 22:21 UTC).
-    - cron: "30 5 1 * *"
+    - cron: "30 5 * * 0"   # domingo (semanal desde 24/11/2026; medido -- ver o topo)
   workflow_dispatch: {}
 
 permissions:
