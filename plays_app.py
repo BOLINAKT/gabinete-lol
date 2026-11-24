@@ -1338,6 +1338,13 @@ st.markdown(
 st.caption("Fluxo: escolher Season/Times -> preencher linhas -> ver resultados (modelo + histórico).")
 
 APP_ROOT = Path(__file__).resolve().parent
+# FAIXA DE CONFIANCA (24/11/2026): ate que jogo a base vai e se a ultima atualizacao deu certo (e o
+# motivo se nao deu). Ver app_core/confianca_base_core.py.
+try:
+    from app_core.confianca_base_core import render_faixa as _faixa_confianca
+    _faixa_confianca(st, APP_ROOT, "lol")
+except Exception as _e_faixa:
+    st.warning("A faixa de confiança da base não abriu: {}".format(type(_e_faixa).__name__))
 
 # Configura o modulo fatiado em 16/08/2026. TEM que vir depois do APP_ROOT:
 # o bloco original ficava ANTES dele e so o usava em tempo de execucao, dentro
